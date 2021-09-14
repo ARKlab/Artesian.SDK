@@ -121,6 +121,11 @@ namespace Artesian.SDK.Service
             return $"{_localDatePattern.Format(start)}/{_localDatePattern.Format(end)}";
         }
 
+        internal string _toUrlParam(LocalDateTime start, LocalDateTime end)
+        {
+            return $"{_localDateTimePattern.Format(start)}/{_localDateTimePattern.Format(end)}";
+        }
+
         internal string _toUrlParam(LocalDateTime dateTime)
         {
             return _localDateTimePattern.Format(dateTime);

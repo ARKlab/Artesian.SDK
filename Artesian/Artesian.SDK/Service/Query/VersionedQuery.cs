@@ -187,6 +187,23 @@ namespace Artesian.SDK.Service
                 throw new ArgumentException("End date " + end + " must be greater than start date " + start);
 
             _queryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
+            _queryParamaters.VersionSelectionConfig.MostRecent.DateStart = start.AtMidnight();
+            _queryParamaters.VersionSelectionConfig.MostRecent.DateEnd = end.AtMidnight();
+
+            return this;
+        }
+        /// <summary>
+        /// Set Most Recent date range version selection
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public VersionedQuery ForMostRecent(LocalDateTime start, LocalDateTime end)
+        {
+            if (end <= start)
+                throw new ArgumentException("End datetime " + end + " must be greater than start datetime " + start);
+
+            _queryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
             _queryParamaters.VersionSelectionConfig.MostRecent.DateStart = start;
             _queryParamaters.VersionSelectionConfig.MostRecent.DateEnd = end;
 
