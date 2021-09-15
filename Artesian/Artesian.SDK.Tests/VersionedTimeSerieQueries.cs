@@ -891,11 +891,11 @@ namespace Artesian.SDK.Tests
                 var ver = qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
-                        .ForMostRecent(new LocalDateTime(2018, 5, 21, 12, 0, 0), new LocalDateTime(2018, 7, 23, 0, 0, 0))
+                        .ForMostRecent(new LocalDateTime(2018, 5, 21, 12, 30, 15), new LocalDateTime(2018, 7, 23, 8, 45, 30))
                         .InRelativeInterval(RelativeInterval.MonthToDate)
                         .ExecuteAsync().Result;
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-05-21T12:00:00/2018-07-23T00:00:00/Day/MonthToDate")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-05-21T12:30:15/2018-07-23T08:45:30/Day/MonthToDate")
                  .WithQueryParam("id", 100000001)
                  .WithVerb(HttpMethod.Get)
                  .Times(1);
