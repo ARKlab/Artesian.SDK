@@ -10,11 +10,11 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Start date for date range
         /// </summary>
-        public LocalDate? DateStart { get; set; }
+        public LocalDateTime? DateStart { get; set; }
         /// <summary>
         /// End date for date range
         /// </summary>
-        public LocalDate? DateEnd { get; set; }
+        public LocalDateTime? DateEnd { get; set; }
         /// <summary>
         /// Period
         /// </summary>
