@@ -706,7 +706,7 @@ namespace Artesian.SDK.Tests
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                         .ExecuteAsync().Result;
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-06-22/2018-07-23/Day/2018-06-22/2018-07-23")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-06-22T00:00:00/2018-07-23T00:00:00/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
                  .WithVerb(HttpMethod.Get)
                  .Times(1);
@@ -727,7 +727,7 @@ namespace Artesian.SDK.Tests
                         .InRelativePeriod(Period.FromDays(5))
                         .ExecuteAsync().Result;
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-06-22/2018-07-23/Day/P5D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-06-22T00:00:00/2018-07-23T00:00:00/Day/P5D")
                  .WithQueryParam("id", 100000001)
                  .WithVerb(HttpMethod.Get)
                  .Times(1);
@@ -744,11 +744,11 @@ namespace Artesian.SDK.Tests
                 var ver = qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
-                        .ForMostRecent(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
+                        .ForMostRecent(new LocalDateTime(2018, 6, 22, 0, 0, 0), new LocalDateTime(2018, 7, 23, 0, 0, 0))
                         .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                         .ExecuteAsync().Result;
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-06-22/2018-07-23/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-06-22T00:00:00/2018-07-23T00:00:00/Day/P2W/P20D")
                    .WithQueryParam("id", 100000001)
                    .WithVerb(HttpMethod.Get)
                    .Times(1);
@@ -891,11 +891,11 @@ namespace Artesian.SDK.Tests
                 var ver = qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
-                        .ForMostRecent(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
+                        .ForMostRecent(new LocalDateTime(2018, 5, 21, 12, 30, 15), new LocalDateTime(2018, 7, 23, 8, 45, 30))
                         .InRelativeInterval(RelativeInterval.MonthToDate)
                         .ExecuteAsync().Result;
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-05-22/2018-07-23/Day/MonthToDate")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-05-21T12:30:15/2018-07-23T08:45:30/Day/MonthToDate")
                  .WithQueryParam("id", 100000001)
                  .WithVerb(HttpMethod.Get)
                  .Times(1);
