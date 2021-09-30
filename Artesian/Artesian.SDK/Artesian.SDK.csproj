@@ -16,7 +16,7 @@
     <PackageTags>Ark;c#;Visual Studio;Framework;Arkive;Artesian;</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
-    <Version>3.1.1</Version>
+    <Version>3.1.2</Version>
     <VersionSuffix></VersionSuffix>
     <PackageReleaseNotes>
       Add: support for .NET 5.0
