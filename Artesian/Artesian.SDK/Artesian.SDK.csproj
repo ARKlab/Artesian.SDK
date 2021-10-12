@@ -50,9 +50,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ark.Tools.Http" Version="3.0.0" />
+    <PackageReference Include="Ark.Tools.Http" Version="3.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="Ark.Tools.Auth0" Version="3.0.0" />
+    <PackageReference Include="Ark.Tools.Auth0" Version="3.3.0" />
   </ItemGroup>
 
 
