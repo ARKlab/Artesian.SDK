@@ -114,7 +114,7 @@ namespace Artesian.SDK.Service
                     req = req.WithHeader("X-Api-Key", _apiKey);
                 else
                 {
-                    var res = await _auth0.GetTokenAsync(_credentials);
+                    var res = await _auth0.GetTokenAsync(_credentials, ctk);
                     req = req.WithOAuthBearerToken(res.AccessToken);
                 }
 
