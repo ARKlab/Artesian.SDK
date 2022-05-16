@@ -1,9 +1,7 @@
 ﻿// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information.
-#if !NET452
 using Microsoft.Identity.Client;
-#endif
 using Flurl;
 using Flurl.Http;
 using Newtonsoft.Json;
@@ -41,9 +39,7 @@ namespace Artesian.SDK.Service
         private readonly string _apiKey;
         private readonly IArtesianServiceConfig _config;
 
-#if !NET452
         private IConfidentialClientApplication _confidentialClientApplication;
-#endif
 
         /// <summary>
         /// Client constructor Auth credentials / ApiKey can be passed through config
@@ -88,7 +84,6 @@ namespace Artesian.SDK.Service
 
             if (config.ApiKey == null)
             {
-#if !NET452
                 var domain = new Uri(config.Domain);
 
                 var tenantId = domain.Segments
@@ -101,7 +96,6 @@ namespace Artesian.SDK.Service
                               .WithTenantId(tenantId)
                               .WithClientSecret(config.ClientSecret)
                               .Build();
-#endif
             }
 
             _client = new FlurlClient(_url);
@@ -121,12 +115,10 @@ namespace Artesian.SDK.Service
                     req = req.WithHeader("X-Api-Key", _apiKey);
                 else
                 {
-#if !NET452
                     var c = _confidentialClientApplication
                         .AcquireTokenForClient(new[] { _config.Audience });
                     var res = await c.ExecuteAsync(ctk);
                     req = req.WithOAuthBearerToken(res.AccessToken);
-#endif
                 }
 
                 ObjectContent content = null;
