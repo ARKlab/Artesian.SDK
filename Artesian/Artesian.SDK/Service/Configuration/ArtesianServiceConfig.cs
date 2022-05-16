@@ -14,7 +14,6 @@ namespace Artesian.SDK.Service
         /// Base address of the Artesian service
         /// </summary>
         public Uri BaseAddress { get; }
-#if !NET452
         /// <summary>
         /// Audience of Artesian service. Required when authenticating with Bearer Token
         /// </summary>
@@ -31,7 +30,6 @@ namespace Artesian.SDK.Service
         /// Client Secret. Required when authenticating with Bearer Token
         /// </summary>
         public string ClientSecret { get; }
-#endif
         /// <summary>
         /// ApiKey used for access to the service
         /// </summary>s
@@ -47,7 +45,6 @@ namespace Artesian.SDK.Service
             BaseAddress = baseAddress;
             ApiKey = xApiKey;
         }
-#if !NET452
         /// <summary>
         /// Config for Bearer token service access
         /// </summary>
@@ -64,6 +61,5 @@ namespace Artesian.SDK.Service
             ClientId = clientId;
             ClientSecret = clientSecret;
         }
-#endif
     }
 }

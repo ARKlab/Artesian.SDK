@@ -95,6 +95,39 @@ namespace Artesian.SDK.Tests
             }
         }
 
+        private const string _realProblemDetailsJson = @"{""Errors"":[{""Key"":""MarketDataEntity.Tags[0].Value[0]"",""Value"":[{""ErrorMessage"":""'Value' must be between 1 and 50 characters. You entered 155 characters."",""AttemptedValue"":""PowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPower"",""CustomState"":null,""ErrorCode"":""LengthValidator"",""FormattedMessagePlaceholderValues"":[{""Key"":""CollectionIndex"",""Value"":0},{""Key"":""MinLength"",""Value"":1},{""Key"":""MaxLength"",""Value"":50},{""Key"":""TotalLength"",""Value"":155},{""Key"":""PropertyName"",""Value"":""Value""},{""Key"":""PropertyValue"",""Value"":""PowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPower""}]}]}],""type"":""https://httpstatuses.com/400"",""title"":""Bad Request"",""status"":400,""detail"":""'Value' must be between 1 and 50 characters. You entered 155 characters."",""instance"":null}";
+
+        [Test]
+        public void MarketData_RegisterIsFailingMarketDataAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var marketDataEntity = new MarketDataEntity.Input()
+                {
+                    ProviderName = "Test",
+                    MarketDataName = "TestName",
+                    OriginalGranularity = Granularity.Day,
+                    OriginalTimezone = "CET",
+                    AggregationRule = AggregationRule.Undefined,
+                    Type = MarketDataType.VersionedTimeSerie
+                };
+
+                httpTest
+                    .RespondWith(_realProblemDetailsJson, 
+                    status: 400, 
+                    headers: new { content_type = "application/problem+json; charset=utf-8"});
+
+                Assert.Throws<ArtesianSdkValidationException>(
+                  () => { 
+                      var mdq = mds.RegisterMarketDataAsync(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult(); 
+                  }
+                );
+
+            }
+        }
+
         [Test]
         public void MarketData_UpdateMarketDataAsync()
         {
