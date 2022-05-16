@@ -1,12 +1,7 @@
 ﻿// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
-// license information. 
-#if !NET452
-using Ark.Tools.Auth0;
-using Auth0.AuthenticationApi;
-using Auth0.AuthenticationApi.Models;
-using JWT.Builder;
-#endif
+// license information.
+using Microsoft.Identity.Client;
 using Flurl;
 using Flurl.Http;
 using Newtonsoft.Json;
@@ -31,8 +26,6 @@ namespace Artesian.SDK.Service
 {
     internal sealed class Client : IDisposable
     {
-        private readonly IAuthenticationApiClient _auth0;
-        private readonly ClientCredentialsTokenRequest _credentials;
         private readonly MediaTypeFormatterCollection _formatters;
         private readonly IFlurlClient _client;
 
@@ -44,6 +37,9 @@ namespace Artesian.SDK.Service
         private readonly string _url;
         private readonly AsyncPolicy _resilienceStrategy;
         private readonly string _apiKey;
+        private readonly IArtesianServiceConfig _config;
+
+        private IConfidentialClientApplication _confidentialClientApplication;
 
         /// <summary>
         /// Client constructor Auth credentials / ApiKey can be passed through config
@@ -55,6 +51,7 @@ namespace Artesian.SDK.Service
         {
             _url = config.BaseAddress.ToString().AppendPathSegment(Url);
             _apiKey = config.ApiKey;
+            _config = config;
 
             var cfg = new JsonSerializerSettings();
             cfg = cfg.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
@@ -87,14 +84,18 @@ namespace Artesian.SDK.Service
 
             if (config.ApiKey == null)
             {
-				_auth0 = new AuthenticationApiClientCachingDecorator(new AuthenticationApiClient($"{config.Domain}"));
+                var domain = new Uri(config.Domain);
 
-                _credentials = new ClientCredentialsTokenRequest()
-                {
-                    Audience = config.Audience,
-                    ClientId = config.ClientId,
-                    ClientSecret = config.ClientSecret,
-                };
+                var tenantId = domain.Segments
+                    .Select(s => s.Trim('/'))
+                    .Where(w => !string.IsNullOrWhiteSpace(w))
+                    .FirstOrDefault();
+
+                _confidentialClientApplication = ConfidentialClientApplicationBuilder
+                              .Create(config.ClientId)
+                              .WithTenantId(tenantId)
+                              .WithClientSecret(config.ClientSecret)
+                              .Build();
             }
 
             _client = new FlurlClient(_url);
@@ -114,7 +115,9 @@ namespace Artesian.SDK.Service
                     req = req.WithHeader("X-Api-Key", _apiKey);
                 else
                 {
-                    var res = await _auth0.GetTokenAsync(_credentials, ctk);
+                    var c = _confidentialClientApplication
+                        .AcquireTokenForClient(new[] { _config.Audience });
+                    var res = await c.ExecuteAsync(ctk);
                     req = req.WithOAuthBearerToken(res.AccessToken);
                 }
 
