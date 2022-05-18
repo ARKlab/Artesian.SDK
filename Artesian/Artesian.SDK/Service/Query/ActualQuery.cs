@@ -158,10 +158,12 @@ namespace Artesian.SDK.Service
         /// Set the Filler Strategy to Custom Value
         /// </summary>
         /// <param name="value"></param>
+        /// <param name="fillerContinue"></param>
         /// <returns>ActualQuery</returns>
-        public ActualQuery WithFillCustomValue(double value)
+        public ActualQuery WithFillCustomValue(double value, bool fillerContinue = false)
         {
             _queryParamaters.FillerKindType = FillerKindType.CustomValue;
+            _queryParamaters.FillerContinue = fillerContinue;
             _queryParamaters.FillerConfig.FillerTimeSeriesDV = value;
 
             return this;
@@ -170,10 +172,12 @@ namespace Artesian.SDK.Service
         /// Set the Filler Strategy to Latest Value
         /// </summary>
         /// <param name="period"></param>
+        /// <param name="fillerContinue"></param>
         /// <returns>ActualQuery</returns>
-        public ActualQuery WithFillLatestValue(Period period)
+        public ActualQuery WithFillLatestValue(Period period, bool fillerContinue = false)
         {
             _queryParamaters.FillerKindType = FillerKindType.LatestValidValue;
+            _queryParamaters.FillerContinue = fillerContinue;
             _queryParamaters.FillerConfig.FillerPeriod = period;
 
             return this;
@@ -215,6 +219,7 @@ namespace Artesian.SDK.Service
                         .SetQueryParam("tz", qp.TimeZone)
                         .SetQueryParam("tr", qp.TransformId)
                         .SetQueryParam("fillerK", qp.FillerKindType)
+                        .SetQueryParam("fillerC", qp.FillerContinue)
                         .SetQueryParam("fillerDV", qp.FillerConfig.FillerTimeSeriesDV)
                         .SetQueryParam("fillerP", qp.FillerConfig.FillerPeriod)
                         .ToString())

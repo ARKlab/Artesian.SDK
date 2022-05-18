@@ -31,6 +31,7 @@ namespace Artesian.SDK.Service
         /// <param name="timezone"></param>
         /// <param name="filterId"></param>
         /// <param name="fillerK"></param>
+        /// <param name="fillerC"></param>
         /// <param name="fillerConfig"></param>
         public ActualQueryParamaters(
             IEnumerable<int> ids, 
@@ -41,9 +42,10 @@ namespace Artesian.SDK.Service
             Granularity? granularity, 
             int? transformId,
             FillerKindType fillerK,
+            bool fillerC,
             FillerConfig fillerConfig
             )
-            : base(ids,extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
+            : base(ids,extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerC, fillerConfig)
         {           
             this.Granularity = granularity;
             this.TransformId = transformId;

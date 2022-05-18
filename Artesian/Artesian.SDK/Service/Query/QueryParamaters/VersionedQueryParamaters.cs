@@ -34,6 +34,7 @@ namespace Artesian.SDK.Service
         /// <param name="filterId"></param>
         /// <param name="versionLimit"></param>
         /// <param name="fillerK"></param>
+        /// <param name="fillerC"></param>
         /// <param name="fillerConfig"></param>
         public VersionedQueryParamaters(
             IEnumerable<int> ids, 
@@ -47,9 +48,10 @@ namespace Artesian.SDK.Service
             VersionSelectionType? versionSelectionType,
             LocalDateTime? versionLimit,
             FillerKindType fillerK,
+            bool fillerC,
             FillerConfig fillerConfig
             )
-            : base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
+            : base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerC, fillerConfig)
         {
             this.VersionSelectionConfig = versionSelectionConfig;
             this.VersionSelectionType = versionSelectionType;

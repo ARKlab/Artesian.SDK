@@ -8,7 +8,7 @@ namespace Artesian.SDK.Service
     interface IQueryWithFill<T>: IQuery<T>
     {
         T WithFillNull();
-        T WithFillLatestValue(Period period);
+        T WithFillLatestValue(Period period, bool fillerContinue);
         T WithFillNone();
     }
 }

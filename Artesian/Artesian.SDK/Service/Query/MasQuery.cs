@@ -149,10 +149,12 @@ namespace Artesian.SDK.Service
         /// Set the Filler Strategy to Latest Value
         /// </summary>
         /// <param name="period"></param>
+        /// <param name="fillerContinue"></param>
         /// <returns>MasQuery</returns>
-        public MasQuery WithFillLatestValue(Period period)
+        public MasQuery WithFillLatestValue(Period period, bool fillerContinue = false)
         {
             _queryParamaters.FillerKindType = FillerKindType.LatestValidValue;
+            _queryParamaters.FillerContinue = fillerContinue;
             _queryParamaters.FillerConfig.FillerPeriod = period;
 
             return this;
@@ -194,8 +196,9 @@ namespace Artesian.SDK.Service
                         .SetQueryParam("filterId", qp.FilterId)
                         .SetQueryParam("p", qp.Products)
                         .SetQueryParam("tz", qp.TimeZone)
-                        .SetQueryParam("fillerK",qp.FillerKindType)
-                        .SetQueryParam("fillerDVs",qp.FillerConfig.FillerMasDV.Settlement)
+                        .SetQueryParam("fillerK", qp.FillerKindType)
+                        .SetQueryParam("fillerC", qp.FillerContinue)
+                        .SetQueryParam("fillerDVs", qp.FillerConfig.FillerMasDV.Settlement)
                         .SetQueryParam("fillerDVo", qp.FillerConfig.FillerMasDV.Open)
                         .SetQueryParam("fillerDVc", qp.FillerConfig.FillerMasDV.Close)
                         .SetQueryParam("fillerDVh", qp.FillerConfig.FillerMasDV.High)

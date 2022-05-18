@@ -30,6 +30,7 @@ namespace Artesian.SDK.Service
         /// <param name="filterId"></param>
         /// <param name="products"></param>
         /// <param name="fillerK"></param>
+        /// <param name="fillerC"></param>
         /// <param name="fillerConfig"></param>
         public MasQueryParamaters(
             IEnumerable<int> ids , 
@@ -39,9 +40,10 @@ namespace Artesian.SDK.Service
             int? filterId,
             IEnumerable<string> products,
             FillerKindType fillerK,
+            bool fillerC,
             FillerConfig fillerConfig
             )
-            : base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
+            : base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerC, fillerConfig)
         {
             this.Products = products;
             this.FillerConfig = fillerConfig;

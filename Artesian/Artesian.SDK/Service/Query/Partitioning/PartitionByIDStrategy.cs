@@ -34,6 +34,7 @@ namespace Artesian.SDK.Service
                                 queryParamater.Granularity,
                                 queryParamater.TransformId,
                                 queryParamater.FillerKindType,
+                                queryParamater.FillerContinue,
                                 queryParamater.FillerConfig
                                 )));
         }
@@ -62,6 +63,7 @@ namespace Artesian.SDK.Service
                                 queryParamater.VersionSelectionType,
                                 queryParamater.VersionLimit,
                                 queryParamater.FillerKindType,
+                                queryParamater.FillerContinue,
                                 queryParamater.FillerConfig
                                 )));
         }
@@ -86,6 +88,7 @@ namespace Artesian.SDK.Service
                                 queryParamater.FilterId,
                                 queryParamater.Products,
                                 queryParamater.FillerKindType,
+                                queryParamater.FillerContinue,
                                 queryParamater.FillerConfig
                                 )));
         }
@@ -130,6 +133,7 @@ namespace Artesian.SDK.Service
                                 queryParamater.FilterId,
                                 queryParamater.Products,
                                 queryParamater.FillerKindType,
+                                queryParamater.FillerContinue,
                                 queryParamater.FillerConfig
                                 )));
         }

@@ -305,6 +305,12 @@ Latest Value
  .WithLFillLatestValue(Period.FromDays(7))
 ```
 
+Latest Value ignoring if the is a value at the end of the specified period
+
+```csharp
+ .WithLFillLatestValue(Period.FromDays(7), true)
+```
+
 ## MarketData Service
 
 Using the ArtesianServiceConfig `cfg` we create an instance of the MarketDataService which is used to retrieve and edit

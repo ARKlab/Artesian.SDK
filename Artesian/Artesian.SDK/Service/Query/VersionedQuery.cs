@@ -351,10 +351,12 @@ namespace Artesian.SDK.Service
         /// Set the Filler Strategy to Latest Value
         /// </summary>
         /// <param name="period"></param>
+        /// <param name="fillerContinue"></param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery WithFillLatestValue(Period period)
+        public VersionedQuery WithFillLatestValue(Period period, bool fillerContinue = false)
         {
             _queryParamaters.FillerKindType = FillerKindType.LatestValidValue;
+            _queryParamaters.FillerContinue = fillerContinue;
             _queryParamaters.FillerConfig.FillerPeriod = period;
 
             return this;
@@ -490,6 +492,7 @@ namespace Artesian.SDK.Service
                             .SetQueryParam("tr", qp.TransformId)
                             .SetQueryParam("versionLimit", qp.VersionLimit)
                             .SetQueryParam("fillerK",  qp.FillerKindType)
+                            .SetQueryParam("fillerC", qp.FillerContinue)
                             .SetQueryParam("fillerDV", qp.FillerConfig.FillerTimeSeriesDV)
                             .SetQueryParam("fillerP", qp.FillerConfig.FillerPeriod)
                             .ToString())

@@ -11,6 +11,6 @@ namespace Artesian.SDK.Service
         T InGranularity(Granularity granularity);
         T WithTimeTransform(int tr);
         T WithTimeTransform(SystemTimeTransform tr);
-        T WithFillCustomValue(double value);
+        T WithFillCustomValue(double value, bool fillerContinue);
     }
 }

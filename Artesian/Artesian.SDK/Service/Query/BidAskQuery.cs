@@ -149,10 +149,12 @@ namespace Artesian.SDK.Service
         /// Set the Filler Strategy to Latest Value
         /// </summary>
         /// <param name="period"></param>
+        /// <param name="fillerContinue"></param>
         /// <returns>BidAskQuery</returns>
-        public BidAskQuery WithFillLatestValue(Period period)
+        public BidAskQuery WithFillLatestValue(Period period, bool fillerContinue = false)
         {
             _queryParamaters.FillerKindType = FillerKindType.LatestValidValue;
+            _queryParamaters.FillerContinue = fillerContinue;
             _queryParamaters.FillerConfig.FillerPeriod = period;
 
             return this;
@@ -194,7 +196,8 @@ namespace Artesian.SDK.Service
                         .SetQueryParam("filterId", qp.FilterId)
                         .SetQueryParam("p", qp.Products)
                         .SetQueryParam("tz", qp.TimeZone)
-                        .SetQueryParam("fillerK",qp.FillerKindType)
+                        .SetQueryParam("fillerK", qp.FillerKindType)
+                        .SetQueryParam("fillerC", qp.FillerContinue)
                         .SetQueryParam("fillerDVbbp",qp.FillerConfig.FillerBidAskDV.BestBidPrice)
                         .SetQueryParam("fillerDVbap", qp.FillerConfig.FillerBidAskDV.BestAskPrice)
                         .SetQueryParam("fillerDVbbq", qp.FillerConfig.FillerBidAskDV.BestBidQuantity)

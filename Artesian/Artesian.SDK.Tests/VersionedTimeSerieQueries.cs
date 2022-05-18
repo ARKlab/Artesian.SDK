@@ -2721,6 +2721,32 @@ namespace Artesian.SDK.Tests
                  .WithQueryParam("id", 100000001)
                  .WithQueryParam("fillerK", FillerKindType.LatestValidValue)
                  .WithQueryParam("fillerP","P7D")
+                 .WithQueryParam("fillerC", false)
+                 .WithVerb(HttpMethod.Get)
+                 .Times(1);
+            }
+        }
+
+        [Test]
+        public void FillerLatestValueVerInAbsoluteDateRangeMostRecentContinue()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var qs = new QueryService(_cfg);
+
+                var ver = qs.CreateVersioned()
+                        .ForMarketData(new [] { 100000001 })
+                        .InGranularity(Granularity.Day)
+                        .ForMostRecent()
+                        .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
+                        .WithFillLatestValue(Period.FromDays(7), true)
+                        .ExecuteAsync().Result;
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/Day/2018-06-22/2018-07-23")
+                 .WithQueryParam("id", 100000001)
+                 .WithQueryParam("fillerK", FillerKindType.LatestValidValue)
+                 .WithQueryParam("fillerP","P7D")
+                 .WithQueryParam("fillerC", true)
                  .WithVerb(HttpMethod.Get)
                  .Times(1);
             }

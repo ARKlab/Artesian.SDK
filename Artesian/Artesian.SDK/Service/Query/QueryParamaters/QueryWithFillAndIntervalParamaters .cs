@@ -26,6 +26,7 @@ namespace Artesian.SDK.Service
         /// <param name="timezone"></param>
         /// <param name="filterId"></param>
         /// <param name="fillerKind"></param>
+        /// <param name="fillerContinue"></param>
         /// <param name="fillerConfig"></param>
         public QueryWithFillAndIntervalParamaters (
             IEnumerable<int> ids, 
@@ -36,10 +37,12 @@ namespace Artesian.SDK.Service
             string timezone, 
             int? filterId,
             FillerKindType fillerKind,
+            bool fillerContinue,
             FillerConfig fillerConfig
             ): base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId)
         {
             this.FillerKindType = fillerKind;
+            this.FillerContinue = fillerContinue;
             this.FillerConfig = fillerConfig;
         }
 
@@ -47,6 +50,10 @@ namespace Artesian.SDK.Service
         /// Filler Kind
         /// </summary>
         public FillerKindType FillerKindType { get; set; } = FillerKindType.Default;
+        /// <summary>
+        /// Filler Continue if no end value
+        /// </summary>
+        public bool FillerContinue { get; set; }
         /// <summary>
         /// Filler config
         /// </summary>
