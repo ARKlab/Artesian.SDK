@@ -6,16 +6,16 @@ namespace Artesian.SDK.Service.GMEPublicOffer
     interface IGMEPublicOfferQuery
     {
         GMEPublicOfferQuery ForDate(LocalDate date);
-        GMEPublicOfferQuery ForPurpose(Purpose purpose);
-        GMEPublicOfferQuery ForStatus(Status status);
+        GMEPublicOfferQuery ForPurpose(GME_Purpose purpose);
+        GMEPublicOfferQuery ForStatus(GME_Status status);
         GMEPublicOfferQuery ForOperator(string[] @operator);
         GMEPublicOfferQuery ForUnit(string[] unit);
-        GMEPublicOfferQuery ForMarket(Market[] market);
-        GMEPublicOfferQuery ForScope(Scope[] scope);
-        GMEPublicOfferQuery ForBAType(BAType[] baType);
-        GMEPublicOfferQuery ForZone(Zone[] zone);
-        GMEPublicOfferQuery ForUnitType(UnitType[] unitType);
-        GMEPublicOfferQuery ForGenerationType(GenerationType[] generationType);
+        GMEPublicOfferQuery ForMarket(GME_Market[] market);
+        GMEPublicOfferQuery ForScope(GME_Scope[] scope);
+        GMEPublicOfferQuery ForBAType(GME_BAType[] baType);
+        GMEPublicOfferQuery ForZone(GME_Zone[] zone);
+        GMEPublicOfferQuery ForUnitType(GME_UnitType[] unitType);
+        GMEPublicOfferQuery ForGenerationType(GME_GenerationType[] generationType);
         GMEPublicOfferQuery WithSort(string[] sort);
         GMEPublicOfferQuery WithPagination(int page, int pageSize);
     }

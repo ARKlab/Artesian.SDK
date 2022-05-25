@@ -39,7 +39,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// GenerationType
         /// </summary>
         [Key(0)]
-        public GenerationType GenerationType { get; set; }
+        public GME_GenerationType GenerationType { get; set; }
 
         /// <summary>
         /// From date

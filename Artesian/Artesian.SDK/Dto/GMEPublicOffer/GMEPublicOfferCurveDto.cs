@@ -13,19 +13,19 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Status
         /// </summary>
         [Key(0)]
-        public Status Status { get; set; }
+        public GME_Status Status { get; set; }
 
         /// <summary>
         /// The BAType
         /// </summary>
         [Key(1)]
-        public BAType BAType { get; set; }
+        public GME_BAType BAType { get; set; }
 
         /// <summary>
         /// The Scope
         /// </summary>
         [Key(2)]
-        public Scope Scope { get; set; }
+        public GME_Scope Scope { get; set; }
 
         /// <summary>
         /// The Date
@@ -43,31 +43,31 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Market
         /// </summary>
         [Key(5)]
-        public Market Market { get; set; }
+        public GME_Market Market { get; set; }
 
         /// <summary>
         /// The Purpose
         /// </summary>
         [Key(6)]
-        public Purpose Purpose { get; set; }
+        public GME_Purpose Purpose { get; set; }
 
         /// <summary>
         /// The Zone
         /// </summary>
         [Key(7)]
-        public Zone Zone { get; set; }
+        public GME_Zone Zone { get; set; }
 
         /// <summary>
         /// The Unit Type
         /// </summary>
         [Key(8)]
-        public UnitType UnitType { get; set; }
+        public GME_UnitType UnitType { get; set; }
 
         /// <summary>
         /// The Generation Type
         /// </summary>
         [Key(9)]
-        public GenerationType GenerationType { get; set; }
+        public GME_GenerationType GenerationType { get; set; }
 
         /// <summary>
         /// The Unit
@@ -122,6 +122,42 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// </summary>
         [Key(18)]
         public decimal ADJEnergyPrice { get; set; }
+
+        /// <summary>
+        /// Quarter Value
+        /// </summary>
+        [Key(19)]
+        public int? Quarter { get; set; }
+
+        /// <summary>
+        /// The Awarded Price
+        /// </summary>
+        [Key(20)]
+        public decimal? AwardedPrice { get; set; }
+
+        /// <summary>
+        /// Transaction Reference
+        /// </summary>
+        [Key(21)]
+        public string TransactionReference { get; set; }
+
+        /// <summary>
+        /// Grid Supply Point No
+        /// </summary>
+        [Key(22)]
+        public string GridSupplyPoint { get; set; }
+
+        /// <summary>
+        /// Bilateral
+        /// </summary>
+        [Key(23)]
+        public bool? Bilateral { get; set; }
+
+        /// <summary>
+        /// SubmittedAt
+        /// </summary>
+        [Key(24)]
+        public LocalDateTime? SubmittedAt { get; set; }
 
     }
 }
