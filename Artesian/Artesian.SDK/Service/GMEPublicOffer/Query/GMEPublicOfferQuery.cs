@@ -43,7 +43,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// </summary>
         /// <param name="status">Status to be queried</param>
         /// <returns>GMEPublicOfferQuery</returns>
-        public GMEPublicOfferQuery ForStatus(GME_Status status)
+        public GMEPublicOfferQuery ForStatus(Status status)
         {
             _queryParamaters.Status = status;
 
@@ -55,7 +55,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// </summary>
         /// <param name="purpose">Purpose to be queried</param>
         /// <returns>GMEPublicOfferQuery</returns>
-        public GMEPublicOfferQuery ForPurpose(GME_Purpose purpose)
+        public GMEPublicOfferQuery ForPurpose(Purpose purpose)
         {
             _queryParamaters.Purpose = purpose;
 
@@ -67,7 +67,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// </summary>
         /// <param name="baType">BATypes to be queried</param>
         /// <returns>GMEPublicOfferQuery</returns>
-        public GMEPublicOfferQuery ForBAType(GME_BAType[] baType)
+        public GMEPublicOfferQuery ForBAType(BAType[] baType)
         {
             _queryParamaters.BAType = baType;
 
@@ -79,7 +79,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// </summary>
         /// <param name="generationType">GenerationTypes to be queried</param>
         /// <returns>GMEPublicOfferQuery</returns>
-        public GMEPublicOfferQuery ForGenerationType(GME_GenerationType[] generationType)
+        public GMEPublicOfferQuery ForGenerationType(GenerationType[] generationType)
         {
             _queryParamaters.GenerationType = generationType;
 
@@ -91,7 +91,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// </summary>
         /// <param name="market">Markets to be queried</param>
         /// <returns>GMEPublicOfferQuery</returns>
-        public GMEPublicOfferQuery ForMarket(GME_Market[] market)
+        public GMEPublicOfferQuery ForMarket(Market[] market)
         {
             _queryParamaters.Market = market;
 
@@ -115,7 +115,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// </summary>
         /// <param name="scope">Scopes to be queried</param>
         /// <returns>GMEPublicOfferQuery</returns>
-        public GMEPublicOfferQuery ForScope(GME_Scope[] scope)
+        public GMEPublicOfferQuery ForScope(Scope[] scope)
         {
             _queryParamaters.Scope = scope;
 
@@ -139,7 +139,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// </summary>
         /// <param name="unitType">Unit types to be queried</param>
         /// <returns>GMEPublicOfferQuery</returns>
-        public GMEPublicOfferQuery ForUnitType(GME_UnitType[] unitType)
+        public GMEPublicOfferQuery ForUnitType(UnitType[] unitType)
         {
             _queryParamaters.UnitType = unitType;
 
@@ -151,7 +151,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// </summary>
         /// <param name="zone">Zones to be queried</param>
         /// <returns>GMEPublicOfferQuery</returns>
-        public GMEPublicOfferQuery ForZone(GME_Zone[] zone)
+        public GMEPublicOfferQuery ForZone(Zone[] zone)
         {
             _queryParamaters.Zone = zone;
 

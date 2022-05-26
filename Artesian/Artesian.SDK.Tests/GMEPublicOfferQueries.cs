@@ -28,8 +28,8 @@ namespace Artesian.SDK.Tests
 
                 var act = qs.CreateRawCurveQuery()
                        .ForDate(new LocalDate(2019,1,1))
-                       .ForPurpose(GME_Purpose.OFF)
-                       .ForStatus(GME_Status.INC)
+                       .ForPurpose(Purpose.OFF)
+                       .ForStatus(Status.INC)
                        .ExecuteAsync().Result;
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/extract/2019-01-01/OFF/INC")
@@ -48,16 +48,16 @@ namespace Artesian.SDK.Tests
 
                 var act = qs.CreateRawCurveQuery()
                        .ForDate(new LocalDate(2019, 1, 1))
-                       .ForPurpose(GME_Purpose.OFF)
-                       .ForStatus(GME_Status.INC)
-                       .ForGenerationType(new GME_GenerationType[] { GME_GenerationType.GAS })
-                       .ForBAType(new GME_BAType[] { GME_BAType.REV })
-                       .ForMarket(new GME_Market[] { GME_Market.MB4 })
+                       .ForPurpose(Purpose.OFF)
+                       .ForStatus(Status.INC)
+                       .ForGenerationType(new GenerationType[] { GenerationType.GAS })
+                       .ForBAType(new BAType[] { BAType.REV })
+                       .ForMarket(new Market[] { Market.MB4 })
                        .ForOperator(new [] { "op1" })
-                       .ForScope(new GME_Scope[] { GME_Scope.GR1 })
+                       .ForScope(new Scope[] { Scope.GR1 })
                        .ForUnit(new [] { "unit1" })
-                       .ForUnitType(new GME_UnitType[] { GME_UnitType.UP })
-                       .ForZone(new GME_Zone[] { GME_Zone.CNOR })
+                       .ForUnitType(new UnitType[] { UnitType.UP })
+                       .ForZone(new Zone[] { Zone.CNOR })
                        .WithPagination(2,20)
                        .WithSort(new [] { "id asc" })
                        .ExecuteAsync().Result;
@@ -233,7 +233,7 @@ namespace Artesian.SDK.Tests
                         new GenerationTypeMapping(){
                             From = new LocalDate(2019,1,1),
                             To = new LocalDate(2020,1,1),
-                            GenerationType = GME_GenerationType.COAL
+                            GenerationType = GenerationType.COAL
                         }
                     }
                 };
@@ -275,16 +275,20 @@ namespace Artesian.SDK.Tests
 
                 var gmePublicOFfer = new GMEPublicOfferDto()
                 {
-                      Purpose = GME_Purpose.BID,
-                      Type = GME_Type.REG,
-                      Status = GME_Status.ACC,
-                      Market = GME_Market.MGP,
+                      Purpose = Purpose.BID,
+                      Type = Dto.GMEPublicOffer.Type.REG,
+                      Status = Status.ACC,
+                      Market = Market.MGP,
                       UnitReference = "Something",
-                      Zone = GME_Zone.AUST,
+                      Zone = Zone.AUST,
                       Operator = "SomethingAgain",
+                      Data = new List<GMEPublicOfferDataDto>()
+                      {
+                          new GMEPublicOfferDataDto(){ }
+                      }
                 };
 
-                var data = new GMEPublicOfferUpsertDataDto()
+                var gmeData = new GMEPublicOfferUpsertDataDto()
                 {
                     GMEPublicOffer = new List<GMEPublicOfferDto>()
                     {
@@ -292,7 +296,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                gmeService.UpsertDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+                gmeService.UpsertDataAsync(gmeData).ConfigureAwait(true).GetAwaiter().GetResult();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/upsertdata")
                     .WithVerb(HttpMethod.Post)

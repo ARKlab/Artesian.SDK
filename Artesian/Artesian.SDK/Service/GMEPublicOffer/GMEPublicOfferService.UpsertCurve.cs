@@ -28,7 +28,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <returns></returns>
         public Task UpsertDataAsync(GMEPublicOfferUpsertDataDto data, CancellationToken ctk = default)
         {
-            //data.Validate();
+            data.Validate();
 
             var url = "/upsertdata";
 

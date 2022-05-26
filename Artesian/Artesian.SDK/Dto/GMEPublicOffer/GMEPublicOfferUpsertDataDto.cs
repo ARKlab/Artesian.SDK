@@ -40,8 +40,8 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
                 if (item.UnitReference == null)
                     throw new ArgumentException("'UnitReference' must be valorized");
 
-                if (item.UnitReference == null)
-                    throw new ArgumentException("'UnitReference' must be valorized");
+                if (item.Operator == null)
+                    throw new ArgumentException("'Operator' must be valorized");
 
                 if (item.Data == null || item.Data.Count == 0)
                     throw new ArgumentException("'Data' needs at least one element on it");

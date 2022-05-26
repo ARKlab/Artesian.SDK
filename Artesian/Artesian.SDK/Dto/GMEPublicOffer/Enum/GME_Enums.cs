@@ -1,7 +1,7 @@
 ﻿namespace Artesian.SDK.Dto.GMEPublicOffer
 {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public enum GME_Market : byte
+    public enum Market : byte
     {
         MGP = 0,
         MI1 = 1,
@@ -21,7 +21,7 @@
         MRR = 50,
     }
 
-    public enum GME_Status : byte
+    public enum Status : byte
     {
         ACC = 0,
         REJ = 1,
@@ -31,19 +31,19 @@
         SUB = 5,
     }
 
-    public enum GME_Purpose : byte
+    public enum Purpose : byte
     {
         BID = 0,
         OFF = 1
     }
 
-    public enum GME_Type : byte
+    public enum Type : byte
     {
         REG = 0,
         STND = 1
     }
 
-    public enum GME_Scope : byte
+    public enum Scope : byte
     {
         NULL = 0,
         ACC = 1,
@@ -56,7 +56,7 @@
         RS = 8,
     }
 
-    public enum GME_BAType : byte
+    public enum BAType : byte
     {
         NULL = 0,
         NETT = 1,
@@ -64,7 +64,7 @@
         REV = 3,
     }
 
-    public enum GME_Zone : byte
+    public enum Zone : byte
     {
         AUST = 0,
         BRNN = 1,
@@ -87,7 +87,7 @@
         CALA = 18,
     }
 
-    public enum GME_GenerationType : byte
+    public enum GenerationType : byte
     {
         UNKNOWN = 0,
         OTHER = 1,
@@ -104,7 +104,7 @@
         OIL = 12
     }
 
-    public enum GME_UnitType : byte
+    public enum UnitType : byte
     {
         UP = 0,
         UPV = 1,
