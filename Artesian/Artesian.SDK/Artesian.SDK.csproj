@@ -19,7 +19,7 @@
     <Version>4.1.0</Version>
     <VersionSuffix></VersionSuffix>
     <PackageReleaseNotes>
-      Add: support for .NET 5.0
+      Add: support for .NET 6.0
       Breaking: minimum .NET Framework raised to 4.7.2 as per Microsoft guidance.
 
       .NET 461 clients can use netstandard2.0, but risk upstream libraries to fail at runtime. Update to 4.7.2 for full compatibility.
