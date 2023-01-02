@@ -123,5 +123,41 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         [Key(18)]
         public decimal ADJEnergyPrice { get; set; }
 
+        /// <summary>
+        /// Quarter Value
+        /// </summary>
+        [Key(19)]
+        public int? Quarter { get; set; }
+
+        /// <summary>
+        /// The Awarded Price
+        /// </summary>
+        [Key(20)]
+        public decimal? AwardedPrice { get; set; }
+
+        /// <summary>
+        /// Transaction Reference
+        /// </summary>
+        [Key(21)]
+        public string TransactionReference { get; set; }
+
+        /// <summary>
+        /// Grid Supply Point No
+        /// </summary>
+        [Key(22)]
+        public string GridSupplyPoint { get; set; }
+
+        /// <summary>
+        /// Bilateral
+        /// </summary>
+        [Key(23)]
+        public bool? Bilateral { get; set; }
+
+        /// <summary>
+        /// SubmittedAt
+        /// </summary>
+        [Key(24)]
+        public LocalDateTime? SubmittedAt { get; set; }
+
     }
 }

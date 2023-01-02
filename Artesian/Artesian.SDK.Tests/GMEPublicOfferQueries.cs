@@ -265,5 +265,44 @@ namespace Artesian.SDK.Tests
 
         #endregion
 
+        #region UpsertGME
+        [Test]
+        public void UpsertDataAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var gmeService = new GMEPublicOfferService(_cfg);
+
+                var gmePublicOFfer = new GMEPublicOfferDto()
+                {
+                      Purpose = Purpose.BID,
+                      Type = Dto.GMEPublicOffer.Type.REG,
+                      Status = Status.ACC,
+                      Market = Market.MGP,
+                      UnitReference = "Something",
+                      Zone = Zone.AUST,
+                      Operator = "SomethingAgain",
+                      Data = new List<GMEPublicOfferDataDto>()
+                      {
+                          new GMEPublicOfferDataDto(){ }
+                      }
+                };
+
+                var gmeData = new GMEPublicOfferUpsertDataDto()
+                {
+                    GMEPublicOffer = new List<GMEPublicOfferDto>()
+                    {
+                        gmePublicOFfer
+                    }
+                };
+
+                gmeService.UpsertDataAsync(gmeData).ConfigureAwait(true).GetAwaiter().GetResult();
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/upsertdata")
+                    .WithVerb(HttpMethod.Post)
+                    .Times(1);
+            }
+        }
+        #endregion
     }
 }
