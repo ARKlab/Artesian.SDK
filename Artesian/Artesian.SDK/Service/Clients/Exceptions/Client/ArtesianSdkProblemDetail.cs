@@ -40,7 +40,7 @@ namespace Artesian.SDK.Service
         ///     A URI reference that identifies the specific occurrence of the problem.It may
         ///     or may not yield further information if dereferenced.
         ///</summary>
-       [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "instance")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "instance")]
         public string Instance { get; set; }
         /// <summary>
         ///    Gets the System.Collections.Generic.IDictionary`2 for extension members.
