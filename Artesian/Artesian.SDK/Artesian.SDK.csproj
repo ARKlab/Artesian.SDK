@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <StartupObject />
     <PackageProjectUrl>https://github.com/ARKlab/Artesian.SDK</PackageProjectUrl>
-    <Copyright>Copyright (C) 2020 ARK LTD</Copyright>
+    <Copyright>Copyright (C) 2023 ARK Energy LTD</Copyright>
     <Company>ARK Labs</Company>
     <Authors>ARK Labs</Authors>
     <PackageIcon>ark-dark.png</PackageIcon>
