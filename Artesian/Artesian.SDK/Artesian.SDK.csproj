@@ -17,12 +17,9 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
     <Version>4.2.0</Version>
-    <VersionSuffix>beta01</VersionSuffix>
+    <VersionSuffix></VersionSuffix>
     <PackageReleaseNotes>
-      Add: support for .NET 6.0
-      Breaking: minimum .NET Framework raised to 4.7.2 as per Microsoft guidance.
-
-      .NET 461 clients can use netstandard2.0, but risk upstream libraries to fail at runtime. Update to 4.7.2 for full compatibility.
+      Breaking: remove support for .NET 5.0 (EOL)
     </PackageReleaseNotes>
     
     <Version Condition=" '$(VersionSuffix)' != '' ">$(Version)-$(VersionSuffix)</Version>
