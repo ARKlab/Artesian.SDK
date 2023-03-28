@@ -36,7 +36,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
                 .SetQueryParam("page", page)
                 ;
 
-            return _client.Exec<PagedResult<OperatorDto>>(HttpMethod.Get, url);
+            return _client.Exec<PagedResult<OperatorDto>>(HttpMethod.Get, url, ctk);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
                 .SetQueryParam("page", page)
                 ;
 
-            return _client.Exec<PagedResult<UnitDto>>(HttpMethod.Get, url);
+            return _client.Exec<PagedResult<UnitDto>>(HttpMethod.Get, url, ctk);
         }
 
 
@@ -77,7 +77,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
 
             var url = $"/unitconfigurationmappings/{unit}";
 
-            return _client.Exec<UnitConfigurationDto>(HttpMethod.Get, url);
+            return _client.Exec<UnitConfigurationDto>(HttpMethod.Get, url, ctk);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
                 .SetQueryParam("pageSize", pageSize)
                 .SetQueryParam("page", page);
 
-            return _client.Exec<PagedResult<UnitConfigurationDto>>(HttpMethod.Get, url);
+            return _client.Exec<PagedResult<UnitConfigurationDto>>(HttpMethod.Get, url, ctk);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
 
             var url = $"/unitconfigurationmappings/{unitCfg.Unit}";
 
-            return _client.Exec<UnitConfigurationDto, UnitConfigurationDto>(HttpMethod.Put, url, unitCfg);
+            return _client.Exec<UnitConfigurationDto, UnitConfigurationDto>(HttpMethod.Put, url, unitCfg, ctk);
 
         }
 
@@ -133,7 +133,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
 
             var url = $"/unitconfigurationmappings/{unit}";
 
-            return _client.Exec<UnitConfigurationDto>(HttpMethod.Delete, url);
+            return _client.Exec<UnitConfigurationDto>(HttpMethod.Delete, url, ctk);
         }
     }
 }

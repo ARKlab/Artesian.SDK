@@ -25,7 +25,7 @@ namespace Artesian.SDK.Service
         {
             var url = "/group";
 
-            return _client.Exec<AuthGroup, AuthGroup>(HttpMethod.Post, url, group);
+            return _client.Exec<AuthGroup, AuthGroup>(HttpMethod.Post, url, group, ctk);
         }
         /// <summary>
         /// Update an Authorization Group
@@ -38,7 +38,7 @@ namespace Artesian.SDK.Service
         {
             var url = "/group".AppendPathSegment(groupID);
 
-            return _client.Exec<AuthGroup, AuthGroup>(HttpMethod.Put, url, group);
+            return _client.Exec<AuthGroup, AuthGroup>(HttpMethod.Put, url, group, ctk);
         }
         /// <summary>
         /// Remove an Authorization Group
@@ -50,7 +50,7 @@ namespace Artesian.SDK.Service
         {
             var url = "/group".AppendPathSegment(groupID);
 
-            return _client.Exec(HttpMethod.Delete, url);
+            return _client.Exec(HttpMethod.Delete, url, ctk);
         }
         /// <summary>
         /// Read Authorization Group
@@ -62,7 +62,7 @@ namespace Artesian.SDK.Service
         {
             var url = "/group".AppendPathSegment(groupID);
 
-            return _client.Exec<AuthGroup>(HttpMethod.Get, url);
+            return _client.Exec<AuthGroup>(HttpMethod.Get, url, ctk);
         }
         /// <summary>
         /// Remove an Authorization Group
@@ -77,7 +77,7 @@ namespace Artesian.SDK.Service
                     .SetQueryParam("pageSize", pageSize)
                     .SetQueryParam("page", page);
 
-            return _client.Exec<PagedResult<AuthGroup>>(HttpMethod.Get, url);
+            return _client.Exec<PagedResult<AuthGroup>>(HttpMethod.Get, url, ctk);
         }
         /// <summary>
         /// Get a list of Principals of the selected user
@@ -90,7 +90,7 @@ namespace Artesian.SDK.Service
             var url = "/user/principals"
                         .SetQueryParam("user", $"{user}");
 
-            return _client.Exec<List<Principals>>(HttpMethod.Get, url);
+            return _client.Exec<List<Principals>>(HttpMethod.Get, url, ctk);
         }
     }
 }

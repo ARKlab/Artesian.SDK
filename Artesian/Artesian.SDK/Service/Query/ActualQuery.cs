@@ -231,13 +231,13 @@ namespace Artesian.SDK.Service
             base._validateQuery();
 
             if (_queryParamaters.Granularity == null)
-                throw new ApplicationException("Extraction granularity must be provided. Use .InGranularity() argument takes a granularity type");
+                throw new ArtesianSdkClientException("Extraction granularity must be provided. Use .InGranularity() argument takes a granularity type");
 
             if (_queryParamaters.FillerKindType == FillerKindType.LatestValidValue)
             {
                 if (_queryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true || _queryParamaters.FillerConfig.FillerPeriod == null)
                 {
-                    throw new ApplicationException("Latest valid value filler must contain a non negative Period");
+                    throw new ArtesianSdkClientException("Latest valid value filler must contain a non negative Period");
                 }
             }
         }

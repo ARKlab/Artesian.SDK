@@ -15,7 +15,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Store for QueryParams
         /// </summary>
-        protected TQueryParams _queryParamaters = new TQueryParams();
+        protected readonly TQueryParams _queryParamaters = new TQueryParams();
 
         private static LocalDatePattern _localDatePattern = LocalDatePattern.Iso;
         private static LocalDateTimePattern _localDateTimePattern = LocalDateTimePattern.ExtendedIso;
@@ -107,13 +107,13 @@ namespace Artesian.SDK.Service
         protected virtual void _validateQuery()
         {
             if (_queryParamaters.ExtractionRangeType == null)
-                throw new ApplicationException("Data extraction range must be provided. Provide a date range , period or period range or an interval eg .InAbsoluteDateRange()");
+                throw new ArtesianSdkClientException("Data extraction range must be provided. Provide a date range , period or period range or an interval eg .InAbsoluteDateRange()");
 
             if (_queryParamaters.Ids == null && _queryParamaters.FilterId == null)
-                throw new ApplicationException("Marketadata ids OR filterId must be provided for extraction. Use .ForMarketData() OR .ForFilterId() and provide an integer or integer array as an argument");
+                throw new ArtesianSdkClientException("Marketadata ids OR filterId must be provided for extraction. Use .ForMarketData() OR .ForFilterId() and provide an integer or integer array as an argument");
 
             if (_queryParamaters.Ids != null && _queryParamaters.FilterId != null)
-                throw new ApplicationException("Marketadata ids AND filterId cannot be valorized at same time, choose one");
+                throw new ArtesianSdkClientException("Marketadata ids AND filterId cannot be valorized at same time, choose one");
         }
 
         internal string _toUrlParam(LocalDate start, LocalDate end)

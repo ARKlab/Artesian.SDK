@@ -27,7 +27,7 @@ namespace Artesian.SDK.Service
         {
             var url = "/acl/me".AppendPathSegment(path);
 
-            return _client.Exec<IEnumerable<AuthorizationPath.Output>>(HttpMethod.Get, url);
+            return _client.Exec<IEnumerable<AuthorizationPath.Output>>(HttpMethod.Get, url, ctk);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Artesian.SDK.Service
                     .SetQueryParam("asOf", asOf)
                     ;
 
-            return _client.Exec<PagedResult<AclPath>>(HttpMethod.Get, url);
+            return _client.Exec<PagedResult<AclPath>>(HttpMethod.Get, url, ctk);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Artesian.SDK.Service
         {
             var url = "/acl";
 
-            return _client.Exec<AuthorizationPath.Input>(HttpMethod.Post, url, upsert);
+            return _client.Exec<AuthorizationPath.Input>(HttpMethod.Post, url, upsert, ctk);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Artesian.SDK.Service
         {
             var url = "/acl/roles";
 
-            return _client.Exec<AuthorizationPath.Input>(HttpMethod.Post, url, add);
+            return _client.Exec<AuthorizationPath.Input>(HttpMethod.Post, url, add, ctk);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Artesian.SDK.Service
         {
             var url = "/acl/roles";
 
-            return _client.Exec<AuthorizationPath.Input>(HttpMethod.Delete, url, remove);
+            return _client.Exec<AuthorizationPath.Input>(HttpMethod.Delete, url, remove, ctk);
         }
     }
 }

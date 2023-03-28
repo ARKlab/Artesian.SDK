@@ -150,7 +150,11 @@ namespace Artesian.SDK.Service
                                 }
                                 else
                                 {
-                                    responseText = await res.ResponseMessage.Content.ReadAsStringAsync();
+                                    responseText = await res.ResponseMessage.Content.ReadAsStringAsync(
+#if NET6_0_OR_GREATER
+                                        ctk
+#endif
+                                    );
                                 }
                             }
 

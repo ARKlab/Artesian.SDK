@@ -103,7 +103,7 @@ namespace Artesian.SDK.Service
         {
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
             // Add our converters
             _addDefaultConverters(settings.Converters);

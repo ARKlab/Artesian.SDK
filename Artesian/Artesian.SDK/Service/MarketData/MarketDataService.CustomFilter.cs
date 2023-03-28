@@ -23,7 +23,7 @@ namespace Artesian.SDK.Service
             filter.Validate();
             var url = "/filter";
 
-            return _client.Exec<CustomFilter, CustomFilter>(HttpMethod.Post, url, filter);
+            return _client.Exec<CustomFilter, CustomFilter>(HttpMethod.Post, url, filter, ctk);
         }
         /// <summary>
         /// Update specific Filter
@@ -37,7 +37,7 @@ namespace Artesian.SDK.Service
             filter.Validate();
             var url = "/filter".AppendPathSegment(filterId);
 
-            return _client.Exec<CustomFilter, CustomFilter>(HttpMethod.Put, url, filter);
+            return _client.Exec<CustomFilter, CustomFilter>(HttpMethod.Put, url, filter, ctk);
         }
         /// <summary>
         /// Read specific filter
@@ -49,7 +49,7 @@ namespace Artesian.SDK.Service
         {
             var url = "/filter".AppendPathSegment(filterId);
 
-            return _client.Exec<CustomFilter, CustomFilter>(HttpMethod.Get, url);
+            return _client.Exec<CustomFilter>(HttpMethod.Get, url, ctk);
         }
         /// <summary>
         /// Remove specific Filter
@@ -61,7 +61,7 @@ namespace Artesian.SDK.Service
         {
             var url = "/filter".AppendPathSegment(filterId);
 
-            return _client.Exec<CustomFilter, CustomFilter>(HttpMethod.Delete, url);
+            return _client.Exec<CustomFilter>(HttpMethod.Delete, url, ctk);
         }
         /// <summary>
         /// Read all filters
@@ -80,7 +80,7 @@ namespace Artesian.SDK.Service
                 .SetQueryParam("page", page)
                 ;
 
-            return _client.Exec<PagedResult<CustomFilter>>(HttpMethod.Get, url);
+            return _client.Exec<PagedResult<CustomFilter>>(HttpMethod.Get, url, ctk);
         }
     }
 }
