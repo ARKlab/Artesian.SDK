@@ -394,16 +394,16 @@ namespace Artesian.SDK.Service
             base._validateQuery();
 
             if (_queryParamaters.Granularity == null)
-                throw new ApplicationException("Extraction granularity must be provided. Use .InGranularity() argument takes a granularity type");
+                throw new ArtesianSdkClientException("Extraction granularity must be provided. Use .InGranularity() argument takes a granularity type");
 
             if (_queryParamaters.VersionSelectionType == null)
-                throw new ApplicationException("Version selection must be provided. Provide a version to query. eg .ForLastOfDays() arguments take a date range , period or period range");
+                throw new ArtesianSdkClientException("Version selection must be provided. Provide a version to query. eg .ForLastOfDays() arguments take a date range , period or period range");
 
             if(_queryParamaters.FillerKindType == FillerKindType.CustomValue)
             {
                 if(_queryParamaters.FillerConfig.FillerTimeSeriesDV == null)
                 {
-                    throw new ApplicationException("Filler default value must be provided. Provide a value for default value when using custom value filler");
+                    throw new ArtesianSdkClientException("Filler default value must be provided. Provide a value for default value when using custom value filler");
                 }
             }
 
@@ -411,7 +411,7 @@ namespace Artesian.SDK.Service
             {
                 if (_queryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true || _queryParamaters.FillerConfig.FillerPeriod == null)
                 {
-                    throw new ApplicationException("Latest valid value filler must contain a non negative Period");
+                    throw new ArtesianSdkClientException("Latest valid value filler must contain a non negative Period");
                 }
             }
 
@@ -473,7 +473,7 @@ namespace Artesian.SDK.Service
             else if (queryParamaters.VersionSelectionConfig.LastOf.PeriodFrom != null && queryParamaters.VersionSelectionConfig.LastOf.PeriodTo != null)
                 subPath = $"{queryParamaters.VersionSelectionType}/{queryParamaters.VersionSelectionConfig.LastOf.PeriodFrom}/{queryParamaters.VersionSelectionConfig.LastOf.PeriodTo}";
             else
-                throw new ApplicationException("LastOf extraction type not defined");
+                throw new ArtesianSdkClientException("LastOf extraction type not defined");
 
             return subPath;
         }

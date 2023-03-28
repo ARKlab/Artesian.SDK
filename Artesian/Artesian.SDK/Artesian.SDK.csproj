@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <StartupObject />
     <PackageProjectUrl>https://github.com/ARKlab/Artesian.SDK</PackageProjectUrl>
-    <Copyright>Copyright (C) 2020 ARK LTD</Copyright>
+    <Copyright>Copyright (C) 2023 ARK Energy LTD</Copyright>
     <Company>ARK Labs</Company>
     <Authors>ARK Labs</Authors>
     <PackageIcon>ark-dark.png</PackageIcon>
@@ -15,14 +15,12 @@
     <Description>Artesian SDK library</Description>
     <PackageTags>Ark;c#;Visual Studio;Framework;Arkive;Artesian;</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
 
-    <Version>4.2.0</Version>
-    <VersionSuffix></VersionSuffix>
     <PackageReleaseNotes>
       Breaking: remove support for .NET 5.0 (EOL)
     </PackageReleaseNotes>
     
-    <Version Condition=" '$(VersionSuffix)' != '' ">$(Version)-$(VersionSuffix)</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
 
@@ -37,42 +35,18 @@
 
     <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
   
   <ItemGroup>
     <None Include="ark-dark.png" Pack="true" PackagePath="\" />
+	<None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ark.Tools.Http" Version="4.6.1" />
+    <PackageReference Include="Ark.Tools.Http" Version="4.7.5" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-	<PackageReference Include="Microsoft.Identity.Client" Version="4.49.1" />
+	<PackageReference Include="Microsoft.Identity.Client" Version="4.51.0" />
   </ItemGroup>
-
-
-  <Target Name="PushNugetPackage" AfterTargets="Pack" Condition="('$(Configuration)' == 'Release' And $(VersionSuffix) == '') Or ('$(Configuration)' == 'Debug' And $(VersionSuffix) != '')">
-    <Exec Command="dotnet nuget push -s https://api.nuget.org/v3/index.json $(MSBuildProjectDirectory)\$(OutputPath)$(PackageId).$(PackageVersion).nupkg" />
-  </Target>
-
-
-  <Target Name="_ResolvePublishNuGetPackagePdbsAndXml" AfterTargets="RunResolvePublishAssemblies">
-    <ItemGroup>
-      <ResolvedFileToPublish Include="@(ResolvedAssembliesToPublish->'%(RootDir)%(Directory)%(Filename).pdb')" RelativePath="$([System.IO.Path]::ChangeExtension(%(ResolvedAssembliesToPublish.DestinationSubPath), '.pdb'))" DestinationSubPath="$([System.IO.Path]::ChangeExtension(%(ResolvedAssembliesToPublish.DestinationSubPath), '.pdb'))" Condition="'%(ResolvedAssembliesToPublish.PackageName)' != ''&#xD;&#xA;      and Exists('%(RootDir)%(Directory)%(Filename).pdb')" />
-      <ResolvedFileToPublish Include="@(ResolvedAssembliesToPublish->'%(RootDir)%(Directory)%(Filename).xml')" RelativePath="$([System.IO.Path]::ChangeExtension(%(ResolvedAssembliesToPublish.DestinationSubPath), '.xml'))" DestinationSubPath="$([System.IO.Path]::ChangeExtension(%(ResolvedAssembliesToPublish.DestinationSubPath), '.xml'))" Condition="'%(ResolvedAssembliesToPublish.PackageName)' != ''&#xD;&#xA;      and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
-    </ItemGroup>
-  </Target>
-
-  <PropertyGroup>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-  </PropertyGroup>
-  
-  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
-    <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')-&gt;WithMetadataValue('PrivateAssets', 'All'))" />
-    </ItemGroup>
-  </Target>
 
 </Project>

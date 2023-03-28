@@ -226,13 +226,13 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         protected void _validateQuery()
         {
             if (_queryParamaters.Date == null)
-                throw new ApplicationException("Date filter must be provided. Use .ForDate() to set date");
+                throw new ArtesianSdkClientException("Date filter must be provided. Use .ForDate() to set date");
             
             if (_queryParamaters.Status == null)
-                throw new ApplicationException("Status filter must be provided. Use .ForStatus() to set status");
+                throw new ArtesianSdkClientException("Status filter must be provided. Use .ForStatus() to set status");
             
             if (_queryParamaters.Purpose == null)
-                throw new ApplicationException("Purpose filter must be provided. Use .ForPurpose() to set purpose");
+                throw new ArtesianSdkClientException("Purpose filter must be provided. Use .ForPurpose() to set purpose");
         }
         #endregion
     }

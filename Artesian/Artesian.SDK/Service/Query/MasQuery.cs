@@ -217,13 +217,13 @@ namespace Artesian.SDK.Service
             base._validateQuery();
 
             if (_queryParamaters.Products == null)
-                throw new ApplicationException("Products must be provided for extraction. Use .ForProducts() argument takes a string or string array of products");
+                throw new ArtesianSdkClientException("Products must be provided for extraction. Use .ForProducts() argument takes a string or string array of products");
 
             if (_queryParamaters.FillerKindType == FillerKindType.LatestValidValue)
             {
                 if (_queryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true || _queryParamaters.FillerConfig.FillerPeriod == null)
                 {
-                    throw new ApplicationException("Latest valid value filler must contain a non negative Period");
+                    throw new ArtesianSdkClientException("Latest valid value filler must contain a non negative Period");
                 }
             }
 
