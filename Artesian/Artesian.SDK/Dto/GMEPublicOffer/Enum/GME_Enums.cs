@@ -11,6 +11,9 @@
         MI5 = 5,
         MI6 = 6,
         MI7 = 7,
+        MIA1 = 8,
+        MIA2 = 9,
+        MIA3 = 10,
         MSD = 20,
         MB = 30,
         MB2 = 31,
@@ -18,6 +21,7 @@
         MB4 = 33,
         MB5 = 34,
         MB6 = 35,
+        MBh = 36,
         MRR = 50,
     }
 
@@ -86,6 +90,9 @@
         SVIZ = 17,
         CALA = 18,
         MONT = 19,
+        XGRE = 20,
+        XSVI = 21,
+        BSP = 22,
     }
 
     public enum GenerationType : byte
