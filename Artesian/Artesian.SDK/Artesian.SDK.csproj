@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;netstandard2.1;netstandard2.0;net472</TargetFrameworks>
@@ -46,7 +46,7 @@
   <ItemGroup>
     <PackageReference Include="Ark.Tools.Http" Version="4.7.5" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-	<PackageReference Include="Microsoft.Identity.Client" Version="4.51.0" />
+	<PackageReference Include="Microsoft.Identity.Client" Version="4.54.0" />
   </ItemGroup>
 
 </Project>
