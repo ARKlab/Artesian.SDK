@@ -72,6 +72,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// <summary>
         /// The Unit
         /// </summary>
+        /// <remarks>can be NULL for XBID, never NULL otherwise</remarks>
         [Key(10)]
         public string Unit { get; set; }
 
@@ -102,36 +103,42 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// <summary>
         /// Merit Order
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(15)]
         public decimal? MeritOrder { get; set; }
 
         /// <summary>
         /// Partial Quantity Accepted
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(16)]
         public bool? PartialQuantityAccepted { get; set; }
 
         /// <summary>
         /// Adjacent Quantity
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(17)]
         public decimal? ADJQuantity { get; set; }
 
         /// <summary>
         /// Adjacent Energy Price
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(18)]
         public decimal? ADJEnergyPrice { get; set; }
 
         /// <summary>
         /// Quarter Value
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(19)]
         public int? Quarter { get; set; }
 
         /// <summary>
         /// The Awarded Price
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(20)]
         public decimal? AwardedPrice { get; set; }
 
@@ -162,12 +169,14 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// <summary>
         /// Timestamp
         /// </summary>
+        /// <remarks>Added for XBID, NULL otherwise</remarks>
         [Key(25)]
         public LocalDateTime? Timestamp { get; set; }
 
         /// <summary>
         /// PrezzoUnitario
         /// </summary>
+        /// <remarks>Added for XBID, NULL otherwise</remarks>
         [Key(26)]
         public decimal? PrezzoUnitario { get; set; }
 

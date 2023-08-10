@@ -54,6 +54,41 @@ With a version before v5 of the SDK it will be not possible to download the MI-X
 
 The new market in the class GME_Enums --> Market is MIXBID
 
+### Changes on fields
+
+The following fields are now nullable.
+It will be always valorized for Makret except MIXBID 
+```
+        //Can be NULL for XBID, never NULL otherwise
+        public string Unit { get; set; }
+		
+        //Can be NULL for XBID, never NULL otherwise
+        public decimal? MeritOrder { get; set; }
+
+        //Can be NULL for XBID, never NULL otherwise
+        public bool? PartialQuantityAccepted { get; set; }
+
+        //Can be NULL for XBID, never NULL otherwise
+        public decimal? ADJQuantity { get; set; }
+
+        //Can be NULL for XBID, never NULL otherwise
+        public decimal? ADJEnergyPrice { get; set; }
+
+        //Can be NULL for XBID, never NULL otherwise
+        public int? Quarter { get; set; }
+
+        //Can be NULL for XBID, never NULL otherwise
+        public decimal? AwardedPrice { get; set; }
+```
+
+The following fields are new.
+```
+        //Added for XBID, NULL otherwise
+        public LocalDateTime? Timestamp { get; set; }
+
+        //Added for XBID, NULL otherwise
+        public decimal? PrezzoUnitario { get; set; }
+```
 
 ## QueryService
 

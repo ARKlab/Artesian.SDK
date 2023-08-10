@@ -32,7 +32,7 @@ namespace Artesian.SDK.Tests
                        .ForStatus(Status.INC)
                        .ExecuteAsync().Result;
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/extract/2019-01-01/OFF/INC")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/extract/2019-01-01/OFF/INC")
                     .WithVerb(HttpMethod.Get)
                     .Times(1);
             }
@@ -62,10 +62,51 @@ namespace Artesian.SDK.Tests
                        .WithSort(new [] { "id asc" })
                        .ExecuteAsync().Result;
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/extract/2019-01-01/OFF/INC")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/extract/2019-01-01/OFF/INC")
                     .WithQueryParam("generationType", "GAS")
                     .WithQueryParam("baType", "REV")
                     .WithQueryParam("market", "MB4")
+                    .WithQueryParam("operators", "op1")
+                    .WithQueryParam("scope", "GR1")
+                    .WithQueryParam("unit", "unit1")
+                    .WithQueryParam("unitType", "UP")
+                    .WithQueryParam("zone", "CNOR")
+                    .WithQueryParam("page", "2")
+                    .WithQueryParam("pageSize", "20")
+                    .WithQueryParam("sort", "id asc")
+                    .WithVerb(HttpMethod.Get)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public void ExtractRawCurveXBID()
+        {
+            using (var httpTest = new HttpTest())
+            {
+
+                var qs = new GMEPublicOfferService(_cfg);
+
+                var act = qs.CreateRawCurveQuery()
+                       .ForDate(new LocalDate(2019, 1, 1))
+                       .ForPurpose(Purpose.OFF)
+                       .ForStatus(Status.INC)
+                       .ForGenerationType(new GenerationType[] { GenerationType.GAS })
+                       .ForBAType(new BAType[] { BAType.REV })
+                       .ForMarket(new Market[] { Market.MIXBID })
+                       .ForOperator(new[] { "op1" })
+                       .ForScope(new Scope[] { Scope.GR1 })
+                       .ForUnit(new[] { "unit1" })
+                       .ForUnitType(new UnitType[] { UnitType.UP })
+                       .ForZone(new Zone[] { Zone.CNOR })
+                       .WithPagination(2, 20)
+                       .WithSort(new[] { "id asc" })
+                       .ExecuteAsync().Result;
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/extract/2019-01-01/OFF/INC")
+                    .WithQueryParam("generationType", "GAS")
+                    .WithQueryParam("baType", "REV")
+                    .WithQueryParam("market", "MIXBID")
                     .WithQueryParam("operators", "op1")
                     .WithQueryParam("scope", "GR1")
                     .WithQueryParam("unit", "unit1")
@@ -94,7 +135,7 @@ namespace Artesian.SDK.Tests
                 var act = qs.ReadOperatorsAsync(2,20)
                        .ConfigureAwait(true).GetAwaiter().GetResult();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/enums/operators")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/enums/operators")
                     .WithQueryParam("page", 2)
                     .WithQueryParam("pageSize", 20)
                     .WithVerb(HttpMethod.Get)
@@ -113,7 +154,7 @@ namespace Artesian.SDK.Tests
                 var act = qs.ReadOperatorsAsync(2, 20, operatorFilter: "myFilter", sort: new [] { "operator asc" })
                        .ConfigureAwait(true).GetAwaiter().GetResult();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/enums/operators")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/enums/operators")
                     .WithQueryParam("page", 2)
                     .WithQueryParam("pageSize", 20)
                     .WithQueryParam("operatorFilter", "myFilter")
@@ -134,7 +175,7 @@ namespace Artesian.SDK.Tests
                 var act = qs.ReadUnitsAsync(2, 4)
                        .ConfigureAwait(true).GetAwaiter().GetResult();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/enums/units")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/enums/units")
                     .WithQueryParam("page", 2)
                     .WithQueryParam("pageSize", 4)
                     .WithVerb(HttpMethod.Get)
@@ -153,7 +194,7 @@ namespace Artesian.SDK.Tests
                 var act = qs.ReadUnitsAsync(2, 20, unitFilter: "myFilter", sort: new [] { "unit asc" })
                        .ConfigureAwait(true).GetAwaiter().GetResult();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/enums/units")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/enums/units")
                     .WithQueryParam("page", 2)
                     .WithQueryParam("pageSize", 20)
                     .WithQueryParam("unitFilter", "myFilter")
@@ -175,7 +216,7 @@ namespace Artesian.SDK.Tests
                 var req = qs.ReadUnitConfigurationMappingAsync("myUnit")
                        .ConfigureAwait(true).GetAwaiter().GetResult();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/unitconfigurationmappings/myUnit")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/unitconfigurationmappings/myUnit")
                     .WithVerb(HttpMethod.Get)
                     .Times(1);
             }
@@ -191,7 +232,7 @@ namespace Artesian.SDK.Tests
                 var req = qs.ReadUnitConfigurationMappingsAsync(1, 20)
                        .ConfigureAwait(true).GetAwaiter().GetResult();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/unitconfigurationmappings")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/unitconfigurationmappings")
                     .WithQueryParam("page", 1)
                     .WithQueryParam("pageSize", 20)
                     .WithVerb(HttpMethod.Get)
@@ -209,7 +250,7 @@ namespace Artesian.SDK.Tests
                 var req = qs.ReadUnitConfigurationMappingsAsync(1, 20, unitFilter: "unitFilterTest", sort: new [] { "unit desc" })
                        .ConfigureAwait(true).GetAwaiter().GetResult();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/unitconfigurationmappings")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/unitconfigurationmappings")
                     .WithQueryParam("page", 1)
                     .WithQueryParam("pageSize", 20)
                     .WithQueryParam("unitFilter", "unitFilterTest")
@@ -241,7 +282,7 @@ namespace Artesian.SDK.Tests
                 var req = qs.UpsertUnitConfigurationMappingAsync(unitCfg)
                        .ConfigureAwait(true).GetAwaiter().GetResult();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/unitconfigurationmappings/{unitCfg.Unit}")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/unitconfigurationmappings/{unitCfg.Unit}")
                     .WithVerb(HttpMethod.Put)
                     .Times(1);
             }
@@ -257,7 +298,7 @@ namespace Artesian.SDK.Tests
                 qs.DeleteUnitConfigurationMappingAsync("unitToDelete")
                        .ConfigureAwait(true).GetAwaiter().GetResult();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/unitconfigurationmappings/unitToDelete")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/unitconfigurationmappings/unitToDelete")
                     .WithVerb(HttpMethod.Delete)
                     .Times(1);
             }
@@ -298,7 +339,7 @@ namespace Artesian.SDK.Tests
 
                 gmeService.UpsertDataAsync(gmeData).ConfigureAwait(true).GetAwaiter().GetResult();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v1.0/upsertdata")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/upsertdata")
                     .WithVerb(HttpMethod.Post)
                     .Times(1);
             }
