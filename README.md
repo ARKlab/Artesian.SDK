@@ -43,6 +43,18 @@ ArtesianServiceConfig cfg = new ArtesianServiceConfig(
 		);
 ```
 
+## BREAKING CHANGES: Upgrade v4->v5
+
+The following breaking changes has been introduced in v5 respect to v4.
+
+### Update of GME PublicOffer to V2.0
+
+With the introduction of the MI-XBID market on the GME Public Offers data has been increased the api version
+With a version before v5 of the SDK it will be not possible to download the MI-XBID data
+
+The new market in the class GME_Enums --> Market is MIXBID
+
+
 ## QueryService
 
 Using the ArtesianServiceConfig we create an instance of the QueryService which is used to create Actual, Versioned and Market Assessment time series queries

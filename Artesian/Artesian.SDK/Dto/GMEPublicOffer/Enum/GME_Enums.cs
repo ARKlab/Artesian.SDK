@@ -23,7 +23,7 @@
         MB6 = 35,
         MBh = 36,
         MRR = 50,
-        MIXBID= 70,
+        MIXBID = 70,
     }
 
     public enum Status : byte
