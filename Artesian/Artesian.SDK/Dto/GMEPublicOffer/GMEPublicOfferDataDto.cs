@@ -99,5 +99,17 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// </summary>
         [Key(14)]
         public LocalDateTime? SubmittedAt { get; set; }
+
+        /// <summary>
+        /// Timestamp for Xbid data
+        /// </summary>
+        [Key(15)]
+        public LocalDateTime? Timestamp { get; set; }
+
+        /// <summary>
+        /// PrezzoUnitario for Xbid data
+        /// </summary>
+        [Key(16)]
+        public decimal? PrezzoUnitario { get; set; }
     }
 }

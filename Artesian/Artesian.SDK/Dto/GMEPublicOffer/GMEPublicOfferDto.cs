@@ -139,7 +139,8 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
      [GME_Data] [GridSupplyPoint]         | , [GRID_SUPPLY_POINT_NO] [nvarchar](255) NULL
      [GME_Data] [Bilateral]               | , [BILATERAL_IN] [bit] NULL
      [GME_Data] [SubmittedAt]             | , [SUBMITTED_DT] [datetime] NULL
-
+     [GME_Data] [Timestamp]               | , [TIMESTAMP] [datetime] NULL (only XBID market)
+     [GME_Data] [PrezzoUnitario]          | , [PREZZO_UNITARIO] [decimal] NULL (only XBID market)
         */
     }
 }
