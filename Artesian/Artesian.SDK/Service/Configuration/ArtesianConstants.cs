@@ -19,7 +19,7 @@ namespace Artesian.SDK.Service
 		internal const string CharacterValidatorRegEx = @"^[^'"",:;\s](?:(?:[^'"",:;\s]| )*[^'"",:;\s])?$";
         internal const string MarketDataNameValidatorRegEx = @"^[^\s](?:(?:[^\s]| )*[^\s])?$";
         internal const string QueryVersion = "v1.0";
-        internal const string GMEPublicOfferVersion = "v1.0";
+        internal const string GMEPublicOfferVersion = "v2.0";
         internal const string QueryRoute = "query";
         internal const string GMEPublicOfferRoute = "gmepublicoffer";
         internal const string MetadataVersion = "v2.1";
