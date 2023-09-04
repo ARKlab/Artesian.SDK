@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ark.Tools.Http" Version="4.9.2" />
+    <PackageReference Include="Ark.Tools.Http" Version="4.9.3" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
 	<PackageReference Include="Microsoft.Identity.Client" Version="4.55.0" />
   </ItemGroup>
