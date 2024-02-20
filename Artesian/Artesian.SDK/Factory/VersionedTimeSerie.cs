@@ -1,4 +1,6 @@
-﻿using Artesian.SDK.Common;
+﻿using Ark.Tools.Nodatime;
+
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 using EnsureThat;
@@ -163,6 +165,36 @@ namespace Artesian.SDK.Factory
             }
             //else
             //    _logger.Warn("No Data to be saved.");
+        }
+
+        /// <summary>
+        /// MarketData Delete
+        /// </summary>
+        /// <remarks>
+        /// Delete the Data of the current MarketData
+        /// </remarks>
+        /// <param name="rangeToDelete">Range to be deleted</param>
+        /// <param name="version">Version of the Time Serie</param>
+        /// <param name="product">Product of the MarketAssessment, BidAsk or Auction Time Serie</param>
+        /// <param name="deferCommandExecution">DeferCommandExecution</param>
+        /// <param name="deferDataGeneration">DeferDataGeneration</param>
+        /// <param name="ctk">The Cancellation Token</param> 
+        /// <returns></returns>
+        public async Task Delete(LocalDateTimeRange rangeToDelete, LocalDateTime? version = null, List<string> product = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        {
+            Ensure.Any.IsNotNull(_entity);
+
+            var data = new DeleteCurveData(_identifier)
+            {
+                Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
+                Range = rangeToDelete,
+                DeferCommandExecution = deferCommandExecution,
+                DeferDataGeneration = deferDataGeneration,
+                Version = version,
+                Product = product,
+            };
+
+            await _marketDataService.DeleteCurveDataAsync(data, ctk);
         }
     }
 }
