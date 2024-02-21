@@ -148,21 +148,21 @@ namespace Artesian.SDK.Factory
         /// <remarks>
         /// Delete the Data of the current MarketData
         /// </remarks>
-        /// <param name="rangeStart">LocalDateTime start of range to be deleted</param>
-        /// <param name="rangeEnd">LocalDateTime end of range to be deleted</param>
+        /// <param name="rangeStart">LocalDateTime start of range to be deleted (in case of null, LocalDateTime MinIso value will be used)</param>
+        /// <param name="rangeEnd">LocalDateTime end of range to be deleted (in case of null, LocalDateTime MaxIso value will be used)</param>
         /// <param name="deferCommandExecution">DeferCommandExecution</param>
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Delete(LocalDateTime rangeStart, LocalDateTime rangeEnd, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        public async Task Delete(LocalDateTime? rangeStart, LocalDateTime? rangeEnd, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
             Ensure.Any.IsNotNull(_entity);
 
             var data = new DeleteCurveData(_identifier)
             {
                 Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
-                RangeStart = rangeStart,
-                RangeEnd = rangeEnd,
+                RangeStart = rangeStart ?? LocalDateTime.MinIsoValue,
+                RangeEnd = rangeEnd ?? LocalDateTime.MaxIsoValue,
                 DeferCommandExecution = deferCommandExecution,
                 DeferDataGeneration = deferDataGeneration,
             };
