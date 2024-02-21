@@ -354,8 +354,8 @@ Latest Value
 
 ## MarketData Service
 
-Using the ArtesianServiceConfig `cfg` we create an instance of the MarketDataService which is used to retrieve and edit
-MarketData refrences. `GetMarketReference` will read the marketdata entity by MarketDataIdentifier and returns an istance of IMarketData if it exists.
+Using the ArtesianServiceConfig `cfg` we create an instance of the MarketDataService which is used to retrieve, edit or delete
+MarketData references. `GetMarketReference` will read the marketdata entity by MarketDataIdentifier and returns an istance of IMarketData if it exists.
 
 ```csharp
 //reference market data entity
@@ -400,7 +400,7 @@ await marketData.Update();
 await marketData.Load();
 ```
 
-Using `Write mode` to edit MarketData and `save` to save the data of the current MarketData providing an instant.
+Using `Write mode` to edit MarketData and `Save` to save the data of the current MarketData providing an instant. Can be used `Delete` specifying a range to delete a specific range of the time serie.
 
 ### Actual Time Series
 
@@ -415,6 +415,11 @@ writeMarketData.AddData(new LocalDate(2018, 10, 04), 15);
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 ```
+`Delete` range of the Actual Time serie.
+
+```csharp
+await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
+```
 
 ### Versioned Time Series
 
@@ -428,6 +433,13 @@ writeMarketData.AddData(new LocalDate(2018, 10, 03), 10);
 writeMarketData.AddData(new LocalDate(2018, 10, 04), 15);
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
+```
+`Delete` range of the Versioned Time serie.
+
+```csharp
+var version = new LocalDateTime(2018, 10, 01);
+
+await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), version);
 ```
 
 ### Market Assessment Time Series
@@ -455,6 +467,13 @@ writeMarketData.AddData(new LocalDate(2018, 11, 28), "Dec-18", marketAssessmentV
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 ```
+`Delete` range of the Market Assessment Time serie.
+
+```csharp
+var product = new List<string>(){"Jan-15"};
+
+await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
+```
 
 ### Auction Time Series
 
@@ -473,6 +492,12 @@ offer.Add(new AuctionBidValue(120, 12));
 writeMarketData.Add(localDateTime, new AuctionBids(localDateTime, bid.ToArray(), offer.ToArray()));
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 ```
+`Delete` range of the Auction Time serie.
+
+```csharp
+await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
+```
+
 ### Bid Ask Time Series
 
 `EditBidAsk` starts the write mode for a Bid Ask. Checks are done to verify registration and MarketDataType to verify it is a Bid Ask.
@@ -494,6 +519,12 @@ var bidAskValue = new BidAskValue()
 writeMarketData.AddData(new LocalDate(2018, 11, 28), "Dec-18", bidAskValue);
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
+```
+`Delete` range of the Bid Ask Time serie.
+
+```csharp
+var product = new List<string>(){"Jan-15"};
+await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
 ```
 
 ## Links

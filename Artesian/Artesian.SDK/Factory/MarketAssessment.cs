@@ -153,13 +153,12 @@ namespace Artesian.SDK.Factory
         /// </remarks>
         /// <param name="rangeStart">LocalDateTime start of range to be deleted</param>
         /// <param name="rangeEnd">LocalDateTime end of range to be deleted</param>
-        /// <param name="version">Version of the Time Serie</param>
-        /// <param name="product">Product of the MarketAssessment, BidAsk or Auction Time Serie</param>
+        /// <param name="product">Product of the MarketAssessment Time Serie</param>
         /// <param name="deferCommandExecution">DeferCommandExecution</param>
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Delete(LocalDateTime rangeStart, LocalDateTime rangeEnd, LocalDateTime? version = null, List<string> product = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        public async Task Delete(LocalDateTime rangeStart, LocalDateTime rangeEnd, List<string> product = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
             Ensure.Any.IsNotNull(_entity);
 
@@ -170,7 +169,6 @@ namespace Artesian.SDK.Factory
                 RangeEnd = rangeEnd,
                 DeferCommandExecution = deferCommandExecution,
                 DeferDataGeneration = deferDataGeneration,
-                Version = version,
                 Product = product,
             };
 
