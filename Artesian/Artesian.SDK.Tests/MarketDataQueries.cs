@@ -555,7 +555,8 @@ namespace Artesian.SDK.Tests
                 {
                     ID = new MarketDataIdentifier("test", "testName"),
                     Timezone = "CET",
-                    Range = new LocalDateTimeRange(new LocalDateTime(2018, 01, 01, 0, 0), new LocalDateTime(2018, 01, 03, 0, 0)),
+                    RangeStart = new LocalDateTime(2018, 01, 01, 0, 0),
+                    RangeEnd = new LocalDateTime(2018, 01, 03, 0, 0),
                     Product = new List<string> { "Jan-15" }
                 };
 
@@ -578,7 +579,8 @@ namespace Artesian.SDK.Tests
                 {
                     ID = new MarketDataIdentifier("test", "testName"),
                     Timezone = "CET",
-                    Range = new LocalDateTimeRange(new LocalDateTime(2018, 01, 01, 0, 0), new LocalDateTime(2018, 01, 03, 0, 0))
+                    RangeStart = new LocalDateTime(2018, 01, 01, 0, 0),
+                    RangeEnd = new LocalDateTime(2018, 01, 03, 0, 0),
                 };
 
                 mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
@@ -601,7 +603,8 @@ namespace Artesian.SDK.Tests
                 {
                     ID = new MarketDataIdentifier("test", "testName"),
                     Timezone = "CET",
-                    Range = new LocalDateTimeRange(new LocalDateTime(2018, 01, 01, 0, 0), new LocalDateTime(2018, 01, 03, 0, 0)),
+                    RangeStart = new LocalDateTime(2018, 01, 01, 0, 0),
+                    RangeEnd = new LocalDateTime(2018, 01, 03, 0, 0),
                     Version = new LocalDateTime(2018, 09, 25, 12, 0, 0, 123).PlusNanoseconds(100)
                 };
 

@@ -159,21 +159,23 @@ namespace Artesian.SDK.Factory
         /// <remarks>
         /// Delete the Data of the current MarketData
         /// </remarks>
-        /// <param name="rangeToDelete">Range to be deleted</param>
+        /// <param name="rangeStart">LocalDateTime start of range to be deleted</param>
+        /// <param name="rangeEnd">LocalDateTime end of range to be deleted</param>
         /// <param name="version">Version of the Time Serie</param>
         /// <param name="product">Product of the MarketAssessment, BidAsk or Auction Time Serie</param>
         /// <param name="deferCommandExecution">DeferCommandExecution</param>
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Delete(LocalDateTimeRange rangeToDelete, LocalDateTime? version = null, List<string> product = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        public async Task Delete(LocalDateTime rangeStart, LocalDateTime rangeEnd, LocalDateTime? version = null, List<string> product = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
             Ensure.Any.IsNotNull(_entity);
 
             var data = new DeleteCurveData(_identifier)
             {
                 Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
-                Range = rangeToDelete,
+                RangeStart = rangeStart,
+                RangeEnd = rangeEnd,
                 DeferCommandExecution = deferCommandExecution,
                 DeferDataGeneration = deferDataGeneration,
                 Version = version,

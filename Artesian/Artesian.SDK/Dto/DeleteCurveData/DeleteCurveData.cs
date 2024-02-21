@@ -63,16 +63,23 @@ namespace Artesian.SDK.Dto
         public string Timezone { get; set; }
 
         /// <summary>
-        /// The Range start and end to be deleted.
+        /// Start date of range to be deleted  
         /// </summary>
         [Required]
         [MessagePack.Key(3)]
-        public LocalDateTimeRange Range { get; set; }
+        public LocalDateTime RangeStart { get; set; }
+
+        /// <summary>
+        /// End date of range to be deleted   
+        /// </summary>
+        [Required]
+        [MessagePack.Key(4)]
+        public LocalDateTime RangeEnd { get; set; }
 
         /// <summary>
         /// The list of Product. Only *, is special character for 'delete all products in the range'
         /// </summary>
-        [MessagePack.Key(4)]
+        [MessagePack.Key(5)]
         public IList<string> Product { get; set; }
 
         /// <summary>
