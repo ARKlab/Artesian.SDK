@@ -179,15 +179,19 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Delete(LocalDateTime? rangeStart, LocalDateTime? rangeEnd, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
             Ensure.Any.IsNotNull(_entity);
+
+            var tz = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone;
+            var timeZone = DateTimeZoneProviders.Tzdb[tz];
 
             var data = new DeleteCurveData(_identifier)
             {
                 Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
-                RangeStart = rangeStart ?? LocalDateTime.MinIsoValue,
-                RangeEnd = rangeEnd ?? LocalDateTime.MaxIsoValue,
+                // LocalDate.MinIsoValue is from BCE era. Without formatting it including the era, we got 01/01/9999 so we use default(LocalDateTime) 01/01/0001
+                RangeStart = rangeStart ?? default(LocalDateTime),
+                RangeEnd = rangeEnd ?? LocalDateTime.MaxIsoValue.Date.AtStartOfDayInZone(timeZone).LocalDateTime,
                 DeferCommandExecution = deferCommandExecution,
                 DeferDataGeneration = deferDataGeneration,
                 Version = SelectedVersion,
