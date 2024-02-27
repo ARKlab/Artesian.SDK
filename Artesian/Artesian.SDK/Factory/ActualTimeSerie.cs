@@ -164,7 +164,8 @@ namespace Artesian.SDK.Factory
             var data = new DeleteCurveData(_identifier)
             {
                 Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
-                // LocalDate.MinIsoValue is from BCE era. Without formatting it including the era, we got 01/01/9999 so we use default(LocalDateTime) 01/01/0001
+                // LocalDate.MinIsoValue has year -9998 and yearOfEra 9999. Using it without any string formatting, we got date 01-01-9999.
+                // So we use default(LocalDateTime) 01/01/0001
                 RangeStart = rangeStart ?? default(LocalDateTime),
                 RangeEnd = rangeEnd ?? LocalDateTime.MaxIsoValue.Date.AtStartOfDayInZone(timeZone).LocalDateTime,
                 DeferCommandExecution = deferCommandExecution,
