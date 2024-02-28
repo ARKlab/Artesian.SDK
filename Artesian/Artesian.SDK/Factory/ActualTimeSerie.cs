@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Ark.Tools.Nodatime;
 
 namespace Artesian.SDK.Factory
 {
@@ -139,6 +140,39 @@ namespace Artesian.SDK.Factory
 
                 await _marketDataService.UpsertCurveDataAsync(data, ctk);
             }
+        }
+
+        /// <summary>
+        /// MarketData Delete
+        /// </summary>
+        /// <remarks>
+        /// Delete the Data of the current MarketData
+        /// </remarks>
+        /// <param name="rangeStart">LocalDateTime start of range to be deleted (in case of null, LocalDateTime MinIso value will be used)</param>
+        /// <param name="rangeEnd">LocalDateTime end of range to be deleted (in case of null, LocalDateTime MaxIso value will be used)</param>
+        /// <param name="deferCommandExecution">DeferCommandExecution</param>
+        /// <param name="deferDataGeneration">DeferDataGeneration</param>
+        /// <param name="ctk">The Cancellation Token</param> 
+        /// <returns></returns>
+        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        {
+            Ensure.Any.IsNotNull(_entity);
+
+            var tz = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone;
+            var timeZone = DateTimeZoneProviders.Tzdb[tz];
+
+            var data = new DeleteCurveData(_identifier)
+            {
+                Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
+                // LocalDate.MinIsoValue has year -9998 and yearOfEra 9999. Using it without any string formatting, we got date 01-01-9999.
+                // So we use default(LocalDateTime) 01/01/0001
+                RangeStart = rangeStart ?? default(LocalDateTime),
+                RangeEnd = rangeEnd ?? LocalDateTime.MaxIsoValue.Date.AtStartOfDayInZone(timeZone).LocalDateTime,
+                DeferCommandExecution = deferCommandExecution,
+                DeferDataGeneration = deferDataGeneration,
+            };
+
+            await _marketDataService.DeleteCurveDataAsync(data, ctk);
         }
     }
 }
