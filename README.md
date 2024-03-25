@@ -354,8 +354,8 @@ Latest Value
 
 ## MarketData Service
 
-Using the ArtesianServiceConfig `cfg` we create an instance of the MarketDataService which is used to retrieve and edit
-MarketData refrences. `GetMarketReference` will read the marketdata entity by MarketDataIdentifier and returns an istance of IMarketData if it exists.
+Using the ArtesianServiceConfig `cfg` we create an instance of the MarketDataService which is used to retrieve, edit or delete
+MarketData references. `GetMarketReference` will read the marketdata entity by MarketDataIdentifier and returns an istance of IMarketData if it exists.
 
 ```csharp
 //reference market data entity
@@ -400,12 +400,12 @@ await marketData.Update();
 await marketData.Load();
 ```
 
-Using `Write mode` to edit MarketData and `save` to save the data of the current MarketData providing an instant.
+Using `Write mode` to edit MarketData and `Save` to save the data of the current MarketData providing an instant. Can be used `Delete` specifying a range to delete a specific range of the time serie.
 
 ### Actual Time Series
 
 `EditActual` starts the write mode for an Actual Time serie. Checks are done to verify registration and MarketDataType to verify it is an Actual Time Serie.
-Using `AddData` to be written.
+Using `AddData` to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
 
 ```csharp
 var writeMarketData = marketdata.EditActual();
@@ -414,12 +414,22 @@ writeMarketData.AddData(new LocalDate(2018, 10, 03), 10);
 writeMarketData.AddData(new LocalDate(2018, 10, 04), 15);
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
+
+await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
+```
+
+To delete the whole range of the Actual Time serie, the `Delete` command can be used without specifying any start and end range.
+
+```csharp
+var writeMarketData = marketdata.EditActual();
+
+await writeMarketData.Delete();
 ```
 
 ### Versioned Time Series
 
 `EditVersioned` starts the write mode for a Versioned Time serie. Checks are done to verify registration and MarketDataType to verify it is a Versioned Time Serie.
-Using `AddData` to be written.
+Using `AddData` to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
 
 ```csharp
 var writeMarketData = marketData.EditVersioned(new LocalDateTime(2018, 10, 18, 00, 00));
@@ -428,12 +438,22 @@ writeMarketData.AddData(new LocalDate(2018, 10, 03), 10);
 writeMarketData.AddData(new LocalDate(2018, 10, 04), 15);
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
+
+await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), version);
+```
+
+To delete the whole range of the Versioned Time serie, the `Delete` command can be used without specifying any start and end range.
+
+```csharp
+var writeMarketData = marketdata.EditVersioned(new LocalDateTime(2018, 10, 18, 00, 00));
+
+await writeMarketData.Delete();
 ```
 
 ### Market Assessment Time Series
 
 `EditMarketAssessment` starts the write mode for a Market Assessment. Checks are done to verify registration and MarketDataType to verify it is a Market Assessment.
-Using `AddData` to provide a local date time and a MarketAssessmentValue to be written.
+Using `AddData` to provide a local date time and a MarketAssessmentValue to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
 
 ```csharp
 var writeMarketData = marketData.EditMarketAssessment();
@@ -454,12 +474,24 @@ var marketAssessmentValue = new MarketAssessmentValue()
 writeMarketData.AddData(new LocalDate(2018, 11, 28), "Dec-18", marketAssessmentValue);
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
+
+var product = new List<string>(){"Dec-18"};
+
+await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
+```
+
+To delete the whole range of the Market Assessment Time serie, the `Delete` command can be used without specifying any start and end range.
+
+```csharp
+var writeMarketData = marketdata.EditMarketAssessment();
+
+await writeMarketData.Delete();
 ```
 
 ### Auction Time Series
 
 `EditAuction` starts the write mode for an Auction entity. Checks are done to verify registration and MarketDataType to verify it is an Auction entity.
-Using `AddData` to provide a local date time and Auction bid and offer arrays to be written.
+Using `AddData` to provide a local date time and Auction bid and offer arrays to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
 
 ```csharp
 var writeMarketData = marketData.EditAuction();
@@ -472,11 +504,22 @@ offer.Add(new AuctionBidValue(120, 12));
 
 writeMarketData.Add(localDateTime, new AuctionBids(localDateTime, bid.ToArray(), offer.ToArray()));
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
+
+await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
 ```
+
+To delete the whole range of the Auction Time serie, the `Delete` command can be used without specifying any start and end range.
+
+```csharp
+var writeMarketData = marketdata.EditAuction();
+
+await writeMarketData.Delete();
+```
+
 ### Bid Ask Time Series
 
 `EditBidAsk` starts the write mode for a Bid Ask. Checks are done to verify registration and MarketDataType to verify it is a Bid Ask.
-Using `AddData` to provide a local date time and a BidAskValue to be written.
+Using `AddData` to provide a local date time and a BidAskValue to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
 
 ```csharp
 var writeMarketData = marketData.EditBidAsk();
@@ -494,6 +537,18 @@ var bidAskValue = new BidAskValue()
 writeMarketData.AddData(new LocalDate(2018, 11, 28), "Dec-18", bidAskValue);
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
+
+var product = new List<string>(){"Dec-18"};
+
+await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
+```
+
+To delete the whole range of the Bid Ask Time serie, the `Delete` command can be used without specifying any start and end range.
+
+```csharp
+var writeMarketData = marketdata.EditBidAsk();
+
+await writeMarketData.Delete();
 ```
 
 ## Links

@@ -3,6 +3,7 @@
 // license information. 
 
 using Artesian.SDK.Dto;
+
 using NodaTime;
 using System.Collections.Generic;
 using System.Threading;
@@ -275,6 +276,25 @@ namespace Artesian.SDK.Service
         /// <param name="ctk">CancellationToken</param>
         /// <returns></returns>
         Task UpsertCurveDataAsync(UpsertCurveData data, CancellationToken ctk = default);
+        #endregion
+
+        #region DeleteCurve
+        /// <summary>
+        /// Delete the curve data supplied in <paramref name="data"/>
+        /// </summary>
+        /// <remarks>
+        /// Unified controller for deleting curve data
+        /// ID, TimeZone and Range fields should not be null
+        /// - Product: MarketDataAssessment, BidAsk and Auction should not be null. For Actual and Versioned should be null
+        /// - Actual TimeSerie: Version fiels should be null
+        /// - Versioned TimeSerie: Version fields should not be null
+        /// </remarks>
+        /// <param name="data">
+        /// An object that represents Auction, BidAsk, MarketDataAssessment, ActualTimeSerie or VersionedTimeSerie
+        /// </param>
+        /// <param name="ctk">CancellationToken</param>
+        /// <returns></returns>
+        Task DeleteCurveDataAsync(DeleteCurveData data, CancellationToken ctk = default);
         #endregion
 
         #region ApiKey
