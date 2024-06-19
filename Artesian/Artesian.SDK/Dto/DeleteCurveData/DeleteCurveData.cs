@@ -56,11 +56,11 @@ namespace Artesian.SDK.Dto
         public LocalDateTime? Version { get; set; }
 
         /// <summary>
-        /// The timezone. Must be the OriginalTimezone or, when Hourly, must be "UTC".
+        /// The timezone of the Range to delete. It is applied only if the curve Granularity is less than Day. Default is CET
         /// </summary>
         [Required]
         [MessagePack.Key(2)]
-        public string Timezone { get; set; }
+        public string Timezone { get; set; } = "CET";
 
         /// <summary>
         /// Start date of range to be deleted  
