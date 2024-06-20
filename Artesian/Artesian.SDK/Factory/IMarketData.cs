@@ -169,11 +169,12 @@ namespace Artesian.SDK.Factory
         /// <param name="rangeStart">LocalDateTime start of range to be deleted (in case of null, LocalDateTime MinIso value will be used)</param>
         /// <param name="rangeEnd">LocalDateTime end of range to be deleted (in case of null, LocalDateTime MaxIso value will be used)</param>
         /// <param name="product">Product of the MarketAssessment Time Serie</param>
+        /// <param name="timezone">Timezone of the delete range. Default is CET</param>
         /// <param name="deferCommandExecution">DeferCommandExecution</param>
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string> product = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
+        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string> product = null, string timezone = "CET", bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
     }
 
     /// <summary>
@@ -237,7 +238,7 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string> product = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
+        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string> product = null, string timezone = "CET", bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
     }
     /// <summary>
     /// Interface for Auction Bid Write
@@ -299,7 +300,7 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);    }
+        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = "CET", bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);    }
 
     /// <summary>
     /// Interface for timeserie write
@@ -367,6 +368,6 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
+        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = "CET", bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
     }
 }
