@@ -56,7 +56,7 @@ namespace Artesian.SDK.Dto
         public LocalDateTime? Version { get; set; }
 
         /// <summary>
-        /// The timezone of the Range to delete. It is applied only if the curve Granularity is less than Day. Default is CET
+        /// Timezone of the delete range. For DateSerie must be the OriginalTimezone of the Serie. In case null or empty the default is CET for TimeSerie and OriginalTimezone for DateSerie
         /// </summary>
         [Required]
         [MessagePack.Key(2)]

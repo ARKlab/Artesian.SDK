@@ -150,16 +150,24 @@ namespace Artesian.SDK.Factory
         /// </remarks>
         /// <param name="rangeStart">LocalDateTime start of range to be deleted (in case of null, LocalDateTime MinIso value will be used)</param>
         /// <param name="rangeEnd">LocalDateTime end of range to be deleted (in case of null, LocalDateTime MaxIso value will be used)</param>
-        /// <param name="timezone">Timezone of the delete range. Default is CET</param>
+        /// <param name="timezone">Timezone of the delete range. For DateSerie must be the OriginalTimezone of the Serie. In case null or empty the default is CET for TimeSerie and OriginalTimezone for DateSerie</param>
         /// <param name="deferCommandExecution">DeferCommandExecution</param>
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = "CET", bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
             Ensure.Any.IsNotNull(_entity);
 
-            var timeZone = DateTimeZoneProviders.Tzdb[timezone];
+            var tz = (string.IsNullOrEmpty(timezone) 
+                      && _entity.OriginalGranularity.IsTimeGranularity()) 
+                                                    ? "CET" 
+                                                    : (string.IsNullOrEmpty(timezone)
+                                                       && !_entity.OriginalGranularity.IsTimeGranularity())
+                                                                    ? _entity.OriginalTimezone
+                                                                    : timezone;
+
+            var timeZone = DateTimeZoneProviders.Tzdb[tz];
 
             var data = new DeleteCurveData(_identifier)
             {
