@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Artesian.SDK.Dto
 {
@@ -56,7 +57,7 @@ namespace Artesian.SDK.Dto
         public LocalDateTime? Version { get; set; }
 
         /// <summary>
-        /// Timezone of the delete range. For DateSerie must be the OriginalTimezone of the Serie. In case null or empty the default is CET for TimeSerie and OriginalTimezone for DateSerie
+        /// For DateSeries if provided must be equal to MarketData OrignalTimezone Default:MarketData OrignalTimezone. For TimeSeries Default:CET
         /// </summary>
         [Required]
         [MessagePack.Key(2)]

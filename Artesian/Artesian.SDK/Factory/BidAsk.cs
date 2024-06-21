@@ -153,7 +153,7 @@ namespace Artesian.SDK.Factory
         /// <param name="rangeStart">LocalDateTime start of range to be deleted (in case of null, LocalDateTime MinIso value will be used)</param>
         /// <param name="rangeEnd">LocalDateTime end of range to be deleted (in case of null, LocalDateTime MaxIso value will be used)</param>
         /// <param name="product">Product of the BidAsk Time Serie</param>
-        /// <param name="timezone">Timezone of the delete range. For DateSerie must be the OriginalTimezone of the Serie. In case null or empty the default is CET for TimeSerie and OriginalTimezone for DateSerie</param>
+        /// <param name="timezone">For DateSeries if provided must be equal to MarketData OrignalTimezone Default:MarketData OrignalTimezone. For TimeSeries Default:CET</param>
         /// <param name="deferCommandExecution">DeferCommandExecution</param>
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
@@ -162,22 +162,14 @@ namespace Artesian.SDK.Factory
         {
             Ensure.Any.IsNotNull(_entity);
 
-            var tz = (string.IsNullOrEmpty(timezone)
-                      && _entity.OriginalGranularity.IsTimeGranularity())
-                                                    ? "CET"
-                                                    : (string.IsNullOrEmpty(timezone)
-                                                       && !_entity.OriginalGranularity.IsTimeGranularity())
-                                                                    ? _entity.OriginalTimezone
-                                                                    : timezone;
-            var timeZone = DateTimeZoneProviders.Tzdb[tz];
-
+            
             var data = new DeleteCurveData(_identifier)
             {
                 Timezone = timezone,
                 // LocalDate.MinIsoValue has year -9998 and yearOfEra 9999. Using it without any string formatting, we got date 01-01-9999.
                 // So we use default(LocalDateTime) 01/01/0001
                 RangeStart = rangeStart ?? default(LocalDateTime),
-                RangeEnd = rangeEnd ?? LocalDateTime.MaxIsoValue.Date.AtStartOfDayInZone(timeZone).LocalDateTime,
+                RangeEnd = rangeEnd ?? LocalDateTime.MaxIsoValue.Date.AtMidnight(),
                 DeferCommandExecution = deferCommandExecution,
                 DeferDataGeneration = deferDataGeneration,
                 Product = product,
