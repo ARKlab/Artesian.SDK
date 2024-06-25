@@ -1,14 +1,10 @@
-﻿using Ark.Tools.Nodatime;
+﻿using MessagePack;
 
-using MessagePack;
 using NodaTime;
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Artesian.SDK.Dto
 {
@@ -56,7 +52,7 @@ namespace Artesian.SDK.Dto
         public LocalDateTime? Version { get; set; }
 
         /// <summary>
-        /// The timezone. Must be the OriginalTimezone or, when Hourly, must be "UTC".
+        /// For DateSeries if provided must be equal to MarketData OrignalTimezone Default:MarketData OrignalTimezone. For TimeSeries Default:CET
         /// </summary>
         [Required]
         [MessagePack.Key(2)]
