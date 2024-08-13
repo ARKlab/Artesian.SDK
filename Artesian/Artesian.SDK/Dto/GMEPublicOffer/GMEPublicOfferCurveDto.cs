@@ -31,13 +31,13 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Date
         /// </summary>
         [Key(3)]
-        public LocalDate Date { get; set; }
+        public LocalDate? Date { get; set; }
 
         /// <summary>
         /// The Hour
         /// </summary>
         [Key(4)]
-        public int Hour { get; set; }
+        public int? Hour { get; set; }
 
         /// <summary>
         /// The Market
@@ -72,6 +72,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// <summary>
         /// The Unit
         /// </summary>
+        /// <remarks>can be NULL for XBID, never NULL otherwise</remarks>
         [Key(10)]
         public string Unit { get; set; }
 
@@ -85,53 +86,59 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Quantity
         /// </summary>
         [Key(12)]
-        public decimal Quantity { get; set; }
+        public decimal? Quantity { get; set; }
 
         /// <summary>
         /// The Awarded Quantity
         /// </summary>
         [Key(13)]
-        public decimal AwardedQuantity { get; set; }
+        public decimal? AwardedQuantity { get; set; }
 
         /// <summary>
         /// The Energy Price
         /// </summary>
         [Key(14)]
-        public decimal EnergyPrice { get; set; }
+        public decimal? EnergyPrice { get; set; }
 
         /// <summary>
         /// Merit Order
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(15)]
-        public decimal MeritOrder { get; set; }
+        public decimal? MeritOrder { get; set; }
 
         /// <summary>
         /// Partial Quantity Accepted
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(16)]
-        public bool PartialQuantityAccepted { get; set; }
+        public bool? PartialQuantityAccepted { get; set; }
 
         /// <summary>
         /// Adjacent Quantity
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(17)]
-        public decimal ADJQuantity { get; set; }
+        public decimal? ADJQuantity { get; set; }
 
         /// <summary>
         /// Adjacent Energy Price
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(18)]
-        public decimal ADJEnergyPrice { get; set; }
+        public decimal? ADJEnergyPrice { get; set; }
 
         /// <summary>
         /// Quarter Value
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(19)]
         public int? Quarter { get; set; }
 
         /// <summary>
         /// The Awarded Price
         /// </summary>
+        /// <remarks>always NULL for XBID, never NULL otherwise</remarks>
         [Key(20)]
         public decimal? AwardedPrice { get; set; }
 
@@ -158,6 +165,20 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// </summary>
         [Key(24)]
         public LocalDateTime? SubmittedAt { get; set; }
+
+        /// <summary>
+        /// Timestamp
+        /// </summary>
+        /// <remarks>Added for XBID, NULL otherwise</remarks>
+        [Key(25)]
+        public LocalDateTime? Timestamp { get; set; }
+
+        /// <summary>
+        /// PrezzoUnitario
+        /// </summary>
+        /// <remarks>Added for XBID, NULL otherwise</remarks>
+        [Key(26)]
+        public decimal? PrezzoUnitario { get; set; }
 
     }
 }

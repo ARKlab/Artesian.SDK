@@ -1,4 +1,6 @@
-﻿using Artesian.SDK.Common;
+﻿using Ark.Tools.Nodatime;
+
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 using EnsureThat;
@@ -163,6 +165,38 @@ namespace Artesian.SDK.Factory
             }
             //else
             //    _logger.Warn("No Data to be saved.");
+        }
+
+        /// <summary>
+        /// MarketData Delete
+        /// </summary>
+        /// <remarks>
+        /// Delete the Data of the current MarketData
+        /// </remarks>
+        /// <param name="rangeStart">LocalDateTime start of range to be deleted (in case of null, LocalDateTime MinIso value will be used)</param>
+        /// <param name="rangeEnd">LocalDateTime end of range to be deleted (in case of null, LocalDateTime MaxIso value will be used)</param>
+        /// <param name="timezone">For DateSeries if provided must be equal to MarketData OrignalTimezone Default:MarketData OrignalTimezone. For TimeSeries Default:CET</param>
+        /// <param name="deferCommandExecution">DeferCommandExecution</param>
+        /// <param name="deferDataGeneration">DeferDataGeneration</param>
+        /// <param name="ctk">The Cancellation Token</param> 
+        /// <returns></returns>
+        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        {
+            Ensure.Any.IsNotNull(_entity);
+
+            var data = new DeleteCurveData(_identifier)
+            {
+                Timezone = timezone,
+                // LocalDate.MinIsoValue has year -9998 and yearOfEra 9999. Using it without any string formatting, we got date 01-01-9999.
+                // So we use default(LocalDateTime) 01/01/0001
+                RangeStart = rangeStart ?? default(LocalDateTime),
+                RangeEnd = rangeEnd ?? LocalDateTime.MaxIsoValue.Date.AtMidnight(),
+                DeferCommandExecution = deferCommandExecution,
+                DeferDataGeneration = deferDataGeneration,
+                Version = SelectedVersion,
+            };
+
+            await _marketDataService.DeleteCurveDataAsync(data, ctk);
         }
     }
 }

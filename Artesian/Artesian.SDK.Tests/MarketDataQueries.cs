@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+
+using Ark.Tools.Nodatime;
+
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
-using Flurl;
+
 using Flurl.Http.Testing;
+
 using NodaTime;
+
 using NUnit.Framework;
 
 namespace Artesian.SDK.Tests
@@ -534,6 +539,146 @@ namespace Artesian.SDK.Tests
 
                 var ex = Assert.Throws<ArgumentException>(() => mds.UpsertCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult());
                 Assert.That("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized", Is.EqualTo(ex.Message));
+            }
+        }
+        #endregion
+
+        #region DeleteCurve
+        [Test]
+        public void DeleteCurve_DeleteCurveDataAsync_Product()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var data = new DeleteCurveData()
+                {
+                    ID = new MarketDataIdentifier("test", "testName"),
+                    Timezone = "CET",
+                    RangeStart = new LocalDateTime(2018, 01, 01, 0, 0),
+                    RangeEnd = new LocalDateTime(2018, 01, 03, 0, 0),
+                    Product = new List<string> { "Jan-15" }
+                };
+
+                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
+                    .WithVerb(HttpMethod.Post)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public void DeleteCurve_DeleteCurveDataWholeRangeAsync_Product()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var data = new DeleteCurveData()
+                {
+                    ID = new MarketDataIdentifier("test", "testName"),
+                    Timezone = "CET",
+                    Product = new List<string> { "Jan-15" }
+                };
+
+                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
+                    .WithVerb(HttpMethod.Post)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public void DeleteCurve_DeleteCurveDataAsync_Actual()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var data = new DeleteCurveData()
+                {
+                    ID = new MarketDataIdentifier("test", "testName"),
+                    Timezone = "CET",
+                    RangeStart = new LocalDateTime(2018, 01, 01, 0, 0),
+                    RangeEnd = new LocalDateTime(2018, 01, 03, 0, 0),
+                };
+
+                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
+                    .WithVerb(HttpMethod.Post)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public void DeleteCurve_DeleteCurveDataWholeRangeAsync_Actual()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var data = new DeleteCurveData()
+                {
+                    ID = new MarketDataIdentifier("test", "testName"),
+                    Timezone = "CET",
+                };
+
+                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
+                    .WithVerb(HttpMethod.Post)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public void DeleteCurve_DeleteCurveDataAsync_Versioned()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                //Create Version
+                var data = new DeleteCurveData()
+                {
+                    ID = new MarketDataIdentifier("test", "testName"),
+                    Timezone = "CET",
+                    RangeStart = new LocalDateTime(2018, 01, 01, 0, 0),
+                    RangeEnd = new LocalDateTime(2018, 01, 03, 0, 0),
+                    Version = new LocalDateTime(2018, 09, 25, 12, 0, 0, 123).PlusNanoseconds(100)
+                };
+
+                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
+                    .WithVerb(HttpMethod.Post)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public void DeleteCurve_DeleteCurveDataWholeRangeAsync_Versioned()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                //Create Version
+                var data = new DeleteCurveData()
+                {
+                    ID = new MarketDataIdentifier("test", "testName"),
+                    Timezone = "CET",
+                    Version = new LocalDateTime(2018, 09, 25, 12, 0, 0, 123).PlusNanoseconds(100)
+                };
+
+                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
+                    .WithVerb(HttpMethod.Post)
+                    .Times(1);
             }
         }
         #endregion

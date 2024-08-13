@@ -23,7 +23,8 @@
         MB6 = 35,
         MBh = 36,
         MRR = 50,
-        MIXBID= 70,
+        MIXBID = 70,
+        AFRR = 100
     }
 
     public enum Status : byte
@@ -34,6 +35,8 @@
         REP = 3,
         REV = 4,
         SUB = 5,
+        COM = 6,
+        PCOM = 7
     }
 
     public enum Purpose : byte
@@ -118,7 +121,8 @@
         UP = 0,
         UPV = 1,
         UC = 2,
-        UCV = 3
+        UCV = 3,
+        UNKNOWN = 99,
     }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
