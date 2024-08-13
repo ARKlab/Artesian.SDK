@@ -7,6 +7,7 @@ using Flurl;
 using Flurl.Http.Testing;
 using NodaTime;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Artesian.SDK.Tests
 {
