@@ -66,8 +66,8 @@ namespace Artesian.SDK.Tests
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .ExecuteAsync().Result;
 
-            Assert.AreEqual(act.First().Value, 10);
-            Assert.AreEqual(act.Last().Value, 22);
+            Assert.That(act.First().Value, Is.EqualTo(10));
+            Assert.That(act.Last().Value, Is.EqualTo(22));
 
             writeMarketData.Delete(new LocalDateTime(2018, 10, 05, 0, 0), new LocalDateTime(2018, 10, 07, 0, 0)).ConfigureAwait(true).GetAwaiter().GetResult();
 
@@ -77,8 +77,8 @@ namespace Artesian.SDK.Tests
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .ExecuteAsync().Result;
 
-            Assert.AreEqual(act.First().Value, 10);
-            Assert.AreEqual(act.Last().Value, null);
+            Assert.That(act.First().Value, Is.EqualTo(10));
+            Assert.That(act.Last().Value, Is.Null);
 
 
             writeMarketData.Delete().ConfigureAwait(true).GetAwaiter().GetResult();
@@ -89,8 +89,8 @@ namespace Artesian.SDK.Tests
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .ExecuteAsync().Result;
 
-            Assert.AreEqual(act.First().Value, null);
-            Assert.AreEqual(act.Last().Value, null);
+            Assert.That(act.First().Value, null);
+            Assert.That(act.Last().Value, null);
         }
 
         [Test]
@@ -139,8 +139,8 @@ namespace Artesian.SDK.Tests
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.First().Value, 10);
-            Assert.AreEqual(ts.Last().Value, 22);
+            Assert.That(ts.First().Value, Is.EqualTo(10));
+            Assert.That(ts.Last().Value, Is.EqualTo(22));
 
             writeMarketData.Delete(new LocalDateTime(2018, 10, 05, 0, 0), new LocalDateTime(2018, 10, 07, 0, 0)).ConfigureAwait(true).GetAwaiter().GetResult();
 
@@ -151,8 +151,8 @@ namespace Artesian.SDK.Tests
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.First().Value, 10);
-            Assert.AreEqual(ts.Last().Value, null);
+            Assert.That(ts.First().Value, Is.EqualTo(10));
+            Assert.That(ts.Last().Value, Is.Null);
 
 
             writeMarketData.Delete().ConfigureAwait(true).GetAwaiter().GetResult();
@@ -164,7 +164,7 @@ namespace Artesian.SDK.Tests
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.Count(), 0);
+            Assert.That(ts.Count(), Is.EqualTo(0));
         }
 
 
@@ -225,8 +225,8 @@ namespace Artesian.SDK.Tests
                         .InAbsoluteDateRange(new LocalDate(2018, 09, 24), new LocalDate(2018, 09, 27))
                         .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.First().Price, 100);
-            Assert.AreEqual(ts.Last().Price, 320);
+            Assert.That(ts.First().Price, Is.EqualTo(100));
+            Assert.That(ts.Last().Price, Is.EqualTo(320));
 
             writeMarketData.Delete(new LocalDateTime(2018, 09, 26, 0, 0), new LocalDateTime(2018, 09, 27, 0, 0)).ConfigureAwait(true).GetAwaiter().GetResult();
 
@@ -235,8 +235,8 @@ namespace Artesian.SDK.Tests
                         .InAbsoluteDateRange(new LocalDate(2018, 09, 24), new LocalDate(2018, 09, 27))
                         .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.First().Price, 100);
-            Assert.AreEqual(ts.Last().Price, 220);
+            Assert.That(ts.First().Price, Is.EqualTo(100));
+            Assert.That(ts.Last().Price, Is.EqualTo(220));
 
 
             writeMarketData.Delete().ConfigureAwait(true).GetAwaiter().GetResult();
@@ -246,7 +246,7 @@ namespace Artesian.SDK.Tests
                         .InAbsoluteDateRange(new LocalDate(2018, 09, 24), new LocalDate(2018, 09, 27))
                         .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.Count(), 0);
+            Assert.That(ts.Count(), Is.EqualTo(0));
         }
 
         [Test]
@@ -331,8 +331,8 @@ namespace Artesian.SDK.Tests
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.First().High, 47);
-            Assert.AreEqual(ts.Last().High, 49);
+            Assert.That(ts.First().High, Is.EqualTo(47));
+            Assert.That(ts.Last().High, Is.EqualTo(49));
 
             writeMarketData.Delete(new LocalDateTime(2014, 01, 03, 0, 0), new LocalDateTime(2014, 01, 04, 0, 0), new List<string>() { "Jan-15" }).ConfigureAwait(true).GetAwaiter().GetResult();
 
@@ -342,8 +342,8 @@ namespace Artesian.SDK.Tests
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.First().High, 47);
-            Assert.AreEqual(ts.Last().High, null);
+            Assert.That(ts.First().High, Is.EqualTo(47));
+            Assert.That(ts.Last().High, Is.Null);
 
 
             writeMarketData.Delete(product: new List<string>() { "Jan-15" }, deferCommandExecution: false, deferDataGeneration: false).ConfigureAwait(true).GetAwaiter().GetResult();
@@ -354,8 +354,8 @@ namespace Artesian.SDK.Tests
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.First().High, null);
-            Assert.AreEqual(ts.Last().High, null);
+            Assert.That(ts.First().High, Is.Null);
+            Assert.That(ts.Last().High, Is.Null);
         }
 
         [Test]
@@ -431,8 +431,8 @@ namespace Artesian.SDK.Tests
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.First().BestBidPrice, 47);
-            Assert.AreEqual(ts.Last().BestBidPrice, 49);
+            Assert.That(ts.First().BestBidPrice, Is.EqualTo(47));
+            Assert.That(ts.Last().BestBidPrice, Is.EqualTo(49));
 
             writeMarketData.Delete(new LocalDateTime(2014, 01, 03, 0, 0), new LocalDateTime(2014, 01, 04, 0, 0), new List<string>() { "Jan-15" }).ConfigureAwait(true).GetAwaiter().GetResult();
 
@@ -442,8 +442,8 @@ namespace Artesian.SDK.Tests
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.First().BestBidPrice, 47);
-            Assert.AreEqual(ts.Last().BestBidPrice, null);
+            Assert.That(ts.First().BestBidPrice, Is.EqualTo(47));
+            Assert.That(ts.Last().BestBidPrice, Is.Null);
 
 
             writeMarketData.Delete(product: new List<string>() { "Jan-15" }).ConfigureAwait(true).GetAwaiter().GetResult();
@@ -454,8 +454,8 @@ namespace Artesian.SDK.Tests
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync().Result;
 
-            Assert.AreEqual(ts.First().BestBidPrice, null);
-            Assert.AreEqual(ts.Last().BestBidPrice, null);
+            Assert.That(ts.First().BestBidPrice, Is.Null);
+            Assert.That(ts.Last().BestBidPrice, Is.Null);
         }
     }
 }
