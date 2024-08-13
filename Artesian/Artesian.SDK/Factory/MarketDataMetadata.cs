@@ -1,13 +1,8 @@
 ﻿using Artesian.SDK.Dto;
+
 using NodaTime;
-using System;
-using System.Collections;
+
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Artesian.SDK.Factory
 {
@@ -16,7 +11,7 @@ namespace Artesian.SDK.Factory
     /// </summary>
     public class MarketDataMetadata
     {
-        private MarketDataEntity.Output _output;
+        private readonly MarketDataEntity.Output _output;
 
         /// <summary>
         /// Read Only Class for MarketData Entity constructor

@@ -1,8 +1,11 @@
 ﻿using Artesian.SDK.Service;
-using Flurl;
+
 using Flurl.Http.Testing;
+
 using NodaTime;
+
 using NUnit.Framework;
+
 using System;
 using System.Net.Http;
 
@@ -11,7 +14,7 @@ namespace Artesian.SDK.Tests
     [TestFixture]
     public class AuctionTimeSerieQueries
     {
-        private ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
+        private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
 
         #region MarketData ids
 

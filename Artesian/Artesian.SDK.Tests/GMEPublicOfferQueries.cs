@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using Artesian.SDK.Dto;
+
 using Artesian.SDK.Dto.GMEPublicOffer;
 using Artesian.SDK.Service;
 using Artesian.SDK.Service.GMEPublicOffer;
-using Flurl;
+
 using Flurl.Http.Testing;
+
 using NodaTime;
+
 using NUnit.Framework;
 
 namespace Artesian.SDK.Tests
@@ -15,7 +17,7 @@ namespace Artesian.SDK.Tests
     [TestFixture]
     public class GMEPublicOfferQueries
     {
-        private ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
+        private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
 
         #region Raw PO curve query
         [Test]

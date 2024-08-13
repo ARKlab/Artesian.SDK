@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.1;netstandard2.0;net472</TargetFrameworks>
+    <TargetFrameworks>net8.0;netstandard2.0;</TargetFrameworks>
     <ApplicationIcon />
     <Win32Resource />
     <OutputType>Library</OutputType>
     <StartupObject />
     <PackageProjectUrl>https://github.com/ARKlab/Artesian.SDK</PackageProjectUrl>
-    <Copyright>Copyright (C) 2023 ARK Energy LTD</Copyright>
+    <Copyright>Copyright (C) 2024 ARK Energy LTD</Copyright>
     <Company>ARK Labs</Company>
     <Authors>ARK Labs</Authors>
     <PackageIcon>ark-dark.png</PackageIcon>
@@ -18,7 +18,7 @@
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 
     <PackageReleaseNotes>
-      Breaking: remove support for .NET 5.0 (EOL)
+      Breaking: remove support for .NET Framework
     </PackageReleaseNotes>
     
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -39,14 +39,20 @@
   
   <ItemGroup>
     <None Include="ark-dark.png" Pack="true" PackagePath="\" />
-	<None Include="..\..\README.md" Pack="true" PackagePath="\" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+	  <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ark.Tools.Http" Version="4.9.4" />
+
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
+	<PackageReference Include="Flurl.Http" Version="4.0.2" />
+	<PackageReference Include="Flurl.Http.Newtonsoft" Version="0.9.1" />
+	  <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.1.0" />
+    <PackageReference Include="MessagePack.NodaTime" Version="3.2.2" />
+    <PackageReference Include="Polly" Version="8.4.1" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-	<PackageReference Include="Microsoft.Identity.Client" Version="4.57.0" />
+	  <PackageReference Include="Microsoft.Identity.Client" Version="4.63.0" />
   </ItemGroup>
 
 </Project>

@@ -1,13 +1,12 @@
-﻿using Ark.Tools.Nodatime;
-
-using Artesian.SDK.Common;
+﻿using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
-using EnsureThat;
+
 using NodaTime;
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -20,34 +19,39 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class BidAsk : IBidAskWritable
     {
-        private IMarketDataService _marketDataService;
-        private MarketDataEntity.Output _entity = null;
-        private readonly MarketDataIdentifier _identifier = null;
+        private readonly IMarketDataService _marketDataService;
+        private readonly MarketDataEntity.Output _entity;
+        private readonly MarketDataIdentifier _identifier;
+        private readonly List<BidAskElement> _values = new();
 
         /// <summary>
         /// BidAsks Constructor
         /// </summary>
         internal BidAsk(MarketData marketData)
         {
+            Guard.IsNotNull(marketData);
+            Guard.IsNotNull(marketData._entity);
+            Guard.IsNotNull(marketData._marketDataService);
+
             _entity = marketData._entity;
             _marketDataService = marketData._marketDataService;
 
             _identifier = new MarketDataIdentifier(_entity.ProviderName, _entity.MarketDataName);
 
-            BidAsks = new List<BidAskElement>();
+            BidAsks = new ReadOnlyCollection<BidAskElement>(_values);
         }
 
         /// <summary>
         /// BidAsk BidAskElement
         /// </summary>
-        public List<BidAskElement> BidAsks { get; internal set; }
+        public IReadOnlyCollection<BidAskElement> BidAsks { get; internal set; }
 
         /// <summary>
         /// MarketData ClearData
         /// </summary>
         public void ClearData()
         {
-            BidAsks.Clear();
+            _values.Clear();
         }
 
         /// <summary>
@@ -82,7 +86,7 @@ namespace Artesian.SDK.Factory
         private AddBidAskOperationResult _addBidAsk(LocalDateTime reportTime, string product, BidAskValue value)
         {
             //Relative products
-            if (Regex.IsMatch(product, @"\+\d+$"))
+            if (ArtesianConstants.RelativeProductValidator.IsMatch(product))
                 throw new NotSupportedException("Relative Products are not supported");
 
             if (_entity.OriginalGranularity.IsTimeGranularity())
@@ -99,10 +103,10 @@ namespace Artesian.SDK.Factory
             }
 
 
-            if (BidAsks.Any(row => row.ReportTime == reportTime && row.Product.Equals(product)))
+            if (BidAsks.Any(row => row.ReportTime == reportTime && row.Product.Equals(product, StringComparison.Ordinal)))
                 return AddBidAskOperationResult.ProductAlreadyPresent;
 
-            BidAsks.Add(new BidAskElement(reportTime, product, value));
+            _values.Add(new BidAskElement(reportTime, product, value));
             return AddBidAskOperationResult.BidAskAdded;
         }
 
@@ -120,9 +124,7 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default)
         {
-            Ensure.Any.IsNotNull(_entity);
-
-            if (BidAsks.Any())
+            if (_values.Count != 0)
             {
                 var data = new UpsertCurveData(_identifier)
                 {
@@ -133,7 +135,7 @@ namespace Artesian.SDK.Factory
                     KeepNulls = keepNulls
                 };
 
-                foreach (var reportTime in BidAsks.GroupBy(g => g.ReportTime))
+                foreach (var reportTime in _values.GroupBy(g => g.ReportTime))
                 {
                     var BidAsks = reportTime.ToDictionary(key => key.Product.ToString(), value => value.Value);
                     data.BidAsk.Add(reportTime.Key, BidAsks);
@@ -160,9 +162,6 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Delete(LocalDateTime? rangeStart, LocalDateTime? rangeEnd, List<string> product = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
-            Ensure.Any.IsNotNull(_entity);
-
-            
             var data = new DeleteCurveData(_identifier)
             {
                 Timezone = timezone,

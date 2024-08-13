@@ -5,9 +5,10 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Artesian.SDK.Dto;
-using Flurl;
 using NodaTime;
 using System;
+using Flurl;
+using System.Globalization;
 
 namespace Artesian.SDK.Service
 {
@@ -39,7 +40,7 @@ namespace Artesian.SDK.Service
             if (id < 1)
                 throw new ArgumentException("Id invalid :" + id);
 
-            var url = "/marketdata/entity/".AppendPathSegment(id.ToString());
+            var url = "/marketdata/entity/".AppendPathSegment(id.ToString(CultureInfo.InvariantCulture));
             return _client.Exec<MarketDataEntity.Output>(HttpMethod.Get, url, ctk: ctk);
         }
         /// <summary>
@@ -56,7 +57,7 @@ namespace Artesian.SDK.Service
         public Task<PagedResult<CurveRange>> ReadCurveRangeAsync(int id, int page, int pageSize, string product = null, LocalDateTime? versionFrom = null, LocalDateTime? versionTo = null, CancellationToken ctk = default)
         {
 
-            var url = "/marketdata/entity/".AppendPathSegment(id.ToString()).AppendPathSegment("curves")
+            var url = "/marketdata/entity/".AppendPathSegment(id.ToString(CultureInfo.InvariantCulture)).AppendPathSegment("curves")
                      .SetQueryParam("versionFrom", versionFrom)
                      .SetQueryParam("versionTo", versionTo)
                      .SetQueryParam("product", product)

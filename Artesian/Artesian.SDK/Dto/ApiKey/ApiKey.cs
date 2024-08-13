@@ -1,8 +1,8 @@
 ﻿using MessagePack;
+
 using NodaTime;
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Artesian.SDK.Dto
 {

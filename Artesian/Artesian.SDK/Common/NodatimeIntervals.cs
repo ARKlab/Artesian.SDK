@@ -1,45 +1,16 @@
-﻿using EnsureThat;
-using NodaTime;
+﻿using NodaTime;
 using NodaTime.Calendars;
+
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace Artesian.SDK.Common
 {
-    /// <summary>
-    /// DatePeriod enums
-    /// </summary>
-    public enum DatePeriod : byte
-    {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        Day = 2,
-        Week = 3,
-        Month = 4,
-        Bimestral = 5,
-        Trimestral = 6,
-        Calendar = 7
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    }
-
-    /// <summary>
-    /// TimePeriod enums
-    /// </summary>
-    public enum TimePeriod : byte
-    {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        Hour = 2,
-        TenMinutes = 3,
-        Minute = 4,
-        QuarterHour = 5,
-        HalfHour = 6
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    }
 
     /// <summary>
     /// Nodatime Intervals Extensions
     /// </summary>
-    public static class NodatimeIntervalsEx
+    internal static class NodatimeIntervalsEx
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public static bool IsStartOfInterval(this LocalDateTime localTime, DatePeriod period)
@@ -96,45 +67,45 @@ namespace Artesian.SDK.Common
 
         public static LocalDate AtStartOfInterval(this LocalDate date, DatePeriod period)
         {
-            switch (period)
+            return period switch
             {
-                case DatePeriod.Day:
-                    return date;
-                case DatePeriod.Week:
-                    return date.FirstDayOfTheWeek();
-                case DatePeriod.Month:
-                    return date.FirstDayOfTheMonth();
-                case DatePeriod.Bimestral:
-                    return new LocalDate(date.Year, ((date.Month - 1) / 2) * 2 + 1, 1, date.Calendar);
-                case DatePeriod.Trimestral:
-                    return date.FirstDayOfTheQuarter();
-                case DatePeriod.Calendar:
-                    return date.FirstDayOfTheYear();
-            }
-
-            return date;
+                DatePeriod.Day => date,
+                DatePeriod.Week => date.FirstDayOfTheWeek(),
+                DatePeriod.Month => date.FirstDayOfTheMonth(),
+                DatePeriod.Bimestral => new LocalDate(date.Year, ((date.Month - 1) / 2) * 2 + 1, 1, date.Calendar),
+                DatePeriod.Trimestral => date.FirstDayOfTheQuarter(),
+                DatePeriod.Calendar => date.FirstDayOfTheYear(),
+                _ => throw new NotSupportedException("DatePeriod is not supported: " + period.ToString()),
+            };
         }
+
+        private static void _ensureIsoCalendar(LocalDate date, [CallerArgumentExpression(nameof(date))] string parameterName = null)
+        {
+            if (date.Calendar != CalendarSystem.Iso)
+                throw new ArgumentException($"LocalDate.Calendar should be CalendarSystem.Iso. Found '{date.Calendar}'", parameterName);
+        }
+
         public static LocalDate FirstDayOfTheWeek(this LocalDate date, IsoDayOfWeek dayOfWeek = IsoDayOfWeek.Monday)
         {
-            Ensure.Bool.IsTrue(date.Calendar == CalendarSystem.Iso);
+            _ensureIsoCalendar(date);
             return LocalDate.FromWeekYearWeekAndDay(WeekYearRules.Iso.GetWeekYear(date), WeekYearRules.Iso.GetWeekOfWeekYear(date), dayOfWeek);
         }
 
         public static LocalDate FirstDayOfTheMonth(this LocalDate date)
         {
-            Ensure.Bool.IsTrue(date.Calendar == CalendarSystem.Iso);
+            _ensureIsoCalendar(date);
             return new LocalDate(date.Year, date.Month, 1, date.Calendar);
         }
 
         public static LocalDate FirstDayOfTheQuarter(this LocalDate date)
         {
-            Ensure.Bool.IsTrue(date.Calendar == CalendarSystem.Iso);
+            _ensureIsoCalendar(date);
             return new LocalDate(date.Year, (int)((date.Month - 1) / 3) * 3 + 1, 1, date.Calendar);
         }
 
         public static LocalDate FirstDayOfTheSeason(this LocalDate date)
         {
-            Ensure.Bool.IsTrue(date.Calendar == CalendarSystem.Iso);
+            _ensureIsoCalendar(date);
             if (date.Month >= 10)
                 return new LocalDate(date.Year, 10, 1, date.Calendar);
             else if (date.Month < 4)
@@ -145,19 +116,19 @@ namespace Artesian.SDK.Common
 
         public static LocalDate FirstDayOfTheYear(this LocalDate date)
         {
-            Ensure.Bool.IsTrue(date.Calendar == CalendarSystem.Iso);
+            _ensureIsoCalendar(date);
             return new LocalDate(date.Year, 1, 1, date.Calendar);
         }
 
         public static LocalDate LastDayOfTheWeek(this LocalDate date, IsoDayOfWeek dayOfWeek = IsoDayOfWeek.Sunday)
         {
-            Ensure.Bool.IsTrue(date.Calendar == CalendarSystem.Iso);
+            _ensureIsoCalendar(date);
             return LocalDate.FromWeekYearWeekAndDay(WeekYearRules.Iso.GetWeekYear(date), WeekYearRules.Iso.GetWeekOfWeekYear(date), dayOfWeek);
         }
 
         public static LocalDate LastDayOfTheMonth(this LocalDate date)
         {
-            Ensure.Bool.IsTrue(date.Calendar == CalendarSystem.Iso);
+            _ensureIsoCalendar(date);
             return date.FirstDayOfTheMonth().PlusMonths(1).Minus(Period.FromDays(1));
         }
 
@@ -168,7 +139,7 @@ namespace Artesian.SDK.Common
 
         public static LocalDate LastDayOfTheSeason(this LocalDate date)
         {
-            Ensure.Bool.IsTrue(date.Calendar == CalendarSystem.Iso);
+            _ensureIsoCalendar(date);
             if (date.Month >= 10)
                 return new LocalDate(date.Year + 1, 3, 31, date.Calendar);
             else if (date.Month < 4)
@@ -179,13 +150,13 @@ namespace Artesian.SDK.Common
 
         public static LocalDate LastDayOfTheYear(this LocalDate date)
         {
-            Ensure.Bool.IsTrue(date.Calendar == CalendarSystem.Iso);
+            _ensureIsoCalendar(date);
             return date.FirstDayOfTheYear().PlusYears(1).Minus(Period.FromDays(1));
         }
 
         public static LocalDate PreviousDayOfWeek(this LocalDate date, IsoDayOfWeek dayOfWeek = IsoDayOfWeek.Monday)
         {
-            Ensure.Bool.IsTrue(date.Calendar == CalendarSystem.Iso);
+            _ensureIsoCalendar(date);
             while (date.DayOfWeek != dayOfWeek)
                 date = date.PlusDays(-1);
 
@@ -194,7 +165,7 @@ namespace Artesian.SDK.Common
 
         public static LocalDate NextDayOfWeek(this LocalDate date, IsoDayOfWeek dayOfWeek = IsoDayOfWeek.Monday)
         {
-            Ensure.Bool.IsTrue(date.Calendar == CalendarSystem.Iso);
+            _ensureIsoCalendar(date);
             while (date.DayOfWeek != dayOfWeek)
                 date = date.PlusDays(1);
 

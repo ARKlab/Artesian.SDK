@@ -11,12 +11,12 @@ namespace Artesian.SDK.Dto
     public class PathString : IEquatable<PathString>
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        private static Regex _regexSplit = new Regex(@"(?<!\\)\/");
+        private static readonly Regex _regexSplit = new Regex(@"(?<!\\)\/");
         public const int MaxLenghtPaths = 10;
         public const int MaxTokenLen = 50;
 
-        private string[] _tokens;
-        private string _resource;
+        private readonly string[] _tokens;
+        private readonly string _resource;
 
         public const string Star = "*";
         public const string NotSet = "*-";

@@ -1,16 +1,12 @@
 ﻿using Artesian.SDK.Dto;
 using Artesian.SDK.Common;
 using Artesian.SDK.Service;
-using EnsureThat;
 using NodaTime;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Ark.Tools.Nodatime;
 
 namespace Artesian.SDK.Factory
 {
@@ -19,16 +15,20 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class ActualTimeSerie : ITimeserieWritable
     {
-        private IMarketDataService _marketDataService;
-        private MarketDataEntity.Output _entity = null;
-        private readonly MarketDataIdentifier _identifier = null;
-        private Dictionary<LocalDateTime, double?> _values = new Dictionary<LocalDateTime, double?>();
+        private readonly IMarketDataService _marketDataService;
+        private readonly MarketDataEntity.Output _entity;
+        private readonly MarketDataIdentifier _identifier;
+        private readonly Dictionary<LocalDateTime, double?> _values = new Dictionary<LocalDateTime, double?>();
 
         /// <summary>
         /// ActualTimeSerie Constructor
         /// </summary>
         internal ActualTimeSerie(MarketData marketData)
         {
+            Guard.IsNotNull(marketData);
+            Guard.IsNotNull(marketData._entity);
+            Guard.IsNotNull(marketData._marketDataService);
+
             _entity = marketData._entity;
             _marketDataService = marketData._marketDataService;
 
@@ -47,8 +47,7 @@ namespace Artesian.SDK.Factory
         /// </summary>
         public void ClearData()
         {
-            _values = new Dictionary<LocalDateTime, double?>();
-            Values = new ReadOnlyDictionary<LocalDateTime, double?>(_values);
+            _values.Clear();
         }
 
         /// <summary>
@@ -60,8 +59,6 @@ namespace Artesian.SDK.Factory
         /// <returns>AddTimeSerieOperationResult</returns>
         public AddTimeSerieOperationResult AddData(LocalDate localDate, double? value)
         {
-            Ensure.Any.IsNotNull(_entity);
-
             if (_entity.OriginalGranularity.IsTimeGranularity())
                 throw new ActualTimeSerieException("This MarketData has Time granularity. Use AddData(Instant time, double? value)");
 
@@ -78,8 +75,6 @@ namespace Artesian.SDK.Factory
         /// <returns>AddTimeSerieOperationResult</returns>
         public AddTimeSerieOperationResult AddData(Instant time, double? value)
         {
-            Ensure.Any.IsNotNull(_entity);
-
             if (!_entity.OriginalGranularity.IsTimeGranularity())
                 throw new ActualTimeSerieException("This MarketData has Date granularity. Use AddData(LocalDate date, double? value)");
 
@@ -124,9 +119,7 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default)
         {
-            Ensure.Any.IsNotNull(_entity);
-
-            if (_values.Any())
+            if (_values.Count != 0)
             {
                 var data = new UpsertCurveData(_identifier)
                 {
@@ -157,14 +150,12 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
-            Ensure.Any.IsNotNull(_entity);
-
             var data = new DeleteCurveData(_identifier)
             {
                 Timezone = timezone,
                 // LocalDate.MinIsoValue has year -9998 and yearOfEra 9999. Using it without any string formatting, we got date 01-01-9999.
                 // So we use default(LocalDateTime) 01/01/0001
-                RangeStart = rangeStart ?? default(LocalDateTime),
+                RangeStart = rangeStart ?? default,
                 RangeEnd = rangeEnd ?? LocalDateTime.MaxIsoValue.Date.AtMidnight(),
                 DeferCommandExecution = deferCommandExecution,
                 DeferDataGeneration = deferDataGeneration,

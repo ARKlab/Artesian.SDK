@@ -4,7 +4,6 @@ using Flurl.Http.Testing;
 using System.Net.Http;
 using NodaTime;
 using NUnit.Framework;
-using Flurl;
 using Artesian.SDK.Dto;
 
 namespace Artesian.SDK.Tests
@@ -15,7 +14,7 @@ namespace Artesian.SDK.Tests
     [TestFixture]
     public class MarketAssessmentQueries
     {
-        private ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
+        private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
 
         #region MarketData Ids
         [Test]

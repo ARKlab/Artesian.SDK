@@ -2,8 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information.
 using Artesian.SDK.Dto;
+
 using Flurl;
+
 using NodaTime;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +21,10 @@ namespace Artesian.SDK.Service
     /// </summary>
     public class AuctionQuery : QueryWithRange<AuctionQueryParamaters>, IAuctionQuery<AuctionQuery>
     {
-        private Client _client;
-        private IPartitionStrategy _partition;
+        private readonly Client _client;
+        private readonly IPartitionStrategy _partition;
 
-        private string _routePrefix = "auction";
+        private const string _routePrefix = "auction";
 
         internal AuctionQuery(Client client, IPartitionStrategy partiton)
         {
@@ -135,7 +138,7 @@ namespace Artesian.SDK.Service
         {
             _validateQuery();
 
-            var urlList = _partition.Partition(new List<AuctionQueryParamaters> { _queryParamaters })
+            var urlList = _partition.Partition(new List<AuctionQueryParamaters> { QueryParamaters })
                 .Select(qp => $"/{_routePrefix}/{_buildExtractionRangeRoute(qp)}"
                         .SetQueryParam("id", qp.Ids)
                         .SetQueryParam("filterId", qp.FilterId)

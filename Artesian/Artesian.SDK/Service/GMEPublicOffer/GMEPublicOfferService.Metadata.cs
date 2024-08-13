@@ -1,6 +1,8 @@
 ﻿using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.GMEPublicOffer;
+
 using Flurl;
+
 using System;
 using System.Net.Http;
 using System.Threading;

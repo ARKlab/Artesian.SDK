@@ -2,8 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Dto;
+
 using Flurl;
+
 using NodaTime;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +21,9 @@ namespace Artesian.SDK.Service
     /// </summary>
     public class MasQuery : QueryWithFillAndInterval<MasQueryParamaters>, IMasQuery<MasQuery>
     {        
-        private string _routePrefix = "mas";
-        private Client _client;
-        private IPartitionStrategy _partition;
+        private readonly string _routePrefix = "mas";
+        private readonly Client _client;
+        private readonly IPartitionStrategy _partition;
 
         internal MasQuery(Client client, IPartitionStrategy partiton)
         {
@@ -121,7 +124,7 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery ForProducts(params string[] products)
         {
-            _queryParamaters.Products = products;
+            QueryParamaters.Products = products;
             return this;
         }
         /// <summary>
@@ -130,7 +133,7 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery WithFillNull()
         {
-            _queryParamaters.FillerKindType = FillerKindType.Null;
+            QueryParamaters.FillerKindType = FillerKindType.Null;
             return this;
         }
         /// <summary>
@@ -140,8 +143,8 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery WithFillCustomValue(MarketAssessmentValue marketAssessmentValue)
         {
-            _queryParamaters.FillerKindType = FillerKindType.CustomValue;
-            _queryParamaters.FillerConfig.FillerMasDV = marketAssessmentValue;
+            QueryParamaters.FillerKindType = FillerKindType.CustomValue;
+            QueryParamaters.FillerConfig.FillerMasDV = marketAssessmentValue;
 
             return this;
         }
@@ -152,8 +155,8 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery WithFillLatestValue(Period period)
         {
-            _queryParamaters.FillerKindType = FillerKindType.LatestValidValue;
-            _queryParamaters.FillerConfig.FillerPeriod = period;
+            QueryParamaters.FillerKindType = FillerKindType.LatestValidValue;
+            QueryParamaters.FillerConfig.FillerPeriod = period;
 
             return this;
         }
@@ -163,7 +166,7 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery WithFillNone()
         {
-            _queryParamaters.FillerKindType = FillerKindType.NoFill;
+            QueryParamaters.FillerKindType = FillerKindType.NoFill;
 
             return this;
         }
@@ -188,7 +191,7 @@ namespace Artesian.SDK.Service
         {
             _validateQuery();
 
-            var urlList = _partition.Partition(new List<MasQueryParamaters> { _queryParamaters })
+            var urlList = _partition.Partition(new List<MasQueryParamaters> { QueryParamaters })
                 .Select(qp => $"/{_routePrefix}/{_buildExtractionRangeRoute(qp)}"
                         .SetQueryParam("id", qp.Ids)
                         .SetQueryParam("filterId", qp.FilterId)
@@ -216,12 +219,12 @@ namespace Artesian.SDK.Service
         {
             base._validateQuery();
 
-            if (_queryParamaters.Products == null)
+            if (QueryParamaters.Products == null)
                 throw new ArtesianSdkClientException("Products must be provided for extraction. Use .ForProducts() argument takes a string or string array of products");
 
-            if (_queryParamaters.FillerKindType == FillerKindType.LatestValidValue)
+            if (QueryParamaters.FillerKindType == FillerKindType.LatestValidValue)
             {
-                if (_queryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true || _queryParamaters.FillerConfig.FillerPeriod == null)
+                if (QueryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true || QueryParamaters.FillerConfig.FillerPeriod == null)
                 {
                     throw new ArtesianSdkClientException("Latest valid value filler must contain a non negative Period");
                 }

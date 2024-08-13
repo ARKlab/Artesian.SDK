@@ -1,12 +1,12 @@
 ﻿using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.GMEPublicOffer;
+
 using Flurl;
+
 using NodaTime;
 using NodaTime.Text;
-using System;
-using System.Collections.Generic;
+
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,9 +17,9 @@ namespace Artesian.SDK.Service.GMEPublicOffer
     /// </summary>
     public class GMEPublicOfferQuery: IGMEPublicOfferQuery
     {
-        private Client _client;
-        private GMEPublicOfferQueryParamaters _queryParamaters = new GMEPublicOfferQueryParamaters();
-        private static LocalDatePattern _localDatePattern = LocalDatePattern.Iso;
+        private readonly Client _client;
+        private readonly GMEPublicOfferQueryParamaters _queryParamaters = new GMEPublicOfferQueryParamaters();
+        private static readonly LocalDatePattern _localDatePattern = LocalDatePattern.Iso;
 
         internal GMEPublicOfferQuery(Client client)
         {
@@ -203,7 +203,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         {
             _validateQuery();
 
-            var url = $"/extract/{_localDatePattern.Format(_queryParamaters.Date.Value)}/{_queryParamaters.Purpose.ToString()}/{_queryParamaters.Status.ToString()}"
+            var url = $"/extract/{_localDatePattern.Format(_queryParamaters.Date.Value)}/{_queryParamaters.Purpose}/{_queryParamaters.Status}"
                         .SetQueryParam("operators", _queryParamaters.Operator)
                         .SetQueryParam("unit", _queryParamaters.Unit)
                         .SetQueryParam("market", _queryParamaters.Market)

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 
-using Ark.Tools.Nodatime;
-
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 
@@ -12,13 +10,14 @@ using Flurl.Http.Testing;
 using NodaTime;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace Artesian.SDK.Tests
 {
     [TestFixture]
     public class MarketDataQueries
     {
-        private ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
+        private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
 
         #region MarketData
         [Test]
@@ -505,7 +504,7 @@ namespace Artesian.SDK.Tests
                 data.BidAsk[localDateTime].Add("test", new BidAskValue());
 
                 var ex = Assert.Throws<ArgumentException>(() => mds.UpsertCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult());
-                Assert.AreEqual("UpsertCurveData BidAsk must be NULL if Rows are Valorized", ex.Message);
+                ClassicAssert.AreEqual("UpsertCurveData BidAsk must be NULL if Rows are Valorized", ex.Message);
             }
         }
 
@@ -538,7 +537,7 @@ namespace Artesian.SDK.Tests
                 data.MarketAssessment[localDateTime].Add("test", new MarketAssessmentValue());
 
                 var ex = Assert.Throws<ArgumentException>(() => mds.UpsertCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult());
-                Assert.AreEqual("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized", ex.Message);
+                ClassicAssert.AreEqual("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized", ex.Message);
             }
         }
         #endregion

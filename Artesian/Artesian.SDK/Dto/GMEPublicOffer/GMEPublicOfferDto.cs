@@ -1,5 +1,5 @@
 ﻿using MessagePack;
-using NodaTime;
+
 using System.Collections.Generic;
 
 namespace Artesian.SDK.Dto.GMEPublicOffer

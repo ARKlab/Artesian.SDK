@@ -1,8 +1,6 @@
 ﻿// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
-using NodaTime;
-using NodaTime.Text;
 using System;
 
 namespace Artesian.SDK.Service
@@ -19,8 +17,8 @@ namespace Artesian.SDK.Service
         /// <returns>Query</returns>
         protected QueryWithFillAndInterval<TQueryParams> _inRelativeInterval(RelativeInterval relativeInterval)
         {
-            _queryParamaters.ExtractionRangeType = ExtractionRangeType.RelativeInterval;
-            _queryParamaters.ExtractionRangeSelectionConfig.Interval = relativeInterval;
+            QueryParamaters.ExtractionRangeType = ExtractionRangeType.RelativeInterval;
+            QueryParamaters.ExtractionRangeSelectionConfig.Interval = relativeInterval;
             return this;
         }
 
