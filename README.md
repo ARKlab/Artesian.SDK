@@ -1,4 +1,4 @@
-![image](http://www.ark-energy.eu/wp-content/uploads/ark-dark.png)
+![image](./ark-dark.png)
 
 # Artesian.SDK
 
@@ -10,7 +10,7 @@ This Library provides read access to the Artesian API
 
 This library is provided in NuGet.
 
-Support for .NET Framework 4.6.1, .NET Standard 2.0.
+Support for .NET Standard 2.0 and NET 8.
 
 In the Package Manager Console -
 
