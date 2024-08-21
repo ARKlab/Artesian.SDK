@@ -2651,6 +2651,15 @@ namespace Artesian.SDK.Tests
                            .WithVerb(HttpMethod.Get)
                            .Times(1);
 
+                var test4 = partialQuery
+                            .ForAnalysisDate(new LocalDate(2018, 07, 19))
+                            .ExecuteAsync().Result;
+            
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/P5D")
+                           .WithQueryParam("ad", "2018-07-19")
+                           .WithVerb(HttpMethod.Get)
+                           .Times(1);
+
             }
         }
         #endregion
