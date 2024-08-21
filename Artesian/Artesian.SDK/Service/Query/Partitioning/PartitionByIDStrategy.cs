@@ -62,7 +62,8 @@ namespace Artesian.SDK.Service
                                 queryParamater.VersionSelectionType,
                                 queryParamater.VersionLimit,
                                 queryParamater.FillerKindType,
-                                queryParamater.FillerConfig
+                                queryParamater.FillerConfig,
+                                queryParamater.AnalysisDate
                                 )));
         }
 
