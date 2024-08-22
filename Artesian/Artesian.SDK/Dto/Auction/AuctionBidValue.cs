@@ -1,5 +1,4 @@
-﻿using EnsureThat;
-using MessagePack;
+﻿using MessagePack;
 using System.ComponentModel.DataAnnotations;
 using KeyAttribute = MessagePack.KeyAttribute;
 

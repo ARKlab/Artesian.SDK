@@ -1,13 +1,12 @@
-﻿using Ark.Tools.Nodatime;
-
-using Artesian.SDK.Common;
+﻿using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
-using EnsureThat;
+
 using NodaTime;
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -20,34 +19,39 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class MarketAssessment : IMarketAssessmentWritable
     {
-        private IMarketDataService _marketDataService;
-        private MarketDataEntity.Output _entity = null;
-        private readonly MarketDataIdentifier _identifier = null;
+        private readonly IMarketDataService _marketDataService;
+        private readonly MarketDataEntity.Output _entity;
+        private readonly MarketDataIdentifier _identifier;
+        private readonly List<AssessmentElement> _values = new();
 
         /// <summary>
         /// MarketAssessment Constructor
         /// </summary>
         internal MarketAssessment(MarketData marketData)
         {
+            Guard.IsNotNull(marketData);
+            Guard.IsNotNull(marketData._entity);
+            Guard.IsNotNull(marketData._marketDataService);
+
             _entity = marketData._entity;
             _marketDataService = marketData._marketDataService;
 
             _identifier = new MarketDataIdentifier(_entity.ProviderName, _entity.MarketDataName);
 
-            Assessments = new List<AssessmentElement>();
+            Assessments = new ReadOnlyCollection<AssessmentElement>(_values);
         }
 
         /// <summary>
         /// MarketData AssessmentElement
         /// </summary>
-        public List<AssessmentElement> Assessments { get; internal set; }
+        public IReadOnlyCollection<AssessmentElement> Assessments { get; internal set; }
 
         /// <summary>
         /// MarketData ClearData
         /// </summary>
         public void ClearData()
         {
-            Assessments.Clear();
+            _values.Clear();
         }
 
         /// <summary>
@@ -82,7 +86,7 @@ namespace Artesian.SDK.Factory
         private AddAssessmentOperationResult _addAssessment(LocalDateTime reportTime, string product, MarketAssessmentValue value)
         {
             //Relative products
-            if (Regex.IsMatch(product, @"\+\d+$"))
+            if (ArtesianConstants.RelativeProductValidator.IsMatch(product))
                 throw new NotSupportedException("Relative Products are not supported");
 
             if (_entity.OriginalGranularity.IsTimeGranularity())
@@ -101,10 +105,10 @@ namespace Artesian.SDK.Factory
             //if (reportTime.Date >= product.ReferenceDate)
             //    return AddAssessmentOperationResult.IllegalReferenceDate;
 
-            if (Assessments.Any(row => row.ReportTime == reportTime && row.Product.Equals(product)))
+            if (_values.Any(row => row.ReportTime == reportTime && row.Product.Equals(product, StringComparison.Ordinal)))
                 return AddAssessmentOperationResult.ProductAlreadyPresent;
 
-            Assessments.Add(new AssessmentElement(reportTime, product, value));
+            _values.Add(new AssessmentElement(reportTime, product, value));
             return AddAssessmentOperationResult.AssessmentAdded;
         }
 
@@ -122,9 +126,7 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default)
         {
-            Ensure.Any.IsNotNull(_entity);
-
-            if (Assessments.Any())
+            if (_values.Count != 0)
             {
                 var data = new UpsertCurveData(_identifier)
                 {
@@ -135,7 +137,7 @@ namespace Artesian.SDK.Factory
                     KeepNulls = keepNulls
                 };
 
-                foreach (var reportTime in Assessments.GroupBy(g => g.ReportTime))
+                foreach (var reportTime in _values.GroupBy(g => g.ReportTime))
                 {
                     var assessments = reportTime.ToDictionary(key => key.Product.ToString(), value => value.Value);
                     data.MarketAssessment.Add(reportTime.Key, assessments);
@@ -161,8 +163,6 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string> product = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
-            Ensure.Any.IsNotNull(_entity);
-
             var data = new DeleteCurveData(_identifier)
             {
                 Timezone = timezone,

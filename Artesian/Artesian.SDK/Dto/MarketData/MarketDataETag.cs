@@ -51,7 +51,7 @@ namespace Artesian.SDK.Dto
             }
 
             return this.ID.Equals(item.ID)
-                && this.ETag.Equals(item.ETag);
+                && this.ETag.Equals(item.ETag, StringComparison.Ordinal);
         }
         public override int GetHashCode()
         {

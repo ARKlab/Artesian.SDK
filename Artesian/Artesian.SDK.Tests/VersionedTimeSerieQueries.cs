@@ -5,7 +5,6 @@ using Flurl.Http.Testing;
 using Artesian.SDK.Dto;
 using System.Net.Http;
 using NodaTime;
-using Flurl;
 
 namespace Artesian.SDK.Tests
 {
@@ -15,7 +14,7 @@ namespace Artesian.SDK.Tests
     [TestFixture]
     public class VersionedTimeSerieQueries
     {
-        private ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
+        private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
 
         #region MarketData ids
         [Test]

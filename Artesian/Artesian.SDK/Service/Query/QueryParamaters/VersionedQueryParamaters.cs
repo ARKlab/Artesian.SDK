@@ -85,6 +85,6 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// The analysis date from which apply the relative interval (default Today)
         /// </summary>
-        public LocalDate? AnalysisDate { get;  set; }
+        public LocalDate? AnalysisDate { get; set; }
     }
 }

@@ -2,8 +2,6 @@
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 
-using EnsureThat;
-
 using NodaTime;
 
 using System.Collections.Generic;
@@ -19,16 +17,20 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class AuctionTimeSerie : IAuctionMarketDataWritable
     {
-        private IMarketDataService _marketDataService;
-        private MarketDataEntity.Output _entity = null;
-        private readonly MarketDataIdentifier _identifier = null;
-        private Dictionary<LocalDateTime, AuctionBids> _bids = new Dictionary<LocalDateTime, AuctionBids>();
+        private readonly IMarketDataService _marketDataService;
+        private readonly MarketDataEntity.Output _entity;
+        private readonly MarketDataIdentifier _identifier;
+        private readonly Dictionary<LocalDateTime, AuctionBids> _bids = new Dictionary<LocalDateTime, AuctionBids>();
 
         /// <summary>
         /// AuctionTimeSerie Constructor
         /// </summary>
         internal AuctionTimeSerie(MarketData marketData)
         {
+            Guard.IsNotNull(marketData);
+            Guard.IsNotNull(marketData._entity);
+            Guard.IsNotNull(marketData._marketDataService);
+
             _entity = marketData._entity;
             _marketDataService = marketData._marketDataService;
 
@@ -47,8 +49,7 @@ namespace Artesian.SDK.Factory
         /// </summary>
         public void ClearData()
         {
-            _bids = new Dictionary<LocalDateTime, AuctionBids>();
-            Bids = new ReadOnlyDictionary<LocalDateTime, AuctionBids>(_bids);
+            _bids.Clear();
         }
 
         /// <summary>
@@ -60,8 +61,6 @@ namespace Artesian.SDK.Factory
         /// <returns>AddAuctionTimeSerieOperationResult</returns>
         public AddAuctionTimeSerieOperationResult AddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer)
         {
-            Ensure.Any.IsNotNull(_entity);
-
             if (_entity.OriginalGranularity.IsTimeGranularity())
                 throw new ActualTimeSerieException("This MarketData has Time granularity. Use AddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer)");
 
@@ -79,8 +78,6 @@ namespace Artesian.SDK.Factory
         /// <returns>AddAuctionTimeSerieOperationResult</returns>
         public AddAuctionTimeSerieOperationResult AddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer)
         {
-            Ensure.Any.IsNotNull(_entity);
-
             if (!_entity.OriginalGranularity.IsTimeGranularity())
                 throw new AuctionTimeSerieException("This MarketData has Date granularity. Use AddData(LocalDate date, AuctionBidValue[] bid, AuctionBidValue[] offer)");
 
@@ -136,8 +133,6 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default)
         {
-            Ensure.Any.IsNotNull(_entity);
-
             if (Bids.Any())
             {
                 var data = new UpsertCurveData(_identifier)
@@ -169,8 +164,6 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
-            Ensure.Any.IsNotNull(_entity);
-
             var data = new DeleteCurveData(_identifier)
             {
                 Timezone = timezone,

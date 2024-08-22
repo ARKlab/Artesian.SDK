@@ -2,13 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Common;
+
 using Polly;
 using Polly.Bulkhead;
 using Polly.CircuitBreaker;
 using Polly.Retry;
+
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 

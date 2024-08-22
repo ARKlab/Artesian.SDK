@@ -2,8 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Dto;
+
 using Flurl;
+
 using NodaTime;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -19,9 +22,9 @@ namespace Artesian.SDK.Service
     /// </summary>
     public class VersionedQuery : QueryWithFillAndInterval<VersionedQueryParamaters>, IVersionedQuery<VersionedQuery>
     {
-        private Client _client;
-        private IPartitionStrategy _partition;
-        private string _routePrefix = "vts";
+        private readonly Client _client;
+        private readonly IPartitionStrategy _partition;
+        private readonly string _routePrefix = "vts";
 
         internal VersionedQuery(Client client, IPartitionStrategy partiton)
         {
@@ -119,7 +122,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery WithTimeTransform(int tr)
         {
-            _queryParamaters.TransformId = tr;
+            QueryParamaters.TransformId = tr;
             return this;
         }
         /// <summary>
@@ -129,7 +132,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery WithTimeTransform(SystemTimeTransform tr)
         {
-            _queryParamaters.TransformId = (int)tr;
+            QueryParamaters.TransformId = (int)tr;
             return this;
         }
         #endregion
@@ -142,7 +145,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery InGranularity(Granularity granularity)
         {
-            _queryParamaters.Granularity = granularity;
+            QueryParamaters.Granularity = granularity;
             return this;
         }
         /// <summary>
@@ -152,8 +155,8 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForLastNVersions(int lastN)
         {
-            _queryParamaters.VersionSelectionType = VersionSelectionType.LastN;
-            _queryParamaters.VersionSelectionConfig.LastN = lastN;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.LastN;
+            QueryParamaters.VersionSelectionConfig.LastN = lastN;
             return this;
         }
         /// <summary>
@@ -162,8 +165,8 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForMUV(LocalDateTime? versionLimit = null)
         {
-            _queryParamaters.VersionSelectionType = VersionSelectionType.MUV;
-            _queryParamaters.VersionLimit = versionLimit;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.MUV;
+            QueryParamaters.VersionLimit = versionLimit;
             return this;
         }
         /// <summary>
@@ -172,7 +175,7 @@ namespace Artesian.SDK.Service
         /// <returns></returns>
         public VersionedQuery ForMostRecent()
         {
-            _queryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
            
             return this;
         }
@@ -197,9 +200,9 @@ namespace Artesian.SDK.Service
             if (end <= start)
                 throw new ArgumentException("End datetime " + end + " must be greater than start datetime " + start);
 
-            _queryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
-            _queryParamaters.VersionSelectionConfig.MostRecent.DateStart = start;
-            _queryParamaters.VersionSelectionConfig.MostRecent.DateEnd = end;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
+            QueryParamaters.VersionSelectionConfig.MostRecent.DateStart = start;
+            QueryParamaters.VersionSelectionConfig.MostRecent.DateEnd = end;
 
             return this;
         }
@@ -211,9 +214,9 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForMostRecent(Period from, Period to)
         {
-            _queryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
-            _queryParamaters.VersionSelectionConfig.MostRecent.PeriodFrom = from;
-            _queryParamaters.VersionSelectionConfig.MostRecent.PeriodTo = to;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
+            QueryParamaters.VersionSelectionConfig.MostRecent.PeriodFrom = from;
+            QueryParamaters.VersionSelectionConfig.MostRecent.PeriodTo = to;
 
             return this;
         }
@@ -224,8 +227,8 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForMostRecent(Period mostRecentPeriod)
         {
-            _queryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
-            _queryParamaters.VersionSelectionConfig.MostRecent.Period = mostRecentPeriod;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
+            QueryParamaters.VersionSelectionConfig.MostRecent.Period = mostRecentPeriod;
 
             return this;
         }
@@ -240,9 +243,9 @@ namespace Artesian.SDK.Service
             if (end <= start)
                 throw new ArgumentException("End date " + end + " must be greater than start date " + start);
 
-            _queryParamaters.VersionSelectionType = VersionSelectionType.LastOfDays;
-            _queryParamaters.VersionSelectionConfig.LastOf.DateStart = start;
-            _queryParamaters.VersionSelectionConfig.LastOf.DateEnd = end;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.LastOfDays;
+            QueryParamaters.VersionSelectionConfig.LastOf.DateStart = start;
+            QueryParamaters.VersionSelectionConfig.LastOf.DateEnd = end;
 
             return this;
         }
@@ -254,9 +257,9 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForLastOfDays(Period from, Period to)
         {
-            _queryParamaters.VersionSelectionType = VersionSelectionType.LastOfDays;
-            _queryParamaters.VersionSelectionConfig.LastOf.PeriodFrom = from;
-            _queryParamaters.VersionSelectionConfig.LastOf.PeriodTo = to;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.LastOfDays;
+            QueryParamaters.VersionSelectionConfig.LastOf.PeriodFrom = from;
+            QueryParamaters.VersionSelectionConfig.LastOf.PeriodTo = to;
 
             return this;
         }
@@ -267,8 +270,8 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForLastOfDays(Period lastOfPeriod)
         {
-            _queryParamaters.VersionSelectionType = VersionSelectionType.LastOfDays;
-            _queryParamaters.VersionSelectionConfig.LastOf.Period = lastOfPeriod;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.LastOfDays;
+            QueryParamaters.VersionSelectionConfig.LastOf.Period = lastOfPeriod;
 
             return this;
         }
@@ -283,9 +286,9 @@ namespace Artesian.SDK.Service
             if (end <= start)
                 throw new ArgumentException("End date " + end + " must be greater than start date " + start);
 
-            _queryParamaters.VersionSelectionType = VersionSelectionType.LastOfMonths;
-            _queryParamaters.VersionSelectionConfig.LastOf.DateStart = start;
-            _queryParamaters.VersionSelectionConfig.LastOf.DateEnd = end;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.LastOfMonths;
+            QueryParamaters.VersionSelectionConfig.LastOf.DateStart = start;
+            QueryParamaters.VersionSelectionConfig.LastOf.DateEnd = end;
 
             return this;
         }
@@ -296,8 +299,8 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForLastOfMonths(Period lastOfPeriod)
         {
-            _queryParamaters.VersionSelectionType = VersionSelectionType.LastOfMonths;
-            _queryParamaters.VersionSelectionConfig.LastOf.Period = lastOfPeriod;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.LastOfMonths;
+            QueryParamaters.VersionSelectionConfig.LastOf.Period = lastOfPeriod;
 
             return this;
         }
@@ -309,9 +312,9 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForLastOfMonths(Period from, Period to)
         {
-            _queryParamaters.VersionSelectionType = VersionSelectionType.LastOfMonths;
-            _queryParamaters.VersionSelectionConfig.LastOf.PeriodFrom = from;
-            _queryParamaters.VersionSelectionConfig.LastOf.PeriodTo = to;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.LastOfMonths;
+            QueryParamaters.VersionSelectionConfig.LastOf.PeriodFrom = from;
+            QueryParamaters.VersionSelectionConfig.LastOf.PeriodTo = to;
 
             return this;
         }
@@ -322,8 +325,8 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForVersion(LocalDateTime version)
         {
-            _queryParamaters.VersionSelectionType = VersionSelectionType.Version;
-            _queryParamaters.VersionSelectionConfig.Version = version;
+            QueryParamaters.VersionSelectionType = VersionSelectionType.Version;
+            QueryParamaters.VersionSelectionConfig.Version = version;
 
             return this;
         }
@@ -333,7 +336,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForAnalysisDate(LocalDate analysisDate)
         {
-            _queryParamaters.AnalysisDate = analysisDate;
+            QueryParamaters.AnalysisDate = analysisDate;
 
             return this;
         }
@@ -343,7 +346,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery WithFillNull()
         {
-            _queryParamaters.FillerKindType = FillerKindType.Null;
+            QueryParamaters.FillerKindType = FillerKindType.Null;
             return this;
         }
         /// <summary>
@@ -353,8 +356,8 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery WithFillCustomValue(double value)
         {
-            _queryParamaters.FillerKindType = FillerKindType.CustomValue;
-            _queryParamaters.FillerConfig.FillerTimeSeriesDV = value;
+            QueryParamaters.FillerKindType = FillerKindType.CustomValue;
+            QueryParamaters.FillerConfig.FillerTimeSeriesDV = value;
 
             return this;
         }
@@ -365,8 +368,8 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery WithFillLatestValue(Period period)
         {
-            _queryParamaters.FillerKindType = FillerKindType.LatestValidValue;
-            _queryParamaters.FillerConfig.FillerPeriod = period;
+            QueryParamaters.FillerKindType = FillerKindType.LatestValidValue;
+            QueryParamaters.FillerConfig.FillerPeriod = period;
 
             return this;
         }
@@ -376,7 +379,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery WithFillNone()
         {
-            _queryParamaters.FillerKindType = FillerKindType.NoFill;
+            QueryParamaters.FillerKindType = FillerKindType.NoFill;
 
             return this;
         }
@@ -404,29 +407,29 @@ namespace Artesian.SDK.Service
         {
             base._validateQuery();
 
-            if (_queryParamaters.Granularity == null)
+            if (QueryParamaters.Granularity == null)
                 throw new ArtesianSdkClientException("Extraction granularity must be provided. Use .InGranularity() argument takes a granularity type");
 
-            if (_queryParamaters.VersionSelectionType == null)
+            if (QueryParamaters.VersionSelectionType == null)
                 throw new ArtesianSdkClientException("Version selection must be provided. Provide a version to query. eg .ForLastOfDays() arguments take a date range , period or period range");
 
-            if(_queryParamaters.FillerKindType == FillerKindType.CustomValue)
+            if(QueryParamaters.FillerKindType == FillerKindType.CustomValue)
             {
-                if(_queryParamaters.FillerConfig.FillerTimeSeriesDV == null)
+                if(QueryParamaters.FillerConfig.FillerTimeSeriesDV == null)
                 {
                     throw new ArtesianSdkClientException("Filler default value must be provided. Provide a value for default value when using custom value filler");
                 }
             }
 
-            if (_queryParamaters.FillerKindType == FillerKindType.LatestValidValue)
+            if (QueryParamaters.FillerKindType == FillerKindType.LatestValidValue)
             {
-                if (_queryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true || _queryParamaters.FillerConfig.FillerPeriod == null)
+                if (QueryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true || QueryParamaters.FillerConfig.FillerPeriod == null)
                 {
                     throw new ArtesianSdkClientException("Latest valid value filler must contain a non negative Period");
                 }
             }
 
-            if (_queryParamaters.ExtractionRangeType == ExtractionRangeType.DateRange && _queryParamaters.AnalysisDate != null) 
+            if (QueryParamaters.ExtractionRangeType == ExtractionRangeType.DateRange && QueryParamaters.AnalysisDate != null) 
                 throw new ArtesianSdkClientException("Analysis should be related to a Period. Provide a period or remove analysis date.");
         }
 
@@ -495,7 +498,7 @@ namespace Artesian.SDK.Service
         {
             _validateQuery();
 
-            var urlList = _partition.Partition(new List<VersionedQueryParamaters> { _queryParamaters })
+            var urlList = _partition.Partition(new List<VersionedQueryParamaters> { QueryParamaters })
                     .Select(qp => $"/{_routePrefix}/{_buildVersionRoute(qp)}/{qp.Granularity}/{_buildExtractionRangeRoute(qp)}"
                             .SetQueryParam("id", qp.Ids)
                             .SetQueryParam("filterId", qp.FilterId)

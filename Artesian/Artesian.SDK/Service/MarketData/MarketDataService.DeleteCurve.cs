@@ -4,10 +4,8 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Artesian.SDK.Dto;
-using Flurl;
-using NodaTime;
-using System;
 
 namespace Artesian.SDK.Service
 {

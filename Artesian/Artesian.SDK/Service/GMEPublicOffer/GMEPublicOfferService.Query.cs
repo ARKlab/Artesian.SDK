@@ -1,6 +1,4 @@
-﻿using Flurl;
-
-namespace Artesian.SDK.Service.GMEPublicOffer
+﻿namespace Artesian.SDK.Service.GMEPublicOffer
 {
     /// <summary>
     /// GMEPublicOfferService class

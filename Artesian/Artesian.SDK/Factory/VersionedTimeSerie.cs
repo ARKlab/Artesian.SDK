@@ -1,12 +1,9 @@
-﻿using Ark.Tools.Nodatime;
-
-using Artesian.SDK.Common;
+﻿using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
-using EnsureThat;
+
 using NodaTime;
-using System;
-using System.Collections;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -20,8 +17,8 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class VersionedTimeSerie : ITimeserieWritable
     {
-        private IMarketDataService _marketDataService;
-        private MarketDataEntity.Output _entity = null;
+        private readonly IMarketDataService _marketDataService;
+        private readonly MarketDataEntity.Output _entity = null;
         private readonly MarketDataIdentifier _identifier = null;
         private Dictionary<LocalDateTime, double?> _values = new Dictionary<LocalDateTime, double?>();
 
@@ -82,7 +79,7 @@ namespace Artesian.SDK.Factory
         /// <returns>AddTimeSerieOperationResult</returns>
         public AddTimeSerieOperationResult AddData(LocalDate localDate, double? value)
         {
-            Ensure.Any.IsNotNull(_entity);
+            Guard.IsNotNull(_entity);
 
             if (_entity.OriginalGranularity.IsTimeGranularity())
                 throw new VersionedTimeSerieException("This MarketData has Time granularity. Use AddData(Instant time, double? value)");
@@ -100,7 +97,7 @@ namespace Artesian.SDK.Factory
         /// <returns>AddTimeSerieOperationResult</returns>
         public AddTimeSerieOperationResult AddData(Instant time, double? value)
         {
-            Ensure.Any.IsNotNull(_entity);
+            Guard.IsNotNull(_entity);
 
             if (!_entity.OriginalGranularity.IsTimeGranularity())
                 throw new VersionedTimeSerieException("This MarketData has Date granularity. Use AddData(LocalDate date, double? value)");
@@ -182,7 +179,7 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
-            Ensure.Any.IsNotNull(_entity);
+            Guard.IsNotNull(_entity);
 
             var data = new DeleteCurveData(_identifier)
             {

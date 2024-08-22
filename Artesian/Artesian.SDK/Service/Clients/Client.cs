@@ -1,17 +1,23 @@
 ﻿// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information.
-using Microsoft.Identity.Client;
 using Flurl;
 using Flurl.Http;
+
+using Microsoft.Identity.Client;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
+
 using Polly;
+
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -20,14 +26,13 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Ark.Tools.Http;
 
 namespace Artesian.SDK.Service
 {
     internal sealed class Client : IDisposable
     {
         private readonly MediaTypeFormatterCollection _formatters;
-        private readonly IFlurlClient _client;
+        private readonly FlurlClient _client;
 
         private readonly JsonMediaTypeFormatter _jsonFormatter;
         private readonly MessagePackMediaTypeFormatter _msgPackFormatter;
@@ -39,7 +44,7 @@ namespace Artesian.SDK.Service
         private readonly string _apiKey;
         private readonly IArtesianServiceConfig _config;
 
-        private IConfidentialClientApplication _confidentialClientApplication;
+        private readonly IConfidentialClientApplication _confidentialClientApplication;
 
         /// <summary>
         /// Client constructor Auth credentials / ApiKey can be passed through config
@@ -56,7 +61,6 @@ namespace Artesian.SDK.Service
             var cfg = new JsonSerializerSettings();
             cfg = cfg.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
             cfg = cfg.ConfigureForDictionary();
-            cfg = cfg.ConfigureForNodaTimeRanges();
             cfg.Formatting = Formatting.Indented;
             cfg.ContractResolver = new DefaultContractResolver();
             cfg.Converters.Add(new StringEnumConverter());
@@ -146,7 +150,7 @@ namespace Artesian.SDK.Service
                             {
                                 if (res.ResponseMessage.StatusCode == HttpStatusCode.BadRequest)
                                 {
-                                    responseText = _tryDecodeText(await res.ResponseMessage.Content.ReadAsAsync<object>(_formatters, ctk));
+                                    responseText = Client._tryDecodeText(await res.ResponseMessage.Content.ReadAsAsync<object>(_formatters, ctk));
                                 }
                                 else
                                 {
@@ -193,7 +197,7 @@ namespace Artesian.SDK.Service
             }
         }
 
-        private string _tryDecodeText(object responseDeserialized)
+        private static string _tryDecodeText(object responseDeserialized)
         {
             switch (responseDeserialized)
             {
@@ -214,7 +218,7 @@ namespace Artesian.SDK.Service
                     }
                 case Int32 i:
                     {
-                        return i.ToString();
+                        return i.ToString(CultureInfo.InvariantCulture);
                     }
                 default:
                     return "Not parsed error message";

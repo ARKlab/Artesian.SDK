@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
-using Flurl;
+
 using Flurl.Http.Testing;
+
 using NodaTime;
+
 using NUnit.Framework;
 
 namespace Artesian.SDK.Tests
@@ -13,7 +16,7 @@ namespace Artesian.SDK.Tests
     [TestFixture]
     public class ActualTimeSerieQueries
     {
-        private ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
+        private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
 
         #region MarketData ids
         [Test]
@@ -274,9 +277,8 @@ namespace Artesian.SDK.Tests
                 var headerXAgent = httpTest.CallLog.FirstOrDefault().Request.Headers.Where(w => w.Name == "X-Artesian-Agent").FirstOrDefault();
 
                 //ArtesianSDK-C#: 2.2.1.0,Win32NT: 10.0.19041.0,.NETFramework: 4.6.1
-                StringAssert.Contains("ArtesianSDK-C#:", headerXAgent.Value);
-                StringAssert.Contains("Win32NT:", headerXAgent.Value);
-                StringAssert.Contains(".NETCoreApp:", headerXAgent.Value);
+
+                Assert.That(headerXAgent.Value, Does.Contain("ArtesianSDK-C#:").And.Contain("Win32NT:").And.Contain(".NETCoreApp:"));
             }
         }
 

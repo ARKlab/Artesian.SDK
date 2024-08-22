@@ -2,8 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Dto;
+
 using Flurl;
+
 using NodaTime;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +21,10 @@ namespace Artesian.SDK.Service
     /// </summary>
     public class ActualQuery : QueryWithFillAndInterval<ActualQueryParamaters>, IActualQuery<ActualQuery>
     {
-        private Client _client;
-        private IPartitionStrategy _partition;
+        private readonly Client _client;
+        private readonly IPartitionStrategy _partition;
 
-        private string _routePrefix = "ts";
+        private const string _routePrefix = "ts";
 
         internal ActualQuery(Client client, IPartitionStrategy partiton)
         {
@@ -119,7 +122,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery WithTimeTransform(int tr)
         {
-            _queryParamaters.TransformId = tr;
+            QueryParamaters.TransformId = tr;
             return this;
         }
         /// <summary>
@@ -129,7 +132,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery WithTimeTransform(SystemTimeTransform tr)
         {
-            _queryParamaters.TransformId = (int)tr;
+            QueryParamaters.TransformId = (int)tr;
             return this;
         }
         #endregion
@@ -142,7 +145,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery InGranularity(Granularity granularity)
         {
-            _queryParamaters.Granularity = granularity;
+            QueryParamaters.Granularity = granularity;
             return this;
         }
         /// <summary>
@@ -151,7 +154,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery WithFillNull()
         {
-            _queryParamaters.FillerKindType = FillerKindType.Null;
+            QueryParamaters.FillerKindType = FillerKindType.Null;
             return this;
         }
         /// <summary>
@@ -161,8 +164,8 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery WithFillCustomValue(double value)
         {
-            _queryParamaters.FillerKindType = FillerKindType.CustomValue;
-            _queryParamaters.FillerConfig.FillerTimeSeriesDV = value;
+            QueryParamaters.FillerKindType = FillerKindType.CustomValue;
+            QueryParamaters.FillerConfig.FillerTimeSeriesDV = value;
 
             return this;
         }
@@ -173,8 +176,8 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery WithFillLatestValue(Period period)
         {
-            _queryParamaters.FillerKindType = FillerKindType.LatestValidValue;
-            _queryParamaters.FillerConfig.FillerPeriod = period;
+            QueryParamaters.FillerKindType = FillerKindType.LatestValidValue;
+            QueryParamaters.FillerConfig.FillerPeriod = period;
 
             return this;
         }
@@ -184,7 +187,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery WithFillNone()
         {
-            _queryParamaters.FillerKindType = FillerKindType.NoFill;
+            QueryParamaters.FillerKindType = FillerKindType.NoFill;
 
             return this;
         }
@@ -208,7 +211,7 @@ namespace Artesian.SDK.Service
         {
             _validateQuery();
 
-            var urlList = _partition.Partition(new List<ActualQueryParamaters> { _queryParamaters })
+            var urlList = _partition.Partition(new List<ActualQueryParamaters> { QueryParamaters })
                 .Select(qp => $"/{_routePrefix}/{qp.Granularity}/{_buildExtractionRangeRoute(qp)}"
                         .SetQueryParam("id", qp.Ids)
                         .SetQueryParam("filterId", qp.FilterId)
@@ -230,12 +233,12 @@ namespace Artesian.SDK.Service
         {
             base._validateQuery();
 
-            if (_queryParamaters.Granularity == null)
+            if (QueryParamaters.Granularity == null)
                 throw new ArtesianSdkClientException("Extraction granularity must be provided. Use .InGranularity() argument takes a granularity type");
 
-            if (_queryParamaters.FillerKindType == FillerKindType.LatestValidValue)
+            if (QueryParamaters.FillerKindType == FillerKindType.LatestValidValue)
             {
-                if (_queryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true || _queryParamaters.FillerConfig.FillerPeriod == null)
+                if (QueryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true || QueryParamaters.FillerConfig.FillerPeriod == null)
                 {
                     throw new ArtesianSdkClientException("Latest valid value filler must contain a non negative Period");
                 }

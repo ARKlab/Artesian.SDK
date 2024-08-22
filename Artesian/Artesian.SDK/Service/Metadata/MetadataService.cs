@@ -15,8 +15,8 @@ namespace Artesian.SDK.Service
     [Obsolete("Use IMarketDataService", true)]
     public partial class MetadataService : IMetadataService
     {
-        private IArtesianServiceConfig _cfg;
-        private ArtesianPolicyConfig _policy;
+        private readonly IArtesianServiceConfig _cfg;
+        private readonly ArtesianPolicyConfig _policy;
         private static Client _client;
         /// <summary>
         /// Metadata service

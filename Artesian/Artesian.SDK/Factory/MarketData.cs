@@ -1,6 +1,6 @@
-﻿using Artesian.SDK.Dto;
+﻿using Artesian.SDK.Common;
+using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
-using EnsureThat;
 using NodaTime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +35,7 @@ namespace Artesian.SDK.Factory
         /// </summary>
         internal MarketData(IMarketDataService marketDataService, MarketDataIdentifier id)
         {
-            EnsureArg.IsNotNull(marketDataService, nameof(marketDataService));
+            Guard.IsNotNull(marketDataService, nameof(marketDataService));
 
             _marketDataService = marketDataService;
 
@@ -53,11 +53,11 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Register(MarketDataEntity.Input metadata, CancellationToken ctk = default)
         {
-            EnsureArg.IsNotNull(metadata, nameof(metadata));
-            EnsureArg.IsTrue(metadata.ProviderName == null || metadata.ProviderName == this.Identifier.Provider);
-            EnsureArg.IsTrue(metadata.ProviderName == null || metadata.ProviderName == this.Identifier.Provider);
-            EnsureArg.IsTrue(metadata.MarketDataName == null || metadata.MarketDataName == this.Identifier.Name);
-            EnsureArg.IsNotNullOrWhiteSpace(metadata.OriginalTimezone);
+            Guard.IsNotNull(metadata, nameof(metadata));
+            Guard.IsTrue(metadata.ProviderName == null || metadata.ProviderName == this.Identifier.Provider);
+            Guard.IsTrue(metadata.ProviderName == null || metadata.ProviderName == this.Identifier.Provider);
+            Guard.IsTrue(metadata.MarketDataName == null || metadata.MarketDataName == this.Identifier.Name);
+            Guard.IsNotNullOrWhiteSpace(metadata.OriginalTimezone);
 
             metadata.ProviderName = this.Identifier.Provider;
             metadata.MarketDataName = this.Identifier.Name;

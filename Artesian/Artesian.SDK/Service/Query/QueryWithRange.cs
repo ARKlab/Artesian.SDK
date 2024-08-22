@@ -15,10 +15,10 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Store for QueryParams
         /// </summary>
-        protected readonly TQueryParams _queryParamaters = new TQueryParams();
+        protected TQueryParams QueryParamaters { get; } = new TQueryParams();
 
-        private static LocalDatePattern _localDatePattern = LocalDatePattern.Iso;
-        private static LocalDateTimePattern _localDateTimePattern = LocalDateTimePattern.ExtendedIso;
+        private static readonly LocalDatePattern _localDatePattern = LocalDatePattern.Iso;
+        private static readonly LocalDateTimePattern _localDateTimePattern = LocalDateTimePattern.ExtendedIso;
         
         /// <summary>
         /// Set the marketData id to be queried
@@ -27,9 +27,9 @@ namespace Artesian.SDK.Service
         /// <returns>Query</returns>
         protected QueryWithRange<TQueryParams> _forMarketData(int[] ids)
         {
-            _queryParamaters.FilterId = null;
+            QueryParamaters.FilterId = null;
 
-            _queryParamaters.Ids = ids;
+            QueryParamaters.Ids = ids;
             return this;
         }
         /// <summary>
@@ -39,9 +39,9 @@ namespace Artesian.SDK.Service
         /// <returns>Query</returns>
         protected QueryWithRange<TQueryParams> _forFilterId(int filterId)
         {
-            _queryParamaters.Ids = null;
+            QueryParamaters.Ids = null;
 
-            _queryParamaters.FilterId = filterId;
+            QueryParamaters.FilterId = filterId;
             return this;
         }
         /// <summary>
@@ -53,7 +53,7 @@ namespace Artesian.SDK.Service
         {
             if (DateTimeZoneProviders.Tzdb.GetZoneOrNull(tz) == null)
                 throw new ArgumentException($"Timezone {tz} is not recognized");
-            _queryParamaters.TimeZone = tz;
+            QueryParamaters.TimeZone = tz;
             return this;
         }
 
@@ -68,9 +68,9 @@ namespace Artesian.SDK.Service
             if (end <= start)
                 throw new ArgumentException("End date " + end + " must be greater than start date " + start);
 
-            _queryParamaters.ExtractionRangeType = ExtractionRangeType.DateRange;
-            _queryParamaters.ExtractionRangeSelectionConfig.DateStart = start;
-            _queryParamaters.ExtractionRangeSelectionConfig.DateEnd = end;
+            QueryParamaters.ExtractionRangeType = ExtractionRangeType.DateRange;
+            QueryParamaters.ExtractionRangeSelectionConfig.DateStart = start;
+            QueryParamaters.ExtractionRangeSelectionConfig.DateEnd = end;
             return this;
         }
 
@@ -82,9 +82,9 @@ namespace Artesian.SDK.Service
         /// <returns>Query</returns>
         protected QueryWithRange<TQueryParams> _inRelativePeriodRange(Period from, Period to)
         {
-            _queryParamaters.ExtractionRangeType = ExtractionRangeType.PeriodRange;
-            _queryParamaters.ExtractionRangeSelectionConfig.PeriodFrom = from;
-            _queryParamaters.ExtractionRangeSelectionConfig.PeriodTo = to;
+            QueryParamaters.ExtractionRangeType = ExtractionRangeType.PeriodRange;
+            QueryParamaters.ExtractionRangeSelectionConfig.PeriodFrom = from;
+            QueryParamaters.ExtractionRangeSelectionConfig.PeriodTo = to;
             return this;
         }
 
@@ -95,8 +95,8 @@ namespace Artesian.SDK.Service
         /// <returns>Query</returns>
         protected QueryWithRange<TQueryParams> _inRelativePeriod(Period extractionPeriod)
         {
-            _queryParamaters.ExtractionRangeType = ExtractionRangeType.Period;
-            _queryParamaters.ExtractionRangeSelectionConfig.Period = extractionPeriod;
+            QueryParamaters.ExtractionRangeType = ExtractionRangeType.Period;
+            QueryParamaters.ExtractionRangeSelectionConfig.Period = extractionPeriod;
             return this;
         }
 
@@ -106,13 +106,13 @@ namespace Artesian.SDK.Service
         /// <returns></returns>
         protected virtual void _validateQuery()
         {
-            if (_queryParamaters.ExtractionRangeType == null)
+            if (QueryParamaters.ExtractionRangeType == null)
                 throw new ArtesianSdkClientException("Data extraction range must be provided. Provide a date range , period or period range or an interval eg .InAbsoluteDateRange()");
 
-            if (_queryParamaters.Ids == null && _queryParamaters.FilterId == null)
+            if (QueryParamaters.Ids == null && QueryParamaters.FilterId == null)
                 throw new ArtesianSdkClientException("Marketadata ids OR filterId must be provided for extraction. Use .ForMarketData() OR .ForFilterId() and provide an integer or integer array as an argument");
 
-            if (_queryParamaters.Ids != null && _queryParamaters.FilterId != null)
+            if (QueryParamaters.Ids != null && QueryParamaters.FilterId != null)
                 throw new ArtesianSdkClientException("Marketadata ids AND filterId cannot be valorized at same time, choose one");
         }
 

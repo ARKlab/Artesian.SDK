@@ -4,8 +4,6 @@
 using Artesian.SDK.Service;
 using System;
 using Artesian.SDK.Dto;
-using System.Text.RegularExpressions;
-using System.IO;
 
 namespace Artesian.SDK.Common
 {
@@ -104,9 +102,10 @@ namespace Artesian.SDK.Common
                 throw new ArgumentException($"Invalid string '{validStringCheck}'. Must not be null or empty");
             if (validStringCheck.Length < minLenght || validStringCheck.Length > maxLenght)
                 throw new ArgumentException($"Invalid string '{validStringCheck}'. Must be between 1 and 50 characters.");
-            if (!new Regex(ArtesianConstants.CharacterValidatorRegEx).Match(validStringCheck).Success)
+            if (!ArtesianConstants.StringValidator.Match(validStringCheck).Success)
                 throw new ArgumentException($"Invalid string '{validStringCheck}'. Should not contain trailing or leading whitespaces or any of the following characters: ,:; '\"<space>");
         }
+
         /// <summary>
         /// Is valid provider
         /// </summary>
@@ -129,7 +128,7 @@ namespace Artesian.SDK.Common
                 throw new ArgumentException($"Invalid MarketData name {name}. Must not be null or empty");
             if (name.Length < minLenght || name.Length > maxLenght)
                 throw new ArgumentException($"Invalid MarketData name {name}. Must be between 1 and 250 characters.");
-            if (!new Regex(ArtesianConstants.MarketDataNameValidatorRegEx).Match(name).Success)
+            if (!ArtesianConstants.MarketDataNameValidator.Match(name).Success)
                 throw new ArgumentException($"Invalid MarketData name '{name}'. Should not contain trailing or leading whitespaces and no other whitespace than <space> in the middle.");
         }
     }
