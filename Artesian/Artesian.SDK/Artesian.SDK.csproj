@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;netstandard2.0;</TargetFrameworks>
+    <TargetFrameworks>net8.0;netstandard2.0;netstandard2.1;net462</TargetFrameworks>
     <ApplicationIcon />
     <Win32Resource />
     <OutputType>Library</OutputType>
@@ -18,7 +18,7 @@
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 
     <PackageReleaseNotes>
-      Breaking: remove support for .NET Framework
+      Breaking: remove support for .NET6 (EOL) in favor of .NET8
     </PackageReleaseNotes>
     
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
