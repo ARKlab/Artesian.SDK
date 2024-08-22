@@ -35,6 +35,7 @@ namespace Artesian.SDK.Service
         /// <param name="versionLimit"></param>
         /// <param name="fillerK"></param>
         /// <param name="fillerConfig"></param>
+        /// <param name="analysisDate"></param>
         public VersionedQueryParamaters(
             IEnumerable<int> ids, 
             ExtractionRangeSelectionConfig extractionRangeSelectionConfig, 
@@ -47,7 +48,8 @@ namespace Artesian.SDK.Service
             VersionSelectionType? versionSelectionType,
             LocalDateTime? versionLimit,
             FillerKindType fillerK,
-            FillerConfig fillerConfig
+            FillerConfig fillerConfig,
+            LocalDate? analysisDate
             )
             : base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
         {
@@ -56,6 +58,7 @@ namespace Artesian.SDK.Service
             this.Granularity = granularity;
             this.TransformId = transformId;
             this.VersionLimit = versionLimit;
+            this.AnalysisDate = analysisDate;
             this.FillerConfig = fillerConfig;
         }
 
@@ -79,5 +82,9 @@ namespace Artesian.SDK.Service
         /// Version Limit
         /// </summary>
         public LocalDateTime? VersionLimit { get; set; }
+        /// <summary>
+        /// The analysis date from which apply the relative interval (default Today)
+        /// </summary>
+        public LocalDate? AnalysisDate { get; set; }
     }
 }

@@ -2612,6 +2612,8 @@ namespace Artesian.SDK.Tests
             }
         }
 
+
+        [Test]
         public void Ver_RelativePeriodExtractionWindowChange()
         {
             using (var httpTest = new HttpTest())
@@ -2649,9 +2651,57 @@ namespace Artesian.SDK.Tests
                            .WithQueryParam("id", 100000001)
                            .WithVerb(HttpMethod.Get)
                            .Times(1);
-
             }
         }
+
+        [Test]
+        public void Ver_RelativePeriodForAnalysisDate()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var qs = new QueryService(_cfg);
+
+                var partialQuery = qs.CreateVersioned()
+                                    .ForMarketData(new [] { 100000001 })
+                                    .InGranularity(Granularity.Hour)
+                                    .ForMUV()
+                                    .InRelativePeriod(Period.FromDays(5));
+
+                var test = partialQuery
+                            .ForAnalysisDate(new LocalDate(2018, 07, 19))
+                            .ExecuteAsync().Result;
+            
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Hour/P5D")
+                        .WithQueryParam("id", 100000001)
+                        .WithQueryParam("ad", "2018-07-19")
+                        .WithVerb(HttpMethod.Get)
+                        .Times(1);
+            }
+        }
+
+        [Test]
+        public void Ver_RelativePeriodExtractionWindowFail()
+        {
+            var qs = new QueryService(_cfg);
+
+            var query = qs.CreateVersioned()
+                                .ForMarketData(new [] {100000001})
+                                .InGranularity(Granularity.Day)
+                                .ForLastNVersions(3)
+                                .InAbsoluteDateRange(
+                                    new LocalDate(2018, 07, 15),
+                                    new LocalDate(2018, 07, 20)
+                                )
+                                .ForAnalysisDate(new LocalDate(2018, 07, 19))
+                                ;
+
+            Assert.Throws<ArtesianSdkClientException>(
+                () => {
+                    query.ExecuteAsync().ConfigureAwait(true).GetAwaiter().GetResult(); 
+                }
+            );
+        }
+
         #endregion
 
         #region Filler

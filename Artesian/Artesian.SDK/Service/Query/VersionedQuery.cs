@@ -9,6 +9,7 @@ using NodaTime;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -330,6 +331,16 @@ namespace Artesian.SDK.Service
             return this;
         }
         /// <summary>
+        /// Set a specific analysis date from wich apply the relative interval/period
+        /// </summary>
+        /// <returns>VersionedQuery</returns>
+        public VersionedQuery ForAnalysisDate(LocalDate analysisDate)
+        {
+            QueryParamaters.AnalysisDate = analysisDate;
+
+            return this;
+        }
+        /// <summary>
         /// Set the Filler strategy to Null
         /// </summary>
         /// <returns>VersionedQuery</returns>
@@ -418,6 +429,8 @@ namespace Artesian.SDK.Service
                 }
             }
 
+            if (QueryParamaters.ExtractionRangeType == ExtractionRangeType.DateRange && QueryParamaters.AnalysisDate != null) 
+                throw new ArtesianSdkClientException("Analysis should be related to a Period. Provide a period or remove analysis date.");
         }
 
         private string _buildVersionRoute(VersionedQueryParamaters queryParamaters)
@@ -495,6 +508,11 @@ namespace Artesian.SDK.Service
                             .SetQueryParam("fillerK",  qp.FillerKindType)
                             .SetQueryParam("fillerDV", qp.FillerConfig.FillerTimeSeriesDV)
                             .SetQueryParam("fillerP", qp.FillerConfig.FillerPeriod)
+                            .SetQueryParam("ad", 
+                                qp.AnalysisDate.HasValue 
+                                ?   qp.AnalysisDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+                                :   null
+                            )
                             .ToString())
                     .ToList();
             
