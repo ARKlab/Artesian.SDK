@@ -135,6 +135,35 @@ namespace Artesian.SDK.Service
                                 )));
         }
 
+        /// <summary>
+        /// Partition strategy for Derived Query
+        /// </summary>
+        /// <param name="paramaters">The list of Derived Query paramaters to be partitioned. See <see cref="DerivedQueryParamaters"/></param>
+        /// <returns>
+        /// The input list of Derived Query paramaters partitioned by MarketData ID. See <see cref="DerivedQueryParamaters"/>
+        /// </returns>
+        public IEnumerable<DerivedQueryParamaters> Partition(IEnumerable<DerivedQueryParamaters> paramaters)
+        {
+            if (paramaters.Any(g => g.Ids == null)) return paramaters;
+
+            return paramaters.SelectMany(queryParamater =>
+                        _partitionIds(queryParamater.Ids)
+                            .Select(g => new DerivedQueryParamaters(g,
+                                queryParamater.ExtractionRangeSelectionConfig,
+                                queryParamater.ExtractionRangeType,
+                                queryParamater.VersionSelectionConfig,
+                                queryParamater.VersionSelectionType,
+                                queryParamater.TimeZone,
+                                queryParamater.FilterId,
+                                queryParamater.VersionLimit,
+                                queryParamater.Granularity,
+                                queryParamater.TransformId,
+                                queryParamater.FillerKindType,
+                                queryParamater.FillerConfig,
+                                queryParamater.AnalysisDate
+                                )));
+        }
+
         private IEnumerable<IEnumerable<int>> _partitionIds(IEnumerable<int> ids)
         {
             return ids.Select((x, i) => (value: x, index: i))

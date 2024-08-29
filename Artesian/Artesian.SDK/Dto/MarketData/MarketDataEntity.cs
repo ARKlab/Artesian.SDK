@@ -43,6 +43,7 @@ namespace Artesian.SDK.Dto
                     this.TransformID = output.TransformID;
                     this.ProviderDescription = output.ProviderDescription;
                     this.Tags = output.Tags;
+                    this.DerivedCfg = output.DerivedCfg;
                 }
             }
 
@@ -121,6 +122,25 @@ namespace Artesian.SDK.Dto
                 }
                 set { this._path = value; }
             }
+            /// <summary>
+            /// The Derived Configuration
+            /// </summary>
+            [MessagePack.Key(18)]
+            public DerivedCfgBase DerivedCfg
+            {
+                get
+                {
+                    if (_derivedCfg == null)
+                        if (this.Type == MarketDataType.VersionedTimeSerie)
+                            return new DerivedCfgMuv()
+                            {
+                                Version = 1
+                            };
+                    return this._derivedCfg;
+                }
+                set { this._derivedCfg = value; }
+            }
+            internal DerivedCfgBase _derivedCfg;
 
             internal string _path;
 
@@ -152,7 +172,6 @@ namespace Artesian.SDK.Dto
             {
                 if (input != null)
                 {
-
                     this.MarketDataId = input.MarketDataId;
                     this.ETag = input.ETag;
                     this.ProviderName = input.ProviderName;
@@ -164,6 +183,7 @@ namespace Artesian.SDK.Dto
                     this.TransformID = input.TransformID;
                     this.ProviderDescription = input.ProviderDescription;
                     this.Tags = input.Tags;
+                    this.DerivedCfg = input.DerivedCfg;
                 }
             }
 
@@ -220,6 +240,9 @@ namespace Artesian.SDK.Dto
 
             if (marketDataEntityInput.Type == MarketDataType.MarketAssessment && marketDataEntityInput.TransformID != null)
                 throw new ArgumentException("No transform possible when Type is MarketAssessment");
+
+            if (marketDataEntityInput.Type == MarketDataType.DerivedTimeSerie && marketDataEntityInput.DerivedCfg == null)
+                throw new ArgumentException("Derived Configuration must be set for DerivedTimeSerie");
         }
 
         public static void ValidateUpdate(this MarketDataEntity.Input marketDataEntityInput)

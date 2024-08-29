@@ -50,6 +50,14 @@ namespace Artesian.SDK.Service
         /// The input list of Bid Ask Query paramaters partitioned with the defined strategy. See <see cref="BidAskQueryParamaters"/>
         /// </returns>
         IEnumerable<BidAskQueryParamaters> Partition(IEnumerable<BidAskQueryParamaters> paramaters);
+        /// <summary>
+        /// Partition strategy for Derived Time Serie Query
+        /// </summary>
+        /// <param name="paramaters">The list of Derived Time Serie Query paramaters to be partitioned. See <see cref="DerivedQueryParamaters"/></param>
+        /// <returns>
+        /// The input list of Derived Time Serie Query paramaters partitioned with the defined strategy. See <see cref="DerivedQueryParamaters"/>
+        /// </returns>
+        IEnumerable<DerivedQueryParamaters> Partition(IEnumerable<DerivedQueryParamaters> paramaters);
 
     }
 }

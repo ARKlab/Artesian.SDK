@@ -40,6 +40,7 @@
   <ItemGroup>
     <None Include="ark-dark.png" Pack="true" PackagePath="\" />
 	  <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+	  <PackageReference Include="Ark.Tools.SystemTextJson" Version="4.10.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
