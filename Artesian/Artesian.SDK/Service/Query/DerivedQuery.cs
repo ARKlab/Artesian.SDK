@@ -389,11 +389,11 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>Enumerable of TimeSerieRow Actual</returns>
-        public async Task<IEnumerable<TimeSerieRow.Actual>> ExecuteAsync(CancellationToken ctk = default)
+        public async Task<IEnumerable<TimeSerieRow.Versioned>> ExecuteAsync(CancellationToken ctk = default)
         {
             List<string> urls = _buildRequest();
 
-            var taskList = urls.Select(url=> _client.Exec<IEnumerable<TimeSerieRow.Actual>>(HttpMethod.Get, url, ctk: ctk));
+            var taskList = urls.Select(url=> _client.Exec<IEnumerable<TimeSerieRow.Versioned>>(HttpMethod.Get, url, ctk: ctk));
 
             var res = await Task.WhenAll(taskList);
             return res.SelectMany(x => x);
