@@ -9,6 +9,7 @@ using NodaTime;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -24,7 +25,7 @@ namespace Artesian.SDK.Service
         private readonly Client _client;
         private readonly IPartitionStrategy _partition;
 
-        private const string _routePrefix = "ts"; //what should this be?
+        private const string _routePrefix = "vts"; //what should this be?
 
         internal DerivedQuery(Client client, IPartitionStrategy partiton)
         {
@@ -399,34 +400,26 @@ namespace Artesian.SDK.Service
         }
 
         #region private
-        private List<string> _buildRequest()
-        {
-            _validateQuery();
-
-            var urlList = _partition.Partition(new List<DerivedQueryParamaters> { QueryParamaters })
-                .Select(qp => $"/{_routePrefix}/{qp.Granularity}/{_buildExtractionRangeRoute(qp)}"
-                        .SetQueryParam("id", qp.Ids)
-                        .SetQueryParam("filterId", qp.FilterId)
-                        .SetQueryParam("tz", qp.TimeZone)
-                        .SetQueryParam("tr", qp.TransformId)
-                        .SetQueryParam("fillerK", qp.FillerKindType)
-                        .SetQueryParam("fillerDV", qp.FillerConfig.FillerTimeSeriesDV)
-                        .SetQueryParam("fillerP", qp.FillerConfig.FillerPeriod)
-                        .ToString())
-                .ToList();
-
-            return urlList;
-        }
-
         /// <summary>
         /// Validate Query override
         /// </summary>
-        protected sealed override void _validateQuery()
+        protected override void _validateQuery()
         {
             base._validateQuery();
 
             if (QueryParamaters.Granularity == null)
                 throw new ArtesianSdkClientException("Extraction granularity must be provided. Use .InGranularity() argument takes a granularity type");
+
+            if (QueryParamaters.VersionSelectionType == null)
+                throw new ArtesianSdkClientException("Version selection must be provided. Provide a version to query. eg .ForLastOfDays() arguments take a date range , period or period range");
+
+            if (QueryParamaters.FillerKindType == FillerKindType.CustomValue)
+            {
+                if (QueryParamaters.FillerConfig.FillerTimeSeriesDV == null)
+                {
+                    throw new ArtesianSdkClientException("Filler default value must be provided. Provide a value for default value when using custom value filler");
+                }
+            }
 
             if (QueryParamaters.FillerKindType == FillerKindType.LatestValidValue)
             {
@@ -435,9 +428,97 @@ namespace Artesian.SDK.Service
                     throw new ArtesianSdkClientException("Latest valid value filler must contain a non negative Period");
                 }
             }
+
+            if (QueryParamaters.ExtractionRangeType == ExtractionRangeType.DateRange && QueryParamaters.AnalysisDate != null)
+                throw new ArtesianSdkClientException("Analysis should be related to a Period. Provide a period or remove analysis date.");
         }
 
-      
+        private string _buildVersionRoute(DerivedQueryParamaters queryParamaters)
+        {
+            string subPath;
+
+            switch (queryParamaters.VersionSelectionType.Value)
+            {
+                case VersionSelectionType.LastN:
+                    subPath = $"Last{queryParamaters.VersionSelectionConfig.LastN}";
+                    break;
+                case VersionSelectionType.MostRecent:
+                    subPath = _buildMostRecentSubRoute(queryParamaters);
+                    break;
+                case VersionSelectionType.MUV:
+                    subPath = $"MUV";
+                    break;
+                case VersionSelectionType.LastOfDays:
+                case VersionSelectionType.LastOfMonths:
+                    subPath = _buildLastOfSubRoute(queryParamaters);
+                    break;
+                case VersionSelectionType.Version:
+                    subPath = $"Version/{_toUrlParam(queryParamaters.VersionSelectionConfig.Version)}";
+                    break;
+                default:
+                    throw new NotSupportedException("Unsupported version type");
+            }
+
+            return subPath;
+        }
+
+        private string _buildMostRecentSubRoute(DerivedQueryParamaters queryParamaters)
+        {
+            string subPath;
+
+            if (queryParamaters.VersionSelectionConfig.MostRecent.DateStart != null && queryParamaters.VersionSelectionConfig.MostRecent.DateEnd != null)
+                subPath = $"MostRecent/{_toUrlParam(queryParamaters.VersionSelectionConfig.MostRecent.DateStart.Value, queryParamaters.VersionSelectionConfig.MostRecent.DateEnd.Value)}";
+            else if (queryParamaters.VersionSelectionConfig.MostRecent.Period != null)
+                subPath = $"MostRecent/{queryParamaters.VersionSelectionConfig.MostRecent.Period}";
+            else if (queryParamaters.VersionSelectionConfig.MostRecent.PeriodFrom != null && queryParamaters.VersionSelectionConfig.MostRecent.PeriodTo != null)
+                subPath = $"MostRecent/{queryParamaters.VersionSelectionConfig.MostRecent.PeriodFrom}/{queryParamaters.VersionSelectionConfig.MostRecent.PeriodTo}";
+            else
+                subPath = $"MostRecent";
+
+            return subPath;
+        }
+
+        private string _buildLastOfSubRoute(DerivedQueryParamaters queryParamaters)
+        {
+            string subPath;
+
+            if (queryParamaters.VersionSelectionConfig.LastOf.DateStart != null && queryParamaters.VersionSelectionConfig.LastOf.DateEnd != null)
+                subPath = $"{queryParamaters.VersionSelectionType}/{_toUrlParam(queryParamaters.VersionSelectionConfig.LastOf.DateStart.Value, queryParamaters.VersionSelectionConfig.LastOf.DateEnd.Value)}";
+            else if (queryParamaters.VersionSelectionConfig.LastOf.Period != null)
+                subPath = $"{queryParamaters.VersionSelectionType}/{queryParamaters.VersionSelectionConfig.LastOf.Period}";
+            else if (queryParamaters.VersionSelectionConfig.LastOf.PeriodFrom != null && queryParamaters.VersionSelectionConfig.LastOf.PeriodTo != null)
+                subPath = $"{queryParamaters.VersionSelectionType}/{queryParamaters.VersionSelectionConfig.LastOf.PeriodFrom}/{queryParamaters.VersionSelectionConfig.LastOf.PeriodTo}";
+            else
+                throw new ArtesianSdkClientException("LastOf extraction type not defined");
+
+            return subPath;
+        }
+
+        private List<string> _buildRequest()
+        {
+            _validateQuery();
+
+            var urlList = _partition.Partition(new List<DerivedQueryParamaters> { QueryParamaters })
+                    .Select(qp => $"/{_routePrefix}/{_buildVersionRoute(qp)}/{qp.Granularity}/{_buildExtractionRangeRoute(qp)}"
+                            .SetQueryParam("id", qp.Ids)
+                            .SetQueryParam("filterId", qp.FilterId)
+                            .SetQueryParam("tz", qp.TimeZone)
+                            .SetQueryParam("tr", qp.TransformId)
+                            .SetQueryParam("versionLimit", qp.VersionLimit)
+                            .SetQueryParam("fillerK", qp.FillerKindType)
+                            .SetQueryParam("fillerDV", qp.FillerConfig.FillerTimeSeriesDV)
+                            .SetQueryParam("fillerP", qp.FillerConfig.FillerPeriod)
+                            .SetQueryParam("ad",
+                                qp.AnalysisDate.HasValue
+                                ? qp.AnalysisDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+                                : null
+                            )
+                            .ToString())
+                    .ToList();
+
+            return urlList;
+        }
+
         #endregion
         #endregion
     }
