@@ -16,6 +16,7 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// Ordered list of market data ids that provide the data for the derived curve
         /// </summary>
+        [Key("OrderedReferencedMarketDataIds")]
         public int[] OrderedReferencedMarketDataIds { get; set; }
     }
 }
