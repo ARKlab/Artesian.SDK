@@ -305,7 +305,7 @@ To construct a Versioned Time Series the following must be provided.
   <tr><td>Time Extraction Window</td><td>An extraction time window for data to be queried</td></tr>
 </table>
 
-[Go to Versioned Time Extraction window section](#versioned-time-extraction-windows)  
+[Go to Versioned Time Extraction window section](#derived-time-extraction-windows)
 [Go to Time Extraction window section](#artesian-sdk-extraction-windows)
 
 ### Derived Time Extraction Windows
@@ -647,8 +647,8 @@ var marketDataEntity = new MarketDataEntity.Input(){
 ```
 
 DerivedTimeSerie can be:
-MUV - must updated verison of the MarketDataIds
-Coalesce - first version of the MarketDataIds
+- MUV: must updated verison of the MarketDataIds
+- Coalesce: first version of the MarketDataIds
 
 
 ## Links
