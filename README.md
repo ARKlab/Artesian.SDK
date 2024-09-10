@@ -647,8 +647,8 @@ var marketDataEntity = new MarketDataEntity.Input(){
 ```
 
 DerivedTimeSerie can be:
-- MUV: must updated verison of the MarketDataIds
-- Coalesce: first version of the MarketDataIds
+- Coalesce: gets the latest version of the MarketDataIds in order
+- MUV: gets the timeseries must updated version of the derived MarketData in the configuration
 
 
 ## Links
