@@ -13,7 +13,6 @@ namespace Artesian.SDK.Dto
     [Union(0, typeof(DerivedCfgMuv))]
     [Union(1, typeof(DerivedCfgCoalesce))]
     [JsonConverter(typeof(DerivedCfgBaseConverter))]
-    [System.Text.Json.Serialization.JsonConverter(typeof(DerivedCfgBaseConverterSTJ))]
     public abstract record DerivedCfgBase
     {
         /// <summary>

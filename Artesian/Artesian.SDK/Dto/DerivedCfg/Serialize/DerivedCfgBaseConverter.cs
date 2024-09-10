@@ -1,5 +1,4 @@
-﻿using Ark.Tools.SystemTextJson;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
@@ -29,24 +28,6 @@ namespace Artesian.SDK.Dto
             }
 
             throw new InvalidOperationException("Can't deserialize DerivedCfgBase. DerivedAlgorithm field not found.");
-        }
-    }
-
-    class DerivedCfgBaseConverterSTJ : JsonPolymorphicConverter<DerivedCfgBase, DerivedAlgorithm>
-    {
-        public DerivedCfgBaseConverterSTJ()
-            : base(nameof(DerivedCfgBase.DerivedAlgorithm))
-        {
-        }
-
-        protected override Type GetType(DerivedAlgorithm discriminatorValue)
-        {
-            return discriminatorValue switch
-            {
-                DerivedAlgorithm.MUV => typeof(DerivedCfgMuv),
-                DerivedAlgorithm.Coalesce => typeof(DerivedCfgCoalesce),
-                _ => null,
-            };
         }
     }
 
