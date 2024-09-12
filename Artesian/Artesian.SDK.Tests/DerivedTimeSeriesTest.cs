@@ -119,7 +119,7 @@ namespace Artesian.SDK.Tests
             var ts = qs.CreateDerived()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
-                       .ForMUV()
+                       .ForDerived()
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
                        .ExecuteAsync().Result;
 
@@ -135,7 +135,7 @@ namespace Artesian.SDK.Tests
             /*******************************************************************
              * Tidy Up
              *******************************************************************/
-            marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value).GetAwaiter().GetResult();
+            //marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value).GetAwaiter().GetResult();
         }
     }
 }

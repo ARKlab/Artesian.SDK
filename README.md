@@ -321,36 +321,12 @@ To construct a Versioned Time Series the following must be provided.
 
 Derived Time Extraction window types for queries.
 
-Version
-
-```csharp
- .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0, 0, 123))
-```
-
-Last Days
-
-```csharp
- .ForLastOfDays(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
-```
-
-Last N
-
-```csharp
- .ForLastNVersions(3)
-```
-
-Most Recent
-
-```csharp
- .ForMostRecent(Period.FromMonths(-1), Period.FromDays(20))
-```
-
 Most Updated Version
 
 ```csharp
- .ForMUV()
+ .ForDerived()
  /// optional paramater to limit version
- .ForMUV(new LocalDateTime(2019, 05, 01, 2, 0, 0))
+ .ForDerived(new LocalDateTime(2019, 05, 01, 2, 0, 0))
 ```
 
 ### Artesian SDK Extraction Windows
