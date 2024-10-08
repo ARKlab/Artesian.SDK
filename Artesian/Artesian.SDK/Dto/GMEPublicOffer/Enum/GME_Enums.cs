@@ -97,6 +97,8 @@
         XGRE = 20,
         XSVI = 21,
         BSP = 22,
+        XAUS = 23,
+        XFRA = 24,
     }
 
     public enum GenerationType : byte
