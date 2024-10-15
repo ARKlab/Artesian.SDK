@@ -14,6 +14,7 @@ namespace Artesian.SDK.Dto
         , MarketAssessment
         , Auction
         , BidAsk
+        , DerivedTimeSerie
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 }

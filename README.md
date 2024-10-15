@@ -284,6 +284,51 @@ To construct a Bid Ask Time Series the following must be provided.
 
 [Go to Time Extraction window section](#artesian-sdk-extraction-windows)
 
+### Derived Time Series
+
+```csharp
+ var derivedSeries = await qs.CreateDerived()
+		.ForMarketData(new int[] { 100000001 })
+		.InGranularity(Granularity.Day)
+		.ForLastOfMonths(Period.FromMonths(-4))
+		.InRelativeInterval(RelativeInterval.RollingMonth)
+		.ExecuteAsync();
+```
+
+To construct a Versioned Time Series the following must be provided.
+
+<table>
+  <tr><th>Derived Query</th><th>Description</th></tr>
+  <tr><td>Market Data ID</td><td>Provide a market data id or set of market data id's to query</td></tr>
+  <tr><td>Time Granularity</td><td>Specify the granularity type</td></tr>
+  <tr><td>Derived Time Extraction Window</td><td>Derived extraction time window</td></tr>
+  <tr><td>Time Extraction Window</td><td>An extraction time window for data to be queried</td></tr>
+</table>
+
+[Go to Versioned Time Extraction window section](#derived-time-extraction-windows)  
+[Go to Time Extraction window section](#artesian-sdk-extraction-windows)
+
+### Derived Time Extraction Windows
+
+<table>
+  <tr><th>Derived Time Extraction Windows</th><th>Description</th></tr>
+  <tr><td>Version</td><td>Gets the specified version of a versioned timeseries</td></tr>
+  <tr><td>Last Days</td><td>Gets the latest version of a versioned timeseries of each day in a time window</td></tr>
+  <tr><td>Last N</td><td>Gets the latest N timeseries versions that have at least a not-null value</td></tr>
+  <tr><td>Most Recent</td><td>Gets the most recent version of a versioned timeseries in a time window</td></tr>
+  <tr><td>Most Updated Version</td><td>Gets the timeseries of the most updated version of each timepoint of a versioned timeseries</td></tr>
+</table>
+
+Derived Time Extraction window types for queries.
+
+Most Updated Version
+
+```csharp
+ .ForDerived()
+ /// optional paramater to limit version
+ .ForDerived(new LocalDateTime(2019, 05, 01, 2, 0, 0))
+```
+
 ### Artesian SDK Extraction Windows
 
 Extraction window types for queries.
@@ -550,6 +595,37 @@ var writeMarketData = marketdata.EditBidAsk();
 
 await writeMarketData.Delete();
 ```
+
+### Dervied Time Series
+
+Derived Time serie are not edited directly they are derived from existing curves ane therefore are updated as a result of the curves that are in the derived configuration.
+
+```csharp
+//reference derived time serie market data entity
+var marketDataEntity = new MarketDataEntity.Input(){
+    ProviderName = "TestProviderName",
+    MarketDataName = "TestMarketDataName",
+    OriginalGranularity = Granularity.Day,
+    OriginalTimezone = "CET",
+    AggregationRule = AggregationRule.Undefined,
+    Type = MarketDataType.DerivedTimeSerie,
+    DerivedCfg = new DerivedCfgCoalesce()
+    {
+        OrderedReferencedMarketDataIds = new int[]
+        {
+            10000001, //MarketDataIds that the DerivedTimeSerie is made from
+            10000002
+        },
+        Version = 1,
+    },
+    MarketDataId = 0
+}
+```
+
+DerivedTimeSerie can be:
+- Coalesce: gets the latest version of the MarketDataIds in order
+- MUV: gets the timeseries most updated version of the derived MarketData in the configuration
+
 
 ## Links
 

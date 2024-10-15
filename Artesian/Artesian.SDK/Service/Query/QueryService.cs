@@ -153,5 +153,28 @@ namespace Artesian.SDK.Service
         {
             return new BidAskQuery(_client, partitionStrategy ?? _partitionStrategy);
         }
+
+        /// <summary>
+        /// Create Derived Time Serie Query
+        /// </summary>
+        /// <returns>
+        /// Derived Time Serie <see cref="DerivedQuery"/>
+        /// </returns>
+        public DerivedQuery CreateDerived()
+        {
+            return new DerivedQuery(_client, _partitionStrategy);
+        }
+
+        /// <summary>
+        /// Create Derived Time Serie Query
+        /// </summary>
+        /// <param name="partitionStrategy">Partition Strategy</param>
+        /// <returns>
+        /// Derived Time Serie <see cref="DerivedQuery"/>
+        /// </returns>
+        public DerivedQuery CreateDerived(IPartitionStrategy partitionStrategy)
+        {
+            return new DerivedQuery(_client, partitionStrategy ?? _partitionStrategy);
+        }
     }
 }
