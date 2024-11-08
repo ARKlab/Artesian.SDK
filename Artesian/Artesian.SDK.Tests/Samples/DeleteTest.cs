@@ -18,7 +18,7 @@ namespace Artesian.SDK.Tests.Samples
         private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri("https://arkive.artesian.cloud/tenantName/"), "APIKey");
 
         [Test]
-        //[Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        [Ignore("Run only manually with proper artesian URI and ApiKey set")]
         public void DeleteActual()
         {
             var qs = new QueryService(_cfg);
