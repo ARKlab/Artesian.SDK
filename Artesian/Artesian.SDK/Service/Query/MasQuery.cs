@@ -39,7 +39,7 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery ForMarketData(int[] ids)
         {
-            _forMarketData(ids);
+            base.ForMarketData(ids);
             return this;
         }
         /// <summary>
@@ -49,7 +49,7 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery ForMarketData(int id)
         {
-            _forMarketData(new int[] { id });
+            base.ForMarketData(new int[] { id });
             return this;
         }
         /// <summary>
@@ -59,7 +59,7 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery ForFilterId(int filterId)
         {
-            _forFilterId(filterId);
+            base.ForFilterId(filterId);
             return this;
         }
         /// <summary>
@@ -69,7 +69,7 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery InTimezone(string tz)
         {
-            _inTimezone(tz);
+            base.InTimezone(tz);
             return this;
         }
         /// <summary>
@@ -80,7 +80,7 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
-            _inAbsoluteDateRange(start, end);
+            base.InAbsoluteDateRange(start, end);
             return this;
         }
         /// <summary>
@@ -91,7 +91,7 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery InRelativePeriodRange(Period from, Period to)
         {
-            _inRelativePeriodRange(from, to);
+            base.InRelativePeriodRange(from, to);
             return this;
         }
         /// <summary>
@@ -101,7 +101,7 @@ namespace Artesian.SDK.Service
         /// <returns>MasQuery</returns>
         public MasQuery InRelativePeriod(Period extractionPeriod)
         {
-            _inRelativePeriod(extractionPeriod);
+            base.InRelativePeriod(extractionPeriod);
             return this;
         }
         /// <summary>
@@ -189,7 +189,7 @@ namespace Artesian.SDK.Service
         #region private
         private List<string> _buildRequest()
         {
-            _validateQuery();
+            ValidateQuery();
 
             var urlList = _partition.Partition(new List<MasQueryParamaters> { QueryParamaters })
                 .Select(qp => $"/{_routePrefix}/{_buildExtractionRangeRoute(qp)}"
@@ -215,9 +215,9 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Validate Query override
         /// </summary>
-        protected override void _validateQuery()
+        protected override void ValidateQuery()
         {
-            base._validateQuery();
+            base.ValidateQuery();
 
             if (QueryParamaters.Products == null)
                 throw new ArtesianSdkClientException("Products must be provided for extraction. Use .ForProducts() argument takes a string or string array of products");

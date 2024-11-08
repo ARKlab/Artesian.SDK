@@ -201,7 +201,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         #region private helpers
         private string _buildRequest()
         {
-            _validateQuery();
+            ValidateQuery();
 
             var url = $"/extract/{_localDatePattern.Format(_queryParamaters.Date.Value)}/{_queryParamaters.Purpose}/{_queryParamaters.Status}"
                         .SetQueryParam("operators", _queryParamaters.Operator)
@@ -223,7 +223,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <summary>
         /// Validate query
         /// </summary>
-        protected void _validateQuery()
+        protected void ValidateQuery()
         {
             if (_queryParamaters.Date == null)
                 throw new ArtesianSdkClientException("Date filter must be provided. Use .ForDate() to set date");

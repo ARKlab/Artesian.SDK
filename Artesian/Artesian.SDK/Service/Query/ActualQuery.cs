@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.DerivedCfg;
+using Artesian.SDK.Dto.DerivedCfg.Enums;
 
 using Flurl;
 
@@ -40,7 +42,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery ForMarketData(int[] ids)
         {
-            _forMarketData(ids);
+            base.ForMarketData(ids);
             return this;
         }
         /// <summary>
@@ -50,7 +52,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery ForMarketData(int id)
         {
-            _forMarketData(new int[] { id });
+            base.ForMarketData(new int[] { id });
             return this;
         }
         /// <summary>
@@ -60,7 +62,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery ForFilterId(int filterId)
         {
-            _forFilterId(filterId);
+            base.ForFilterId(filterId);
             return this;
         }
         /// <summary>
@@ -70,7 +72,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery InTimezone(string tz)
         {
-            _inTimezone(tz);
+            base.InTimezone(tz);
             return this;
         }
         /// <summary>
@@ -81,7 +83,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
-            _inAbsoluteDateRange(start, end);
+            base.InAbsoluteDateRange(start, end);
             return this;
         }
         /// <summary>
@@ -92,7 +94,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery InRelativePeriodRange(Period from, Period to)
         {
-            _inRelativePeriodRange(from, to);
+            base.InRelativePeriodRange(from, to);
             return this;
         }
         /// <summary>
@@ -102,7 +104,7 @@ namespace Artesian.SDK.Service
         /// <returns>ActualQuery</returns>
         public ActualQuery InRelativePeriod(Period extractionPeriod)
         {
-            _inRelativePeriod(extractionPeriod);
+            base.InRelativePeriod(extractionPeriod);
             return this;
         }
         /// <summary>
@@ -209,7 +211,7 @@ namespace Artesian.SDK.Service
         #region private
         private List<string> _buildRequest()
         {
-            _validateQuery();
+            ValidateQuery();
 
             var urlList = _partition.Partition(new List<ActualQueryParamaters> { QueryParamaters })
                 .Select(qp => $"/{_routePrefix}/{qp.Granularity}/{_buildExtractionRangeRoute(qp)}"
@@ -229,9 +231,9 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Validate Query override
         /// </summary>
-        protected sealed override void _validateQuery()
+        protected sealed override void ValidateQuery()
         {
-            base._validateQuery();
+            base.ValidateQuery();
 
             if (QueryParamaters.Granularity == null)
                 throw new ArtesianSdkClientException("Extraction granularity must be provided. Use .InGranularity() argument takes a granularity type");
