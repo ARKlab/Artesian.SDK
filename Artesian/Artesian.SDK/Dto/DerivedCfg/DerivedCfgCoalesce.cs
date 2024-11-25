@@ -5,15 +5,12 @@ using MessagePack;
 namespace Artesian.SDK.Dto.DerivedCfg
 {
     [MessagePackObject]
-    public record DerivedCfgCoalesce : DerivedCfgBase
+    public record DerivedCfgCoalesce : DerivedCfgWithReferencedIds
     {
         /// <summary>
         /// The Derived Alrghorithm
         /// </summary>
         [IgnoreMember]
         public override DerivedAlgorithm DerivedAlgorithm => DerivedAlgorithm.Coalesce;
-
-        [Key("OrderedReferencedMarketDataIds")]
-        public int[] OrderedReferencedMarketDataIds { get; set; }
     }
 }
