@@ -64,8 +64,6 @@ namespace Artesian.SDK.Tests.Samples
 
                 mktData.Load().GetAwaiter().GetResult();
 
-                //marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value).GetAwaiter().GetResult();
-
                 curveIds.Add(mktData.MarketDataId.Value);
 
                 var writeMarketData = mktData.EditVersioned(curve.Version);
@@ -119,14 +117,11 @@ namespace Artesian.SDK.Tests.Samples
 
             marketData.Load().GetAwaiter().GetResult();
 
-            //marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value).GetAwaiter().GetResult();
-
             Thread.Sleep(2000);
 
             var ts = qs.CreateActual()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
-                       //.WithDerivedConfigurationCoalesce()
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
                        .ExecuteAsync().Result;
 
@@ -195,8 +190,6 @@ namespace Artesian.SDK.Tests.Samples
 
                 mktData.Load().GetAwaiter().GetResult();
 
-                //marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value).GetAwaiter().GetResult();
-
                 curveIds.Add(mktData.MarketDataId.Value);
 
                 var writeMarketData = mktData.EditVersioned(curve.Version);
@@ -252,12 +245,9 @@ namespace Artesian.SDK.Tests.Samples
 
             Thread.Sleep(2000);
 
-            //marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value).GetAwaiter().GetResult();
-
             var ts = qs.CreateActual()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
-                       //.WithDerivedConfigurationCoalesce()
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
                        .ExecuteAsync().Result;
 
