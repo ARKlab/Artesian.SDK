@@ -1,6 +1,8 @@
 ﻿// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
+using Artesian.SDK.Dto.DerivedCfg;
+
 using MessagePack;
 using NodaTime;
 using System;
@@ -121,6 +123,26 @@ namespace Artesian.SDK.Dto
                 }
                 set { this._path = value; }
             }
+            /// <summary>
+            /// The Derived Configuration
+            /// </summary>
+            [MessagePack.Key(18)]
+            public DerivedCfgBase DerivedCfg
+            {
+                get
+                {
+                    if (_derivedCfg == null)
+                        if (this.Type == MarketDataType.VersionedTimeSerie)
+                            return new DerivedCfgMuv()
+                            {
+                                Version = 1
+                            };
+                    return this._derivedCfg;
+                }
+                set { this._derivedCfg = value; }
+
+            }
+            internal DerivedCfgBase _derivedCfg;
 
             internal string _path;
 

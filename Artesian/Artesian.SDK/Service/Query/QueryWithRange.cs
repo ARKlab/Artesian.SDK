@@ -25,7 +25,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="ids">Int[]</param>
         /// <returns>Query</returns>
-        protected QueryWithRange<TQueryParams> _forMarketData(int[] ids)
+        protected QueryWithRange<TQueryParams> ForMarketData(int[] ids)
         {
             QueryParamaters.FilterId = null;
 
@@ -37,7 +37,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="filterId">The filter id to be queried</param>
         /// <returns>Query</returns>
-        protected QueryWithRange<TQueryParams> _forFilterId(int filterId)
+        protected QueryWithRange<TQueryParams> ForFilterId(int filterId)
         {
             QueryParamaters.Ids = null;
 
@@ -49,7 +49,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="tz">String timezone in IANA format</param>
         /// <returns>Query</returns>
-        protected QueryWithRange<TQueryParams> _inTimezone(string tz)
+        protected QueryWithRange<TQueryParams> InTimezone(string tz)
         {
             if (DateTimeZoneProviders.Tzdb.GetZoneOrNull(tz) == null)
                 throw new ArgumentException($"Timezone {tz} is not recognized");
@@ -63,7 +63,7 @@ namespace Artesian.SDK.Service
         /// <param name="start">Local date Start</param>
         /// <param name="end">Local date End</param>
         /// <returns>Query</returns>
-        protected QueryWithRange<TQueryParams> _inAbsoluteDateRange(LocalDate start, LocalDate end)
+        protected QueryWithRange<TQueryParams> InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
             if (end <= start)
                 throw new ArgumentException("End date " + end + " must be greater than start date " + start);
@@ -80,7 +80,7 @@ namespace Artesian.SDK.Service
         /// <param name="from">Period Start</param>
         /// <param name="to">Period End</param>
         /// <returns>Query</returns>
-        protected QueryWithRange<TQueryParams> _inRelativePeriodRange(Period from, Period to)
+        protected QueryWithRange<TQueryParams> InRelativePeriodRange(Period from, Period to)
         {
             QueryParamaters.ExtractionRangeType = ExtractionRangeType.PeriodRange;
             QueryParamaters.ExtractionRangeSelectionConfig.PeriodFrom = from;
@@ -93,7 +93,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="extractionPeriod">Period</param>
         /// <returns>Query</returns>
-        protected QueryWithRange<TQueryParams> _inRelativePeriod(Period extractionPeriod)
+        protected QueryWithRange<TQueryParams> InRelativePeriod(Period extractionPeriod)
         {
             QueryParamaters.ExtractionRangeType = ExtractionRangeType.Period;
             QueryParamaters.ExtractionRangeSelectionConfig.Period = extractionPeriod;
@@ -104,7 +104,7 @@ namespace Artesian.SDK.Service
         /// Validate query
         /// </summary>
         /// <returns></returns>
-        protected virtual void _validateQuery()
+        protected virtual void ValidateQuery()
         {
             if (QueryParamaters.ExtractionRangeType == null)
                 throw new ArtesianSdkClientException("Data extraction range must be provided. Provide a date range , period or period range or an interval eg .InAbsoluteDateRange()");
@@ -116,17 +116,17 @@ namespace Artesian.SDK.Service
                 throw new ArtesianSdkClientException("Marketadata ids AND filterId cannot be valorized at same time, choose one");
         }
 
-        internal string _toUrlParam(LocalDate start, LocalDate end)
+        internal static string ToUrlParam(LocalDate start, LocalDate end)
         {
             return $"{_localDatePattern.Format(start)}/{_localDatePattern.Format(end)}";
         }
 
-        internal string _toUrlParam(LocalDateTime start, LocalDateTime end)
+        internal static string ToUrlParam(LocalDateTime start, LocalDateTime end)
         {
             return $"{_localDateTimePattern.Format(start)}/{_localDateTimePattern.Format(end)}";
         }
 
-        internal string _toUrlParam(LocalDateTime dateTime)
+        internal static string ToUrlParam(LocalDateTime dateTime)
         {
             return _localDateTimePattern.Format(dateTime);
         }

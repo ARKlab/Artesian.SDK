@@ -40,7 +40,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForMarketData(int[] ids)
         {
-            _forMarketData(ids);
+            base.ForMarketData(ids);
             return this;
         }
         /// <summary>
@@ -50,7 +50,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForMarketData(int id)
         {
-            _forMarketData(new int[] { id });
+            base.ForMarketData(new int[] { id });
             return this;
         }
         /// <summary>
@@ -60,7 +60,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery ForFilterId(int filterId)
         {
-            _forFilterId(filterId);
+            base.ForFilterId(filterId);
             return this;
         }
         /// <summary>
@@ -70,7 +70,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery InTimezone(string tz)
         {
-            _inTimezone(tz);
+            base.InTimezone(tz);
             return this;
         }
         /// <summary>
@@ -81,7 +81,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
-            _inAbsoluteDateRange(start, end);
+            base.InAbsoluteDateRange(start, end);
             return this;
         }
         /// <summary>
@@ -92,7 +92,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery InRelativePeriodRange(Period from, Period to)
         {
-            _inRelativePeriodRange(from, to);
+            base.InRelativePeriodRange(from, to);
             return this;
         }
         /// <summary>
@@ -102,7 +102,7 @@ namespace Artesian.SDK.Service
         /// <returns>VersionedQuery</returns>
         public VersionedQuery InRelativePeriod(Period extractionPeriod)
         {
-            _inRelativePeriod(extractionPeriod);
+            base.InRelativePeriod(extractionPeriod);
             return this;
         }
         /// <summary>
@@ -403,9 +403,9 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Validate Query override
         /// </summary>
-        protected override void _validateQuery()
+        protected override void ValidateQuery()
         {
-            base._validateQuery();
+            base.ValidateQuery();
 
             if (QueryParamaters.Granularity == null)
                 throw new ArtesianSdkClientException("Extraction granularity must be provided. Use .InGranularity() argument takes a granularity type");
@@ -453,7 +453,7 @@ namespace Artesian.SDK.Service
                     subPath = _buildLastOfSubRoute(queryParamaters);
                     break;
                 case VersionSelectionType.Version:
-                    subPath = $"Version/{_toUrlParam(queryParamaters.VersionSelectionConfig.Version)}";
+                    subPath = $"Version/{QueryWithRange<VersionedQueryParamaters>.ToUrlParam(queryParamaters.VersionSelectionConfig.Version)}";
                     break;
                 default:
                     throw new NotSupportedException("Unsupported version type");
@@ -467,7 +467,7 @@ namespace Artesian.SDK.Service
             string subPath;
 
             if (queryParamaters.VersionSelectionConfig.MostRecent.DateStart != null && queryParamaters.VersionSelectionConfig.MostRecent.DateEnd != null)
-                subPath = $"MostRecent/{_toUrlParam(queryParamaters.VersionSelectionConfig.MostRecent.DateStart.Value, queryParamaters.VersionSelectionConfig.MostRecent.DateEnd.Value)}";
+                subPath = $"MostRecent/{QueryWithRange<VersionedQueryParamaters>.ToUrlParam(queryParamaters.VersionSelectionConfig.MostRecent.DateStart.Value, queryParamaters.VersionSelectionConfig.MostRecent.DateEnd.Value)}";
             else if (queryParamaters.VersionSelectionConfig.MostRecent.Period != null)
                 subPath = $"MostRecent/{queryParamaters.VersionSelectionConfig.MostRecent.Period}";
             else if (queryParamaters.VersionSelectionConfig.MostRecent.PeriodFrom != null && queryParamaters.VersionSelectionConfig.MostRecent.PeriodTo != null)
@@ -483,7 +483,7 @@ namespace Artesian.SDK.Service
             string subPath;
 
             if (queryParamaters.VersionSelectionConfig.LastOf.DateStart != null && queryParamaters.VersionSelectionConfig.LastOf.DateEnd !=null)
-                subPath = $"{queryParamaters.VersionSelectionType}/{_toUrlParam(queryParamaters.VersionSelectionConfig.LastOf.DateStart.Value, queryParamaters.VersionSelectionConfig.LastOf.DateEnd.Value)}";
+                subPath = $"{queryParamaters.VersionSelectionType}/{QueryWithRange<VersionedQueryParamaters>.ToUrlParam(queryParamaters.VersionSelectionConfig.LastOf.DateStart.Value, queryParamaters.VersionSelectionConfig.LastOf.DateEnd.Value)}";
             else if (queryParamaters.VersionSelectionConfig.LastOf.Period != null)
                 subPath = $"{queryParamaters.VersionSelectionType}/{queryParamaters.VersionSelectionConfig.LastOf.Period}";
             else if (queryParamaters.VersionSelectionConfig.LastOf.PeriodFrom != null && queryParamaters.VersionSelectionConfig.LastOf.PeriodTo != null)
@@ -496,7 +496,7 @@ namespace Artesian.SDK.Service
 
         private List<string> _buildRequest()
         {
-            _validateQuery();
+            ValidateQuery();
 
             var urlList = _partition.Partition(new List<VersionedQueryParamaters> { QueryParamaters })
                     .Select(qp => $"/{_routePrefix}/{_buildVersionRoute(qp)}/{qp.Granularity}/{_buildExtractionRangeRoute(qp)}"

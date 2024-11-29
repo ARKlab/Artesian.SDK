@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.DerivedCfg;
 
 using System.Collections.Generic;
 
@@ -32,6 +33,7 @@ namespace Artesian.SDK.Service
         /// <param name="filterId"></param>
         /// <param name="fillerK"></param>
         /// <param name="fillerConfig"></param>
+        /// <param name="derivedCfgBase"></param>
         public ActualQueryParamaters(
             IEnumerable<int> ids, 
             ExtractionRangeSelectionConfig extractionRangeSelectionConfig, 
@@ -41,13 +43,15 @@ namespace Artesian.SDK.Service
             Granularity? granularity, 
             int? transformId,
             FillerKindType fillerK,
-            FillerConfig fillerConfig
+            FillerConfig fillerConfig,
+            DerivedCfgBase derivedCfgBase = null
             )
             : base(ids,extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
         {           
             this.Granularity = granularity;
             this.TransformId = transformId;
             this.FillerConfig = fillerConfig;
+            this.DerivedCfgBase = derivedCfgBase;
         }
 
         /// <summary>
@@ -58,5 +62,9 @@ namespace Artesian.SDK.Service
         /// Time range
         /// </summary>
         public int? TransformId { get; set; }
+        /// <summary>
+        /// Derived Configuration
+        /// </summary>
+        public DerivedCfgBase DerivedCfgBase { get; set; }
     }
 }

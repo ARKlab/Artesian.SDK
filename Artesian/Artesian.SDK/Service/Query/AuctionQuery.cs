@@ -41,7 +41,7 @@ namespace Artesian.SDK.Service
         /// <returns>AuctionQuery</returns>
         public AuctionQuery ForMarketData(int[] ids)
         {
-            _forMarketData(ids);
+            base.ForMarketData(ids);
             return this;
         }
 
@@ -52,7 +52,7 @@ namespace Artesian.SDK.Service
         /// <returns>AuctionQuery</returns>
         public AuctionQuery ForMarketData(int id)
         {
-            _forMarketData(new int[] { id });
+            base.ForMarketData(new int[] { id });
             return this;
         }
 
@@ -63,7 +63,7 @@ namespace Artesian.SDK.Service
         /// <returns>AuctionQuery</returns>
         public AuctionQuery ForFilterId(int filterId)
         {
-            _forFilterId(filterId);
+            base.ForFilterId(filterId);
             return this;
         }
 
@@ -74,7 +74,7 @@ namespace Artesian.SDK.Service
         /// <returns>AuctionQuery</returns>
         public AuctionQuery InTimezone(string tz)
         {
-            _inTimezone(tz);
+            base.InTimezone(tz);
             return this;
         }
 
@@ -86,7 +86,7 @@ namespace Artesian.SDK.Service
         /// <returns>AuctionQuery</returns>
         public AuctionQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
-            _inAbsoluteDateRange(start, end);
+            base.InAbsoluteDateRange(start, end);
             return this;
         }
 
@@ -98,7 +98,7 @@ namespace Artesian.SDK.Service
         /// <returns>AuctionQuery</returns>
         public AuctionQuery InRelativePeriodRange(Period from, Period to)
         {
-            _inRelativePeriodRange(from, to);
+            base.InRelativePeriodRange(from, to);
             return this;
         }
 
@@ -109,7 +109,7 @@ namespace Artesian.SDK.Service
         /// <returns>AuctionQuery</returns>
         public AuctionQuery InRelativePeriod(Period extractionPeriod)
         {
-            _inRelativePeriod(extractionPeriod);
+            base.InRelativePeriod(extractionPeriod);
             return this;
         }
 
@@ -136,7 +136,7 @@ namespace Artesian.SDK.Service
 
         private List<string> _buildRequest()
         {
-            _validateQuery();
+            ValidateQuery();
 
             var urlList = _partition.Partition(new List<AuctionQueryParamaters> { QueryParamaters })
                 .Select(qp => $"/{_routePrefix}/{_buildExtractionRangeRoute(qp)}"
@@ -152,9 +152,9 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Validate Query override
         /// </summary>
-        protected sealed override void _validateQuery()
+        protected sealed override void ValidateQuery()
         {
-            base._validateQuery();
+            base.ValidateQuery();
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace Artesian.SDK.Service
             switch (queryParamaters.ExtractionRangeType)
             {
                 case ExtractionRangeType.DateRange:
-                    subPath = $"{_toUrlParam(queryParamaters.ExtractionRangeSelectionConfig.DateStart, queryParamaters.ExtractionRangeSelectionConfig.DateEnd)}";
+                    subPath = $"{QueryWithRange<AuctionQueryParamaters>.ToUrlParam(queryParamaters.ExtractionRangeSelectionConfig.DateStart, queryParamaters.ExtractionRangeSelectionConfig.DateEnd)}";
                     break;
 
                 case ExtractionRangeType.PeriodRange:
