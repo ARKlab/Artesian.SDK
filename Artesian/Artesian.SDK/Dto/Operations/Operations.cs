@@ -71,7 +71,7 @@ namespace Artesian.SDK.Dto
                             {
                                 var p = op.Params as OperationEnableDisableTag;
 
-                                if (!p.TagKey.IsValidTagKey())
+                                if (!p.TagKey._isValidTagKey())
                                     throw new ArgumentException("Operations: any single Params TagKey must have specific values");
 
                                 ArtesianUtils.IsValidString(p.TagKey, 3, 50);
@@ -84,7 +84,7 @@ namespace Artesian.SDK.Dto
                             {
                                 var p = op.Params as OperationEnableDisableTag;
 
-                                if (!p.TagKey.IsValidTagKey())
+                                if (!p.TagKey._isValidTagKey())
                                     throw new ArgumentException("Operations: any single Params TagKey must have specific values");
 
                                 ArtesianUtils.IsValidString(p.TagKey, 3, 50);
@@ -130,7 +130,7 @@ namespace Artesian.SDK.Dto
             }
         }
 
-        private static bool IsValidTagKey(this string stringToEvaluate)
+        private static bool _isValidTagKey(this string stringToEvaluate)
         {
             if (stringToEvaluate == "Type" ||
                 stringToEvaluate == "ProviderName" ||

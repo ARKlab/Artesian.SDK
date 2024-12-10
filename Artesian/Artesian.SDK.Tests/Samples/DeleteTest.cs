@@ -11,9 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Artesian.SDK.Tests
+namespace Artesian.SDK.Tests.Samples
 {
-    public class TestDelete
+    public class DeleteTest
     {
         private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri("https://arkive.artesian.cloud/tenantName/"), "APIKey");
 
@@ -39,6 +39,8 @@ namespace Artesian.SDK.Tests
                     marketDataEntity.ProviderName,
                     marketDataEntity.MarketDataName)
                 );
+
+            //marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value).GetAwaiter().GetResult();
 
             var isRegistered = marketData.IsRegistered().GetAwaiter().GetResult();
 

@@ -32,7 +32,7 @@ namespace Artesian.SDK.Service
             switch (queryParamaters.ExtractionRangeType)
             {
                 case ExtractionRangeType.DateRange:
-                    subPath = $"{_toUrlParam(queryParamaters.ExtractionRangeSelectionConfig.DateStart, queryParamaters.ExtractionRangeSelectionConfig.DateEnd)}";
+                    subPath = $"{ToUrlParam(queryParamaters.ExtractionRangeSelectionConfig.DateStart, queryParamaters.ExtractionRangeSelectionConfig.DateEnd)}";
                     break;
                 case ExtractionRangeType.Period:
                     subPath = $"{queryParamaters.ExtractionRangeSelectionConfig.Period}";
@@ -54,9 +54,9 @@ namespace Artesian.SDK.Service
         /// Validate query
         /// </summary>
         /// <returns></returns>
-        protected override void _validateQuery()
+        protected override void ValidateQuery()
         {
-            base._validateQuery();
+            base.ValidateQuery();
         }
 
     }
