@@ -20,7 +20,7 @@ namespace Artesian.SDK.Dto.DerivedCfg.Serialize
                 }
                 else if (token.ToObject<DerivedAlgorithm>() == DerivedAlgorithm.Sum)
                 {
-                    throw new NotImplementedException($@"Not yet impletemented DerivedAlgorithm {DerivedAlgorithm.Sum}");
+                    return new DerivedCfgSum();
                 }
                 else if (token.ToObject<DerivedAlgorithm>() == DerivedAlgorithm.Coalesce)
                 {
@@ -47,6 +47,7 @@ namespace Artesian.SDK.Dto.DerivedCfg.Serialize
             {
                 DerivedAlgorithm.MUV => typeof(DerivedCfgMuv),
                 DerivedAlgorithm.Coalesce => typeof(DerivedCfgCoalesce),
+                DerivedAlgorithm.Sum => typeof(DerivedCfgSum),
                 _ => null,
             };
         }

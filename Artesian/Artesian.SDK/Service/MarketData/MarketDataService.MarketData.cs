@@ -9,6 +9,7 @@ using NodaTime;
 using System;
 using Flurl;
 using System.Globalization;
+using Artesian.SDK.Dto.DerivedCfg;
 
 namespace Artesian.SDK.Service
 {
@@ -106,6 +107,22 @@ namespace Artesian.SDK.Service
             var url = "/marketdata/entity/".AppendPathSegment(id);
 
             return _client.Exec(HttpMethod.Delete, url, ctk: ctk);
+        }
+        /// <summary>
+        /// Update Derived Configuration for marketData with id supplied in <paramref name="marketDataId"/> and Rebuild
+        /// </summary>
+        /// <param name="marketDataId">Id of the marketData</param>
+        /// <param name="derivedCfg">The Derived Configuration to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns>MarketData Entity Output</returns>
+        public Task<MarketDataEntity.Output> UpdateDerivedConfigurationAsync(int marketDataId, DerivedCfgBase derivedCfg, bool force, CancellationToken ctk = default)
+        {
+            var url = "/marketdata/entity/".AppendPathSegment(marketDataId.ToString(CultureInfo.InvariantCulture)).AppendPathSegment("updateDerivedConfiguration")
+                .SetQueryParam("force", force);
+
+
+            return _client.Exec<MarketDataEntity.Output, DerivedCfgBase>(HttpMethod.Post, url, derivedCfg, ctk: ctk);
         }
     }
 }
