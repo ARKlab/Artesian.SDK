@@ -52,16 +52,8 @@ namespace Artesian.SDK.Dto.DerivedCfg.Serialize
         }
     }
 
-    public abstract class JsonCreationConverter<T> : JsonConverter
+    internal abstract class JsonCreationConverter<T> : JsonConverter
     {
-        /// <summary>
-        /// Create an instance of objectType, based properties in the JSON object
-        /// </summary>
-        /// <param name="objectType">type of object expected</param>
-        /// <param name="jObject">
-        /// contents of JSON object that will be deserialized
-        /// </param>
-        /// <returns></returns>
         protected abstract T Create(Type objectType, JObject jObject);
 
         public override bool CanConvert(Type objectType)

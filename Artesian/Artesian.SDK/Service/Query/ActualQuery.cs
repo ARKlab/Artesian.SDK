@@ -2,14 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Dto;
-using Artesian.SDK.Dto.DerivedCfg;
-using Artesian.SDK.Dto.DerivedCfg.Enums;
 
 using Flurl;
 
 using NodaTime;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -40,7 +37,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="ids">Array of marketdata id's to be queried</param>
         /// <returns>ActualQuery</returns>
-        public ActualQuery ForMarketData(int[] ids)
+        public new ActualQuery ForMarketData(int[] ids)
         {
             base.ForMarketData(ids);
             return this;
@@ -60,7 +57,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="filterId">The filter id to be queried</param>
         /// <returns>ActualQuery</returns>
-        public ActualQuery ForFilterId(int filterId)
+        public new ActualQuery ForFilterId(int filterId)
         {
             base.ForFilterId(filterId);
             return this;
@@ -70,7 +67,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="tz">Timezone in which to extract eg UTC/CET</param>
         /// <returns>ActualQuery</returns>
-        public ActualQuery InTimezone(string tz)
+        public new ActualQuery InTimezone(string tz)
         {
             base.InTimezone(tz);
             return this;
@@ -81,7 +78,7 @@ namespace Artesian.SDK.Service
         /// <param name="start">Start date of range</param>
         /// <param name="end">End date of range</param>
         /// <returns>ActualQuery</returns>
-        public ActualQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
+        public new ActualQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
             base.InAbsoluteDateRange(start, end);
             return this;
@@ -92,7 +89,7 @@ namespace Artesian.SDK.Service
         /// <param name="from">Start period of range</param>
         /// <param name="to">End period of range</param>
         /// <returns>ActualQuery</returns>
-        public ActualQuery InRelativePeriodRange(Period from, Period to)
+        public new ActualQuery InRelativePeriodRange(Period from, Period to)
         {
             base.InRelativePeriodRange(from, to);
             return this;
@@ -102,7 +99,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="extractionPeriod">Period to be queried</param>
         /// <returns>ActualQuery</returns>
-        public ActualQuery InRelativePeriod(Period extractionPeriod)
+        public new ActualQuery InRelativePeriod(Period extractionPeriod)
         {
             base.InRelativePeriod(extractionPeriod);
             return this;

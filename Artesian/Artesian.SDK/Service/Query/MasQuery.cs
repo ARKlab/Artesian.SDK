@@ -37,7 +37,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="ids">Array of marketdata id's to be queried</param>
         /// <returns>MasQuery</returns>
-        public MasQuery ForMarketData(int[] ids)
+        public new MasQuery ForMarketData(int[] ids)
         {
             base.ForMarketData(ids);
             return this;
@@ -57,7 +57,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="filterId">The filter id to be queried</param>
         /// <returns>MasQuery</returns>
-        public MasQuery ForFilterId(int filterId)
+        public new MasQuery ForFilterId(int filterId)
         {
             base.ForFilterId(filterId);
             return this;
@@ -67,7 +67,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="tz">Timezone in which to extract eg UTC/CET</param>
         /// <returns>MasQuery</returns>
-        public MasQuery InTimezone(string tz)
+        public new MasQuery InTimezone(string tz)
         {
             base.InTimezone(tz);
             return this;
@@ -78,7 +78,7 @@ namespace Artesian.SDK.Service
         /// <param name="start">Start date of range</param>
         /// <param name="end">End date of range</param>
         /// <returns>MasQuery</returns>
-        public MasQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
+        public new MasQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
             base.InAbsoluteDateRange(start, end);
             return this;
@@ -89,7 +89,7 @@ namespace Artesian.SDK.Service
         /// <param name="from">Start period of range</param>
         /// <param name="to">End period of range</param>
         /// <returns>MasQuery</returns>
-        public MasQuery InRelativePeriodRange(Period from, Period to)
+        public new MasQuery InRelativePeriodRange(Period from, Period to)
         {
             base.InRelativePeriodRange(from, to);
             return this;
@@ -99,7 +99,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="extractionPeriod">Period to be queried</param>
         /// <returns>MasQuery</returns>
-        public MasQuery InRelativePeriod(Period extractionPeriod)
+        public new MasQuery InRelativePeriod(Period extractionPeriod)
         {
             base.InRelativePeriod(extractionPeriod);
             return this;

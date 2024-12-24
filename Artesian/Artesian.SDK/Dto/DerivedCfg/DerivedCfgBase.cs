@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace Artesian.SDK.Dto.DerivedCfg
 {
+    /// <summary>
+    /// Base class for Derived Configuration.
+    /// </summary>
     [MessagePackObject]
     [Union(0, typeof(DerivedCfgMuv))]
     [Union(1, typeof(DerivedCfgCoalesce))]
@@ -26,7 +29,5 @@ namespace Artesian.SDK.Dto.DerivedCfg
         /// </summary>
         [IgnoreMember]
         public abstract DerivedAlgorithm DerivedAlgorithm { get; }
-
-
     }
 }

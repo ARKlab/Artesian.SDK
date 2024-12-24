@@ -16,7 +16,7 @@ namespace Artesian.SDK.Common
         /// Mapping the Date Period based on Granularity
         /// </summary>
         /// <param name="granularity">Granularity</param>
-        public static DatePeriod MapDatePeriod(Granularity granularity)
+        internal static DatePeriod MapDatePeriod(Granularity granularity)
         {
             DatePeriod selectedPeriod = DatePeriod.Day;
 
@@ -51,7 +51,7 @@ namespace Artesian.SDK.Common
         /// Mapping the Time Period based on Granularity
         /// </summary>
         /// <param name="granularity">Granularity</param>
-        public static TimePeriod MapTimePeriod(Granularity granularity)
+        internal static TimePeriod MapTimePeriod(Granularity granularity)
         {
             if (!granularity.IsTimeGranularity())
                 throw new ArgumentException("not a time granularity", nameof(granularity));

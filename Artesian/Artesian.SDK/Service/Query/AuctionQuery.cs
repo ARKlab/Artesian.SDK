@@ -39,7 +39,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="ids">Array of marketdata id's to be queried</param>
         /// <returns>AuctionQuery</returns>
-        public AuctionQuery ForMarketData(int[] ids)
+        public new AuctionQuery ForMarketData(int[] ids)
         {
             base.ForMarketData(ids);
             return this;
@@ -61,7 +61,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="filterId">The filter id to be queried</param>
         /// <returns>AuctionQuery</returns>
-        public AuctionQuery ForFilterId(int filterId)
+        public new AuctionQuery ForFilterId(int filterId)
         {
             base.ForFilterId(filterId);
             return this;
@@ -72,7 +72,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="tz">Timezone in which to extract eg UTC/CET</param>
         /// <returns>AuctionQuery</returns>
-        public AuctionQuery InTimezone(string tz)
+        public new AuctionQuery InTimezone(string tz)
         {
             base.InTimezone(tz);
             return this;
@@ -84,7 +84,7 @@ namespace Artesian.SDK.Service
         /// <param name="start">Start date of range</param>
         /// <param name="end">End date of range</param>
         /// <returns>AuctionQuery</returns>
-        public AuctionQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
+        public new AuctionQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
             base.InAbsoluteDateRange(start, end);
             return this;
@@ -96,7 +96,7 @@ namespace Artesian.SDK.Service
         /// <param name="from">Start period of range</param>
         /// <param name="to">End period of range</param>
         /// <returns>AuctionQuery</returns>
-        public AuctionQuery InRelativePeriodRange(Period from, Period to)
+        public new AuctionQuery InRelativePeriodRange(Period from, Period to)
         {
             base.InRelativePeriodRange(from, to);
             return this;
@@ -107,7 +107,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="extractionPeriod">Period to be queried</param>
         /// <returns>AuctionQuery</returns>
-        public AuctionQuery InRelativePeriod(Period extractionPeriod)
+        public new AuctionQuery InRelativePeriod(Period extractionPeriod)
         {
             base.InRelativePeriod(extractionPeriod);
             return this;

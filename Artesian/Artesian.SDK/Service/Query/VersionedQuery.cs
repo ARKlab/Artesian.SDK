@@ -38,7 +38,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="ids">Array of marketdata id's to be queried</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery ForMarketData(int[] ids)
+        public new VersionedQuery ForMarketData(int[] ids)
         {
             base.ForMarketData(ids);
             return this;
@@ -58,7 +58,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="filterId">The filter id to be queried</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery ForFilterId(int filterId)
+        public new VersionedQuery ForFilterId(int filterId)
         {
             base.ForFilterId(filterId);
             return this;
@@ -68,7 +68,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="tz">Timezone in which to extract eg UTC/CET</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery InTimezone(string tz)
+        public new VersionedQuery InTimezone(string tz)
         {
             base.InTimezone(tz);
             return this;
@@ -79,7 +79,7 @@ namespace Artesian.SDK.Service
         /// <param name="start">Start date of range</param>
         /// <param name="end">End date of range</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
+        public new VersionedQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
             base.InAbsoluteDateRange(start, end);
             return this;
@@ -90,7 +90,7 @@ namespace Artesian.SDK.Service
         /// <param name="from">Start period of range</param>
         /// <param name="to">End period of range</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery InRelativePeriodRange(Period from, Period to)
+        public new VersionedQuery InRelativePeriodRange(Period from, Period to)
         {
             base.InRelativePeriodRange(from, to);
             return this;
@@ -100,7 +100,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="extractionPeriod">Period to be queried</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery InRelativePeriod(Period extractionPeriod)
+        public new VersionedQuery InRelativePeriod(Period extractionPeriod)
         {
             base.InRelativePeriod(extractionPeriod);
             return this;
