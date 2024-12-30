@@ -5,7 +5,7 @@ namespace Artesian.SDK.Dto.DerivedCfg
     /// <summary>
     /// Represents a configuration with referenced market data IDs for derived data.
     /// </summary>
-    [MessagePackObject]
+    // [MessagePackObject] // this is not a serializable object type: only an helper for common properties
     public abstract record DerivedCfgWithReferencedIds : DerivedCfgBase
     {
         /// <summary>
