@@ -81,15 +81,13 @@ namespace Artesian.SDK.Factory
         {
             if (Metadata != null)
                 return true;
-            else
-            {
-                await Load(ctk);
 
-                if (Metadata != null)
-                    return true;
+            await Load(ctk);
 
-                return false;
-            }
+            if (Metadata != null)
+                return true;
+
+            return false;
         }
 
         /// <summary>

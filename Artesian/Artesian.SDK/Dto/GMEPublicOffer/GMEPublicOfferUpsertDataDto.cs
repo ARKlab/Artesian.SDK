@@ -33,18 +33,18 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         public static void Validate(this GMEPublicOfferUpsertDataDto upsertData)
         {
             if (upsertData.GMEPublicOffer == null || upsertData.GMEPublicOffer.Count == 0)
-                throw new ArgumentException("'GMEPublicOffer' needs some elements on it");
+                throw new ArgumentException("'GMEPublicOffer' needs some elements on it", nameof(upsertData));
 
             foreach (var item in upsertData.GMEPublicOffer)
             {
                 if (item.UnitReference == null)
-                    throw new ArgumentException("'UnitReference' must be valorized");
+                    throw new ArgumentException("'UnitReference' must be valorized", nameof(upsertData));
 
                 if (item.Operator == null)
-                    throw new ArgumentException("'Operator' must be valorized");
+                    throw new ArgumentException("'Operator' must be valorized", nameof(upsertData));
 
                 if (item.Data == null || item.Data.Count == 0)
-                    throw new ArgumentException("'Data' needs at least one element on it");
+                    throw new ArgumentException("'Data' needs at least one element on it", nameof(upsertData));
             }
 
         }

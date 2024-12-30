@@ -6,9 +6,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
     /// GMEPublicOfferService class
     /// Contains query types to be created
     /// </summary>
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
     public partial class GMEPublicOfferService : IGMEPublicOfferService
-#pragma warning restore CA1001 // Types that own disposable fields should be disposable
     {
         private readonly IArtesianServiceConfig _cfg;
         private readonly ArtesianPolicyConfig _policy;

@@ -29,7 +29,8 @@ using System.Threading.Tasks;
 
 namespace Artesian.SDK.Service
 {
-    internal sealed class Client : IDisposable
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "Accepted to 'leak' FlurlClient instance")]
+    internal sealed class Client
     {
         private readonly MediaTypeFormatterCollection _formatters;
         private readonly FlurlClient _client;
@@ -92,8 +93,7 @@ namespace Artesian.SDK.Service
 
                 var tenantId = domain.Segments
                     .Select(s => s.Trim('/'))
-                    .Where(w => !string.IsNullOrWhiteSpace(w))
-                    .FirstOrDefault();
+                    .FirstOrDefault(w => !string.IsNullOrWhiteSpace(w));
 
                 _confidentialClientApplication = ConfidentialClientApplicationBuilder
                               .Create(config.ClientId)
@@ -235,12 +235,6 @@ namespace Artesian.SDK.Service
 
         public async Task Exec<TBody>(HttpMethod method, string resource, TBody body, CancellationToken ctk = default)
             => await Exec<object, TBody>(method, resource, body, ctk);
-
-        public void Dispose()
-        {
-            _client.Dispose();
-        }
-
     }
     /// <summary>
     /// Flurl Extension

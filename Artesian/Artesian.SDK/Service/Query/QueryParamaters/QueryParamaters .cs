@@ -13,7 +13,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// 
         /// </summary>
-        public QueryParamaters()
+        protected QueryParamaters()
         {
         }
 
@@ -23,7 +23,7 @@ namespace Artesian.SDK.Service
         /// <param name="ids"></param>
         /// <param name="timezone"></param>
         /// <param name="filterId"></param>
-        public QueryParamaters(
+        protected QueryParamaters(
             IEnumerable<int> ids,
             string timezone, 
             int? filterId

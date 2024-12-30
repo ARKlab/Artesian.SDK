@@ -72,8 +72,11 @@ namespace Artesian.SDK.Service
         /// <returns>Paged Result of Custom Filter Entity</returns>
         public Task<PagedResult<CustomFilter>> ReadFilters(int page, int pageSize, CancellationToken ctk = default)
         {
-            if (page < 1 || pageSize < 1)
-                throw new ArgumentException("Page and Page number need to be greater than 0. Page:" + page + " Page Size:" + pageSize);
+            if (page < 1)
+                throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
+            if (pageSize < 1)
+                throw new ArgumentException("PageSize must to be greater than 0. Page Size:" + pageSize, nameof(pageSize));
+
 
             var url = "/filter"
                 .SetQueryParam("pageSize", pageSize)

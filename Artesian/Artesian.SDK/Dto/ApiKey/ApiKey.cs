@@ -99,7 +99,7 @@ namespace Artesian.SDK.Dto
         public static void Validate(this ApiKey.Input apiKey)
         {
             if (apiKey.Id != 0)
-                throw new ArgumentException("ApiKey Id must be 0");
+                throw new ArgumentException("ApiKey Id must be 0", nameof(apiKey));
         }
     }
 }

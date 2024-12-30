@@ -15,7 +15,7 @@ using System;
 
 namespace Artesian.SDK.Service
 {
-    internal class LZ4MessagePackMediaTypeFormatter : MediaTypeFormatter
+    internal sealed class LZ4MessagePackMediaTypeFormatter : MediaTypeFormatter
     {
         private readonly MessagePackSerializerOptions _options;
 

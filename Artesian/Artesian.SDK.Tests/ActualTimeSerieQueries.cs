@@ -274,7 +274,7 @@ namespace Artesian.SDK.Tests
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .ExecuteAsync().Result;
 
-                var headerXAgent = httpTest.CallLog.FirstOrDefault().Request.Headers.Where(w => w.Name == "X-Artesian-Agent").FirstOrDefault();
+                var headerXAgent = httpTest.CallLog.FirstOrDefault().Request.Headers.FirstOrDefault(w => w.Name == "X-Artesian-Agent");
 
                 //ArtesianSDK-C#: 2.2.1.0,Win32NT: 10.0.19041.0,.NETFramework: 4.6.1
 

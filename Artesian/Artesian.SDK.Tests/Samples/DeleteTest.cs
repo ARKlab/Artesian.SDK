@@ -47,7 +47,7 @@ namespace Artesian.SDK.Tests.Samples
             if (!isRegistered)
                 marketData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
 
-            marketData.Load();
+            marketData.Load().GetAwaiter().GetResult();
 
             var writeMarketData = marketData.EditActual();
 
@@ -119,7 +119,7 @@ namespace Artesian.SDK.Tests.Samples
             if (!isRegistered)
                 marketData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
 
-            marketData.Load();
+            marketData.Load().GetAwaiter().GetResult();
 
             var writeMarketData = marketData.EditVersioned(new LocalDateTime(2018, 10, 03, 0, 0));
 
@@ -194,7 +194,7 @@ namespace Artesian.SDK.Tests.Samples
             if (!isRegistered)
                 marketData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
 
-            marketData.Load();
+            marketData.Load().GetAwaiter().GetResult();
 
             var writeMarketData = marketData.EditAuction();
 
@@ -274,7 +274,7 @@ namespace Artesian.SDK.Tests.Samples
             if (!isRegistered)
                 marketData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
 
-            marketData.Load();
+            marketData.Load().GetAwaiter().GetResult();
 
             var writeMarketData = marketData.EditMarketAssessment();
 
@@ -383,7 +383,7 @@ namespace Artesian.SDK.Tests.Samples
             if (!isRegistered)
                 marketData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
 
-            marketData.Load();
+            marketData.Load().GetAwaiter().GetResult();
 
             var writeMarketData = marketData.EditBidAsk();
 

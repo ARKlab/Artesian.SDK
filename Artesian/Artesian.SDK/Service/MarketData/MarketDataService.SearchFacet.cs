@@ -31,7 +31,7 @@ namespace Artesian.SDK.Service
         /// <param name="doNotLoadAdditionalInfo">Skip loading up-to-date curve range and transform</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>ArtesianSearchResults entity</returns>
-        public Task<ArtesianSearchResults> SearchFacetAsync(ArtesianSearchFilter filter, bool doNotLoadAdditionalInfo, CancellationToken ctk = default)
+        public Task<ArtesianSearchResults> SearchFacetAsync(ArtesianSearchFilter filter, bool doNotLoadAdditionalInfo = false, CancellationToken ctk = default)
         {
             filter.Validate();
 
