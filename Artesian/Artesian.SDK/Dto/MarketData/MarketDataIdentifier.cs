@@ -3,7 +3,6 @@
 // license information. 
 using Artesian.SDK.Common;
 using MessagePack;
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Artesian.SDK.Dto
@@ -12,15 +11,8 @@ namespace Artesian.SDK.Dto
     /// The MarketData identifier entity
     /// </summary>
     [MessagePackObject]
-    public class MarketDataIdentifier : IEquatable<MarketDataIdentifier>
+    public record MarketDataIdentifier
     {
-        /// <summary>
-        /// The MarketData identifier default constructor
-        /// </summary>
-        public MarketDataIdentifier()
-        {
-        }
-
         /// <summary>
         /// The MarketData identifier constructor by provider and name
         /// </summary>
@@ -35,14 +27,14 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public virtual string Provider { get; set; }
+        public string Provider { get; protected set; }
 
         /// <summary>
         /// The Market Data unique name for the Provider
         /// </summary>
         [Required]
         [MessagePack.Key(1)]
-        public virtual string Name { get; set; }
+        public string Name { get; protected set; }
 
         /// <summary>
         /// The Market Data override for ToString()
@@ -52,58 +44,6 @@ namespace Artesian.SDK.Dto
             return string.Format("Provider: {0} Name: {1}", Provider, Name);
         }
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        public bool Equals(MarketDataIdentifier other)
-        {
-            if (ReferenceEquals(this, other))
-                return true;
-            if (Equals(other, null))
-                return false;
-
-            return Provider == other.Provider
-                && Name == other.Name;
-        }
-
-        public static bool operator ==(MarketDataIdentifier x, MarketDataIdentifier y)
-        {
-            if (!Equals(x, null))
-                return x.Equals(y);
-            else if (Equals(y, null))
-                return true;
-            else
-                return false;
-
-        }
-
-        public static bool operator !=(MarketDataIdentifier x, MarketDataIdentifier y)
-        {
-            if (!Equals(x, null))
-                return !x.Equals(y);
-            else if (Equals(y, null))
-                return false;
-            else
-                return true;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is MarketDataIdentifier))
-                return false;
-
-            return Equals((MarketDataIdentifier)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = 7243;
-                hash = hash * 92821 + Provider.GetHashCode();
-                hash = hash * 92821 + Name.GetHashCode();
-                return hash;
-            }
-        }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 
     internal static class MarketDataIdentifierExt

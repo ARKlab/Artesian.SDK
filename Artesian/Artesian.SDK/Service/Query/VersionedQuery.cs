@@ -198,7 +198,7 @@ namespace Artesian.SDK.Service
         public VersionedQuery ForMostRecent(LocalDateTime start, LocalDateTime end)
         {
             if (end <= start)
-                throw new ArgumentException("End datetime " + end + " must be greater than start datetime " + start);
+                throw new ArgumentException("End datetime " + end + " must be greater than start datetime " + start, nameof(end));
 
             QueryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
             QueryParamaters.VersionSelectionConfig.MostRecent.DateStart = start;
@@ -241,7 +241,7 @@ namespace Artesian.SDK.Service
         public VersionedQuery ForLastOfDays(LocalDate start, LocalDate end)
         {
             if (end <= start)
-                throw new ArgumentException("End date " + end + " must be greater than start date " + start);
+                throw new ArgumentException("End date " + end + " must be greater than start date " + start, nameof(end));
 
             QueryParamaters.VersionSelectionType = VersionSelectionType.LastOfDays;
             QueryParamaters.VersionSelectionConfig.LastOf.DateStart = start;
@@ -284,7 +284,7 @@ namespace Artesian.SDK.Service
         public VersionedQuery ForLastOfMonths(LocalDate start, LocalDate end)
         {
             if (end <= start)
-                throw new ArgumentException("End date " + end + " must be greater than start date " + start);
+                throw new ArgumentException("End date " + end + " must be greater than start date " + start, nameof(end));
 
             QueryParamaters.VersionSelectionType = VersionSelectionType.LastOfMonths;
             QueryParamaters.VersionSelectionConfig.LastOf.DateStart = start;

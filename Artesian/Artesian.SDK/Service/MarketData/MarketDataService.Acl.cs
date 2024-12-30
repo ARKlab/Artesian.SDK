@@ -41,8 +41,11 @@ namespace Artesian.SDK.Service
         /// <returns>AclPath entity</returns>
         public Task<PagedResult<AclPath>> GetRoles(int page, int pageSize, string[] principalIds, LocalDateTime? asOf = null, CancellationToken ctk = default)
         {
-            if (page < 1 || pageSize < 1)
-                throw new ArgumentException("Page and Page number need to be greater than 0. Page:" + page + " Page Size:" + pageSize);
+            if (page < 1)
+                throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
+            if (pageSize < 1)
+                throw new ArgumentException("PageSize must to be greater than 0. Page Size:" + pageSize, nameof(pageSize));
+
 
             var url = "/acl"
                     .SetQueryParam("pageSize", pageSize)

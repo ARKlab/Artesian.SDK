@@ -183,7 +183,7 @@ namespace Artesian.SDK.Tests
         {
             using (var httpTest = new HttpTest())
             {
-                Dictionary<string, string[]> filterDict = new Dictionary<string, string[]>
+                Dictionary<string, string[]> filterDict = new Dictionary<string, string[]>(StringComparer.Ordinal)
                 {
                     {"TestKey",new []{"TestValue"} }
                 };
@@ -413,7 +413,7 @@ namespace Artesian.SDK.Tests
 
                 var localDateTime = new LocalDateTime(2018, 09, 24, 00, 00);
 
-                data.MarketAssessment.Add(localDateTime, new Dictionary<string, MarketAssessmentValue>());
+                data.MarketAssessment.Add(localDateTime, new Dictionary<string, MarketAssessmentValue>(StringComparer.Ordinal));
                 data.MarketAssessment[localDateTime].Add("test", new MarketAssessmentValue());
 
                 mds.UpsertCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
@@ -500,11 +500,11 @@ namespace Artesian.SDK.Tests
 
                 var localDateTime = new LocalDateTime(2018, 09, 24, 00, 00);
 
-                data.BidAsk.Add(localDateTime, new Dictionary<string, BidAskValue>());
+                data.BidAsk.Add(localDateTime, new Dictionary<string, BidAskValue>(StringComparer.Ordinal));
                 data.BidAsk[localDateTime].Add("test", new BidAskValue());
 
                 var ex = Assert.Throws<ArgumentException>(() => mds.UpsertCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult());
-                ClassicAssert.AreEqual("UpsertCurveData BidAsk must be NULL if Rows are Valorized", ex.Message);
+                ClassicAssert.AreEqual("UpsertCurveData BidAsk must be NULL if Rows are Valorized (Parameter 'upsertCurveData')", ex.Message);
             }
         }
 
@@ -533,11 +533,11 @@ namespace Artesian.SDK.Tests
 
                 data.AuctionRows.Add(localDateTime, new AuctionBids(localDateTime, bid.ToArray(), offer.ToArray()));
 
-                data.MarketAssessment.Add(localDateTime, new Dictionary<string, MarketAssessmentValue>());
+                data.MarketAssessment.Add(localDateTime, new Dictionary<string, MarketAssessmentValue>(StringComparer.Ordinal));
                 data.MarketAssessment[localDateTime].Add("test", new MarketAssessmentValue());
 
                 var ex = Assert.Throws<ArgumentException>(() => mds.UpsertCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult());
-                ClassicAssert.AreEqual("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized", ex.Message);
+                ClassicAssert.AreEqual("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized (Parameter 'upsertCurveData')", ex.Message);
             }
         }
         #endregion

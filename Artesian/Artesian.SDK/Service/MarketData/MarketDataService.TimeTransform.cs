@@ -21,7 +21,7 @@ namespace Artesian.SDK.Service
         public Task<TimeTransform> ReadTimeTransformBaseAsync(int timeTransformId, CancellationToken ctk = default)
         {
             if (timeTransformId < 1)
-                throw new ArgumentException("Transform id is invalid : " + timeTransformId);
+                throw new ArgumentException("Transform id is invalid : " + timeTransformId, nameof(timeTransformId));
 
             return _client.Exec<TimeTransform>(HttpMethod.Get, $@"/timeTransform/entity/{timeTransformId}", ctk: ctk);
         }
@@ -35,8 +35,10 @@ namespace Artesian.SDK.Service
         /// <returns>Paged Result of Time Transform Entity</returns>
         public Task<PagedResult<TimeTransform>> ReadTimeTransformsAsync(int page, int pageSize, bool userDefined, CancellationToken ctk = default)
         {
-            if (page < 1 || pageSize < 1)
-                throw new ArgumentException("Page and Page number need to be greater than 0. Page:" + page + " Page Size:" + pageSize);
+            if (page < 1)
+                throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
+            if (pageSize < 1)
+                throw new ArgumentException("PageSize must to be greater than 0. Page Size:" + pageSize, nameof(pageSize));
 
             var url = "/timeTransform/entity"
                     .SetQueryParam("pageSize", pageSize)

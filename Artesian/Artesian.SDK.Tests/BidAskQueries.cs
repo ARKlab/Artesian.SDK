@@ -569,8 +569,7 @@ namespace Artesian.SDK.Tests
 
                 var test2 = partialQuery
                             .ForFilterId(1)
-                            .ExecuteAsync().Result; ;
-
+                            .ExecuteAsync().Result;
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ba/RollingMonth")
                         .WithQueryParam("filterId", 1)
                     .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })
@@ -579,8 +578,7 @@ namespace Artesian.SDK.Tests
 
                 var test3 = partialQuery
                             .ForMarketData(new [] { 100000004, 100000005, 100000006 })
-                            .ExecuteAsync().Result; ;
-
+                            .ExecuteAsync().Result;
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ba/RollingMonth")
                         .WithQueryParamMultiple("id", new [] { 100000004, 100000005, 100000006 })
                     .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })
@@ -603,8 +601,7 @@ namespace Artesian.SDK.Tests
 
 
                 var test1 = partialQuery
-                            .ExecuteAsync().Result; ;
-
+                            .ExecuteAsync().Result;
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ba/RollingMonth")
                         .WithQueryParam("id", 100000001)
                     .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })
@@ -613,8 +610,7 @@ namespace Artesian.SDK.Tests
 
                 var test2 = partialQuery
                             .InRelativePeriod(Period.FromDays(5))
-                            .ExecuteAsync().Result; ;
-
+                            .ExecuteAsync().Result;
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ba/P5D")
                         .WithQueryParam("id", 100000001)
                     .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })
@@ -623,8 +619,7 @@ namespace Artesian.SDK.Tests
 
                 var test3 = partialQuery
                             .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                            .ExecuteAsync().Result; ;
-
+                            .ExecuteAsync().Result;
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ba/P2W/P20D")
                         .WithQueryParam("id", 100000001)
                     .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })

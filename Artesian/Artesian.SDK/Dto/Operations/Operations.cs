@@ -48,84 +48,80 @@ namespace Artesian.SDK.Dto
             foreach (var id in operations.IDS)
             {
                 if (id == null)
-                    throw new ArgumentException("Operations: any single ID must be valorized");
-                else
-                {
-                    if (String.IsNullOrWhiteSpace(id.ETag))
-                        throw new ArgumentException("Operations: any single ETAG must be valorized");
-                }
+                    throw new ArgumentException("Operations: any single ID must be valorized", nameof(operations));
+
+                if (String.IsNullOrWhiteSpace(id.ETag))
+                    throw new ArgumentException("Operations: any single ETAG must be valorized", nameof(operations));
             }
 
             foreach (var op in operations.OperationList)
             {
                 if (op == null)
-                    throw new ArgumentException("Operations: any single operation must be valorized");
-                else
+                    throw new ArgumentException("Operations: any single operation must be valorized", nameof(operations));
+
+                if (op.Params == null)
+                    throw new ArgumentException("Operations: any single Params in operationList must be valorized", nameof(operations));
+
+                switch (op.Type)
                 {
-                    if (op.Params == null)
-                        throw new ArgumentException("Operations: any single Params in operationList must be valorized");
+                    case OperationType.EnableTag:
+                        {
+                            var p = op.Params as OperationEnableDisableTag;
 
-                    switch (op.Type)
-                    {
-                        case OperationType.EnableTag:
+                            if (!p.TagKey._isValidTagKey())
+                                throw new ArgumentException("Operations: any single Params TagKey must have specific values", nameof(operations));
+
+                            ArtesianUtils.IsValidString(p.TagKey, 3, 50);
+
+                            ArtesianUtils.IsValidString(p.TagValue, 1, 50);
+
+                            break;
+                        }
+                    case OperationType.DisableTag:
+                        {
+                            var p = op.Params as OperationEnableDisableTag;
+
+                            if (!p.TagKey._isValidTagKey())
+                                throw new ArgumentException("Operations: any single Params TagKey must have specific values", nameof(operations));
+
+                            ArtesianUtils.IsValidString(p.TagKey, 3, 50);
+
+                            ArtesianUtils.IsValidString(p.TagValue, 1, 50);
+
+                            break;
+                        }
+                    case OperationType.UpdateTimeTransformID:
+                        {
+                            var p = op.Params as OperationUpdateTimeTransform;
+
+                            break;
+                        }
+                    case OperationType.UpdateAggregationRule:
+                        {
+                            var p = op.Params as OperationUpdateAggregationRule;
+
+                            break;
+                        }
+                    case OperationType.UpdateOriginalTimeZone:
+                        {
+                            if (op.Params is OperationUpdateOriginalTimeZone p)
                             {
-                                var p = op.Params as OperationEnableDisableTag;
-
-                                if (!p.TagKey._isValidTagKey())
-                                    throw new ArgumentException("Operations: any single Params TagKey must have specific values");
-
-                                ArtesianUtils.IsValidString(p.TagKey, 3, 50);
-
-                                ArtesianUtils.IsValidString(p.TagValue, 1, 50);
-
-                                break;
+                                if (!String.IsNullOrWhiteSpace(p.Value) && DateTimeZoneProviders.Tzdb.GetZoneOrNull(p.Value) == null)
+                                    throw new ArgumentException("Operations: any single Params Value must be in IANA database if valorized", nameof(operations));
                             }
-                        case OperationType.DisableTag:
-                            {
-                                var p = op.Params as OperationEnableDisableTag;
+                            else
+                                throw new InvalidOperationException("Operations: Data cannot be used as OperationUpdateOriginalTimeZone");
 
-                                if (!p.TagKey._isValidTagKey())
-                                    throw new ArgumentException("Operations: any single Params TagKey must have specific values");
+                            break;
+                        }
+                    case OperationType.UpdateProviderDescription:
+                        {
+                            var p = op.Params as OperationUpdateProviderDescription;
 
-                                ArtesianUtils.IsValidString(p.TagKey, 3, 50);
-
-                                ArtesianUtils.IsValidString(p.TagValue, 1, 50);
-
-                                break;
-                            }
-                        case OperationType.UpdateTimeTransformID:
-                            {
-                                var p = op.Params as OperationUpdateTimeTransform;
-
-                                break;
-                            }
-                        case OperationType.UpdateAggregationRule:
-                            {
-                                var p = op.Params as OperationUpdateAggregationRule;
-
-                                break;
-                            }
-                        case OperationType.UpdateOriginalTimeZone:
-                            {
-                                if (op.Params is OperationUpdateOriginalTimeZone p)
-                                {
-                                    if (!String.IsNullOrWhiteSpace(p.Value) && DateTimeZoneProviders.Tzdb.GetZoneOrNull(p.Value) == null)
-                                        throw new ArgumentException("Operations: any single Params Value must be in IANA database if valorized");
-                                }
-                                else
-                                    throw new InvalidOperationException("Operations: Data cannot be used as OperationUpdateOriginalTimeZone");
-
-                                break;
-                            }
-                        case OperationType.UpdateProviderDescription:
-                            {
-                                var p = op.Params as OperationUpdateProviderDescription;
-
-                                break;
-                            }
-                        default:
-                            throw new NotSupportedException("Operations: The Operation Type is not supported");
-                    }
+                            break;
+                        }
+                    default:
+                        throw new NotSupportedException("Operations: The Operation Type is not supported");
                 }
             }
         }
@@ -142,8 +138,8 @@ namespace Artesian.SDK.Dto
                 stringToEvaluate == "AggregationRule"
                 )
                 return false;
-            else
-                return true;
+
+            return true;
         }
     }
 

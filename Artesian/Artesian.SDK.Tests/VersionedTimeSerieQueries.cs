@@ -2594,8 +2594,7 @@ namespace Artesian.SDK.Tests
                                     .InRelativeInterval(RelativeInterval.RollingMonth);
 
                 var test1 = partialQuery
-                            .ExecuteAsync().Result; ;
-
+                            .ExecuteAsync().Result;
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/RollingMonth")
                            .WithQueryParam("id", 100000001)
                            .WithVerb(HttpMethod.Get)
@@ -2627,8 +2626,7 @@ namespace Artesian.SDK.Tests
                                     .InRelativePeriod(Period.FromDays(5));
 
                 var test1 = partialQuery
-                            .ExecuteAsync().Result; ;
-
+                            .ExecuteAsync().Result;
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/P5D")
                            .WithQueryParam("id", 100000001)
                            .WithVerb(HttpMethod.Get)

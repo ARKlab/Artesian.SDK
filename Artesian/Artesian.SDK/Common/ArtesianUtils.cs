@@ -4,6 +4,7 @@
 using Artesian.SDK.Service;
 using System;
 using Artesian.SDK.Dto;
+using System.Runtime.CompilerServices;
 
 namespace Artesian.SDK.Common
 {
@@ -96,14 +97,15 @@ namespace Artesian.SDK.Common
         /// <param name="validStringCheck">string</param>
         /// <param name="minLenght">int</param>
         /// <param name="maxLenght">int</param>
-        public static void IsValidString(string validStringCheck, int minLenght, int maxLenght)
+        /// <param name="callerParamName"></param>
+        public static void IsValidString(string validStringCheck, int minLenght, int maxLenght, [CallerArgumentExpression(nameof(validStringCheck))] string callerParamName = "")
         {
             if (String.IsNullOrEmpty(validStringCheck))
-                throw new ArgumentException($"Invalid string '{validStringCheck}'. Must not be null or empty");
+                throw new ArgumentException($"Invalid string '{validStringCheck}'. Must not be null or empty", callerParamName);
             if (validStringCheck.Length < minLenght || validStringCheck.Length > maxLenght)
-                throw new ArgumentException($"Invalid string '{validStringCheck}'. Must be between 1 and 50 characters.");
+                throw new ArgumentException($"Invalid string '{validStringCheck}'. Must be between 1 and 50 characters.", callerParamName);
             if (!ArtesianConstants.StringValidator.Match(validStringCheck).Success)
-                throw new ArgumentException($"Invalid string '{validStringCheck}'. Should not contain trailing or leading whitespaces or any of the following characters: ,:; '\"<space>");
+                throw new ArgumentException($"Invalid string '{validStringCheck}'. Should not contain trailing or leading whitespaces or any of the following characters: ,:; '\"<space>", callerParamName);
         }
 
         /// <summary>
@@ -112,24 +114,27 @@ namespace Artesian.SDK.Common
         /// <param name="provider">string</param>
         /// <param name="minLenght">int</param>
         /// <param name="maxLenght">int</param>
-        public static void IsValidProvider(string provider, int minLenght, int maxLenght)
+        /// <param name="callerParamName"></param>
+        public static void IsValidProvider(string provider, int minLenght, int maxLenght, [CallerArgumentExpression(nameof(provider))] string callerParamName = "")
         {
-            IsValidString(provider, minLenght, maxLenght);
+            IsValidString(provider, minLenght, maxLenght, callerParamName);
         }
+
         /// <summary>
         /// Is valid Market Data name
         /// </summary>
         /// <param name="name">string</param>
         /// <param name="minLenght">int</param>
         /// <param name="maxLenght">int</param>
-        public static void IsValidMarketDataName(string name, int minLenght, int maxLenght)
+        /// <param name="callerParamName"></param>
+        public static void IsValidMarketDataName(string name, int minLenght, int maxLenght, [CallerArgumentExpression(nameof(name))] string callerParamName = "")
         {
             if (String.IsNullOrEmpty(name))
-                throw new ArgumentException($"Invalid MarketData name {name}. Must not be null or empty");
+                throw new ArgumentException($"Invalid MarketData name {name}. Must not be null or empty", callerParamName);
             if (name.Length < minLenght || name.Length > maxLenght)
-                throw new ArgumentException($"Invalid MarketData name {name}. Must be between 1 and 250 characters.");
+                throw new ArgumentException($"Invalid MarketData name {name}. Must be between 1 and 250 characters.", callerParamName);
             if (!ArtesianConstants.MarketDataNameValidator.Match(name).Success)
-                throw new ArgumentException($"Invalid MarketData name '{name}'. Should not contain trailing or leading whitespaces and no other whitespace than <space> in the middle.");
+                throw new ArgumentException($"Invalid MarketData name '{name}'. Should not contain trailing or leading whitespaces and no other whitespace than <space> in the middle.", callerParamName);
         }
     }
 }

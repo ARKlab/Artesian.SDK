@@ -11,7 +11,8 @@ namespace Artesian.SDK.Service
     {
         private readonly IArtesianServiceConfig _cfg;
         private readonly ArtesianPolicyConfig _policy;
-        private static Client _client;
+        private readonly Client _client;
+
         /// <summary>
         /// Metadata service
         /// </summary>

@@ -38,7 +38,7 @@ namespace Artesian.SDK.Service
         public Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(int id, CancellationToken ctk = default)
         {
             if (id < 1)
-                throw new ArgumentException("Id invalid :" + id);
+                throw new ArgumentException("Id invalid: " + id, nameof(id));
 
             var url = "/marketdata/entity/".AppendPathSegment(id.ToString(CultureInfo.InvariantCulture));
             return _client.Exec<MarketDataEntity.Output>(HttpMethod.Get, url, ctk: ctk);

@@ -136,8 +136,8 @@ namespace Artesian.SDK.Factory
 
                 foreach (var reportTime in _values.GroupBy(g => g.ReportTime))
                 {
-                    var BidAsks = reportTime.ToDictionary(key => key.Product.ToString(), value => value.Value);
-                    data.BidAsk.Add(reportTime.Key, BidAsks);
+                    var bidAsks = reportTime.ToDictionary(key => key.Product, value => value.Value, StringComparer.Ordinal);
+                    data.BidAsk.Add(reportTime.Key, bidAsks);
                 }
 
                 await _marketDataService.UpsertCurveDataAsync(data, ctk);
@@ -159,7 +159,7 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Delete(LocalDateTime? rangeStart, LocalDateTime? rangeEnd, List<string> product = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string> product = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
             var data = new DeleteCurveData(_identifier)
             {
@@ -179,7 +179,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// BidAskElement entity
         /// </summary>
-        public class BidAskElement
+        public sealed class BidAskElement
         {
             /// <summary>
             /// BidAskElement constructor
