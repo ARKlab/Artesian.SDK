@@ -142,7 +142,7 @@ namespace Artesian.SDK.Factory
                     data.MarketAssessment.Add(reportTime.Key, assessments);
                 }
 
-                await _marketDataService.UpsertCurveDataAsync(data, ctk);
+                await _marketDataService.UpsertCurveDataAsync(data, ctk).ConfigureAwait(false);
             }
         }
 
@@ -174,7 +174,7 @@ namespace Artesian.SDK.Factory
                 Product = product,
             };
 
-            await _marketDataService.DeleteCurveDataAsync(data, ctk);
+            await _marketDataService.DeleteCurveDataAsync(data, ctk).ConfigureAwait(false);
         }
 
         /// <summary>
