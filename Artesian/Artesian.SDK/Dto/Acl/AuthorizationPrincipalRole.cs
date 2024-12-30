@@ -18,7 +18,7 @@ namespace Artesian.SDK.Dto
     /// The Principal Entity
     /// </summary>
     [MessagePackObject]
-    public class Principal : IEquatable<Principal>
+    public record Principal
     {
         /// <summary>
         /// The Principal Type
@@ -31,44 +31,40 @@ namespace Artesian.SDK.Dto
         [Key(1)]
         public string PrincipalId { get; set; }
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        public bool Equals(Principal other)
-        {
-            return PrincipalType == other.PrincipalType && PrincipalId == other.PrincipalId;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is Principal p && this.Equals(p);
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public Principal()
         {
 
         }
-        public Principal(string s)
+
+        private Principal(string s)
         {
             PrincipalId = s.Substring(2);
             PrincipalType = AuthorizationPrincipalRole.DecodePrincipalEnum(s.Substring(0, 1));
         }
 
+        /// <summary>
+        /// Encodes the Principal to "g:group" or "u:user"
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"{AuthorizationPrincipalRole.EncodePrincipalEnum(PrincipalType)}:{PrincipalId}";
         }
 
-        public override int GetHashCode()
-        {
-            var hashCode = -109350059;
-            hashCode = hashCode * -1521134295 + PrincipalType.GetHashCode();
-            hashCode = hashCode * -1521134295 + PrincipalId.GetHashCode();
-            return hashCode;
-        }
+        /// <summary>
+        /// Implicit conversion from string to Principal
+        /// </summary>
+        /// <param name="p"></param>
+        public static implicit operator string(Principal p) { return p.ToString(); }
 
-        public static implicit operator string(Principal url) { return url.ToString(); }
-
-        public static implicit operator Principal(string url) { return new Principal(url); }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+        /// <summary>
+        /// Implicit conversion from Principal to string
+        /// </summary>
+        /// <param name="p"></param>
+        public static implicit operator Principal(string p) { return new Principal(p); }
     }
 
     /// <summary>

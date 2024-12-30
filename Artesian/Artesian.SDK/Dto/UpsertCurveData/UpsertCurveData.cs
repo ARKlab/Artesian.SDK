@@ -113,72 +113,72 @@ namespace Artesian.SDK.Dto
         public static void Validate(this UpsertCurveData upsertCurveData)
         {
             if (upsertCurveData.ID == null)
-                throw new ArgumentException("UpsertCurveData ID must be valorized");
+                throw new ArgumentException("UpsertCurveData ID must be valorized", nameof(upsertCurveData));
 
             if (upsertCurveData.Timezone != null && DateTimeZoneProviders.Tzdb.GetZoneOrNull(upsertCurveData.Timezone) == null)
-                throw new ArgumentException("UpsertCurveData Timezone must be in IANA database if valorized");
+                throw new ArgumentException("UpsertCurveData Timezone must be in IANA database if valorized", nameof(upsertCurveData));
 
             if (upsertCurveData.DownloadedAt == default)
-                throw new ArgumentException("UpsertCurveData DownloadedAt must be valorized");
+                throw new ArgumentException("UpsertCurveData DownloadedAt must be valorized", nameof(upsertCurveData));
 
             if (upsertCurveData.Rows == null)
             {
                 if (upsertCurveData.Version != null)
-                    throw new ArgumentException("UpsertCurveData Version must be NULL if Rows are NULL");
+                    throw new ArgumentException("UpsertCurveData Version must be NULL if Rows are NULL", nameof(upsertCurveData));
 
                 if ((upsertCurveData.MarketAssessment == null || upsertCurveData.MarketAssessment.Count == 0) && (upsertCurveData.AuctionRows == null || upsertCurveData.AuctionRows.Count == 0) && (upsertCurveData.BidAsk == null || upsertCurveData.BidAsk.Count == 0))
-                    throw new ArgumentException("UpsertCurveData MarketAssessment/Auctions/BidAsks must be valorized if Rows are NULL");
+                    throw new ArgumentException("UpsertCurveData MarketAssessment/Auctions/BidAsks must be valorized if Rows are NULL", nameof(upsertCurveData));
             }
             else
             {
                 if (upsertCurveData.MarketAssessment != null)
-                    throw new ArgumentException("UpsertCurveData MarketAssessment must be NULL if Rows are Valorized");
+                    throw new ArgumentException("UpsertCurveData MarketAssessment must be NULL if Rows are Valorized", nameof(upsertCurveData));
 
                 if (upsertCurveData.AuctionRows != null)
-                    throw new ArgumentException("UpsertCurveData Auctions must be NULL if Rows are Valorized");
+                    throw new ArgumentException("UpsertCurveData Auctions must be NULL if Rows are Valorized", nameof(upsertCurveData));
 
                 if (upsertCurveData.BidAsk != null)
-                    throw new ArgumentException("UpsertCurveData BidAsk must be NULL if Rows are Valorized");
+                    throw new ArgumentException("UpsertCurveData BidAsk must be NULL if Rows are Valorized", nameof(upsertCurveData));
 
                 foreach (var row in upsertCurveData.Rows)
                 {
                     if (row.Key == default)
-                        throw new ArgumentException($"Rows[{row}]", "Invalid timepoint");
+                        throw new ArgumentException($"Rows[{row}]: Invalid timepoint", nameof(upsertCurveData));
                 }
             }
 
             if (upsertCurveData.MarketAssessment == null)
             {
                 if ((upsertCurveData.Rows == null || upsertCurveData.Rows.Count == 0) && (upsertCurveData.AuctionRows == null || upsertCurveData.AuctionRows.Count == 0) && (upsertCurveData.BidAsk == null || upsertCurveData.BidAsk.Count == 0))
-                    throw new ArgumentException("UpsertCurveData Rows/Auctions/BidAsks must be valorized if MarketAssesment are NULL");
+                    throw new ArgumentException("UpsertCurveData Rows/Auctions/BidAsks must be valorized if MarketAssesment are NULL", nameof(upsertCurveData));
             }
             else
             {
                 if (upsertCurveData.Rows != null)
-                    throw new ArgumentException("UpsertCurveData Rows must be NULL if MarketAssessment are Valorized");
+                    throw new ArgumentException("UpsertCurveData Rows must be NULL if MarketAssessment are Valorized", nameof(upsertCurveData));
 
                 if (upsertCurveData.AuctionRows != null)
-                    throw new ArgumentException("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized");
+                    throw new ArgumentException("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized", nameof(upsertCurveData));
 
                 if (upsertCurveData.BidAsk != null)
-                    throw new ArgumentException("UpsertCurveData BidAsk must be NULL if MarketAssessment are Valorized");
+                    throw new ArgumentException("UpsertCurveData BidAsk must be NULL if MarketAssessment are Valorized", nameof(upsertCurveData));
             }
 
             if (upsertCurveData.AuctionRows == null)
             {
                 if ((upsertCurveData.Rows == null || upsertCurveData.Rows.Count == 0) && (upsertCurveData.MarketAssessment == null || upsertCurveData.MarketAssessment.Count == 0) && (upsertCurveData.BidAsk == null || upsertCurveData.BidAsk.Count == 0))
-                    throw new ArgumentException("UpsertCurveData Rows/MarketAssessment/BidAsks must be valorized if Auctions are NULL");
+                    throw new ArgumentException("UpsertCurveData Rows/MarketAssessment/BidAsks must be valorized if Auctions are NULL", nameof(upsertCurveData));
             }
             else
             {
                 if (upsertCurveData.Rows != null)
-                    throw new ArgumentException("UpsertCurveData Rows must be NULL if Auctions are Valorized");
+                    throw new ArgumentException("UpsertCurveData Rows must be NULL if Auctions are Valorized", nameof(upsertCurveData));
 
                 if (upsertCurveData.MarketAssessment != null)
-                    throw new ArgumentException("UpsertCurveData MarketAssesment must be NULL if Auctions are Valorized");
+                    throw new ArgumentException("UpsertCurveData MarketAssesment must be NULL if Auctions are Valorized", nameof(upsertCurveData));
 
                 if (upsertCurveData.BidAsk != null)
-                    throw new ArgumentException("UpsertCurveData BidAsk must be NULL if Auctions are Valorized");
+                    throw new ArgumentException("UpsertCurveData BidAsk must be NULL if Auctions are Valorized", nameof(upsertCurveData));
             }
         }
     }

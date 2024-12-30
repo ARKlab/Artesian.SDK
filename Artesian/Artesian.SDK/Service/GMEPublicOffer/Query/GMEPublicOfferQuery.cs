@@ -193,7 +193,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         {
             string url = _buildRequest();
 
-            var res = await _client.Exec<PagedResult<GMEPublicOfferCurveDto>>(HttpMethod.Get, url, ctk: ctk);
+            var res = await _client.Exec<PagedResult<GMEPublicOfferCurveDto>>(HttpMethod.Get, url, ctk: ctk).ConfigureAwait(false);
             return res;
         }
 

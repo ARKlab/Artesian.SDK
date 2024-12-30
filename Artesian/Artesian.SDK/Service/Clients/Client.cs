@@ -29,7 +29,8 @@ using System.Threading.Tasks;
 
 namespace Artesian.SDK.Service
 {
-    internal sealed class Client : IDisposable
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "Accepted to 'leak' FlurlClient instance")]
+    internal sealed class Client
     {
         private readonly MediaTypeFormatterCollection _formatters;
         private readonly FlurlClient _client;
@@ -92,8 +93,7 @@ namespace Artesian.SDK.Service
 
                 var tenantId = domain.Segments
                     .Select(s => s.Trim('/'))
-                    .Where(w => !string.IsNullOrWhiteSpace(w))
-                    .FirstOrDefault();
+                    .FirstOrDefault(w => !string.IsNullOrWhiteSpace(w));
 
                 _confidentialClientApplication = ConfidentialClientApplicationBuilder
                               .Create(config.ClientId)
@@ -121,7 +121,7 @@ namespace Artesian.SDK.Service
                 {
                     var c = _confidentialClientApplication
                         .AcquireTokenForClient(new[] { _config.Audience });
-                    var res = await c.ExecuteAsync(ctk);
+                    var res = await c.ExecuteAsync(ctk).ConfigureAwait(false);
                     req = req.WithOAuthBearerToken(res.AccessToken);
                 }
 
@@ -132,7 +132,7 @@ namespace Artesian.SDK.Service
                     if (body != null)
                         content = new ObjectContent(typeof(TBody), body, _lz4msgPackFormatter);
 
-                    using (var res =  await _resilienceStrategy.ExecuteAsync ( () =>  req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseContentRead, cancellationToken: ctk)))
+                    using (var res =  await _resilienceStrategy.ExecuteAsync ( () =>  req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseContentRead, cancellationToken: ctk)).ConfigureAwait(false))
                     {
                         if (res.ResponseMessage.StatusCode == HttpStatusCode.NoContent || res.ResponseMessage.StatusCode == HttpStatusCode.NotFound)
                             return default;
@@ -144,13 +144,14 @@ namespace Artesian.SDK.Service
 
                             if (res.ResponseMessage.Content.Headers.ContentType.MediaType == "application/problem+json")
                             {
-                                problemDetail = await res.ResponseMessage.Content.ReadAsAsync<ArtesianSdkProblemDetail>(_formatters, ctk);
+                                problemDetail = await res.ResponseMessage.Content.ReadAsAsync<ArtesianSdkProblemDetail>(_formatters, ctk).ConfigureAwait(false);
                             }
                             else
                             {
                                 if (res.ResponseMessage.StatusCode == HttpStatusCode.BadRequest)
                                 {
-                                    responseText = Client._tryDecodeText(await res.ResponseMessage.Content.ReadAsAsync<object>(_formatters, ctk));
+                                    var obj = await res.ResponseMessage.Content.ReadAsAsync<object>(_formatters, ctk).ConfigureAwait(false);
+                                    responseText = _tryDecodeText(obj);
                                 }
                                 else
                                 {
@@ -158,7 +159,7 @@ namespace Artesian.SDK.Service
 #if NET6_0_OR_GREATER
                                         ctk
 #endif
-                                    );
+                                    ).ConfigureAwait(false);
                                 }
                             }
 
@@ -179,7 +180,7 @@ namespace Artesian.SDK.Service
                             }
                         }
 
-                        return await res.ResponseMessage.Content.ReadAsAsync<TResult>(_formatters, ctk);
+                        return await res.ResponseMessage.Content.ReadAsAsync<TResult>(_formatters, ctk).ConfigureAwait(false);
                     }
                 }
                 finally
@@ -228,19 +229,13 @@ namespace Artesian.SDK.Service
         }
 
         public async Task Exec(HttpMethod method, string resource, CancellationToken ctk = default)
-            => await Exec<object, object>(method, resource, null, ctk);
+            => await Exec<object, object>(method, resource, null, ctk).ConfigureAwait(false);
 
         public Task<TResult> Exec<TResult>(HttpMethod method, string resource, CancellationToken ctk = default)
             => Exec<TResult, object>(method, resource, null, ctk);
 
         public async Task Exec<TBody>(HttpMethod method, string resource, TBody body, CancellationToken ctk = default)
-            => await Exec<object, TBody>(method, resource, body, ctk);
-
-        public void Dispose()
-        {
-            _client.Dispose();
-        }
-
+            => await Exec<object, TBody>(method, resource, body, ctk).ConfigureAwait(false);
     }
     /// <summary>
     /// Flurl Extension

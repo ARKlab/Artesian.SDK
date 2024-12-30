@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Artesian.SDK.Service;
 using Flurl.Http.Testing;
@@ -18,19 +19,19 @@ namespace Artesian.SDK.Tests
 
         #region MarketData ids
         [Test]
-        public void VerInPeriodRelativeIntervalLastOfMonths()
+        public async Task VerInPeriodRelativeIntervalLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/RollingMonth")
                    .WithQueryParam("id", 100000001)
@@ -40,19 +41,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativeIntervalLastOfMonths_Policy()
+        public async Task VerInPeriodRelativeIntervalLastOfMonths_Policy()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/RollingMonth")
                    .WithQueryParam("id", 100000001)
@@ -62,18 +63,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodAbsoluteDateRangeLastOfMonths()
+        public async Task VerInPeriodAbsoluteDateRangeLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InAbsoluteDateRange(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/2018-05-22/2018-07-23")
                    .WithQueryParam("id", 100000001)
@@ -83,18 +84,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativePeriodLastOfMonths()
+        public async Task VerInPeriodRelativePeriodLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/P5D")
                    .WithQueryParam("id", 100000001)
@@ -104,18 +105,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativePeriodRangeLastOfMonths()
+        public async Task VerInPeriodRelativePeriodRangeLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InRelativePeriodRange(Period.FromMonths(-2), Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/P-2M/P5D")
                    .WithQueryParam("id", 100000001)
@@ -125,18 +126,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativeIntervalLastOfMonths()
+        public async Task VerInPeriodRangeRelativeIntervalLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4), Period.FromDays(20))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/P20D/Day/RollingMonth")
                    .WithQueryParam("id", 100000001)
@@ -146,18 +147,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeAbsoluteDateRangeLastOfMonths()
+        public async Task VerInPeriodRangeAbsoluteDateRangeLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4), Period.FromDays(20))
                         .InAbsoluteDateRange(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/P20D/Day/2018-05-22/2018-07-23")
                    .WithQueryParam("id", 100000001)
@@ -167,18 +168,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativePeriodLastOfMonths()
+        public async Task VerInPeriodRangeRelativePeriodLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4), Period.FromDays(20))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/P20D/Day/P5D")
                    .WithQueryParam("id", 100000001)
@@ -188,18 +189,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativePeriodRangeLastOfMonths()
+        public async Task VerInPeriodRangeRelativePeriodRangeLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4), Period.FromDays(20))
                         .InRelativePeriodRange(Period.FromMonths(-2), Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/P20D/Day/P-2M/P5D")
                    .WithQueryParam("id", 100000001)
@@ -209,18 +210,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativeIntervalLastOfMonths()
+        public async Task VerInDateRangeRelativeIntervalLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(new LocalDate(2018, 3, 22), new LocalDate(2018, 7, 23))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/2018-03-22/2018-07-23/Day/RollingMonth")
                    .WithQueryParam("id", 100000001)
@@ -230,18 +231,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeAbsoluteDateRangeLastOfMonths()
+        public async Task VerInDateRangeAbsoluteDateRangeLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                         .InAbsoluteDateRange(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/2018-05-22/2018-07-23/Day/2018-05-22/2018-07-23")
                   .WithQueryParam("id", 100000001)
@@ -251,18 +252,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativePeriodRangeLastOfMonths()
+        public async Task VerInDateRangeRelativePeriodRangeLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                         .InRelativePeriodRange(Period.FromMonths(-4), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/2018-05-22/2018-07-23/Day/P-4M/P20D")
                   .WithQueryParam("id", 100000001)
@@ -272,18 +273,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativePeriodLastOfMonths()
+        public async Task VerInDateRangeRelativePeriodLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/2018-05-22/2018-07-23/Day/P5D")
                   .WithQueryParam("id", 100000001)
@@ -293,18 +294,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativeIntervalLastOfDays()
+        public async Task VerInPeriodRelativeIntervalLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromDays(-20))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-20D/Day/RollingMonth")
                   .WithQueryParam("id", 100000001)
@@ -314,18 +315,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodAbsoluteDateRangeLastOfDays()
+        public async Task VerInPeriodAbsoluteDateRangeLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromDays(-20))
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-20D/Day/2018-06-22/2018-07-23")
                   .WithQueryParam("id", 100000001)
@@ -335,18 +336,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativePeriodLastOfDays()
+        public async Task VerInPeriodRelativePeriodLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromDays(-20))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-20D/Day/P5D")
                   .WithQueryParam("id", 100000001)
@@ -356,18 +357,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativePeriodRangeLastOfDays()
+        public async Task VerInPeriodRelativePeriodRangeLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromDays(-20))
                         .InRelativePeriodRange(Period.FromMonths(-1), Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-20D/Day/P-1M/P5D")
                   .WithQueryParam("id", 100000001)
@@ -377,18 +378,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativeIntervalLastOfDays()
+        public async Task VerInPeriodRangeRelativeIntervalLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromMonths(-1), Period.FromDays(20))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-1M/P20D/Day/RollingMonth")
                   .WithQueryParam("id", 100000001)
@@ -398,18 +399,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeAbsoluteDateRangeLastOfDays()
+        public async Task VerInPeriodRangeAbsoluteDateRangeLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromMonths(-1), Period.FromDays(20))
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-1M/P20D/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
@@ -419,18 +420,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativePeriodLastOfDays()
+        public async Task VerInPeriodRangeRelativePeriodLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromMonths(-1), Period.FromDays(20))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-1M/P20D/Day/P5D")
                  .WithQueryParam("id", 100000001)
@@ -440,18 +441,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativePeriodRangeLastOfDays()
+        public async Task VerInPeriodRangeRelativePeriodRangeLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromMonths(-1), Period.FromDays(20))
                         .InRelativePeriodRange(Period.FromMonths(-1), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-1M/P20D/Day/P-1M/P20D")
                  .WithQueryParam("id", 100000001)
@@ -461,18 +462,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativeIntervalLastOfDays()
+        public async Task VerInDateRangeRelativeIntervalLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/2018-05-22/2018-07-23/Day/RollingMonth")
                  .WithQueryParam("id", 100000001)
@@ -482,18 +483,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeAbsoluteDateRangeLastOfDays()
+        public async Task VerInDateRangeAbsoluteDateRangeLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/2018-06-22/2018-07-23/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
@@ -503,18 +504,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativePeriodRangeLastOfDays()
+        public async Task VerInDateRangeRelativePeriodRangeLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                         .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/2018-06-22/2018-07-23/Day/P2W/P20D")
                 .WithQueryParam("id", 100000001)
@@ -524,18 +525,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativePeriodLastOfDays()
+        public async Task VerInDateRangeRelativePeriodLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/2018-05-22/2018-07-23/Day/P5D")
                 .WithQueryParam("id", 100000001)
@@ -545,18 +546,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativeIntervalLastN()
+        public async Task VerInRelativeIntervalLastN()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastNVersions(3)
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/RollingMonth")
                 .WithQueryParam("id", 100000001)
@@ -566,18 +567,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInAbsoluteDateRangeLastN()
+        public async Task VerInAbsoluteDateRangeLastN()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastNVersions(3)
                         .InAbsoluteDateRange(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/2018-05-22/2018-07-23")
                    .WithQueryParam("id", 100000001)
@@ -587,18 +588,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodExtractionWindowLastN()
+        public async Task VerInRelativePeriodExtractionWindowLastN()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastNVersions(3)
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/P5D")
                    .WithQueryParam("id", 100000001)
@@ -608,18 +609,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodRangeExtractionWindowLastN()
+        public async Task VerInRelativePeriodRangeExtractionWindowLastN()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastNVersions(3)
                         .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/P2W/P20D")
                    .WithQueryParam("id", 100000001)
@@ -629,18 +630,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInAbsoluteDateRangeMostRecent()
+        public async Task VerInAbsoluteDateRangeMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent()
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
@@ -650,18 +651,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodExtractionWindowMostRecent()
+        public async Task VerInRelativePeriodExtractionWindowMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent()
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/Day/P5D")
                    .WithQueryParam("id", 100000001)
@@ -671,18 +672,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodRangeExtractionWindowMostRecent()
+        public async Task VerInRelativePeriodRangeExtractionWindowMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent()
                         .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/Day/P2W/P20D")
                    .WithQueryParam("id", 100000001)
@@ -692,18 +693,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeAbsoluteDateRangeMostRecent()
+        public async Task VerInDateRangeAbsoluteDateRangeMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-06-22T00:00:00/2018-07-23T00:00:00/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
@@ -713,18 +714,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativePeriodExtractionWindowMostRecent()
+        public async Task VerInDateRangeRelativePeriodExtractionWindowMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-06-22T00:00:00/2018-07-23T00:00:00/Day/P5D")
                  .WithQueryParam("id", 100000001)
@@ -734,18 +735,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativePeriodRangeExtractionWindowMostRecent()
+        public async Task VerInDateRangeRelativePeriodRangeExtractionWindowMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent(new LocalDateTime(2018, 6, 22, 0, 0, 0), new LocalDateTime(2018, 7, 23, 0, 0, 0))
                         .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-06-22T00:00:00/2018-07-23T00:00:00/Day/P2W/P20D")
                    .WithQueryParam("id", 100000001)
@@ -755,18 +756,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativePeriodMostRecent()
+        public async Task VerInPeriodRelativePeriodMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent(Period.FromDays(-20))
                         .InRelativePeriod(Period.FromMonths(-1))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/P-20D/Day/P-1M")
                   .WithQueryParam("id", 100000001)
@@ -776,18 +777,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodAbsoluteDateRangeMostRecent()
+        public async Task VerInPeriodAbsoluteDateRangeMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent(Period.FromDays(-20))
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/P-20D/Day/2018-06-22/2018-07-23")
                   .WithQueryParam("id", 100000001)
@@ -797,18 +798,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativePeriodRangeMostRecent()
+        public async Task VerInPeriodRelativePeriodRangeMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent(Period.FromDays(-20))
                         .InRelativePeriodRange(Period.FromMonths(-1), Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/P-20D/Day/P-1M/P5D")
                   .WithQueryParam("id", 100000001)
@@ -818,18 +819,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativePeriodMostRecent()
+        public async Task VerInPeriodRangeRelativePeriodMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent(Period.FromMonths(-1), Period.FromDays(20))
                         .InRelativePeriod(Period.FromMonths(-1))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/P-1M/P20D/Day/P-1M")
                  .WithQueryParam("id", 100000001)
@@ -839,18 +840,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeAbsoluteDateRangeMostRecent()
+        public async Task VerInPeriodRangeAbsoluteDateRangeMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent(Period.FromMonths(-1), Period.FromDays(20))
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/P-1M/P20D/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
@@ -860,18 +861,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativePeriodRangeMostRecent()
+        public async Task VerInPeriodRangeRelativePeriodRangeMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent(Period.FromMonths(-1), Period.FromDays(20))
                         .InRelativePeriodRange(Period.FromMonths(-1), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/P-1M/P20D/Day/P-1M/P20D")
                  .WithQueryParam("id", 100000001)
@@ -881,18 +882,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativeIntervalMostRecent()
+        public async Task VerInDateRangeRelativeIntervalMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent(new LocalDateTime(2018, 5, 21, 12, 30, 15), new LocalDateTime(2018, 7, 23, 8, 45, 30))
                         .InRelativeInterval(RelativeInterval.MonthToDate)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/2018-05-21T12:30:15/2018-07-23T08:45:30/Day/MonthToDate")
                  .WithQueryParam("id", 100000001)
@@ -903,18 +904,18 @@ namespace Artesian.SDK.Tests
 
 
         [Test]
-        public void VerInRelativeIntervalVersion()
+        public async Task VerInRelativeIntervalVersion()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/RollingMonth")
                    .WithQueryParam("id", 100000001)
@@ -924,18 +925,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativeIntervalVersion_Millisecond()
+        public async Task VerInRelativeIntervalVersion_Millisecond()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0, 0, 123))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00.123/Day/RollingMonth")
                    .WithQueryParam("id", 100000001)
@@ -945,18 +946,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInAbsoluteDateRangeVersion()
+        public async Task VerInAbsoluteDateRangeVersion()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                         .InAbsoluteDateRange(new LocalDate(2018, 7, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/2018-07-22/2018-07-23")
                    .WithQueryParam("id", 100000001)
@@ -966,18 +967,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodExtractionWindowVersion()
+        public async Task VerInRelativePeriodExtractionWindowVersion()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/P5D")
                    .WithQueryParam("id", 100000001)
@@ -987,18 +988,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodRangeExtractionWindowVersion()
+        public async Task VerInRelativePeriodRangeExtractionWindowVersion()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                         .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/P2W/P20D")
                   .WithQueryParam("id", 100000001)
@@ -1008,18 +1009,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativeIntervalMUV()
+        public async Task VerInRelativeIntervalMUV()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .ForMUV()
                        .InRelativeInterval(RelativeInterval.RollingMonth)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/RollingMonth")
                   .WithQueryParam("id", 100000001)
@@ -1029,18 +1030,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInAbsoluteDateRangeMUV()
+        public async Task VerInAbsoluteDateRangeMUV()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .ForMUV(new LocalDateTime(2019, 05, 01, 2, 0, 0))
                        .InAbsoluteDateRange(new LocalDate(2018, 7, 22), new LocalDate(2018, 7, 23))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/2018-07-22/2018-07-23")
                   .WithQueryParam("id", 100000001)
@@ -1051,18 +1052,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodExtractionWindowMUV()
+        public async Task VerInRelativePeriodExtractionWindowMUV()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .InRelativePeriod(Period.FromDays(5))
                        .ForMUV()
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/P5D")
                   .WithQueryParam("id", 100000001)
@@ -1072,18 +1073,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodRangeExtractionWindowMUV()
+        public async Task VerInRelativePeriodRangeExtractionWindowMUV()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .ForMUV()
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/P2W/P20D")
                   .WithQueryParam("id", 100000001)
@@ -1094,18 +1095,18 @@ namespace Artesian.SDK.Tests
 
 
         [Test]
-        public void VerWithMultipleMarketDataWindowLastOfDays()
+        public async Task VerWithMultipleMarketDataWindowLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001, 100000002, 100000003 })
                        .InGranularity(Granularity.Day)
                        .ForLastOfDays(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/2018-06-22/2018-07-23/Day/P2W/P20D")
                   .WithQueryParamMultiple("id", new [] { 100000001, 100000002, 100000003 })
@@ -1115,18 +1116,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithMultipleMarketDataWindowLastOfMonths()
+        public async Task VerWithMultipleMarketDataWindowLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001, 100000002, 100000003 })
                        .InGranularity(Granularity.Day)
                        .ForLastOfMonths(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/2018-05-22/2018-07-23/Day/P2W/P20D")
                   .WithQueryParamMultiple("id", new [] { 100000001, 100000002, 100000003 })
@@ -1136,18 +1137,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithMultipleMarketDataWindowLastN()
+        public async Task VerWithMultipleMarketDataWindowLastN()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001, 100000002, 100000003 })
                        .InGranularity(Granularity.Day)
                        .ForLastNVersions(3)
                        .InRelativeInterval(RelativeInterval.RollingMonth)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/RollingMonth")
                   .WithQueryParamMultiple("id", new [] { 100000001, 100000002, 100000003 })
@@ -1157,18 +1158,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithMultipleMarketDataWindowMUV()
+        public async Task VerWithMultipleMarketDataWindowMUV()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001, 100000002, 100000003 })
                        .InGranularity(Granularity.Day)
                        .InRelativePeriod(Period.FromDays(5))
                        .ForMUV()
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/P5D")
                   .WithQueryParamMultiple("id", new [] { 100000001, 100000002, 100000003 })
@@ -1178,18 +1179,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithMultipleMarketDataWindowVersion()
+        public async Task VerWithMultipleMarketDataWindowVersion()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001, 100000002, 100000003 })
                        .InGranularity(Granularity.Day)
                        .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                        .InRelativeInterval(RelativeInterval.RollingMonth)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/RollingMonth")
                   .WithQueryParamMultiple("id", new [] { 100000001, 100000002, 100000003 })
@@ -1199,19 +1200,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeTransformLastOfDays()
+        public async Task VerWithTimeTransformLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .ForLastOfDays(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .WithTimeTransform(1)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/2018-06-22/2018-07-23/Day/P2W/P20D")
                   .WithQueryParam("id", 100000001)
@@ -1222,19 +1223,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeTransformLastOfMonths()
+        public async Task VerWithTimeTransformLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .ForLastOfMonths(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .WithTimeTransform(1)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/2018-05-22/2018-07-23/Day/P2W/P20D")
                   .WithQueryParam("id", 100000001)
@@ -1245,19 +1246,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeTransformLastN()
+        public async Task VerWithTimeTransformLastN()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .ForLastNVersions(3)
                        .InRelativeInterval(RelativeInterval.RollingMonth)
                        .WithTimeTransform(1)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/RollingMonth")
                   .WithQueryParam("id", 100000001)
@@ -1268,19 +1269,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeTransformMUV()
+        public async Task VerWithTimeTransformMUV()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .InRelativePeriod(Period.FromDays(5))
                        .ForMUV()
                        .WithTimeTransform(1)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/P5D")
                   .WithQueryParam("id", 100000001)
@@ -1291,19 +1292,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeTransformVersion()
+        public async Task VerWithTimeTransformVersion()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                        .InRelativeInterval(RelativeInterval.RollingMonth)
                        .WithTimeTransform(1)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/RollingMonth")
                  .WithQueryParam("id", 100000001)
@@ -1314,19 +1315,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeZoneLastOfDays()
+        public async Task VerWithTimeZoneLastOfDays()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .ForLastOfDays(Period.FromMonths(-1), Period.FromDays(20))
                        .InAbsoluteDateRange(new LocalDate(2017, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-1M/P20D/Day/2017-01-01/2018-01-10")
                  .WithQueryParam("id", 100000001)
@@ -1337,19 +1338,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeZoneLastOfMonths()
+        public async Task VerWithTimeZoneLastOfMonths()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .ForLastOfMonths(Period.FromMonths(-1), Period.FromDays(20))
                        .InAbsoluteDateRange(new LocalDate(2017, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-1M/P20D/Day/2017-01-01/2018-01-10")
                  .WithQueryParam("id", 100000001)
@@ -1360,19 +1361,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeZoneLastN()
+        public async Task VerWithTimeZoneLastN()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .ForLastNVersions(3)
                        .InAbsoluteDateRange(new LocalDate(2017, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/2017-01-01/2018-01-10")
                  .WithQueryParam("id", 100000001)
@@ -1383,19 +1384,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeZoneMUV()
+        public async Task VerWithTimeZoneMUV()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .ForMUV()
                        .InAbsoluteDateRange(new LocalDate(2017, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/2017-01-01/2018-01-10")
                  .WithQueryParam("id", 100000001)
@@ -1406,19 +1407,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeZoneVersion()
+        public async Task VerWithTimeZoneVersion()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForMarketData(new [] { 100000001 })
                        .InGranularity(Granularity.Day)
                        .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                        .InAbsoluteDateRange(new LocalDate(2017, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/2017-01-01/2018-01-10")
                  .WithQueryParam("id", 100000001)
@@ -1429,18 +1430,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativeIntervalLastOfMonthsWithHeaders()
+        public async Task VerInPeriodRelativeIntervalLastOfMonthsWithHeaders()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/RollingMonth")
                    .WithQueryParam("id", 100000001)
@@ -1453,12 +1454,12 @@ namespace Artesian.SDK.Tests
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/RollingMonth")
                    .WithQueryParam("id", 100000001)
@@ -1469,14 +1470,14 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Ver_Partitioned_By_ID()
+        public async Task Ver_Partitioned_By_ID()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                     .ForMarketData(new [] {
                         100001250, 100001251, 100001252, 100001253, 100001254,
                         100001255, 100001256, 100001257, 100001258, 100001259,
@@ -1494,7 +1495,7 @@ namespace Artesian.SDK.Tests
                     .InGranularity(Granularity.Day)
                     .InRelativePeriod(Period.FromDays(5))
                     .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
-                    .ExecuteAsync().ConfigureAwait(true).GetAwaiter().GetResult();
+                    .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/P5D")
                     .WithVerb(HttpMethod.Get)
@@ -1532,18 +1533,18 @@ namespace Artesian.SDK.Tests
 
         #region FilterId
         [Test]
-        public void VerInPeriodRelativeIntervalLastOfMonths_FilterId()
+        public async Task VerInPeriodRelativeIntervalLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -1553,18 +1554,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodAbsoluteDateRangeLastOfMonths_FilterId()
+        public async Task VerInPeriodAbsoluteDateRangeLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InAbsoluteDateRange(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/2018-05-22/2018-07-23")
                    .WithQueryParam("filterId", 1)
@@ -1574,18 +1575,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativePeriodLastOfMonths_FilterId()
+        public async Task VerInPeriodRelativePeriodLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/P5D")
                    .WithQueryParam("filterId", 1)
@@ -1595,18 +1596,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativePeriodRangeLastOfMonths_FilterId()
+        public async Task VerInPeriodRelativePeriodRangeLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InRelativePeriodRange(Period.FromMonths(-2), Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/P-2M/P5D")
                    .WithQueryParam("filterId", 1)
@@ -1616,18 +1617,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativeIntervalLastOfMonths_FilterId()
+        public async Task VerInPeriodRangeRelativeIntervalLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4), Period.FromDays(20))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/P20D/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -1637,18 +1638,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeAbsoluteDateRangeLastOfMonths_FilterId()
+        public async Task VerInPeriodRangeAbsoluteDateRangeLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4), Period.FromDays(20))
                         .InAbsoluteDateRange(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/P20D/Day/2018-05-22/2018-07-23")
                    .WithQueryParam("filterId", 1)
@@ -1658,18 +1659,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativePeriodLastOfMonths_FilterId()
+        public async Task VerInPeriodRangeRelativePeriodLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4), Period.FromDays(20))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/P20D/Day/P5D")
                    .WithQueryParam("filterId", 1)
@@ -1679,18 +1680,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativePeriodRangeLastOfMonths_FilterId()
+        public async Task VerInPeriodRangeRelativePeriodRangeLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4), Period.FromDays(20))
                         .InRelativePeriodRange(Period.FromMonths(-2), Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/P20D/Day/P-2M/P5D")
                    .WithQueryParam("filterId", 1)
@@ -1700,18 +1701,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativeIntervalLastOfMonths_FilterId()
+        public async Task VerInDateRangeRelativeIntervalLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(new LocalDate(2018, 3, 22), new LocalDate(2018, 7, 23))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/2018-03-22/2018-07-23/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -1721,18 +1722,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeAbsoluteDateRangeLastOfMonths_FilterId()
+        public async Task VerInDateRangeAbsoluteDateRangeLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                         .InAbsoluteDateRange(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/2018-05-22/2018-07-23/Day/2018-05-22/2018-07-23")
                    .WithQueryParam("filterId", 1)
@@ -1742,18 +1743,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativePeriodRangeLastOfMonths_FilterId()
+        public async Task VerInDateRangeRelativePeriodRangeLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                         .InRelativePeriodRange(Period.FromMonths(-4), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/2018-05-22/2018-07-23/Day/P-4M/P20D")
                    .WithQueryParam("filterId", 1)
@@ -1763,18 +1764,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativePeriodLastOfMonths_FilterId()
+        public async Task VerInDateRangeRelativePeriodLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/2018-05-22/2018-07-23/Day/P5D")
                    .WithQueryParam("filterId", 1)
@@ -1784,18 +1785,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativeIntervalLastOfDays_FilterId()
+        public async Task VerInPeriodRelativeIntervalLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromDays(-20))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-20D/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -1805,18 +1806,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodAbsoluteDateRangeLastOfDays_FilterId()
+        public async Task VerInPeriodAbsoluteDateRangeLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromDays(-20))
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-20D/Day/2018-06-22/2018-07-23")
                    .WithQueryParam("filterId", 1)
@@ -1826,18 +1827,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativePeriodLastOfDays_FilterId()
+        public async Task VerInPeriodRelativePeriodLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromDays(-20))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-20D/Day/P5D")
                    .WithQueryParam("filterId", 1)
@@ -1847,18 +1848,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativePeriodRangeLastOfDays_FilterId()
+        public async Task VerInPeriodRelativePeriodRangeLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromDays(-20))
                         .InRelativePeriodRange(Period.FromMonths(-1), Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-20D/Day/P-1M/P5D")
                    .WithQueryParam("filterId", 1)
@@ -1868,18 +1869,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativeIntervalLastOfDays_FilterId()
+        public async Task VerInPeriodRangeRelativeIntervalLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromMonths(-1), Period.FromDays(20))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-1M/P20D/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -1889,18 +1890,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeAbsoluteDateRangeLastOfDays_FilterId()
+        public async Task VerInPeriodRangeAbsoluteDateRangeLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromMonths(-1), Period.FromDays(20))
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-1M/P20D/Day/2018-06-22/2018-07-23")
                    .WithQueryParam("filterId", 1)
@@ -1910,18 +1911,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativePeriodLastOfDays_FilterId()
+        public async Task VerInPeriodRangeRelativePeriodLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromMonths(-1), Period.FromDays(20))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-1M/P20D/Day/P5D")
                    .WithQueryParam("filterId", 1)
@@ -1931,18 +1932,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRangeRelativePeriodRangeLastOfDays_FilterId()
+        public async Task VerInPeriodRangeRelativePeriodRangeLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(Period.FromMonths(-1), Period.FromDays(20))
                         .InRelativePeriodRange(Period.FromMonths(-1), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-1M/P20D/Day/P-1M/P20D")
                    .WithQueryParam("filterId", 1)
@@ -1952,18 +1953,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativeIntervalLastOfDays_FilterId()
+        public async Task VerInDateRangeRelativeIntervalLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/2018-05-22/2018-07-23/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -1973,18 +1974,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeAbsoluteDateRangeLastOfDays_FilterId()
+        public async Task VerInDateRangeAbsoluteDateRangeLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/2018-06-22/2018-07-23/Day/2018-06-22/2018-07-23")
                    .WithQueryParam("filterId", 1)
@@ -1994,18 +1995,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativePeriodRangeLastOfDays_FilterId()
+        public async Task VerInDateRangeRelativePeriodRangeLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                         .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/2018-06-22/2018-07-23/Day/P2W/P20D")
                    .WithQueryParam("filterId", 1)
@@ -2015,18 +2016,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInDateRangeRelativePeriodLastOfDays_FilterId()
+        public async Task VerInDateRangeRelativePeriodLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfDays(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/2018-05-22/2018-07-23/Day/P5D")
                    .WithQueryParam("filterId", 1)
@@ -2036,18 +2037,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativeIntervalLastN_FilterId()
+        public async Task VerInRelativeIntervalLastN_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastNVersions(3)
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -2057,18 +2058,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInAbsoluteDateRangeLastN_FilterId()
+        public async Task VerInAbsoluteDateRangeLastN_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastNVersions(3)
                         .InAbsoluteDateRange(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/2018-05-22/2018-07-23")
                    .WithQueryParam("filterId", 1)
@@ -2078,18 +2079,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodExtractionWindowLastN_FilterId()
+        public async Task VerInRelativePeriodExtractionWindowLastN_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastNVersions(3)
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/P5D")
                    .WithQueryParam("filterId", 1)
@@ -2099,18 +2100,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodRangeExtractionWindowLastN_FilterId()
+        public async Task VerInRelativePeriodRangeExtractionWindowLastN_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastNVersions(3)
                         .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/P2W/P20D")
                    .WithQueryParam("filterId", 1)
@@ -2120,18 +2121,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativeIntervalVersion_FilterId()
+        public async Task VerInRelativeIntervalVersion_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -2141,18 +2142,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativeIntervalVersion_Millisecond_FilterId()
+        public async Task VerInRelativeIntervalVersion_Millisecond_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0, 0, 123))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00.123/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -2162,18 +2163,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInAbsoluteDateRangeVersion_FilterId()
+        public async Task VerInAbsoluteDateRangeVersion_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                         .InAbsoluteDateRange(new LocalDate(2018, 7, 22), new LocalDate(2018, 7, 23))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/2018-07-22/2018-07-23")
                    .WithQueryParam("filterId", 1)
@@ -2183,18 +2184,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodExtractionWindowVersion_FilterId()
+        public async Task VerInRelativePeriodExtractionWindowVersion_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                         .InRelativePeriod(Period.FromDays(5))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/P5D")
                    .WithQueryParam("filterId", 1)
@@ -2204,18 +2205,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodRangeExtractionWindowVersion_FilterId()
+        public async Task VerInRelativePeriodRangeExtractionWindowVersion_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                         .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/P2W/P20D")
                    .WithQueryParam("filterId", 1)
@@ -2225,18 +2226,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativeIntervalMUV_FilterId()
+        public async Task VerInRelativeIntervalMUV_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .ForMUV()
                        .InRelativeInterval(RelativeInterval.RollingMonth)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -2246,18 +2247,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInAbsoluteDateRangeMUV_FilterId()
+        public async Task VerInAbsoluteDateRangeMUV_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .ForMUV()
                        .InAbsoluteDateRange(new LocalDate(2018, 7, 22), new LocalDate(2018, 7, 23))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/2018-07-22/2018-07-23")
                    .WithQueryParam("filterId", 1)
@@ -2267,18 +2268,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodExtractionWindowMUV_FilterId()
+        public async Task VerInRelativePeriodExtractionWindowMUV_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .InRelativePeriod(Period.FromDays(5))
                        .ForMUV()
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/P5D")
                    .WithQueryParam("filterId", 1)
@@ -2288,18 +2289,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInRelativePeriodRangeExtractionWindowMUV_FilterId()
+        public async Task VerInRelativePeriodRangeExtractionWindowMUV_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .ForMUV()
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/P2W/P20D")
                    .WithQueryParam("filterId", 1)
@@ -2309,19 +2310,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeTransformLastOfDays_FilterId()
+        public async Task VerWithTimeTransformLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .ForLastOfDays(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .WithTimeTransform(1)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/2018-06-22/2018-07-23/Day/P2W/P20D")
                    .WithQueryParam("filterId", 1)
@@ -2332,19 +2333,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeTransformLastOfMonths_FilterId()
+        public async Task VerWithTimeTransformLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .ForLastOfMonths(new LocalDate(2018, 5, 22), new LocalDate(2018, 7, 23))
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .WithTimeTransform(1)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/2018-05-22/2018-07-23/Day/P2W/P20D")
                    .WithQueryParam("filterId", 1)
@@ -2355,19 +2356,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeTransformLastN_FilterId()
+        public async Task VerWithTimeTransformLastN_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .ForLastNVersions(3)
                        .InRelativeInterval(RelativeInterval.RollingMonth)
                        .WithTimeTransform(1)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -2378,19 +2379,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeTransformMUV_FilterId()
+        public async Task VerWithTimeTransformMUV_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .InRelativePeriod(Period.FromDays(5))
                        .ForMUV()
                        .WithTimeTransform(1)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/P5D")
                    .WithQueryParam("filterId", 1)
@@ -2401,19 +2402,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeTransformVersion_FilterId()
+        public async Task VerWithTimeTransformVersion_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                        .InRelativeInterval(RelativeInterval.RollingMonth)
                        .WithTimeTransform(1)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -2424,19 +2425,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeZoneLastOfDays_FilterId()
+        public async Task VerWithTimeZoneLastOfDays_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .ForLastOfDays(Period.FromMonths(-1), Period.FromDays(20))
                        .InAbsoluteDateRange(new LocalDate(2017, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-1M/P20D/Day/2017-01-01/2018-01-10")
                    .WithQueryParam("filterId", 1)
@@ -2447,19 +2448,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeZoneLastOfMonths_FilterId()
+        public async Task VerWithTimeZoneLastOfMonths_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .ForLastOfMonths(Period.FromMonths(-1), Period.FromDays(20))
                        .InAbsoluteDateRange(new LocalDate(2017, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-1M/P20D/Day/2017-01-01/2018-01-10")
                    .WithQueryParam("filterId", 1)
@@ -2470,19 +2471,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeZoneLastN_FilterId()
+        public async Task VerWithTimeZoneLastN_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .ForLastNVersions(3)
                        .InAbsoluteDateRange(new LocalDate(2017, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/2017-01-01/2018-01-10")
                    .WithQueryParam("filterId", 1)
@@ -2493,19 +2494,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeZoneMUV_FilterId()
+        public async Task VerWithTimeZoneMUV_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .ForMUV()
                        .InAbsoluteDateRange(new LocalDate(2017, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/2017-01-01/2018-01-10")
                    .WithQueryParam("filterId", 1)
@@ -2516,19 +2517,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerWithTimeZoneVersion_FilterId()
+        public async Task VerWithTimeZoneVersion_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
                        .InAbsoluteDateRange(new LocalDate(2017, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/2017-01-01/2018-01-10")
                    .WithQueryParam("filterId", 1)
@@ -2539,18 +2540,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void VerInPeriodRelativeIntervalLastOfMonthsWithHeaders_FilterId()
+        public async Task VerInPeriodRelativeIntervalLastOfMonthsWithHeaders_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -2563,12 +2564,12 @@ namespace Artesian.SDK.Tests
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForFilterId(1)
                         .InGranularity(Granularity.Day)
                         .ForLastOfMonths(Period.FromMonths(-4))
                         .InRelativeInterval(RelativeInterval.RollingMonth)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/RollingMonth")
                    .WithQueryParam("filterId", 1)
@@ -2581,7 +2582,7 @@ namespace Artesian.SDK.Tests
 
         #region partialQueryChanges
         [Test]
-        public void Ver_PeriodRelativeIntervalChange()
+        public async Task Ver_PeriodRelativeIntervalChange()
         {
             using (var httpTest = new HttpTest())
             {
@@ -2593,17 +2594,16 @@ namespace Artesian.SDK.Tests
                                     .ForLastOfMonths(Period.FromMonths(-4))
                                     .InRelativeInterval(RelativeInterval.RollingMonth);
 
-                var test1 = partialQuery
-                            .ExecuteAsync().Result; ;
-
+                var test1 = await partialQuery
+                            .ExecuteAsync();
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/RollingMonth")
                            .WithQueryParam("id", 100000001)
                            .WithVerb(HttpMethod.Get)
                            .Times(1);
 
-                var test2 = partialQuery
+                var test2 = await partialQuery
                             .ForLastOfDays(Period.FromDays(-20))
-                            .ExecuteAsync().Result;
+                            .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfDays/P-20D/Day/RollingMonth")
                            .WithQueryParam("id", 100000001)
@@ -2614,7 +2614,7 @@ namespace Artesian.SDK.Tests
 
 
         [Test]
-        public void Ver_RelativePeriodExtractionWindowChange()
+        public async Task Ver_RelativePeriodExtractionWindowChange()
         {
             using (var httpTest = new HttpTest())
             {
@@ -2626,26 +2626,25 @@ namespace Artesian.SDK.Tests
                                     .ForLastNVersions(3)
                                     .InRelativePeriod(Period.FromDays(5));
 
-                var test1 = partialQuery
-                            .ExecuteAsync().Result; ;
-
+                var test1 = await partialQuery
+                            .ExecuteAsync();
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Last3/Day/P5D")
                            .WithQueryParam("id", 100000001)
                            .WithVerb(HttpMethod.Get)
                            .Times(1);
 
-                var test2 = partialQuery
+                var test2 = await partialQuery
                             .ForVersion(new LocalDateTime(2018, 07, 19, 12, 0))
-                            .ExecuteAsync().Result;
+                            .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/Version/2018-07-19T12:00:00/Day/P5D")
                            .WithQueryParam("id", 100000001)
                            .WithVerb(HttpMethod.Get)
                            .Times(1);
 
-                var test3 = partialQuery
+                var test3 = await partialQuery
                             .ForMUV()
-                            .ExecuteAsync().Result;
+                            .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Day/P5D")
                            .WithQueryParam("id", 100000001)
@@ -2655,7 +2654,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Ver_RelativePeriodForAnalysisDate()
+        public async Task Ver_RelativePeriodForAnalysisDate()
         {
             using (var httpTest = new HttpTest())
             {
@@ -2667,9 +2666,9 @@ namespace Artesian.SDK.Tests
                                     .ForMUV()
                                     .InRelativePeriod(Period.FromDays(5));
 
-                var test = partialQuery
+                var test = await partialQuery
                             .ForAnalysisDate(new LocalDate(2018, 07, 19))
-                            .ExecuteAsync().Result;
+                            .ExecuteAsync();
             
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MUV/Hour/P5D")
                         .WithQueryParam("id", 100000001)
@@ -2695,9 +2694,9 @@ namespace Artesian.SDK.Tests
                                 .ForAnalysisDate(new LocalDate(2018, 07, 19))
                                 ;
 
-            Assert.Throws<ArtesianSdkClientException>(
+            Assert.ThrowsAsync<ArtesianSdkClientException>(
                 () => {
-                    query.ExecuteAsync().ConfigureAwait(true).GetAwaiter().GetResult(); 
+                    return query.ExecuteAsync(); 
                 }
             );
         }
@@ -2706,19 +2705,19 @@ namespace Artesian.SDK.Tests
 
         #region Filler
         [Test]
-        public void FillerNoneVerInAbsoluteDateRangeMostRecent()
+        public async Task FillerNoneVerInAbsoluteDateRangeMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent()
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                         .WithFillNone()
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
@@ -2729,19 +2728,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void FillerNullVerInAbsoluteDateRangeMostRecent()
+        public async Task FillerNullVerInAbsoluteDateRangeMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent()
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                         .WithFillNull()
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
@@ -2752,19 +2751,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void FillerLatestValueVerInAbsoluteDateRangeMostRecent()
+        public async Task FillerLatestValueVerInAbsoluteDateRangeMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent()
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                         .WithFillLatestValue(Period.FromDays(7))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
@@ -2776,19 +2775,19 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void FillerCustomValueVerInAbsoluteDateRangeMostRecent()
+        public async Task FillerCustomValueVerInAbsoluteDateRangeMostRecent()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var ver = qs.CreateVersioned()
+                var ver = await qs.CreateVersioned()
                         .ForMarketData(new [] { 100000001 })
                         .InGranularity(Granularity.Day)
                         .ForMostRecent()
                         .InAbsoluteDateRange(new LocalDate(2018, 6, 22), new LocalDate(2018, 7, 23))
                         .WithFillCustomValue(123)
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/MostRecent/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)

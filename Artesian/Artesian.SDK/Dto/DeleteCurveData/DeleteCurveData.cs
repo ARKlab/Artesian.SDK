@@ -96,10 +96,10 @@ namespace Artesian.SDK.Dto
         public static void Validate(this DeleteCurveData deleteCurveData)
         {
             if (deleteCurveData.ID == null)
-                throw new ArgumentException("DeleteCurveData ID must be valorized");
+                throw new ArgumentException("DeleteCurveData ID must be valorized", nameof(deleteCurveData));
 
             if (deleteCurveData.Timezone != null && DateTimeZoneProviders.Tzdb.GetZoneOrNull(deleteCurveData.Timezone) == null)
-                throw new ArgumentException("DeleteCurveData Timezone must be in IANA database if valorized");
+                throw new ArgumentException("DeleteCurveData Timezone must be in IANA database if valorized", nameof(deleteCurveData));
         }
     }
 }

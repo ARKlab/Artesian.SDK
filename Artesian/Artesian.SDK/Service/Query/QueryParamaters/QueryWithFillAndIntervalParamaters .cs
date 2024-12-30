@@ -11,14 +11,14 @@ namespace Artesian.SDK.Service
     public abstract class QueryWithFillAndIntervalParamaters : QueryWithRangeParamaters
     {
         /// <summary>
-        /// 
+        /// Query with Fill and Interval Paramaters DTO
         /// </summary>
-        public QueryWithFillAndIntervalParamaters ()
+        protected QueryWithFillAndIntervalParamaters ()
         {
         }
 
         /// <summary>
-        /// 
+        /// Query with Fill and Interval Paramaters DTO
         /// </summary>
         /// <param name="ids"></param>
         /// <param name="extractionRangeSelectionConfig"></param>
@@ -27,7 +27,7 @@ namespace Artesian.SDK.Service
         /// <param name="filterId"></param>
         /// <param name="fillerKind"></param>
         /// <param name="fillerConfig"></param>
-        public QueryWithFillAndIntervalParamaters (
+        protected QueryWithFillAndIntervalParamaters (
             IEnumerable<int> ids, 
             ExtractionRangeSelectionConfig 
             extractionRangeSelectionConfig, 

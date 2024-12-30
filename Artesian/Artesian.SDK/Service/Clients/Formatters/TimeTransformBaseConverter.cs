@@ -8,7 +8,7 @@ using System;
 
 namespace Artesian.SDK.Service
 {
-    class TimeTransformConverter : JsonCreationConverter<TimeTransform>
+    internal sealed class TimeTransformConverter : JsonCreationConverter<TimeTransform>
     {
         protected override TimeTransform Create(Type objectType, JObject jObject)
         {
@@ -19,13 +19,15 @@ namespace Artesian.SDK.Service
                 {
                     return new TimeTransformSimpleShift();
                 }
-                else if (token.ToObject<TransformType>() == TransformType.Calendar)
+
+                if (token.ToObject<TransformType>() == TransformType.Calendar)
                 {
-                    throw new NotImplementedException($@"Not yet impletemented transform {TransformType.Calendar}");
+                    throw new NotSupportedException($@"Not yet impletemented transform {TransformType.Calendar}");
                 }
-                else if (token.ToObject<TransformType>() == TransformType.Composition)
+
+                if (token.ToObject<TransformType>() == TransformType.Composition)
                 {
-                    throw new NotImplementedException($@"Not yet impletemented transform {TransformType.Composition}");
+                    throw new NotSupportedException($@"Not yet impletemented transform {TransformType.Composition}");
                 }
 
                 throw new InvalidOperationException("Can't deserialize TimeTransformBase. TransformType field is not valid.");
@@ -59,7 +61,7 @@ namespace Artesian.SDK.Service
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override object ReadJson(JsonReader reader,

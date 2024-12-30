@@ -37,19 +37,19 @@ namespace Artesian.SDK.Service
         internal static readonly Regex MarketDataNameValidator = MarketDataNameValidatorGenerator();
         internal static readonly Regex RelativeProductValidator = RelativeProductValidatorGenerator();
 
-        [GeneratedRegex(CharacterValidatorRegEx, RegexOptions.CultureInvariant)]
+        [GeneratedRegex(CharacterValidatorRegEx, RegexOptions.CultureInvariant, 1000)]
         private static partial Regex StringValidatorGenerator();
 
-        [GeneratedRegex(MarketDataNameValidatorRegEx, RegexOptions.CultureInvariant)]
+        [GeneratedRegex(MarketDataNameValidatorRegEx, RegexOptions.CultureInvariant, 1000)]
         private static partial Regex MarketDataNameValidatorGenerator();
 
-        [GeneratedRegex(RelativeProductValidatorRegEx, RegexOptions.CultureInvariant)]
+        [GeneratedRegex(RelativeProductValidatorRegEx, RegexOptions.CultureInvariant, 1000)]
         private static partial Regex RelativeProductValidatorGenerator();
 #else
 
-        internal static readonly Regex StringValidator = new Regex(CharacterValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled);
-        internal static readonly Regex MarketDataNameValidator = new Regex(MarketDataNameValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled);
-        internal static readonly Regex RelativeProductValidator = new Regex(RelativeProductValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        internal static readonly Regex StringValidator = new Regex(CharacterValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+        internal static readonly Regex MarketDataNameValidator = new Regex(MarketDataNameValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+        internal static readonly Regex RelativeProductValidator = new Regex(RelativeProductValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 #endif
 
     }

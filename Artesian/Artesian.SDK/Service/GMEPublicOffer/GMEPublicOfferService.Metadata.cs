@@ -1,4 +1,5 @@
-﻿using Artesian.SDK.Dto;
+﻿using Artesian.SDK.Common;
+using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.GMEPublicOffer;
 
 using Flurl;
@@ -28,8 +29,10 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <returns>Paged result of OperatorDto</returns>
         public Task<PagedResult<OperatorDto>> ReadOperatorsAsync(int page, int pageSize, string operatorFilter = null, string[] sort = null, CancellationToken ctk = default)
         {
-            if (page < 1 || pageSize < 1)
-                throw new ArgumentException("Page and Page number need to be greater than 0. Page:" + page + " Page Size:" + pageSize);
+            if (page < 1)
+                throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
+            if (pageSize < 1)
+                throw new ArgumentException("PageSize must to be greater than 0. Page Size:" + pageSize, nameof(pageSize));
 
             var url = "/enums/operators"
                 .SetQueryParam("operatorFilter", operatorFilter)
@@ -52,8 +55,10 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <returns>Paged result of UnitDto</returns>
         public Task<PagedResult<UnitDto>> ReadUnitsAsync(int page, int pageSize, string unitFilter = null, string[] sort = null, CancellationToken ctk = default)
         {
-            if (page < 1 || pageSize < 1)
-                throw new ArgumentException("Page and Page number need to be greater than 0. Page:" + page + " Page Size:" + pageSize);
+            if (page < 1)
+                throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
+            if (pageSize < 1)
+                throw new ArgumentException("PageSize must to be greater than 0. Page Size:" + pageSize, nameof(pageSize));
 
             var url = "/enums/units"
                 .SetQueryParam("unitFilter", unitFilter)
@@ -74,8 +79,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <returns>UnitConfiguration result</returns>
         public Task<UnitConfigurationDto> ReadUnitConfigurationMappingAsync(string unit, CancellationToken ctk = default)
         {
-            if (string.IsNullOrEmpty(unit))
-                throw new ArgumentException("Unit must be provided");
+            Guard.IsNotNullOrWhiteSpace(unit);
 
             var url = $"/unitconfigurationmappings/{unit}";
 
@@ -93,8 +97,10 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <returns>UnitConfiguration result</returns>
         public Task<PagedResult<UnitConfigurationDto>> ReadUnitConfigurationMappingsAsync(int page, int pageSize, string unitFilter = null, string[] sort = null, CancellationToken ctk = default)
         {
-            if (page < 1 || pageSize < 1)
-                throw new ArgumentException("Page and Page number need to be greater than 0. Page:" + page + " Page Size:" + pageSize);
+            if (page < 1)
+                throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
+            if (pageSize < 1)
+                throw new ArgumentException("PageSize must to be greater than 0. Page Size:" + pageSize, nameof(pageSize));
 
             var url = $"/unitconfigurationmappings"
                 .SetQueryParam("unitFilter", unitFilter)
@@ -113,8 +119,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <returns>Upsert UnitConfiguration</returns>
         public Task<UnitConfigurationDto> UpsertUnitConfigurationMappingAsync(UnitConfigurationDto unitCfg, CancellationToken ctk = default)
         {
-            if (unitCfg?.Unit == null)
-                throw new ArgumentException($"Valid UnitConfiguration must be provided");
+            Guard.IsNotNullOrWhiteSpace(unitCfg.Unit);
 
             var url = $"/unitconfigurationmappings/{unitCfg.Unit}";
 
@@ -130,8 +135,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <returns></returns>
         public Task DeleteUnitConfigurationMappingAsync(string unit, CancellationToken ctk = default)
         {
-            if (string.IsNullOrEmpty(unit))
-                throw new ArgumentException("Unit must be provided");
+            Guard.IsNotNullOrWhiteSpace(unit);
 
             var url = $"/unitconfigurationmappings/{unit}";
 

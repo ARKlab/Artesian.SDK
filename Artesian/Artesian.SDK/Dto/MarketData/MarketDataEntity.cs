@@ -238,19 +238,19 @@ namespace Artesian.SDK.Dto
         public static void ValidateRegister(this MarketDataEntity.Input marketDataEntityInput)
         {
             if (marketDataEntityInput.MarketDataId != 0)
-                throw new ArgumentException("MarketDataId must be 0");
+                throw new ArgumentException("MarketDataId must be 0", nameof(marketDataEntityInput));
 
             if (marketDataEntityInput.Type == MarketDataType.MarketAssessment && marketDataEntityInput.TransformID != null)
-                throw new ArgumentException("No transform possible when Type is MarketAssessment");
+                throw new ArgumentException("No transform possible when Type is MarketAssessment", nameof(marketDataEntityInput));
         }
 
         public static void ValidateUpdate(this MarketDataEntity.Input marketDataEntityInput)
         {
             if (marketDataEntityInput.Type == MarketDataType.MarketAssessment && marketDataEntityInput.TransformID != null)
-                throw new ArgumentException("No transform possible when Type is MarketAssessment");
+                throw new ArgumentException("No transform possible when Type is MarketAssessment", nameof(marketDataEntityInput));
 
             if (marketDataEntityInput.Type == MarketDataType.MarketAssessment && marketDataEntityInput.AggregationRule != AggregationRule.Undefined)
-                throw new ArgumentException("Aggregation Rule must be Undefined if Type is MarketAssessment");
+                throw new ArgumentException("Aggregation Rule must be Undefined if Type is MarketAssessment", nameof(marketDataEntityInput));
         }
     }
 }

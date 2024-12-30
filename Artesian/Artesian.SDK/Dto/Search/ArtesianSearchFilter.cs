@@ -41,24 +41,27 @@ namespace Artesian.SDK.Dto
 
     internal static class ArtesianSearchFilterExt
     {
+        private static Regex _validSorts = new Regex(
+            "^(MarketDataId|ProviderName|MarketDataName|OriginalGranularity|Type|OriginalTimezone|Created|LastUpdated)( (asc|desc))?$"
+            , RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1));
+
         public static void Validate(this ArtesianSearchFilter artesianSearchFilter)
         {
-            var validSorts = new Regex("^(MarketDataId|ProviderName|MarketDataName|OriginalGranularity|Type|OriginalTimezone|Created|LastUpdated)( (asc|desc))?$");
 
             if (artesianSearchFilter.Sorts != null)
             {
                 foreach (string element in artesianSearchFilter.Sorts)
                 {
-                    if (!validSorts.IsMatch(element))
-                        throw new ArgumentException($"Invalid search param {element}");
+                    if (!_validSorts.IsMatch(element))
+                        throw new ArgumentException($"Invalid search param {element}", nameof(artesianSearchFilter));
                 }
             }
 
             if (artesianSearchFilter.PageSize <= 0)
-                throw new ArgumentException("Page size should be greater than 0");
+                throw new ArgumentException("Page size should be greater than 0", nameof(artesianSearchFilter));
 
             if (artesianSearchFilter.Page <= 0)
-                throw new ArgumentException("Page should be greater than 0");
+                throw new ArgumentException("Page should be greater than 0", nameof(artesianSearchFilter));
 
             if (artesianSearchFilter.Filters!=null) {
                 foreach (KeyValuePair<string, string[]> element in artesianSearchFilter.Filters)

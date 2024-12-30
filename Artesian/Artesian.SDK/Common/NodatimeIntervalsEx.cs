@@ -108,10 +108,10 @@ namespace Artesian.SDK.Common
             _ensureIsoCalendar(date);
             if (date.Month >= 10)
                 return new LocalDate(date.Year, 10, 1, date.Calendar);
-            else if (date.Month < 4)
+            if (date.Month < 4)
                 return new LocalDate(date.Year - 1, 10, 1, date.Calendar);
-            else
-                return new LocalDate(date.Year, 4, 1, date.Calendar);
+
+            return new LocalDate(date.Year, 4, 1, date.Calendar);
         }
 
         public static LocalDate FirstDayOfTheYear(this LocalDate date)
@@ -142,10 +142,10 @@ namespace Artesian.SDK.Common
             _ensureIsoCalendar(date);
             if (date.Month >= 10)
                 return new LocalDate(date.Year + 1, 3, 31, date.Calendar);
-            else if (date.Month < 4)
+            if (date.Month < 4)
                 return new LocalDate(date.Year, 3, 31, date.Calendar);
-            else
-                return new LocalDate(date.Year, 9, 30, date.Calendar);
+
+            return new LocalDate(date.Year, 9, 30, date.Calendar);
         }
 
         public static LocalDate LastDayOfTheYear(this LocalDate date)
