@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Artesian.SDK.Service;
 using Flurl.Http.Testing;
 using System.Net.Http;
@@ -18,17 +19,17 @@ namespace Artesian.SDK.Tests
 
         #region MarketData Ids
         [Test]
-        public void MasInRelativeIntervalExtractionWindow()
+        public async Task MasInRelativeIntervalExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InRelativeInterval(RelativeInterval.RollingMonth)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/RollingMonth")
                     .WithQueryParam("id", 100000001)
@@ -39,17 +40,17 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasInAbsoluteDateRangeExtractionWindow()
+        public async Task MasInAbsoluteDateRangeExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1","GY+1"})
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("id", 100000001)
@@ -60,17 +61,17 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasInRelativePeriodExtractionWindow()
+        public async Task MasInRelativePeriodExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InRelativePeriod(Period.FromDays(5))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/P5D")
                     .WithQueryParam("id", 100000001)
@@ -81,17 +82,17 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasInRelativePeriodRangeExtractionWindow()
+        public async Task MasInRelativePeriodRangeExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/P2W/P20D")
                     .WithQueryParam("id", 100000001)
@@ -102,17 +103,17 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasMultipleMarketDataWindow()
+        public async Task MasMultipleMarketDataWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001, 100000002, 100000003 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/P2W/P20D")
                     .WithQueryParam("id" , new [] { 100000001, 100000002, 100000003 })
@@ -125,11 +126,11 @@ namespace Artesian.SDK.Tests
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001, 100000002, 100000003 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromMonths(6))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/P2W/P6M")
                     .WithQueryParamMultiple("id", new [] { 100000001, 100000002, 100000003 })
@@ -140,18 +141,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasWithTimeZone()
+        public async Task MasWithTimeZone()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("id", 100000001)
@@ -165,12 +166,12 @@ namespace Artesian.SDK.Tests
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("WET")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("id", 100000001)
@@ -182,17 +183,17 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasWithHeaders()
+        public async Task MasWithHeaders()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("id", 100000001)
@@ -204,14 +205,14 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Mas_Partitioned_By_ID()
+        public async Task Mas_Partitioned_By_ID()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateMarketAssessment()
+                var act = await qs.CreateMarketAssessment()
                     .ForMarketData(new [] {
                         100001250, 100001251, 100001252, 100001253, 100001254,
                         100001255, 100001256, 100001257, 100001258, 100001259,
@@ -228,7 +229,7 @@ namespace Artesian.SDK.Tests
                         100001312, 100001313, 100001314, 100001315, 100001315 })
                     .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                     .ForProducts(new [] { "M+1", "GY+1" })
-                    .ExecuteAsync().ConfigureAwait(true).GetAwaiter().GetResult();
+                    .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/P2W/P20D")
                     .WithQueryParamMultiple("id", new [] {
@@ -269,17 +270,17 @@ namespace Artesian.SDK.Tests
 
         #region FilterId
         [Test]
-        public void MasInRelativeIntervalExtractionWindow_FilterId()
+        public async Task MasInRelativeIntervalExtractionWindow_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForFilterId(1)
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InRelativeInterval(RelativeInterval.RollingMonth)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/RollingMonth")
                     .WithQueryParam("filterId", 1)
@@ -290,17 +291,17 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasInAbsoluteDateRangeExtractionWindow_FilterId()
+        public async Task MasInAbsoluteDateRangeExtractionWindow_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForFilterId(1)
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("filterId", 1)
@@ -311,17 +312,17 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasInRelativePeriodExtractionWindow_FilterId()
+        public async Task MasInRelativePeriodExtractionWindow_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForFilterId(1)
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InRelativePeriod(Period.FromDays(5))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/P5D")
                     .WithQueryParam("filterId", 1)
@@ -332,17 +333,17 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasInRelativePeriodRangeExtractionWindow_FilterId()
+        public async Task MasInRelativePeriodRangeExtractionWindow_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForFilterId(1)
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/P2W/P20D")
                     .WithQueryParam("filterId", 1)
@@ -353,18 +354,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasWithTimeZone_FilterId()
+        public async Task MasWithTimeZone_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForFilterId(1)
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("filterId", 1)
@@ -378,12 +379,12 @@ namespace Artesian.SDK.Tests
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForFilterId(1)
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("WET")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("filterId", 1)
@@ -395,17 +396,17 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasWithHeaders_FilterId()
+        public async Task MasWithHeaders_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForFilterId(1)
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("filterId", 1)
@@ -419,18 +420,18 @@ namespace Artesian.SDK.Tests
 
         #region Filler
         [Test]
-        public void FillerNullMasInAbsoluteDateRangeExtractionWindow()
+        public async Task FillerNullMasInAbsoluteDateRangeExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .WithFillNull()
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("id", 100000001)
@@ -442,18 +443,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void FillerNoFillMasInAbsoluteDateRangeExtractionWindow()
+        public async Task FillerNoFillMasInAbsoluteDateRangeExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .WithFillNone()
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("id", 100000001)
@@ -465,18 +466,18 @@ namespace Artesian.SDK.Tests
         }
         
         [Test]
-        public void FillerLatestValidValueMasInAbsoluteDateRangeExtractionWindow()
+        public async Task FillerLatestValidValueMasInAbsoluteDateRangeExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .WithFillLatestValue(Period.FromDays(7))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("id", 100000001)
@@ -489,18 +490,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void FillerCustomValueMasInAbsoluteDateRangeExtractionWindow()
+        public async Task FillerCustomValueMasInAbsoluteDateRangeExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .WithFillCustomValue(new MarketAssessmentValue { Settlement = 123, Open = 456, Close = 789, High = 321, Low = 654, VolumePaid = 987, VolumeGiven = 213, Volume = 435 })
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("id", 100000001)
@@ -520,18 +521,18 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void FillerCustomValueOHLCMasInAbsoluteDateRangeExtractionWindow()
+        public async Task FillerCustomValueOHLCMasInAbsoluteDateRangeExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var mas = qs.CreateMarketAssessment()
+                var mas = await qs.CreateMarketAssessment()
                        .ForMarketData(new [] { 100000001 })
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .WithFillCustomValue(new MarketAssessmentValue { Open = 456, Close = 789, High = 321, Low = 654 })
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                     .WithQueryParam("id", 100000001)
@@ -548,7 +549,7 @@ namespace Artesian.SDK.Tests
         #endregion
 
         [Test]
-        public void MasExtractionWindow_MktChange()
+        public async Task MasExtractionWindow_MktChange()
         {
             using (var httpTest = new HttpTest())
             {
@@ -560,26 +561,26 @@ namespace Artesian.SDK.Tests
                            .InRelativeInterval(RelativeInterval.RollingMonth);
 
 
-                var test1 = partialQuery
-                    .ExecuteAsync().Result;
+                var test1 = await partialQuery
+                    .ExecuteAsync();
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/RollingMonth")
                     .WithQueryParam("id", 100000001)
                     .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })
                     .WithVerb(HttpMethod.Get)
                     .Times(1);
 
-                var test2 = partialQuery
+                var test2 = await partialQuery
                             .ForFilterId(1)
-                            .ExecuteAsync().Result;
+                            .ExecuteAsync();
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/RollingMonth")
                         .WithQueryParam("filterId", 1)
                         .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })
                         .WithVerb(HttpMethod.Get)
                         .Times(1);
 
-                var test3 = partialQuery
+                var test3 = await partialQuery
                             .ForMarketData(new [] { 100000004, 100000005, 100000006 })
-                            .ExecuteAsync().Result;
+                            .ExecuteAsync();
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/RollingMonth")
                         .WithQueryParamMultiple("id", new [] { 100000004, 100000005, 100000006 })
                         .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })
@@ -589,7 +590,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MasExtractionWindow_RelativeIntervalChange()
+        public async Task MasExtractionWindow_RelativeIntervalChange()
         {
             using (var httpTest = new HttpTest())
             {
@@ -601,35 +602,35 @@ namespace Artesian.SDK.Tests
                            .InRelativeInterval(RelativeInterval.RollingMonth);
 
 
-                var test1 = partialQuery
-                            .ExecuteAsync().Result;
+                var test1 = await partialQuery
+                            .ExecuteAsync();
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/RollingMonth")
                         .WithQueryParam("id", 100000001)
                         .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })
                         .WithVerb(HttpMethod.Get)
                         .Times(1);
 
-                var test2 = partialQuery
+                var test2 = await partialQuery
                             .InRelativePeriod(Period.FromDays(5))
-                            .ExecuteAsync().Result;
+                            .ExecuteAsync();
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/P5D")
                         .WithQueryParam("id", 100000001)
                         .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })
                         .WithVerb(HttpMethod.Get)
                         .Times(1);
 
-                var test3 = partialQuery
+                var test3 = await partialQuery
                             .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                            .ExecuteAsync().Result;
+                            .ExecuteAsync();
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/P2W/P20D")
                         .WithQueryParam("id", 100000001)
                         .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })
                         .WithVerb(HttpMethod.Get)
                         .Times(1);
 
-                var test4 = partialQuery
+                var test4 = await partialQuery
                             .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
-                            .ExecuteAsync().Result;
+                            .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/mas/2018-01-01/2018-01-10")
                         .WithQueryParam("id", 100000001)

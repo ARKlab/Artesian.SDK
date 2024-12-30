@@ -10,6 +10,7 @@ using NUnit.Framework.Legacy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Artesian.SDK.Tests.Samples
 {
@@ -19,7 +20,7 @@ namespace Artesian.SDK.Tests.Samples
 
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
-        public void DeleteActual()
+        public async Task DeleteActual()
         {
             var qs = new QueryService(_cfg);
             var marketDataService = new MarketDataService(_cfg);
@@ -40,14 +41,14 @@ namespace Artesian.SDK.Tests.Samples
                     marketDataEntity.MarketDataName)
                 );
 
-            //marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value).GetAwaiter().GetResult();
+            //marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value);
 
-            var isRegistered = marketData.IsRegistered().GetAwaiter().GetResult();
+            var isRegistered = await marketData.IsRegistered();
 
             if (!isRegistered)
-                marketData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
+                await marketData.Register(marketDataEntity);
 
-            marketData.Load().GetAwaiter().GetResult();
+            await marketData.Load();
 
             var writeMarketData = marketData.EditActual();
 
@@ -56,36 +57,36 @@ namespace Artesian.SDK.Tests.Samples
             writeMarketData.AddData(new LocalDate(2018, 10, 05), 18);
             writeMarketData.AddData(new LocalDate(2018, 10, 06), 22);
 
-            writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime())).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
-            var act = qs.CreateActual()
+            var act = await qs.CreateActual()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
             ClassicAssert.AreEqual(act.First().Value, 10);
             ClassicAssert.AreEqual(act.Last().Value, 22);
 
-            writeMarketData.Delete(new LocalDateTime(2018, 10, 05, 0, 0), new LocalDateTime(2018, 10, 07, 0, 0)).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Delete(new LocalDateTime(2018, 10, 05, 0, 0), new LocalDateTime(2018, 10, 07, 0, 0));
 
-            act = qs.CreateActual()
+            act = await qs.CreateActual()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
             ClassicAssert.AreEqual(act.First().Value, 10);
             ClassicAssert.AreEqual(act.Last().Value, null);
 
 
-            writeMarketData.Delete().ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Delete();
 
-            act = qs.CreateActual()
+            act = await qs.CreateActual()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
             ClassicAssert.AreEqual(act.First().Value, null);
             ClassicAssert.AreEqual(act.Last().Value, null);
@@ -93,7 +94,7 @@ namespace Artesian.SDK.Tests.Samples
 
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
-        public void DeleteVersion()
+        public async Task DeleteVersion()
         {
             var qs = new QueryService(_cfg);
             var marketDataService = new MarketDataService(_cfg);
@@ -114,12 +115,12 @@ namespace Artesian.SDK.Tests.Samples
                     marketDataEntity.MarketDataName)
                 );
 
-            var isRegistered = marketData.IsRegistered().GetAwaiter().GetResult();
+            var isRegistered = await marketData.IsRegistered();
 
             if (!isRegistered)
-                marketData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
+                await marketData.Register(marketDataEntity);
 
-            marketData.Load().GetAwaiter().GetResult();
+            await marketData.Load();
 
             var writeMarketData = marketData.EditVersioned(new LocalDateTime(2018, 10, 03, 0, 0));
 
@@ -128,39 +129,39 @@ namespace Artesian.SDK.Tests.Samples
             writeMarketData.AddData(new LocalDate(2018, 10, 05), 18);
             writeMarketData.AddData(new LocalDate(2018, 10, 06), 22);
 
-            writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime())).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
-            var ts = qs.CreateVersioned()
+            var ts = await qs.CreateVersioned()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
                        .ForLastOfDays(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.First().Value, 10);
             ClassicAssert.AreEqual(ts.Last().Value, 22);
 
-            writeMarketData.Delete(new LocalDateTime(2018, 10, 05, 0, 0), new LocalDateTime(2018, 10, 07, 0, 0)).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Delete(new LocalDateTime(2018, 10, 05, 0, 0), new LocalDateTime(2018, 10, 07, 0, 0));
 
-            ts = qs.CreateVersioned()
+            ts = await qs.CreateVersioned()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
                        .ForLastOfDays(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.First().Value, 10);
             ClassicAssert.AreEqual(ts.Last().Value, null);
 
 
-            writeMarketData.Delete().ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Delete();
 
-            ts = qs.CreateVersioned()
+            ts = await qs.CreateVersioned()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
                        .ForLastOfDays(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.Count(), 0);
         }
@@ -168,7 +169,7 @@ namespace Artesian.SDK.Tests.Samples
 
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
-        public void DeleteAuction()
+        public async Task DeleteAuction()
         {
             var qs = new QueryService(_cfg);
             var marketDataService = new MarketDataService(_cfg);
@@ -189,12 +190,12 @@ namespace Artesian.SDK.Tests.Samples
                     marketDataEntity.MarketDataName)
                 );
 
-            var isRegistered = marketData.IsRegistered().GetAwaiter().GetResult();
+            var isRegistered = await marketData.IsRegistered();
 
             if (!isRegistered)
-                marketData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
+                await marketData.Register(marketDataEntity);
 
-            marketData.Load().GetAwaiter().GetResult();
+            await marketData.Load();
 
             var writeMarketData = marketData.EditAuction();
 
@@ -216,40 +217,40 @@ namespace Artesian.SDK.Tests.Samples
             writeMarketData.AddData(new LocalDate(2018, 09, 25), bid2.ToArray(), offer2.ToArray());
             writeMarketData.AddData(new LocalDate(2018, 09, 26), bid3.ToArray(), offer3.ToArray());
 
-            writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime())).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
-            var ts = qs.CreateAuction()
+            var ts = await qs.CreateAuction()
                         .ForMarketData(new int[] { marketData.MarketDataId.Value })
                         .InAbsoluteDateRange(new LocalDate(2018, 09, 24), new LocalDate(2018, 09, 27))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.First().Price, 100);
             ClassicAssert.AreEqual(ts.Last().Price, 320);
 
-            writeMarketData.Delete(new LocalDateTime(2018, 09, 26, 0, 0), new LocalDateTime(2018, 09, 27, 0, 0)).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Delete(new LocalDateTime(2018, 09, 26, 0, 0), new LocalDateTime(2018, 09, 27, 0, 0));
 
-            ts = qs.CreateAuction()
+            ts = await qs.CreateAuction()
                         .ForMarketData(new int[] { marketData.MarketDataId.Value })
                         .InAbsoluteDateRange(new LocalDate(2018, 09, 24), new LocalDate(2018, 09, 27))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.First().Price, 100);
             ClassicAssert.AreEqual(ts.Last().Price, 220);
 
 
-            writeMarketData.Delete().ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Delete();
 
-            ts = qs.CreateAuction()
+            ts = await qs.CreateAuction()
                         .ForMarketData(new int[] { marketData.MarketDataId.Value })
                         .InAbsoluteDateRange(new LocalDate(2018, 09, 24), new LocalDate(2018, 09, 27))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.Count(), 0);
         }
 
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
-        public void DeleteMAS()
+        public async Task DeleteMAS()
         {
             var qs = new QueryService(_cfg);
             var marketDataService = new MarketDataService(_cfg);
@@ -269,12 +270,12 @@ namespace Artesian.SDK.Tests.Samples
                     marketDataEntity.MarketDataName)
                 );
 
-            var isRegistered = marketData.IsRegistered().GetAwaiter().GetResult();
+            var isRegistered = await marketData.IsRegistered();
 
             if (!isRegistered)
-                marketData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
+                await marketData.Register(marketDataEntity);
 
-            marketData.Load().GetAwaiter().GetResult();
+            await marketData.Load();
 
             var writeMarketData = marketData.EditMarketAssessment();
 
@@ -321,36 +322,36 @@ namespace Artesian.SDK.Tests.Samples
             writeMarketData.AddData(new LocalDate(2014, 01, 02), "Jan-15", marketAssessmentValue1);
             writeMarketData.AddData(new LocalDate(2014, 01, 03), "Jan-15", marketAssessmentValue2);
 
-            writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime())).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
-            var ts = qs.CreateMarketAssessment()
+            var ts = await qs.CreateMarketAssessment()
                         .ForMarketData(new int[] { marketData.MarketDataId.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.First().High, 47);
             ClassicAssert.AreEqual(ts.Last().High, 49);
 
-            writeMarketData.Delete(new LocalDateTime(2014, 01, 03, 0, 0), new LocalDateTime(2014, 01, 04, 0, 0), new List<string>() { "Jan-15" }).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Delete(new LocalDateTime(2014, 01, 03, 0, 0), new LocalDateTime(2014, 01, 04, 0, 0), new List<string>() { "Jan-15" });
 
-            ts = qs.CreateMarketAssessment()
+            ts = await qs.CreateMarketAssessment()
                         .ForMarketData(new int[] { marketData.MarketDataId.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.First().High, 47);
             ClassicAssert.AreEqual(ts.Last().High, null);
 
 
-            writeMarketData.Delete(product: new List<string>() { "Jan-15" }, deferCommandExecution: false, deferDataGeneration: false).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Delete(product: new List<string>() { "Jan-15" }, deferCommandExecution: false, deferDataGeneration: false);
 
-            ts = qs.CreateMarketAssessment()
+            ts = await qs.CreateMarketAssessment()
                         .ForMarketData(new int[] { marketData.MarketDataId.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.First().High, null);
             ClassicAssert.AreEqual(ts.Last().High, null);
@@ -358,7 +359,7 @@ namespace Artesian.SDK.Tests.Samples
 
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
-        public void DeleteBidAsk()
+        public async Task DeleteBidAsk()
         {
             var qs = new QueryService(_cfg);
             var marketDataService = new MarketDataService(_cfg);
@@ -378,12 +379,12 @@ namespace Artesian.SDK.Tests.Samples
                     marketDataEntity.MarketDataName)
                 );
 
-            var isRegistered = marketData.IsRegistered().GetAwaiter().GetResult();
+            var isRegistered = await marketData.IsRegistered();
 
             if (!isRegistered)
-                marketData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
+                await marketData.Register(marketDataEntity);
 
-            marketData.Load().GetAwaiter().GetResult();
+            await marketData.Load();
 
             var writeMarketData = marketData.EditBidAsk();
 
@@ -421,36 +422,36 @@ namespace Artesian.SDK.Tests.Samples
             writeMarketData.AddData(new LocalDate(2014, 01, 02), "Jan-15", bidAskValue1);
             writeMarketData.AddData(new LocalDate(2014, 01, 03), "Jan-15", bidAskValue2);
 
-            writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime())).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
-            var ts = qs.CreateBidAsk()
+            var ts = await qs.CreateBidAsk()
                         .ForMarketData(new int[] { marketData.MarketDataId.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.First().BestBidPrice, 47);
             ClassicAssert.AreEqual(ts.Last().BestBidPrice, 49);
 
-            writeMarketData.Delete(new LocalDateTime(2014, 01, 03, 0, 0), new LocalDateTime(2014, 01, 04, 0, 0), new List<string>() { "Jan-15" }).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Delete(new LocalDateTime(2014, 01, 03, 0, 0), new LocalDateTime(2014, 01, 04, 0, 0), new List<string>() { "Jan-15" });
 
-            ts = qs.CreateBidAsk()
+            ts = await qs.CreateBidAsk()
                         .ForMarketData(new int[] { marketData.MarketDataId.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.First().BestBidPrice, 47);
             ClassicAssert.AreEqual(ts.Last().BestBidPrice, null);
 
 
-            writeMarketData.Delete(product: new List<string>() { "Jan-15" }).ConfigureAwait(true).GetAwaiter().GetResult();
+            await writeMarketData.Delete(product: new List<string>() { "Jan-15" });
 
-            ts = qs.CreateBidAsk()
+            ts = await qs.CreateBidAsk()
                         .ForMarketData(new int[] { marketData.MarketDataId.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
-                        .ExecuteAsync().Result;
+                        .ExecuteAsync();
 
             ClassicAssert.AreEqual(ts.First().BestBidPrice, null);
             ClassicAssert.AreEqual(ts.Last().BestBidPrice, null);

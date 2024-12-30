@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Artesian.SDK.Tests
 {
@@ -19,16 +20,16 @@ namespace Artesian.SDK.Tests
         #region MarketData ids
 
         [Test]
-        public void AuctInAbsoluteDateRangeExtractionWindow()
+        public async Task AuctInAbsoluteDateRangeExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForMarketData(new [] { 100000001 })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
@@ -38,16 +39,16 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void AuctInRelativePeriodRangeExtractionWindow()
+        public async Task AuctInRelativePeriodRangeExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForMarketData(new [] { 100000001 })
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/P2W/P20D")
                     .WithVerb(HttpMethod.Get)
@@ -57,16 +58,16 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void AuctInRelativePeriodExtractionWindow()
+        public async Task AuctInRelativePeriodExtractionWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForMarketData(new [] { 100000001 })
                        .InRelativePeriod(Period.FromWeeks(2))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/P2W")
                     .WithVerb(HttpMethod.Get)
@@ -76,16 +77,16 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void AuctMultipleMarketDataWindow()
+        public async Task AuctMultipleMarketDataWindow()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForMarketData(new [] { 100000001, 100000002, 100000003 })
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/P2W/P20D")
                     .WithVerb(HttpMethod.Get)
@@ -97,10 +98,10 @@ namespace Artesian.SDK.Tests
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForMarketData(new [] { 100000001, 100000002, 100000003 })
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromMonths(6))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/P2W/P6M")
                     .WithVerb(HttpMethod.Get)
@@ -110,17 +111,17 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void AuctWithTimeZone()
+        public async Task AuctWithTimeZone()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForMarketData(new [] { 100000001 })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
@@ -133,11 +134,11 @@ namespace Artesian.SDK.Tests
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForMarketData(new [] { 100000001 })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("WET")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
@@ -148,16 +149,16 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void AuctWithHeaders()
+        public async Task AuctWithHeaders()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForMarketData(new [] { 100000001 })
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/P2W/P20D")
                     .WithQueryParam("id", 100000001)
@@ -169,13 +170,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Auct_Partitioned_By_ID()
+        public async Task Auct_Partitioned_By_ID()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                     .ForMarketData(new [] {
                         100001250, 100001251, 100001252, 100001253, 100001254,
                         100001255, 100001256, 100001257, 100001258, 100001259,
@@ -191,7 +192,7 @@ namespace Artesian.SDK.Tests
                         100001307, 100001308, 100001309, 100001310, 100001311,
                         100001312, 100001313, 100001314, 100001315, 100001315 })
                     .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                    .ExecuteAsync().ConfigureAwait(true).GetAwaiter().GetResult();
+                    .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/P2W/P20D")
                     .WithVerb(HttpMethod.Get)
@@ -231,16 +232,16 @@ namespace Artesian.SDK.Tests
         #region FilterId
 
         [Test]
-        public void AuctInAbsoluteDateRangeExtractionWindow_FilterId()
+        public async Task AuctInAbsoluteDateRangeExtractionWindow_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForFilterId(1)
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
@@ -250,16 +251,16 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void AuctInRelativePeriodRangeExtractionWindow_FilterId()
+        public async Task AuctInRelativePeriodRangeExtractionWindow_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForFilterId(1)
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/P2W/P20D")
                     .WithVerb(HttpMethod.Get)
@@ -269,17 +270,17 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void AuctWithTimeZone_FilterId()
+        public async Task AuctWithTimeZone_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForFilterId(1)
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
@@ -292,11 +293,11 @@ namespace Artesian.SDK.Tests
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForFilterId(1)
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("WET")
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
@@ -307,16 +308,16 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void AuctWithHeaders_FilterId()
+        public async Task AuctWithHeaders_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new QueryService(_cfg);
 
-                var act = qs.CreateAuction()
+                var act = await qs.CreateAuction()
                        .ForFilterId(1)
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/auction/P2W/P20D")
                     .WithQueryParam("filterId", 1)
