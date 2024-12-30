@@ -71,7 +71,7 @@ namespace Artesian.SDK.Service
                 throw new ArgumentNullException(nameof(readStream));
             }
 
-            return await MessagePackSerializer.DeserializeAsync(type, readStream, _options);
+            return await MessagePackSerializer.DeserializeAsync(type, readStream, _options).ConfigureAwait(false);
         }
     }
 }
