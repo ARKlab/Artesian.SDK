@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
@@ -21,13 +22,13 @@ namespace Artesian.SDK.Tests
 
         #region MarketData
         [Test]
-        public void MarketData_ReadMarketDataByProviderCurveName()
+        public async Task MarketData_ReadMarketDataByProviderCurveName()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.ReadMarketDataRegistryAsync(new MarketDataIdentifier("TestProvider", "TestCurveName")).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadMarketDataRegistryAsync(new MarketDataIdentifier("TestProvider", "TestCurveName"));
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity")
                     .WithQueryParam("provider", "TestProvider")
@@ -38,13 +39,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MarketData_ReadMarketDataByCurveRange()
+        public async Task MarketData_ReadMarketDataByCurveRange()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.ReadCurveRangeAsync(100000001, 1, 1, "M+1", new LocalDateTime(2018, 07, 19, 12, 0), new LocalDateTime(2017, 07, 19, 12, 0)).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadCurveRangeAsync(100000001, 1, 1, "M+1", new LocalDateTime(2018, 07, 19, 12, 0), new LocalDateTime(2017, 07, 19, 12, 0));
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity/100000001/curves")
                     .WithQueryParam("versionFrom", new LocalDateTime(2018, 07, 19, 12, 0))
@@ -58,13 +59,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MarketData_ReadMarketDataRegistryAsync()
+        public async Task MarketData_ReadMarketDataRegistryAsync()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.ReadMarketDataRegistryAsync(100000001).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadMarketDataRegistryAsync(100000001);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity/100000001")
                    .WithVerb(HttpMethod.Get)
@@ -73,7 +74,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MarketData_RegisterMarketDataAsync()
+        public async Task MarketData_RegisterMarketDataAsync()
         {
             using (var httpTest = new HttpTest())
             {
@@ -89,7 +90,7 @@ namespace Artesian.SDK.Tests
                     Type = MarketDataType.VersionedTimeSerie
                 };
 
-                var mdq = mds.RegisterMarketDataAsync(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.RegisterMarketDataAsync(marketDataEntity);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity")
                     .WithVerb(HttpMethod.Post)
@@ -123,9 +124,9 @@ namespace Artesian.SDK.Tests
                     status: 400, 
                     headers: new { content_type = "application/problem+json; charset=utf-8"});
 
-                Assert.Throws<ArtesianSdkValidationException>(
+                Assert.ThrowsAsync<ArtesianSdkValidationException>(
                   () => { 
-                      var mdq = mds.RegisterMarketDataAsync(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult(); 
+                      return mds.RegisterMarketDataAsync(marketDataEntity); 
                   }
                 );
 
@@ -133,7 +134,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MarketData_UpdateMarketDataAsync()
+        public async Task MarketData_UpdateMarketDataAsync()
         {
             using (var httpTest = new HttpTest())
             {
@@ -150,7 +151,7 @@ namespace Artesian.SDK.Tests
                     MarketDataId = 1
                 };
 
-                var mdq = mds.UpdateMarketDataAsync(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.UpdateMarketDataAsync(marketDataEntity);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity/1")
                     .WithVerb(HttpMethod.Put)
@@ -161,13 +162,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MarketData_DeleteMarketDataAsync()
+        public async Task MarketData_DeleteMarketDataAsync()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                mds.DeleteMarketDataAsync(1).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.DeleteMarketDataAsync(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity/1")
                     .WithVerb(HttpMethod.Delete)
@@ -179,7 +180,7 @@ namespace Artesian.SDK.Tests
 
         #region SearchFacet
         [Test]
-        public void SearchFacet_SearchFacet()
+        public async Task SearchFacet_SearchFacet()
         {
             using (var httpTest = new HttpTest())
             {
@@ -196,7 +197,7 @@ namespace Artesian.SDK.Tests
                     Filters = filterDict,
                     Sorts = new List<string>() { "OriginalTimezone" }
                 };
-                var mdq = mds.SearchFacetAsync(filter, false).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.SearchFacetAsync(filter, false);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/searchfacet")
                     .WithQueryParam("pageSize", 1)
@@ -213,7 +214,7 @@ namespace Artesian.SDK.Tests
 
         #region Operations
         [Test]
-        public void Operations_PerformOperationsAsync_Enable()
+        public async Task Operations_PerformOperationsAsync_Enable()
         {
             using (var httpTest = new HttpTest())
             {
@@ -235,7 +236,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                var mdq = mds.PerformOperationsAsync(operations).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.PerformOperationsAsync(operations);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/operations")
                     .WithVerb(HttpMethod.Post)
@@ -244,7 +245,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Operations_PerformOperationsAsync_Disable()
+        public async Task Operations_PerformOperationsAsync_Disable()
         {
             using (var httpTest = new HttpTest())
             {
@@ -266,7 +267,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                var mdq = mds.PerformOperationsAsync(operations).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.PerformOperationsAsync(operations);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/operations")
                     .WithVerb(HttpMethod.Post)
@@ -275,7 +276,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Operations_PerformOperationsAsync_Aggregation()
+        public async Task Operations_PerformOperationsAsync_Aggregation()
         {
             using (var httpTest = new HttpTest())
             {
@@ -296,7 +297,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                var mdq = mds.PerformOperationsAsync(operations).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.PerformOperationsAsync(operations);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/operations")
                     .WithVerb(HttpMethod.Post)
@@ -305,7 +306,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Operations_PerformOperationsAsync_TimeZone()
+        public async Task Operations_PerformOperationsAsync_TimeZone()
         {
             using (var httpTest = new HttpTest())
             {
@@ -326,7 +327,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                var mdq = mds.PerformOperationsAsync(operations).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.PerformOperationsAsync(operations);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/operations")
                     .WithVerb(HttpMethod.Post)
@@ -335,7 +336,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Operations_PerformOperationsAsync_TimeTransform()
+        public async Task Operations_PerformOperationsAsync_TimeTransform()
         {
             using (var httpTest = new HttpTest())
             {
@@ -356,7 +357,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                var mdq = mds.PerformOperationsAsync(operations).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.PerformOperationsAsync(operations);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/operations")
                     .WithVerb(HttpMethod.Post)
@@ -365,7 +366,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Operations_PerformOperationsAsync_ProviderDescription()
+        public async Task Operations_PerformOperationsAsync_ProviderDescription()
         {
             using (var httpTest = new HttpTest())
             {
@@ -386,7 +387,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                var mdq = mds.PerformOperationsAsync(operations).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.PerformOperationsAsync(operations);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/operations")
                     .WithVerb(HttpMethod.Post)
@@ -397,7 +398,7 @@ namespace Artesian.SDK.Tests
 
         #region UpsertCurve
         [Test]
-        public void UpsertCurve_UpsertCurveDataAsync_MarketAssessment()
+        public async Task UpsertCurve_UpsertCurveDataAsync_MarketAssessment()
         {
             using (var httpTest = new HttpTest())
             {
@@ -416,7 +417,7 @@ namespace Artesian.SDK.Tests
                 data.MarketAssessment.Add(localDateTime, new Dictionary<string, MarketAssessmentValue>(StringComparer.Ordinal));
                 data.MarketAssessment[localDateTime].Add("test", new MarketAssessmentValue());
 
-                mds.UpsertCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.UpsertCurveDataAsync(data);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/upsertdata")
                     .WithVerb(HttpMethod.Post)
@@ -425,7 +426,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void UpsertCurve_UpsertCurveDataAsync_Auction()
+        public async Task UpsertCurve_UpsertCurveDataAsync_Auction()
         {
             using (var httpTest = new HttpTest())
             {
@@ -447,7 +448,7 @@ namespace Artesian.SDK.Tests
 
                 data.AuctionRows.Add(localDateTime, new AuctionBids(localDateTime, bid.ToArray(), offer.ToArray()));
 
-                mds.UpsertCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.UpsertCurveDataAsync(data);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/upsertdata")
                     .WithVerb(HttpMethod.Post)
@@ -456,7 +457,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void UpsertCurve_UpsertCurveDataAsync_Versioned()
+        public async Task UpsertCurve_UpsertCurveDataAsync_Versioned()
         {
             using (var httpTest = new HttpTest())
             {
@@ -472,7 +473,7 @@ namespace Artesian.SDK.Tests
                     Version = new LocalDateTime(2018, 09, 25, 12, 0, 0, 123).PlusNanoseconds(100)
                 };
 
-                mds.UpsertCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.UpsertCurveDataAsync(data);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/upsertdata")
                     .WithVerb(HttpMethod.Post)
@@ -503,7 +504,7 @@ namespace Artesian.SDK.Tests
                 data.BidAsk.Add(localDateTime, new Dictionary<string, BidAskValue>(StringComparer.Ordinal));
                 data.BidAsk[localDateTime].Add("test", new BidAskValue());
 
-                var ex = Assert.Throws<ArgumentException>(() => mds.UpsertCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult());
+                var ex = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
                 ClassicAssert.AreEqual("UpsertCurveData BidAsk must be NULL if Rows are Valorized (Parameter 'upsertCurveData')", ex.Message);
             }
         }
@@ -536,7 +537,7 @@ namespace Artesian.SDK.Tests
                 data.MarketAssessment.Add(localDateTime, new Dictionary<string, MarketAssessmentValue>(StringComparer.Ordinal));
                 data.MarketAssessment[localDateTime].Add("test", new MarketAssessmentValue());
 
-                var ex = Assert.Throws<ArgumentException>(() => mds.UpsertCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult());
+                var ex = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
                 ClassicAssert.AreEqual("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized (Parameter 'upsertCurveData')", ex.Message);
             }
         }
@@ -544,7 +545,7 @@ namespace Artesian.SDK.Tests
 
         #region DeleteCurve
         [Test]
-        public void DeleteCurve_DeleteCurveDataAsync_Product()
+        public async Task DeleteCurve_DeleteCurveDataAsync_Product()
         {
             using (var httpTest = new HttpTest())
             {
@@ -559,7 +560,7 @@ namespace Artesian.SDK.Tests
                     Product = new List<string> { "Jan-15" }
                 };
 
-                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.DeleteCurveDataAsync(data);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
                     .WithVerb(HttpMethod.Post)
@@ -568,7 +569,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void DeleteCurve_DeleteCurveDataWholeRangeAsync_Product()
+        public async Task DeleteCurve_DeleteCurveDataWholeRangeAsync_Product()
         {
             using (var httpTest = new HttpTest())
             {
@@ -581,7 +582,7 @@ namespace Artesian.SDK.Tests
                     Product = new List<string> { "Jan-15" }
                 };
 
-                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.DeleteCurveDataAsync(data);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
                     .WithVerb(HttpMethod.Post)
@@ -590,7 +591,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void DeleteCurve_DeleteCurveDataAsync_Actual()
+        public async Task DeleteCurve_DeleteCurveDataAsync_Actual()
         {
             using (var httpTest = new HttpTest())
             {
@@ -604,7 +605,7 @@ namespace Artesian.SDK.Tests
                     RangeEnd = new LocalDateTime(2018, 01, 03, 0, 0),
                 };
 
-                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.DeleteCurveDataAsync(data);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
                     .WithVerb(HttpMethod.Post)
@@ -613,7 +614,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void DeleteCurve_DeleteCurveDataWholeRangeAsync_Actual()
+        public async Task DeleteCurve_DeleteCurveDataWholeRangeAsync_Actual()
         {
             using (var httpTest = new HttpTest())
             {
@@ -625,7 +626,7 @@ namespace Artesian.SDK.Tests
                     Timezone = "CET",
                 };
 
-                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.DeleteCurveDataAsync(data);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
                     .WithVerb(HttpMethod.Post)
@@ -634,7 +635,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void DeleteCurve_DeleteCurveDataAsync_Versioned()
+        public async Task DeleteCurve_DeleteCurveDataAsync_Versioned()
         {
             using (var httpTest = new HttpTest())
             {
@@ -650,7 +651,7 @@ namespace Artesian.SDK.Tests
                     Version = new LocalDateTime(2018, 09, 25, 12, 0, 0, 123).PlusNanoseconds(100)
                 };
 
-                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.DeleteCurveDataAsync(data);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
                     .WithVerb(HttpMethod.Post)
@@ -659,7 +660,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void DeleteCurve_DeleteCurveDataWholeRangeAsync_Versioned()
+        public async Task DeleteCurve_DeleteCurveDataWholeRangeAsync_Versioned()
         {
             using (var httpTest = new HttpTest())
             {
@@ -673,7 +674,7 @@ namespace Artesian.SDK.Tests
                     Version = new LocalDateTime(2018, 09, 25, 12, 0, 0, 123).PlusNanoseconds(100)
                 };
 
-                mds.DeleteCurveDataAsync(data).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.DeleteCurveDataAsync(data);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/deletedata")
                     .WithVerb(HttpMethod.Post)
@@ -684,13 +685,13 @@ namespace Artesian.SDK.Tests
 
         #region TimeTransform
         [Test]
-        public void TimeTransform_ReadTimeTransformBaseAsync()
+        public async Task TimeTransform_ReadTimeTransformBaseAsync()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.ReadTimeTransformBaseAsync(1).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadTimeTransformBaseAsync(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/timeTransform/entity/1")
                    .WithVerb(HttpMethod.Get)
@@ -701,7 +702,7 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.ReadTimeTransformBaseAsync(2).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadTimeTransformBaseAsync(2);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/timeTransform/entity/2")
                    .WithVerb(HttpMethod.Get)
@@ -710,13 +711,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void TimeTransform_ReadTimeTransform()
+        public async Task TimeTransform_ReadTimeTransform()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.ReadTimeTransformsAsync(1, 1, true).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadTimeTransformsAsync(1, 1, true);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/timeTransform/entity")
                     .WithQueryParam("pageSize", 1)
@@ -728,13 +729,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void TimeTransform_ReadTimeTransformWithHeaders()
+        public async Task TimeTransform_ReadTimeTransformWithHeaders()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.ReadTimeTransformsAsync(1, 1, true).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadTimeTransformsAsync(1, 1, true);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/timeTransform/entity")
                     .WithQueryParam("pageSize", 1)
@@ -747,7 +748,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void TimeTransform_RegisterTimeTransformBaseAsync()
+        public async Task TimeTransform_RegisterTimeTransformBaseAsync()
         {
             using (var httpTest = new HttpTest())
             {
@@ -764,7 +765,7 @@ namespace Artesian.SDK.Tests
                     NegativeShift = "P3M",
                 };
 
-                var mdq = mds.RegisterTimeTransformBaseAsync(timeTransformEntity).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.RegisterTimeTransformBaseAsync(timeTransformEntity);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/timeTransform/entity")
                     .WithVerb(HttpMethod.Post)
@@ -775,7 +776,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void TimeTransform_UpdateTimeTransformBaseAsync()
+        public async Task TimeTransform_UpdateTimeTransformBaseAsync()
         {
             using (var httpTest = new HttpTest())
             {
@@ -792,7 +793,7 @@ namespace Artesian.SDK.Tests
                     NegativeShift = "P3M",
                 };
 
-                var mdq = mds.UpdateTimeTransformBaseAsync(timeTransformEntity).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.UpdateTimeTransformBaseAsync(timeTransformEntity);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/timeTransform/entity/1")
                     .WithVerb(HttpMethod.Put)
@@ -803,13 +804,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void TimeTransform_DeleteTimeTransformSimpleShift()
+        public async Task TimeTransform_DeleteTimeTransformSimpleShift()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                mds.DeleteTimeTransformSimpleShiftAsync(1).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.DeleteTimeTransformSimpleShiftAsync(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/timeTransform/entity/1")
                     .WithVerb(HttpMethod.Delete)
@@ -821,7 +822,7 @@ namespace Artesian.SDK.Tests
 
         #region CustomFilter
         [Test]
-        public void CustomFilter_CreateFilter()
+        public async Task CustomFilter_CreateFilter()
         {
             using (var httpTest = new HttpTest())
             {
@@ -834,7 +835,7 @@ namespace Artesian.SDK.Tests
                     Name = "TestName"
                 };
 
-                var mdq = mds.CreateFilter(filter).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.CreateFilter(filter);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/filter")
                     .WithVerb(HttpMethod.Post)
@@ -845,7 +846,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void CustomFilter_UpdateFilter()
+        public async Task CustomFilter_UpdateFilter()
         {
             using (var httpTest = new HttpTest())
             {
@@ -858,7 +859,7 @@ namespace Artesian.SDK.Tests
                     Name = "TestName"
                 };
 
-                var mdq = mds.UpdateFilter(1, filter).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.UpdateFilter(1, filter);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/filter/1")
                     .WithVerb(HttpMethod.Put)
@@ -869,7 +870,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void CustomFilter_RemoveFilter()
+        public async Task CustomFilter_RemoveFilter()
         {
             using (var httpTest = new HttpTest())
             {
@@ -877,7 +878,7 @@ namespace Artesian.SDK.Tests
 
                 var filter = new CustomFilter();
 
-                var mdq = mds.RemoveFilter(1).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.RemoveFilter(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/filter/1")
                     .WithVerb(HttpMethod.Delete)
@@ -887,7 +888,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void CustomFilter_ReadFilter()
+        public async Task CustomFilter_ReadFilter()
         {
             using (var httpTest = new HttpTest())
             {
@@ -895,7 +896,7 @@ namespace Artesian.SDK.Tests
 
                 var filter = new CustomFilter();
 
-                var mdq = mds.ReadFilter(1).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadFilter(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/filter/")
                     .WithVerb(HttpMethod.Get)
@@ -905,7 +906,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void CustomFilter_ReadFilters()
+        public async Task CustomFilter_ReadFilters()
         {
             using (var httpTest = new HttpTest())
             {
@@ -913,7 +914,7 @@ namespace Artesian.SDK.Tests
 
                 var filter = new CustomFilter();
 
-                var mdq = mds.ReadFilters(1, 1).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadFilters(1, 1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/filter")
                     .WithQueryParam("pageSize", 1)
@@ -927,7 +928,7 @@ namespace Artesian.SDK.Tests
 
         #region Acl
         [Test]
-        public void Acl_ReadRolesByPath()
+        public async Task Acl_ReadRolesByPath()
         {
             using (var httpTest = new HttpTest())
             {
@@ -935,7 +936,7 @@ namespace Artesian.SDK.Tests
 
                 var path = new PathString(new[] { "Path1" });
 
-                var mdq = mds.ReadRolesByPath(path).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadRolesByPath(path);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/acl/me")
                     .WithVerb(HttpMethod.Get)
@@ -945,13 +946,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Acl_GetRoles()
+        public async Task Acl_GetRoles()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.GetRoles(1, 1, new[] { "Principals" }).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.GetRoles(1, 1, new[] { "Principals" });
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/acl")
                     .WithQueryParam("pageSize", 1)
@@ -965,7 +966,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Acl_AddRoles()
+        public async Task Acl_AddRoles()
         {
             using (var httpTest = new HttpTest())
             {
@@ -989,7 +990,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                mds.AddRoles(auth).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.AddRoles(auth);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/acl/roles")
                     .WithVerb(HttpMethod.Post)
@@ -1000,7 +1001,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Acl_UpsertRoles()
+        public async Task Acl_UpsertRoles()
         {
             using (var httpTest = new HttpTest())
             {
@@ -1024,7 +1025,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                mds.UpsertRoles(auth).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.UpsertRoles(auth);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/acl")
                     .WithVerb(HttpMethod.Post)
@@ -1035,7 +1036,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Acl_RemoveRoles()
+        public async Task Acl_RemoveRoles()
         {
             using (var httpTest = new HttpTest())
             {
@@ -1059,7 +1060,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                mds.RemoveRoles(auth).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.RemoveRoles(auth);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/acl/roles")
                     .WithVerb(HttpMethod.Delete)
@@ -1072,7 +1073,7 @@ namespace Artesian.SDK.Tests
 
         #region Admin
         [Test]
-        public void Admin_CreateAuthGroup()
+        public async Task Admin_CreateAuthGroup()
         {
             using (var httpTest = new HttpTest())
             {
@@ -1084,7 +1085,7 @@ namespace Artesian.SDK.Tests
                     Name = "AuthGroupTest"
                 };
 
-                var mdq = mds.CreateAuthGroup(group).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.CreateAuthGroup(group);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/group")
                     .WithVerb(HttpMethod.Post)
@@ -1095,7 +1096,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Admin_UpdateAuthGroup()
+        public async Task Admin_UpdateAuthGroup()
         {
             using (var httpTest = new HttpTest())
             {
@@ -1107,7 +1108,7 @@ namespace Artesian.SDK.Tests
                     Name = "AuthGroupTest"
                 };
 
-                var mdq = mds.UpdateAuthGroup(1, group).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.UpdateAuthGroup(1, group);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/group/1")
                     .WithVerb(HttpMethod.Put)
@@ -1118,13 +1119,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Admin_RemoveAuthGroup()
+        public async Task Admin_RemoveAuthGroup()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                mds.RemoveAuthGroup(1).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.RemoveAuthGroup(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/group/1")
                     .WithVerb(HttpMethod.Delete)
@@ -1134,13 +1135,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Admin_ReadAuthGroup()
+        public async Task Admin_ReadAuthGroup()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                mds.ReadAuthGroup(1).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.ReadAuthGroup(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/group/1")
                     .WithVerb(HttpMethod.Get)
@@ -1150,13 +1151,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Admin_ReadAuthGroups()
+        public async Task Admin_ReadAuthGroups()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.ReadAuthGroups(1, 1).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadAuthGroups(1, 1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/group")
                     .WithQueryParam("pageSize", 1)
@@ -1170,7 +1171,7 @@ namespace Artesian.SDK.Tests
 
         #region ApiKey
         [Test]
-        public void ApiKey_CreateApiKeyAsync()
+        public async Task ApiKey_CreateApiKeyAsync()
         {
             using (var httpTest = new HttpTest())
             {
@@ -1181,7 +1182,7 @@ namespace Artesian.SDK.Tests
                     Id = 0
                 };
 
-                var mdq = mds.CreateApiKeyAsync(apiKey).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.CreateApiKeyAsync(apiKey);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/apikey/entity")
                     .WithVerb(HttpMethod.Post)
@@ -1192,13 +1193,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ApiKey_ReadApiKeyByIdAsync()
+        public async Task ApiKey_ReadApiKeyByIdAsync()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.ReadApiKeyByIdAsync(1).ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadApiKeyByIdAsync(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/apikey/entity/1")
                     .WithVerb(HttpMethod.Get)
@@ -1208,13 +1209,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ApiKey_ReadApiKeyByKeyAsync()
+        public async Task ApiKey_ReadApiKeyByKeyAsync()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.ReadApiKeyByKeyAsync("testKey").ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadApiKeyByKeyAsync("testKey");
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/apikey/entity")
                     .WithQueryParam("key", "testKey")
@@ -1225,13 +1226,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ApiKey_ReadApiKeysAsync()
+        public async Task ApiKey_ReadApiKeysAsync()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = mds.ReadApiKeysAsync(1, 1, "testName").ConfigureAwait(true).GetAwaiter().GetResult();
+                var mdq = await mds.ReadApiKeysAsync(1, 1, "testName");
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/apikey/entity")
                     .WithQueryParam("pageSize", 1)
@@ -1244,13 +1245,13 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ApiKey_DeleteApiKeyAsync()
+        public async Task ApiKey_DeleteApiKeyAsync()
         {
             using (var httpTest = new HttpTest())
             {
                 var mds = new MarketDataService(_cfg);
 
-                mds.DeleteApiKeyAsync(1).ConfigureAwait(true).GetAwaiter().GetResult();
+                await mds.DeleteApiKeyAsync(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/apikey/entity/1")
                     .WithVerb(HttpMethod.Delete)

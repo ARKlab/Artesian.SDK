@@ -285,6 +285,9 @@ dotnet_diagnostic.MA0006.severity = silent
 dotnet_diagnostic.MA0051.severity = suggestion
 dotnet_diagnostic.MA0016.severity = suggestion
 
+# VSTHRD200: Use "Async" suffix for async methods
+dotnet_diagnostic.VSTHRD200.severity = silent
+
 [*.{cs,vb}]
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
