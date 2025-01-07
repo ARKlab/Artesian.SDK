@@ -7,7 +7,7 @@ using System;
 
 namespace Artesian.SDK.Dto.DerivedCfg.Serialize
 {
-    class DerivedCfgBaseConverter : JsonCreationConverter<DerivedCfgBase>
+    sealed class DerivedCfgBaseConverter : JsonCreationConverter<DerivedCfgBase>
     {
         protected override DerivedCfgBase Create(Type objectType, JObject jObject)
         {
@@ -18,11 +18,13 @@ namespace Artesian.SDK.Dto.DerivedCfg.Serialize
                 {
                     return new DerivedCfgMuv();
                 }
-                else if (token.ToObject<DerivedAlgorithm>() == DerivedAlgorithm.Sum)
+
+                if (token.ToObject<DerivedAlgorithm>() == DerivedAlgorithm.Sum)
                 {
-                    throw new NotImplementedException($@"Not yet impletemented DerivedAlgorithm {DerivedAlgorithm.Sum}");
+                    throw new NotSupportedException($@"Not yet impletemented DerivedAlgorithm {DerivedAlgorithm.Sum}");
                 }
-                else if (token.ToObject<DerivedAlgorithm>() == DerivedAlgorithm.Coalesce)
+
+                if (token.ToObject<DerivedAlgorithm>() == DerivedAlgorithm.Coalesce)
                 {
                     return new DerivedCfgCoalesce();
                 }
@@ -34,7 +36,7 @@ namespace Artesian.SDK.Dto.DerivedCfg.Serialize
         }
     }
 
-    class DerivedCfgBaseConverterSTJ : JsonPolymorphicConverter<DerivedCfgBase, DerivedAlgorithm>
+    sealed class DerivedCfgBaseConverterSTJ : JsonPolymorphicConverter<DerivedCfgBase, DerivedAlgorithm>
     {
         public DerivedCfgBaseConverterSTJ()
             : base(nameof(DerivedCfgBase.DerivedAlgorithm))
@@ -68,7 +70,7 @@ namespace Artesian.SDK.Dto.DerivedCfg.Serialize
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override object ReadJson(JsonReader reader,

@@ -42,10 +42,10 @@ namespace Artesian.SDK.Dto
         public static void Validate(this CustomFilter customfilter)
         {
             if (String.IsNullOrWhiteSpace(customfilter.Name))
-                throw new ArgumentException("CustomFilter Name must be valorized");
+                throw new ArgumentException("CustomFilter Name must be valorized", nameof(customfilter));
 
             if (String.IsNullOrWhiteSpace(customfilter.SearchText) && customfilter.Filters == null)
-                throw new ArgumentException("Either filter text or filter key values must be provided");
+                throw new ArgumentException("Either filter text or filter key values must be provided", nameof(customfilter));
         }
     }
 }

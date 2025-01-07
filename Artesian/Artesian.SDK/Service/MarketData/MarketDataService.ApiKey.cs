@@ -62,8 +62,11 @@ namespace Artesian.SDK.Service
         /// <returns>Paged result of ApiKey Output entity</returns>
         public Task<PagedResult<ApiKey.Output>> ReadApiKeysAsync(int page, int pageSize, string userId, CancellationToken ctk = default)
         {
-            if (page < 1 || pageSize < 1)
-                throw new ArgumentException("Page and Page number need to be greater than 0. Page:" + page + " Page Size:" + pageSize);
+            if (page < 1)
+                throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
+            if (pageSize < 1)
+                throw new ArgumentException("PageSize must to be greater than 0. Page Size:" + pageSize, nameof(pageSize));
+
 
             var url = "/apikey/entity"
                     .SetQueryParam("pageSize", pageSize)

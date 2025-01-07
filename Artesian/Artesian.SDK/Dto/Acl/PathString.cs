@@ -11,7 +11,7 @@ namespace Artesian.SDK.Dto
     public class PathString : IEquatable<PathString>
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        private static readonly Regex _regexSplit = new Regex(@"(?<!\\)\/");
+        private static readonly Regex _regexSplit = new Regex(@"(?<!\\)\/", RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
         public const int MaxLenghtPaths = 10;
         public const int MaxTokenLen = 50;
 
@@ -27,15 +27,15 @@ namespace Artesian.SDK.Dto
             resource = string.IsNullOrEmpty(resource) ? NotSet : resource;
 
             if (tokens.Length > PathString.MaxLenghtPaths)
-                throw new ArgumentException($@"Max allowed tokens: {PathString.MaxLenghtPaths}");
+                throw new ArgumentException($@"Max allowed tokens: {PathString.MaxLenghtPaths}", nameof(tokens));
 
             if (tokens.Length == 0 && resource == NotSet)
-                throw new ArgumentException($@"At least 1 token is needed");
+                throw new ArgumentException($@"At least 1 token is needed", nameof(tokens));
 
             for (int i = 0; i < tokens.Length; i++)
             {
                 if (tokens[i].Length > MaxTokenLen)
-                    throw new ArgumentException($@"Tokens should be less than {MaxTokenLen} characters in length");
+                    throw new ArgumentException($@"Tokens should be less than {MaxTokenLen} characters in length", nameof(tokens));
             }
 
             _tokens = tokens;
@@ -45,17 +45,29 @@ namespace Artesian.SDK.Dto
         public static PathString Parse(string path)
         {
             if (String.IsNullOrWhiteSpace(path))
-                throw new ArgumentException("path should not be null or a whitespace");
+                throw new ArgumentException("path should not be null or a whitespace", nameof(path));
 
-            if (!path.StartsWith(@"/"))
-                throw new ArgumentException(@"path should start with '/' character");
+#if NETSTANDARD2_1_OR_GREATER || NET5_0_OR_GREATER
+            if (!path.StartsWith('/'))
+                throw new ArgumentException(@"path should start with '/' character", nameof(path));
+#else
+            if (!path.StartsWith("/", StringComparison.Ordinal))
+                throw new ArgumentException(@"path should start with '/' character", nameof(path));
+#endif
 
             var tokens = _regexSplit.Split(path.Substring(1))
                 .Select(s => s.Replace(@"\/", @"/"))
                 .ToArray();
 
-            if (path.EndsWith("/") && !path.EndsWith(@"\/"))
+
+#if NETSTANDARD2_1_OR_GREATER || NET5_0_OR_GREATER
+            if (path.EndsWith('/') && !path.EndsWith(@"\/", StringComparison.Ordinal))
                 return new PathString(tokens);
+#else
+            if (path.EndsWith("/", StringComparison.Ordinal) && !path.EndsWith(@"\/", StringComparison.Ordinal))
+                return new PathString(tokens);
+#endif
+
 
             return new PathString(tokens.Take(tokens.Length-1).ToArray(), tokens[tokens.Length-1]);
         }
@@ -88,7 +100,7 @@ namespace Artesian.SDK.Dto
 
         public bool IsMatch()
         {
-            return _tokens.Any(x => x.EndsWith(Star)) || _resource.EndsWith(Star);
+            return _tokens.Any(x => x.EndsWith(Star, StringComparison.Ordinal)) || _resource.EndsWith(Star, StringComparison.Ordinal);
         }
 
         public string GetPath()
@@ -131,7 +143,7 @@ namespace Artesian.SDK.Dto
 
         public bool Equals(PathString other)
         {
-            return Enumerable.SequenceEqual(_tokens, other._tokens);
+            return Enumerable.SequenceEqual(_tokens, other._tokens, StringComparer.Ordinal);
         }
 
         public override bool Equals(object obj)
@@ -142,7 +154,7 @@ namespace Artesian.SDK.Dto
         public override int GetHashCode()
         {
             var hashCode = 2064342430;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(ToString());
+            hashCode = hashCode * -1521134295 + StringComparer.Ordinal.GetHashCode(ToString());
             return hashCode;
         }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

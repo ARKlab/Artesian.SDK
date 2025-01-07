@@ -13,7 +13,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// 
         /// </summary>
-        public QueryWithRangeParamaters()
+        protected QueryWithRangeParamaters()
         {
         }
 
@@ -25,7 +25,7 @@ namespace Artesian.SDK.Service
         /// <param name="extractionRangeType"></param>
         /// <param name="timezone"></param>
         /// <param name="filterId"></param>
-        public QueryWithRangeParamaters(
+        protected QueryWithRangeParamaters(
             IEnumerable<int> ids, 
             ExtractionRangeSelectionConfig 
             extractionRangeSelectionConfig, 
