@@ -366,7 +366,12 @@ var marketDataEntity = new MarketDataEntity.Input(){
     OriginalTimezone = "CET",
     AggregationRule = AggregationRule.Undefined,
     Type = MarketDataType.VersionedTimeSerie,
-    MarketDataId = 1
+    MarketDataId = 1,
+    DerivedCfg = new DerivedCfgCoalesce()
+    {
+        OrderedReferencedMarketDataIds = new int[]{ 10000, 10001, 10002}.ToArray(),
+        Version = 1,
+    }
 }
 
 var marketDataService = new MarketDataService(cfg);
@@ -376,7 +381,7 @@ var marketData = await marketDataService.GetMarketDataReference(new MarketDataId
         marketDataEntity.MarketDataName)
     );
 ```
-
+DerivedCfg can be of type: DerivedCfgCoalesce, DerivedCfgSum, DerivedCfgMuv.
 To Check MarketData for `IsRegistered` status, returns true if present or false if not found.
 
 ```csharp
@@ -398,6 +403,17 @@ marketData.Metadata.Transform = SystemTimeTransforms.GASDAY66;
 await marketData.Update();
 
 await marketData.Load();
+```
+
+Updating the DerivedCfg can be performed with `UpdateDerivedConfiguration` on MarketData. A validation will be done on the existing DerivedCfg of the MarketData, that should be not null and with same type as the update.
+
+```csharp
+var derivedCfgUpdate = new DerivedCfgCoalesce()
+{
+    OrderedReferencedMarketDataIds = new int[]{ 10002, 10001, 10000}.ToArray(),
+};
+
+marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false);
 ```
 
 Using `Write mode` to edit MarketData and `Save` to save the data of the current MarketData providing an instant. Can be used `Delete` specifying a range to delete a specific range of the time serie.

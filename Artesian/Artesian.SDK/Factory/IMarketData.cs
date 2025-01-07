@@ -1,4 +1,6 @@
 ﻿using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.DerivedCfg;
+
 using NodaTime;
 
 using System.Collections.Generic;
@@ -110,6 +112,33 @@ namespace Artesian.SDK.Factory
         /// </remarks>
         /// <returns> Marketdata </returns>
         IBidAskWritable EditBidAsk();
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        Task UpdateDerivedConfiguration(DerivedCfgMuv derivedCfg, bool force, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        Task UpdateDerivedConfiguration(DerivedCfgCoalesce derivedCfg, bool force, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        Task UpdateDerivedConfiguration(DerivedCfgSum derivedCfg, bool force, CancellationToken ctk = default);
     }
 
     /// <summary>

@@ -141,7 +141,7 @@ namespace Artesian.SDK.Tests.Samples
                 OrderedReferencedMarketDataIds = curveIds.ToArray(),
             };
 
-            var marketDataOutput = marketDataService.UpdateDerivedConfigurationAsync(marketData.MarketDataId.Value, derivedCfgUpdate, false).ConfigureAwait(true).GetAwaiter().GetResult();
+            marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false).ConfigureAwait(true).GetAwaiter().GetResult();
 
             Thread.Sleep(2000);
 
