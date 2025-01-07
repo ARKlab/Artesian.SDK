@@ -69,11 +69,29 @@ namespace Artesian.SDK.Service
         /// Update Derived Configuration for marketData with id supplied in <paramref name="marketDataId"/> and Rebuild
         /// </summary>
         /// <param name="marketDataId">Id of the marketData</param>
-        /// <param name="derivedCfg">The Derived Configuration to be updated</param>
+        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
         /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns>MarketData Entity Output</returns>
-        Task<MarketDataEntity.Output> UpdateDerivedConfigurationAsync(int marketDataId, DerivedCfgBase derivedCfg, bool force, CancellationToken ctk = default);
+        Task<MarketDataEntity.Output> UpdateDerivedConfigurationAsync(int marketDataId, DerivedCfgMuv derivedCfg, bool force, CancellationToken ctk = default);
+        /// <summary>
+        /// Update Derived Configuration for marketData with id supplied in <paramref name="marketDataId"/> and Rebuild
+        /// </summary>
+        /// <param name="marketDataId">Id of the marketData</param>
+        /// <param name="derivedCfg">The Derived Configuration Coalesce to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns>MarketData Entity Output</returns>
+        Task<MarketDataEntity.Output> UpdateDerivedConfigurationAsync(int marketDataId, DerivedCfgCoalesce derivedCfg, bool force, CancellationToken ctk = default);
+        /// <summary>
+        /// Update Derived Configuration for marketData with id supplied in <paramref name="marketDataId"/> and Rebuild
+        /// </summary>
+        /// <param name="marketDataId">Id of the marketData</param>
+        /// <param name="derivedCfg">The Derived Configuration Sum to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns>MarketData Entity Output</returns>
+        Task<MarketDataEntity.Output> UpdateDerivedConfigurationAsync(int marketDataId, DerivedCfgSum derivedCfg, bool force, CancellationToken ctk = default);
         #endregion
 
         #region SearchFacet

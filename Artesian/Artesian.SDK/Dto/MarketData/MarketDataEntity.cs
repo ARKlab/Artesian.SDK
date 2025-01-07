@@ -252,5 +252,14 @@ namespace Artesian.SDK.Dto
             if (marketDataEntityInput.Type == MarketDataType.MarketAssessment && marketDataEntityInput.AggregationRule != AggregationRule.Undefined)
                 throw new ArgumentException("Aggregation Rule must be Undefined if Type is MarketAssessment");
         }
+
+        public static void ValidateDerivedCfg(this MarketDataEntity.Output marketDataEntityOutput, DerivedCfgBase derivedCfg)
+        {
+            if(marketDataEntityOutput.DerivedCfg == null)
+                throw new ArgumentException("Derived Configuration is null for the MarketData selected");
+
+            if (marketDataEntityOutput.DerivedCfg.DerivedAlgorithm != derivedCfg.DerivedAlgorithm)
+                throw new ArgumentException("Derived Algorithm is different from the one in the update");
+        }
     }
 }
