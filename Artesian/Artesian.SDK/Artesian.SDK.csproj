@@ -15,15 +15,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
 	<PackageReference Include="Flurl.Http" Version="4.0.2" />
 	<PackageReference Include="Flurl.Http.Newtonsoft" Version="0.9.1" />
-	  <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.2.0" />
+	<PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.2.0" />
     <PackageReference Include="MessagePack.NodaTime" Version="3.4.2" />
     <PackageReference Include="Polly" Version="8.5.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-	  <PackageReference Include="Microsoft.Identity.Client" Version="4.66.2" />
+	<PackageReference Include="Microsoft.Identity.Client" Version="4.66.2" />
   </ItemGroup>
+
+	<ItemGroup Label="Vulnerabilities Overrides">
+		<PackageReference Include="System.Text.Json" Version="8.0.5"/>
+	</ItemGroup>
 
 </Project>
