@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Artesian.SDK.Dto.DerivedCfg.Serialize
 {
-    public abstract class JsonPolymorphicConverter<TBase, TDiscriminatorEnum> : JsonConverter<TBase>
+    internal abstract class JsonPolymorphicConverter<TBase, TDiscriminatorEnum> : JsonConverter<TBase>
         where TDiscriminatorEnum : struct, Enum
     {
         private readonly string _discriminatorPropertyName;

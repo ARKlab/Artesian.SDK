@@ -60,7 +60,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The custom Tags assigned to the data
         /// </summary>
-        public Dictionary<string, List<string>> Tags { get => _output.Tags; set => _output.Tags = value; }
+        public IDictionary<string, List<string>> Tags { get => _output.Tags; set => _output.Tags = value; }
         /// <summary>
         /// The Authorization Path
         /// </summary>

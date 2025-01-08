@@ -21,6 +21,7 @@ namespace Artesian.SDK.Tests.Samples
 
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "<Pending>")]
         public async Task CreateDerivedCoalesceTimeSeries()
         {
             var qs = new QueryService(_cfg);
@@ -142,13 +143,13 @@ namespace Artesian.SDK.Tests.Samples
 
             marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false).ConfigureAwait(true).GetAwaiter().GetResult();
 
-            Thread.Sleep(2000);
+            await Task.Delay(2000);
 
-            ts = qs.CreateActual()
+            ts = await qs.CreateActual()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
             foreach (var item in ts)
             {
@@ -172,6 +173,7 @@ namespace Artesian.SDK.Tests.Samples
 
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "<Pending>")]
         public async Task CreateDerivedSumTimeSeries()
         {
             var qs = new QueryService(_cfg);

@@ -17,13 +17,13 @@ namespace Artesian.SDK.Service
         /// <param name="operations">Operations</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>MarketData Entity Output</returns>
-        public Task<List<MarketDataEntity.Output>> PerformOperationsAsync(Operations operations, CancellationToken ctk = default)
+        public Task<IList<MarketDataEntity.Output>> PerformOperationsAsync(Operations operations, CancellationToken ctk = default)
         {
             operations.Validate();
 
             var url = "/marketdata/operations";
 
-            return _client.Exec<List<MarketDataEntity.Output>, Operations>(HttpMethod.Post, url, operations, ctk: ctk);
+            return _client.Exec<IList<MarketDataEntity.Output>, Operations>(HttpMethod.Post, url, operations, ctk: ctk);
         }
     }
 }

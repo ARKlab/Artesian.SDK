@@ -10,6 +10,7 @@ using System;
 using Flurl;
 using System.Globalization;
 using Artesian.SDK.Dto.DerivedCfg;
+using Artesian.SDK.Dto.MarketData;
 
 namespace Artesian.SDK.Service
 {

@@ -96,7 +96,7 @@ namespace Artesian.SDK.Service
         /// <param name="operations"></param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>MarketData Entity Output</returns>
-        Task<List<MarketDataEntity.Output>> PerformOperationsAsync(Operations operations, CancellationToken ctk = default);
+        Task<IList<MarketDataEntity.Output>> PerformOperationsAsync(Operations operations, CancellationToken ctk = default);
         #endregion
 
         #region TimeTransform
@@ -266,7 +266,7 @@ namespace Artesian.SDK.Service
         /// <param name="user">The user name</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>List of Principals entity</returns>
-        Task<List<Principals>> ReadUserPrincipals(string user, CancellationToken ctk = default);
+        Task<IList<Principals>> ReadUserPrincipals(string user, CancellationToken ctk = default);
         #endregion
 
         #region UpsertCurve
