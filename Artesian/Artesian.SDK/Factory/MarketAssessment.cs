@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -139,11 +138,11 @@ namespace Artesian.SDK.Factory
 
                 foreach (var reportTime in _values.GroupBy(g => g.ReportTime))
                 {
-                    var assessments = reportTime.ToDictionary(key => key.Product.ToString(), value => value.Value);
+                    var assessments = reportTime.ToDictionary(key => key.Product, value => value.Value, StringComparer.Ordinal);
                     data.MarketAssessment.Add(reportTime.Key, assessments);
                 }
 
-                await _marketDataService.UpsertCurveDataAsync(data, ctk);
+                await _marketDataService.UpsertCurveDataAsync(data, ctk).ConfigureAwait(false);
             }
         }
 
@@ -161,7 +160,7 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string> product = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string> product = null, string timezone = "CET", bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
             var data = new DeleteCurveData(_identifier)
             {
@@ -175,13 +174,13 @@ namespace Artesian.SDK.Factory
                 Product = product,
             };
 
-            await _marketDataService.DeleteCurveDataAsync(data, ctk);
+            await _marketDataService.DeleteCurveDataAsync(data, ctk).ConfigureAwait(false);
         }
 
         /// <summary>
         /// AssessmentElement entity
         /// </summary>
-        public class AssessmentElement
+        public sealed class AssessmentElement
         {
             /// <summary>
             /// AssessmentElement constructor

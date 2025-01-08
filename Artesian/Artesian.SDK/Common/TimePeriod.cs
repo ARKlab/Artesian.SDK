@@ -3,7 +3,7 @@
     /// <summary>
     /// TimePeriod enums
     /// </summary>
-    public enum TimePeriod : byte
+    internal enum TimePeriod : byte
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         Hour = 2,

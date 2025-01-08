@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Artesian.SDK.Service
 {
-    internal class DictionaryJsonConverter : JsonConverter
+    internal sealed class DictionaryJsonConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -74,6 +74,7 @@ namespace Artesian.SDK.Service
             object key = null;
             object value = null;
 
+#pragma warning disable MA0045 // Do not use blocking calls in a sync method (need to make calling method async)
             while (reader.Read())
             {
                 if (reader.TokenType == JsonToken.EndObject && key != null)
@@ -94,6 +95,7 @@ namespace Artesian.SDK.Service
                     value = serializer.Deserialize(reader, valueType);
                 }
             }
+#pragma warning restore MA0045 // Do not use blocking calls in a sync method (need to make calling method async)
         }
     }
 

@@ -158,7 +158,7 @@ namespace Artesian.SDK.Factory
                     KeepNulls = keepNulls
                 };
 
-                await _marketDataService.UpsertCurveDataAsync(data, ctk);
+                await _marketDataService.UpsertCurveDataAsync(data, ctk).ConfigureAwait(false);
             }
             //else
             //    _logger.Warn("No Data to be saved.");
@@ -193,7 +193,7 @@ namespace Artesian.SDK.Factory
                 Version = SelectedVersion,
             };
 
-            await _marketDataService.DeleteCurveDataAsync(data, ctk);
+            await _marketDataService.DeleteCurveDataAsync(data, ctk).ConfigureAwait(false);
         }
     }
 }

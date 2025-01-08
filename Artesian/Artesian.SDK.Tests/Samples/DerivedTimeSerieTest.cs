@@ -11,7 +11,7 @@ using NUnit.Framework.Legacy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace Artesian.SDK.Tests.Samples
 {
@@ -21,7 +21,7 @@ namespace Artesian.SDK.Tests.Samples
 
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
-        public void CreateDerivedCoalesceTimeSeries()
+        public async Task CreateDerivedCoalesceTimeSeries()
         {
             var qs = new QueryService(_cfg);
             var marketDataService = new MarketDataService(_cfg);
@@ -57,12 +57,12 @@ namespace Artesian.SDK.Tests.Samples
                         marketDataEntity.MarketDataName)
                     );
 
-                var isRegd = mktData.IsRegistered().GetAwaiter().GetResult();
+                var isRegd = await mktData.IsRegistered();
 
                 if (!isRegd)
-                    mktData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
+                    await mktData.Register(marketDataEntity);
 
-                mktData.Load().GetAwaiter().GetResult();
+                await mktData.Load();
 
                 curveIds.Add(mktData.MarketDataId.Value);
 
@@ -73,13 +73,13 @@ namespace Artesian.SDK.Tests.Samples
                     writeMarketData.AddData(dt, curve.Value);
                 }
 
-                writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime())).ConfigureAwait(true).GetAwaiter().GetResult();
+                await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
-                var dts = qs.CreateActual()
+                var dts = await qs.CreateActual()
                            .ForMarketData(new[] { mktData.MarketDataId.Value })
                            .InGranularity(Granularity.Day)
                            .InAbsoluteDateRange(curve.Start, curve.End)
-                           .ExecuteAsync().Result;
+                           .ExecuteAsync();
 
                 ClassicAssert.AreEqual(curve.Value, dts.First().Value);
                 ClassicAssert.AreEqual(curve.Value, dts.Last().Value);
@@ -110,20 +110,19 @@ namespace Artesian.SDK.Tests.Samples
                     marketDataEntityDerived.MarketDataName)
                 );
 
-            var isRegistered = marketData.IsRegistered().GetAwaiter().GetResult();
+            var isRegistered = await marketData.IsRegistered();
 
             if (!isRegistered)
-                marketData.Register(marketDataEntityDerived).ConfigureAwait(true).GetAwaiter().GetResult();
+                await marketData.Register(marketDataEntityDerived);
 
-            marketData.Load().GetAwaiter().GetResult();
+            await marketData.Load();
+            await Task.Delay(2000);
 
-            Thread.Sleep(2000);
-
-            var ts = qs.CreateActual()
+            var ts = await qs.CreateActual()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
             foreach (var item in ts)
             {
@@ -165,15 +164,15 @@ namespace Artesian.SDK.Tests.Samples
              *******************************************************************/
             foreach (var curve in curveIds)
             {
-                marketDataService.DeleteMarketDataAsync(curve).GetAwaiter().GetResult();
+                await marketDataService.DeleteMarketDataAsync(curve);
             }
-            marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value).GetAwaiter().GetResult();
+            await marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value);
         }
 
 
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
-        public void CreateDerivedSumTimeSeries()
+        public async Task CreateDerivedSumTimeSeries()
         {
             var qs = new QueryService(_cfg);
             var marketDataService = new MarketDataService(_cfg);
@@ -209,12 +208,12 @@ namespace Artesian.SDK.Tests.Samples
                         marketDataEntity.MarketDataName)
                     );
 
-                var isRegd = mktData.IsRegistered().GetAwaiter().GetResult();
+                var isRegd = await mktData.IsRegistered();
 
                 if (!isRegd)
-                    mktData.Register(marketDataEntity).ConfigureAwait(true).GetAwaiter().GetResult();
+                    await mktData.Register(marketDataEntity);
 
-                mktData.Load().GetAwaiter().GetResult();
+                await mktData.Load();
 
                 curveIds.Add(mktData.MarketDataId.Value);
 
@@ -225,13 +224,13 @@ namespace Artesian.SDK.Tests.Samples
                     writeMarketData.AddData(dt, curve.Value);
                 }
 
-                writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime())).ConfigureAwait(true).GetAwaiter().GetResult();
+                await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
-                var dts = qs.CreateActual()
+                var dts = await qs.CreateActual()
                            .ForMarketData(new[] { mktData.MarketDataId.Value })
                            .InGranularity(Granularity.Day)
                            .InAbsoluteDateRange(curve.Start, curve.End)
-                           .ExecuteAsync().Result;
+                           .ExecuteAsync();
 
                 ClassicAssert.AreEqual(curve.Value, dts.First().Value);
                 ClassicAssert.AreEqual(curve.Value, dts.Last().Value);
@@ -262,20 +261,19 @@ namespace Artesian.SDK.Tests.Samples
                     marketDataEntityDerived.MarketDataName)
                 );
 
-            var isRegistered = marketData.IsRegistered().GetAwaiter().GetResult();
+            var isRegistered = await marketData.IsRegistered();
 
             if (!isRegistered)
-                marketData.Register(marketDataEntityDerived).ConfigureAwait(true).GetAwaiter().GetResult();
+                await marketData.Register(marketDataEntityDerived);
 
-            marketData.Load().GetAwaiter().GetResult();
+            await marketData.Load();
+            await Task.Delay(2000);
 
-            Thread.Sleep(2000);
-
-            var ts = qs.CreateActual()
+            var ts = await qs.CreateActual()
                        .ForMarketData(new[] { marketData.MarketDataId.Value })
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
             foreach (var item in ts)
             {
@@ -292,9 +290,9 @@ namespace Artesian.SDK.Tests.Samples
              *******************************************************************/
             foreach (var curve in curveIds)
             {
-                marketDataService.DeleteMarketDataAsync(curve).GetAwaiter().GetResult();
+                await marketDataService.DeleteMarketDataAsync(curve);
             }
-            marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value).GetAwaiter().GetResult();
+            await marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value);
         }
     }
 }

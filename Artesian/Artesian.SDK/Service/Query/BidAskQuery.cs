@@ -37,7 +37,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="ids">Array of marketdata id's to be queried</param>
         /// <returns>BidAskQuery</returns>
-        public BidAskQuery ForMarketData(int[] ids)
+        public new BidAskQuery ForMarketData(int[] ids)
         {
             base.ForMarketData(ids);
             return this;
@@ -57,7 +57,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="filterId">The filter id to be queried</param>
         /// <returns>BidAskQuery</returns>
-        public BidAskQuery ForFilterId(int filterId)
+        public new BidAskQuery ForFilterId(int filterId)
         {
             base.ForFilterId(filterId);
             return this;
@@ -67,7 +67,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="tz">Timezone in which to extract eg UTC/CET</param>
         /// <returns>BidAskQuery</returns>
-        public BidAskQuery InTimezone(string tz)
+        public new BidAskQuery InTimezone(string tz)
         {
             base.InTimezone(tz);
             return this;
@@ -78,7 +78,7 @@ namespace Artesian.SDK.Service
         /// <param name="start">Start date of range</param>
         /// <param name="end">End date of range</param>
         /// <returns>BidAskQuery</returns>
-        public BidAskQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
+        public new BidAskQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
             base.InAbsoluteDateRange(start, end);
             return this;
@@ -89,7 +89,7 @@ namespace Artesian.SDK.Service
         /// <param name="from">Start period of range</param>
         /// <param name="to">End period of range</param>
         /// <returns>BidAskQuery</returns>
-        public BidAskQuery InRelativePeriodRange(Period from, Period to)
+        public new BidAskQuery InRelativePeriodRange(Period from, Period to)
         {
             base.InRelativePeriodRange(from, to);
             return this;
@@ -99,7 +99,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="extractionPeriod">Period to be queried</param>
         /// <returns>BidAskQuery</returns>
-        public BidAskQuery InRelativePeriod(Period extractionPeriod)
+        public new BidAskQuery InRelativePeriod(Period extractionPeriod)
         {
             base.InRelativePeriod(extractionPeriod);
             return this;
@@ -181,7 +181,7 @@ namespace Artesian.SDK.Service
 
             var taskList = urls.Select(url => _client.Exec<IEnumerable<BidAskRow>>(HttpMethod.Get, url, ctk: ctk));
 
-            var res = await Task.WhenAll(taskList);
+            var res = await Task.WhenAll(taskList).ConfigureAwait(false);
 
             return res.SelectMany(x => x);
         }

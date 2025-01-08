@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 using Artesian.SDK.Dto.GMEPublicOffer;
 using Artesian.SDK.Service;
@@ -21,18 +22,18 @@ namespace Artesian.SDK.Tests
 
         #region Raw PO curve query
         [Test]
-        public void ExtractRawCurveBasic()
+        public async Task ExtractRawCurveBasic()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new GMEPublicOfferService(_cfg);
 
-                var act = qs.CreateRawCurveQuery()
+                var act = await qs.CreateRawCurveQuery()
                        .ForDate(new LocalDate(2019,1,1))
                        .ForPurpose(Purpose.OFF)
                        .ForStatus(Status.INC)
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/extract/2019-01-01/OFF/INC")
                     .WithVerb(HttpMethod.Get)
@@ -41,14 +42,14 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ExtractRawCurve()
+        public async Task ExtractRawCurve()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new GMEPublicOfferService(_cfg);
 
-                var act = qs.CreateRawCurveQuery()
+                var act = await qs.CreateRawCurveQuery()
                        .ForDate(new LocalDate(2019, 1, 1))
                        .ForPurpose(Purpose.OFF)
                        .ForStatus(Status.INC)
@@ -62,7 +63,7 @@ namespace Artesian.SDK.Tests
                        .ForZone(new Zone[] { Zone.CNOR })
                        .WithPagination(2,20)
                        .WithSort(new [] { "id asc" })
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/extract/2019-01-01/OFF/INC")
                     .WithQueryParam("generationType", "GAS")
@@ -82,14 +83,14 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ExtractRawCurveXBID()
+        public async Task ExtractRawCurveXBID()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new GMEPublicOfferService(_cfg);
 
-                var act = qs.CreateRawCurveQuery()
+                var act = await qs.CreateRawCurveQuery()
                        .ForDate(new LocalDate(2019, 1, 1))
                        .ForPurpose(Purpose.OFF)
                        .ForStatus(Status.INC)
@@ -103,7 +104,7 @@ namespace Artesian.SDK.Tests
                        .ForZone(new Zone[] { Zone.CNOR })
                        .WithPagination(2, 20)
                        .WithSort(new[] { "id asc" })
-                       .ExecuteAsync().Result;
+                       .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/extract/2019-01-01/OFF/INC")
                     .WithQueryParam("generationType", "GAS")
@@ -127,15 +128,15 @@ namespace Artesian.SDK.Tests
 
         #region Metadata 
         [Test]
-        public void ReadOperatorsEnumVar1()
+        public async Task ReadOperatorsEnumVar1()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new GMEPublicOfferService(_cfg);
 
-                var act = qs.ReadOperatorsAsync(2,20)
-                       .ConfigureAwait(true).GetAwaiter().GetResult();
+                var act = await qs.ReadOperatorsAsync(2,20)
+                       ;
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/enums/operators")
                     .WithQueryParam("page", 2)
@@ -146,15 +147,15 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ReadOperatorsEnumVar2()
+        public async Task ReadOperatorsEnumVar2()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new GMEPublicOfferService(_cfg);
 
-                var act = qs.ReadOperatorsAsync(2, 20, operatorFilter: "myFilter", sort: new [] { "operator asc" })
-                       .ConfigureAwait(true).GetAwaiter().GetResult();
+                var act = await qs.ReadOperatorsAsync(2, 20, operatorFilter: "myFilter", sort: new[] { "operator asc" })
+                       ;
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/enums/operators")
                     .WithQueryParam("page", 2)
@@ -167,15 +168,15 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ReadUnitsEnumVar1()
+        public async Task ReadUnitsEnumVar1()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new GMEPublicOfferService(_cfg);
 
-                var act = qs.ReadUnitsAsync(2, 4)
-                       .ConfigureAwait(true).GetAwaiter().GetResult();
+                var act = await qs.ReadUnitsAsync(2, 4)
+                       ;
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/enums/units")
                     .WithQueryParam("page", 2)
@@ -186,15 +187,15 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ReadUnitsEnumVar2()
+        public async Task ReadUnitsEnumVar2()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new GMEPublicOfferService(_cfg);
 
-                var act = qs.ReadUnitsAsync(2, 20, unitFilter: "myFilter", sort: new [] { "unit asc" })
-                       .ConfigureAwait(true).GetAwaiter().GetResult();
+                var act = await qs.ReadUnitsAsync(2, 20, unitFilter: "myFilter", sort: new[] { "unit asc" })
+                       ;
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/enums/units")
                     .WithQueryParam("page", 2)
@@ -208,15 +209,15 @@ namespace Artesian.SDK.Tests
 
 
         [Test]
-        public void ReadUnitConfigurationMappingVar1()
+        public async Task ReadUnitConfigurationMappingVar1()
         {
             using (var httpTest = new HttpTest())
             {
 
                 var qs = new GMEPublicOfferService(_cfg);
 
-                var req = qs.ReadUnitConfigurationMappingAsync("myUnit")
-                       .ConfigureAwait(true).GetAwaiter().GetResult();
+                var req = await qs.ReadUnitConfigurationMappingAsync("myUnit")
+                       ;
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/unitconfigurationmappings/myUnit")
                     .WithVerb(HttpMethod.Get)
@@ -225,14 +226,14 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ReadUnitConfigurationMappingsVar1()
+        public async Task ReadUnitConfigurationMappingsVar1()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new GMEPublicOfferService(_cfg);
 
-                var req = qs.ReadUnitConfigurationMappingsAsync(1, 20)
-                       .ConfigureAwait(true).GetAwaiter().GetResult();
+                var req = await qs.ReadUnitConfigurationMappingsAsync(1, 20)
+                       ;
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/unitconfigurationmappings")
                     .WithQueryParam("page", 1)
@@ -243,14 +244,14 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ReadUnitConfigurationMappingsVar2()
+        public async Task ReadUnitConfigurationMappingsVar2()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new GMEPublicOfferService(_cfg);
 
-                var req = qs.ReadUnitConfigurationMappingsAsync(1, 20, unitFilter: "unitFilterTest", sort: new [] { "unit desc" })
-                       .ConfigureAwait(true).GetAwaiter().GetResult();
+                var req = await qs.ReadUnitConfigurationMappingsAsync(1, 20, unitFilter: "unitFilterTest", sort: new[] { "unit desc" })
+                       ;
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/unitconfigurationmappings")
                     .WithQueryParam("page", 1)
@@ -263,7 +264,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void UpsertUnitConfigurationMapping()
+        public async Task UpsertUnitConfigurationMapping()
         {
             using (var httpTest = new HttpTest())
             {
@@ -281,8 +282,8 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                var req = qs.UpsertUnitConfigurationMappingAsync(unitCfg)
-                       .ConfigureAwait(true).GetAwaiter().GetResult();
+                var req = await qs.UpsertUnitConfigurationMappingAsync(unitCfg)
+                       ;
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/unitconfigurationmappings/{unitCfg.Unit}")
                     .WithVerb(HttpMethod.Put)
@@ -291,14 +292,14 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void DeleteUnitConfigurationMapping()
+        public async Task DeleteUnitConfigurationMapping()
         {
             using (var httpTest = new HttpTest())
             {
                 var qs = new GMEPublicOfferService(_cfg);
 
-                qs.DeleteUnitConfigurationMappingAsync("unitToDelete")
-                       .ConfigureAwait(true).GetAwaiter().GetResult();
+                await qs.DeleteUnitConfigurationMappingAsync("unitToDelete")
+                       ;
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/unitconfigurationmappings/unitToDelete")
                     .WithVerb(HttpMethod.Delete)
@@ -310,7 +311,7 @@ namespace Artesian.SDK.Tests
 
         #region UpsertGME
         [Test]
-        public void UpsertDataAsync()
+        public async Task UpsertDataAsync()
         {
             using (var httpTest = new HttpTest())
             {
@@ -339,7 +340,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                gmeService.UpsertDataAsync(gmeData).ConfigureAwait(true).GetAwaiter().GetResult();
+                await gmeService.UpsertDataAsync(gmeData);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}gmepublicoffer/v2.0/upsertdata")
                     .WithVerb(HttpMethod.Post)

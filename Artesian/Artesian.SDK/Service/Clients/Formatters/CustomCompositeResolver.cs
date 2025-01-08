@@ -8,7 +8,7 @@ using MessagePack.Resolvers;
 
 namespace Artesian.SDK.Service
 {
-    internal class CustomCompositeResolver : IFormatterResolver
+    internal sealed class CustomCompositeResolver : IFormatterResolver
     {
         public static IFormatterResolver Instance = new CustomCompositeResolver();
 

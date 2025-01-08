@@ -2,57 +2,31 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;netstandard2.0;netstandard2.1;net462</TargetFrameworks>
-    <ApplicationIcon />
-    <Win32Resource />
     <OutputType>Library</OutputType>
-    <StartupObject />
-    <PackageProjectUrl>https://github.com/ARKlab/Artesian.SDK</PackageProjectUrl>
-    <Copyright>Copyright (C) 2024 ARK Energy LTD</Copyright>
-    <Company>ARK Labs</Company>
-    <Authors>ARK Labs</Authors>
-    <PackageIcon>ark-dark.png</PackageIcon>
-    <RepositoryUrl>https://github.com/ARKlab/Artesian.SDK</RepositoryUrl>
+	  
     <Description>Artesian SDK library</Description>
     <PackageTags>Ark;c#;Visual Studio;Framework;Arkive;Artesian;</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	<PackageReadmeFile>README.md</PackageReadmeFile>
 
     <PackageReleaseNotes>
       Breaking: remove support for .NET6 (EOL) in favor of .NET8
     </PackageReleaseNotes>
-    
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <LangVersion>latest</LangVersion>
 
-    <IncludeSymbols>True</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Platforms>AnyCPU;x64;x86</Platforms>
+	  <IsPackable>true</IsPackable>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-
-    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-  </PropertyGroup>
-  
   <ItemGroup>
-    <None Include="ark-dark.png" Pack="true" PackagePath="\" />
-	  <None Include="..\..\README.md" Pack="true" PackagePath="\" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
 	<PackageReference Include="Flurl.Http" Version="4.0.2" />
 	<PackageReference Include="Flurl.Http.Newtonsoft" Version="0.9.1" />
-	  <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.1.0" />
-    <PackageReference Include="MessagePack.NodaTime" Version="3.4.1" />
+	<PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.2.0" />
+    <PackageReference Include="MessagePack.NodaTime" Version="3.4.2" />
     <PackageReference Include="Polly" Version="8.5.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-	  <PackageReference Include="Microsoft.Identity.Client" Version="4.66.2" />
+	<PackageReference Include="Microsoft.Identity.Client" Version="4.66.2" />
   </ItemGroup>
+
+	<ItemGroup Label="Vulnerabilities Overrides">
+		<PackageReference Include="System.Text.Json" Version="8.0.5"/>
+	</ItemGroup>
 
 </Project>

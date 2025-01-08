@@ -68,7 +68,7 @@ namespace Artesian.SDK.Factory
             if (_entity != null)
                 throw new ArtesianFactoryException("Market Data is already registered with ID {0}", _entity.MarketDataId);
 
-            _entity = await _marketDataService.RegisterMarketDataAsync(metadata, ctk);
+            _entity = await _marketDataService.RegisterMarketDataAsync(metadata, ctk).ConfigureAwait(false);
 
             Metadata = new MarketDataMetadata(_entity);
         }
@@ -84,15 +84,13 @@ namespace Artesian.SDK.Factory
         {
             if (Metadata != null)
                 return true;
-            else
-            {
-                await Load(ctk);
 
-                if (Metadata != null)
-                    return true;
+            await Load(ctk).ConfigureAwait(false);
 
-                return false;
-            }
+            if (Metadata != null)
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -104,7 +102,7 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Load(CancellationToken ctk = default)
         {
-            _entity = await _marketDataService.ReadMarketDataRegistryAsync(this.Identifier, ctk);
+            _entity = await _marketDataService.ReadMarketDataRegistryAsync(Identifier, ctk).ConfigureAwait(false);
 
             if (_entity != null)
                 Metadata = new MarketDataMetadata(_entity);
@@ -124,7 +122,7 @@ namespace Artesian.SDK.Factory
 
             var marketDataEntityInput = new MarketDataEntity.Input(_entity);
 
-            _entity = await _marketDataService.UpdateMarketDataAsync(marketDataEntityInput, ctk);
+            _entity = await _marketDataService.UpdateMarketDataAsync(marketDataEntityInput, ctk).ConfigureAwait(false);
 
             Metadata = new MarketDataMetadata(_entity);
         }

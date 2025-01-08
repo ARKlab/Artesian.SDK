@@ -52,7 +52,7 @@ namespace Artesian.SDK.Service
         protected QueryWithRange<TQueryParams> InTimezone(string tz)
         {
             if (DateTimeZoneProviders.Tzdb.GetZoneOrNull(tz) == null)
-                throw new ArgumentException($"Timezone {tz} is not recognized");
+                throw new ArgumentException($"Timezone {tz} is not recognized", nameof(tz));
             QueryParamaters.TimeZone = tz;
             return this;
         }
@@ -66,7 +66,7 @@ namespace Artesian.SDK.Service
         protected QueryWithRange<TQueryParams> InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
             if (end <= start)
-                throw new ArgumentException("End date " + end + " must be greater than start date " + start);
+                throw new ArgumentException("End date " + end + " must be greater than start date " + start, nameof(end));
 
             QueryParamaters.ExtractionRangeType = ExtractionRangeType.DateRange;
             QueryParamaters.ExtractionRangeSelectionConfig.DateStart = start;

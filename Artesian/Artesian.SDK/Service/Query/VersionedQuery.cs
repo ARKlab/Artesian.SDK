@@ -38,7 +38,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="ids">Array of marketdata id's to be queried</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery ForMarketData(int[] ids)
+        public new VersionedQuery ForMarketData(int[] ids)
         {
             base.ForMarketData(ids);
             return this;
@@ -58,7 +58,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="filterId">The filter id to be queried</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery ForFilterId(int filterId)
+        public new VersionedQuery ForFilterId(int filterId)
         {
             base.ForFilterId(filterId);
             return this;
@@ -68,7 +68,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="tz">Timezone in which to extract eg UTC/CET</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery InTimezone(string tz)
+        public new VersionedQuery InTimezone(string tz)
         {
             base.InTimezone(tz);
             return this;
@@ -79,7 +79,7 @@ namespace Artesian.SDK.Service
         /// <param name="start">Start date of range</param>
         /// <param name="end">End date of range</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
+        public new VersionedQuery InAbsoluteDateRange(LocalDate start, LocalDate end)
         {
             base.InAbsoluteDateRange(start, end);
             return this;
@@ -90,7 +90,7 @@ namespace Artesian.SDK.Service
         /// <param name="from">Start period of range</param>
         /// <param name="to">End period of range</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery InRelativePeriodRange(Period from, Period to)
+        public new VersionedQuery InRelativePeriodRange(Period from, Period to)
         {
             base.InRelativePeriodRange(from, to);
             return this;
@@ -100,7 +100,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="extractionPeriod">Period to be queried</param>
         /// <returns>VersionedQuery</returns>
-        public VersionedQuery InRelativePeriod(Period extractionPeriod)
+        public new VersionedQuery InRelativePeriod(Period extractionPeriod)
         {
             base.InRelativePeriod(extractionPeriod);
             return this;
@@ -198,7 +198,7 @@ namespace Artesian.SDK.Service
         public VersionedQuery ForMostRecent(LocalDateTime start, LocalDateTime end)
         {
             if (end <= start)
-                throw new ArgumentException("End datetime " + end + " must be greater than start datetime " + start);
+                throw new ArgumentException("End datetime " + end + " must be greater than start datetime " + start, nameof(end));
 
             QueryParamaters.VersionSelectionType = VersionSelectionType.MostRecent;
             QueryParamaters.VersionSelectionConfig.MostRecent.DateStart = start;
@@ -241,7 +241,7 @@ namespace Artesian.SDK.Service
         public VersionedQuery ForLastOfDays(LocalDate start, LocalDate end)
         {
             if (end <= start)
-                throw new ArgumentException("End date " + end + " must be greater than start date " + start);
+                throw new ArgumentException("End date " + end + " must be greater than start date " + start, nameof(end));
 
             QueryParamaters.VersionSelectionType = VersionSelectionType.LastOfDays;
             QueryParamaters.VersionSelectionConfig.LastOf.DateStart = start;
@@ -284,7 +284,7 @@ namespace Artesian.SDK.Service
         public VersionedQuery ForLastOfMonths(LocalDate start, LocalDate end)
         {
             if (end <= start)
-                throw new ArgumentException("End date " + end + " must be greater than start date " + start);
+                throw new ArgumentException("End date " + end + " must be greater than start date " + start, nameof(end));
 
             QueryParamaters.VersionSelectionType = VersionSelectionType.LastOfMonths;
             QueryParamaters.VersionSelectionConfig.LastOf.DateStart = start;
@@ -394,7 +394,7 @@ namespace Artesian.SDK.Service
 
             var taskList = urls.Select(url => _client.Exec<IEnumerable<TimeSerieRow.Versioned>>(HttpMethod.Get, url, ctk: ctk));
 
-            var res = await Task.WhenAll(taskList);
+            var res = await Task.WhenAll(taskList).ConfigureAwait(false);
 
             return res.SelectMany(t=>t);
         }

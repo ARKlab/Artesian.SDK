@@ -4,7 +4,6 @@ using Artesian.SDK.Service;
 using NodaTime;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -131,7 +130,7 @@ namespace Artesian.SDK.Factory
                     KeepNulls = keepNulls
                 };
 
-                await _marketDataService.UpsertCurveDataAsync(data, ctk);
+                await _marketDataService.UpsertCurveDataAsync(data, ctk).ConfigureAwait(false);
             }
         }
 
@@ -161,7 +160,7 @@ namespace Artesian.SDK.Factory
                 DeferDataGeneration = deferDataGeneration,
             };
 
-            await _marketDataService.DeleteCurveDataAsync(data, ctk);
+            await _marketDataService.DeleteCurveDataAsync(data, ctk).ConfigureAwait(false);
         }
     }
 }
