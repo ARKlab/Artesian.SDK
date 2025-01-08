@@ -108,7 +108,7 @@ namespace Artesian.SDK.Dto
             /// The custom Tags assigned to the data
             /// </summary>
             [MessagePack.Key(10)]
-            public Dictionary<string, List<string>> Tags { get; set; }
+            public IDictionary<string, List<string>> Tags { get; set; }
             /// <summary>
             /// The Authorization Path
             /// </summary>
@@ -230,27 +230,6 @@ namespace Artesian.SDK.Dto
             /// The Curve Ranges
             /// </summary>
             public IEnumerable<CurveRange> Curves { get; set; }
-        }
-    }
-
-    internal static class MarketDataEntityInputExt
-    {
-        public static void ValidateRegister(this MarketDataEntity.Input marketDataEntityInput)
-        {
-            if (marketDataEntityInput.MarketDataId != 0)
-                throw new ArgumentException("MarketDataId must be 0", nameof(marketDataEntityInput));
-
-            if (marketDataEntityInput.Type == MarketDataType.MarketAssessment && marketDataEntityInput.TransformID != null)
-                throw new ArgumentException("No transform possible when Type is MarketAssessment", nameof(marketDataEntityInput));
-        }
-
-        public static void ValidateUpdate(this MarketDataEntity.Input marketDataEntityInput)
-        {
-            if (marketDataEntityInput.Type == MarketDataType.MarketAssessment && marketDataEntityInput.TransformID != null)
-                throw new ArgumentException("No transform possible when Type is MarketAssessment", nameof(marketDataEntityInput));
-
-            if (marketDataEntityInput.Type == MarketDataType.MarketAssessment && marketDataEntityInput.AggregationRule != AggregationRule.Undefined)
-                throw new ArgumentException("Aggregation Rule must be Undefined if Type is MarketAssessment", nameof(marketDataEntityInput));
         }
     }
 }

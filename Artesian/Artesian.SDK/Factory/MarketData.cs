@@ -1,7 +1,11 @@
 ﻿using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.DerivedCfg;
+using Artesian.SDK.Dto.MarketData;
 using Artesian.SDK.Service;
+
 using NodaTime;
+
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -54,9 +58,9 @@ namespace Artesian.SDK.Factory
         public async Task Register(MarketDataEntity.Input metadata, CancellationToken ctk = default)
         {
             Guard.IsNotNull(metadata, nameof(metadata));
-            Guard.IsTrue(metadata.ProviderName == null || metadata.ProviderName == this.Identifier.Provider);
-            Guard.IsTrue(metadata.ProviderName == null || metadata.ProviderName == this.Identifier.Provider);
-            Guard.IsTrue(metadata.MarketDataName == null || metadata.MarketDataName == this.Identifier.Name);
+            Guard.IsTrue(metadata.ProviderName == null || string.Equals(metadata.ProviderName, this.Identifier.Provider));
+            Guard.IsTrue(metadata.ProviderName == null || string.Equals(metadata.ProviderName, this.Identifier.Provider));
+            Guard.IsTrue(metadata.MarketDataName == null || string.Equals(metadata.MarketDataName, this.Identifier.Name));
             Guard.IsNotNullOrWhiteSpace(metadata.OriginalTimezone);
 
             metadata.ProviderName = this.Identifier.Provider;
@@ -219,6 +223,87 @@ namespace Artesian.SDK.Factory
 
             var bask = new BidAsk(this);
             return bask;
+        }
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        public async Task UpdateDerivedConfiguration(DerivedCfgMuv derivedCfg, CancellationToken ctk = default)
+        {
+            await UpdateDerivedConfiguration(derivedCfg, false, ctk).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        public async Task UpdateDerivedConfiguration(DerivedCfgMuv derivedCfg, bool force = false, CancellationToken ctk = default)
+        {
+            _entity.ValidateDerivedCfg(derivedCfg);
+
+            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
+
+            Metadata = new MarketDataMetadata(_entity);
+        }
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        public async Task UpdateDerivedConfiguration(DerivedCfgCoalesce derivedCfg, CancellationToken ctk = default)
+        {
+            await UpdateDerivedConfiguration(derivedCfg, false, ctk).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        public async Task UpdateDerivedConfiguration(DerivedCfgCoalesce derivedCfg, bool force = false, CancellationToken ctk = default)
+        {
+            _entity.ValidateDerivedCfg(derivedCfg);
+
+            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
+
+            Metadata = new MarketDataMetadata(_entity);
+        }
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        public async Task UpdateDerivedConfiguration(DerivedCfgSum derivedCfg, CancellationToken ctk = default)
+        {
+            await UpdateDerivedConfiguration(derivedCfg, false, ctk).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        public async Task UpdateDerivedConfiguration(DerivedCfgSum derivedCfg, bool force = false, CancellationToken ctk = default)
+        {
+            _entity.ValidateDerivedCfg(derivedCfg);
+
+            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
+
+            Metadata = new MarketDataMetadata(_entity);
         }
     }
 }

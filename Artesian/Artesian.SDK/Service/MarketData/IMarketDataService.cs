@@ -3,6 +3,7 @@
 // license information. 
 
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.DerivedCfg;
 
 using NodaTime;
 using System.Collections.Generic;
@@ -64,6 +65,15 @@ namespace Artesian.SDK.Service
         /// <param name="ctk">CancellationToken</param>
         /// <returns></returns>
         Task DeleteMarketDataAsync(int id, CancellationToken ctk = default);
+        /// <summary>
+        /// Update Derived Configuration for marketData with id supplied in <paramref name="marketDataId"/> and Rebuild
+        /// </summary>
+        /// <param name="marketDataId">Id of the marketData</param>
+        /// <param name="derivedCfg">The Derived Configuration to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns>MarketData Entity Output</returns>
+        Task<MarketDataEntity.Output> UpdateDerivedConfigurationAsync(int marketDataId, DerivedCfgBase derivedCfg, bool force = false, CancellationToken ctk = default);
         #endregion
 
         #region SearchFacet
@@ -86,7 +96,7 @@ namespace Artesian.SDK.Service
         /// <param name="operations"></param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>MarketData Entity Output</returns>
-        Task<List<MarketDataEntity.Output>> PerformOperationsAsync(Operations operations, CancellationToken ctk = default);
+        Task<IList<MarketDataEntity.Output>> PerformOperationsAsync(Operations operations, CancellationToken ctk = default);
         #endregion
 
         #region TimeTransform
@@ -256,7 +266,7 @@ namespace Artesian.SDK.Service
         /// <param name="user">The user name</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>List of Principals entity</returns>
-        Task<List<Principals>> ReadUserPrincipals(string user, CancellationToken ctk = default);
+        Task<IList<Principals>> ReadUserPrincipals(string user, CancellationToken ctk = default);
         #endregion
 
         #region UpsertCurve

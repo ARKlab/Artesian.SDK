@@ -18,9 +18,10 @@ namespace Artesian.SDK.Tests.Samples
     public class DerivedTimeSerieTest
     {
         private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri("https://arkive.artesian.cloud/tenantName/"), "APIKey");
-        
+
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "<Pending>")]
         public async Task CreateDerivedCoalesceTimeSeries()
         {
             var qs = new QueryService(_cfg);
@@ -133,6 +134,32 @@ namespace Artesian.SDK.Tests.Samples
                     ClassicAssert.AreEqual(200, item.Value);
             }
 
+            // Update DerivedCfg
+            curveIds.Reverse();
+            var derivedCfgUpdate = new DerivedCfgCoalesce()
+            {
+                OrderedReferencedMarketDataIds = curveIds.ToArray(),
+            };
+
+            marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false).ConfigureAwait(true).GetAwaiter().GetResult();
+
+            await Task.Delay(2000);
+
+            ts = await qs.CreateActual()
+                       .ForMarketData(new[] { marketData.MarketDataId.Value })
+                       .InGranularity(Granularity.Day)
+                       .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
+                       .ExecuteAsync();
+
+            foreach (var item in ts)
+            {
+                if (item.Time.Date <= new DateTime(2018, 10, 3))
+                    ClassicAssert.AreEqual(100, item.Value);
+
+                if (item.Time.Date > new DateTime(2018, 10, 3))
+                    ClassicAssert.AreEqual(200, item.Value);
+            }
+
             /*******************************************************************
              * Tidy Up
              *******************************************************************/
@@ -146,6 +173,7 @@ namespace Artesian.SDK.Tests.Samples
 
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "<Pending>")]
         public async Task CreateDerivedSumTimeSeries()
         {
             var qs = new QueryService(_cfg);

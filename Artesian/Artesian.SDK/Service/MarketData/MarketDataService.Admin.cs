@@ -82,12 +82,12 @@ namespace Artesian.SDK.Service
         /// <param name="user">The user name</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>List of Principals entity</returns>
-        public Task<List<Principals>> ReadUserPrincipals(string user, CancellationToken ctk = default)
+        public Task<IList<Principals>> ReadUserPrincipals(string user, CancellationToken ctk = default)
         {
             var url = "/user/principals"
                         .SetQueryParam("user", $"{user}");
 
-            return _client.Exec<List<Principals>>(HttpMethod.Get, url, ctk);
+            return _client.Exec<IList<Principals>>(HttpMethod.Get, url, ctk);
         }
     }
 }

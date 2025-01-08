@@ -4,7 +4,8 @@ using System.Text.Json.Serialization;
 
 namespace Artesian.SDK.Dto.DerivedCfg.Serialize
 {
-    internal abstract class JsonPolymorphicConverter<TBase, TDiscriminatorEnum> : JsonConverter<TBase> where TDiscriminatorEnum : struct, Enum
+    internal abstract class JsonPolymorphicConverter<TBase, TDiscriminatorEnum> : JsonConverter<TBase>
+        where TDiscriminatorEnum : struct, Enum
     {
         private readonly string _discriminatorPropertyName;
 
@@ -22,35 +23,44 @@ namespace Artesian.SDK.Dto.DerivedCfg.Serialize
                 throw new JsonException();
             }
 
-            using JsonDocument jsonDocument = JsonDocument.ParseValue(ref reader);
-            string propertyName = options.PropertyNamingPolicy?.ConvertName(_discriminatorPropertyName) ?? _discriminatorPropertyName;
-            if (!jsonDocument.RootElement.TryGetProperty(propertyName, out var value))
+            using (var jsonDocument = JsonDocument.ParseValue(ref reader))
             {
-                throw new JsonException();
-            }
+                var pn = options.PropertyNamingPolicy?.ConvertName(_discriminatorPropertyName) ?? _discriminatorPropertyName;
 
-            Type type = null;
-            TDiscriminatorEnum result;
-            if (value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out var value2) && Enum.IsDefined(typeof(TDiscriminatorEnum), value2))
-            {
-                type = GetType((TDiscriminatorEnum)Enum.ToObject(typeof(TDiscriminatorEnum), value2));
-            }
-            else if (value.ValueKind == JsonValueKind.String && Enum.TryParse<TDiscriminatorEnum>(value.GetString(), ignoreCase: true, out result))
-            {
-                type = GetType(result);
-            }
+                if (!jsonDocument.RootElement.TryGetProperty(pn, out var typeProperty))
+                {
+                    throw new JsonException();
+                }
 
-            if (type == null)
-            {
-                throw new JsonException();
-            }
+                Type? type = null;
 
-            return (TBase)JsonSerializer.Deserialize(jsonDocument.RootElement.GetRawText(), type, options);
+                if (typeProperty.ValueKind == JsonValueKind.Number
+                    && typeProperty.TryGetInt32(out var enumInt)
+                    && Enum.IsDefined(typeof(TDiscriminatorEnum), enumInt))
+                {
+                    type = GetType((TDiscriminatorEnum)Enum.ToObject(typeof(TDiscriminatorEnum), enumInt));
+                }
+                else if (typeProperty.ValueKind == JsonValueKind.String
+                    && Enum.TryParse<TDiscriminatorEnum>(typeProperty.GetString(), true, out var enumVal))
+                {
+                    type = GetType(enumVal);
+                }
+
+                if (type == null)
+                {
+                    throw new JsonException();
+                }
+
+                var jsonObject = jsonDocument.RootElement.GetRawText();
+                var result = (TBase?)JsonSerializer.Deserialize(jsonObject, type, options);
+
+                return result;
+            }
         }
 
         public override void Write(Utf8JsonWriter writer, TBase value, JsonSerializerOptions options)
         {
-            JsonSerializer.Serialize(writer, (object)value, options);
+            JsonSerializer.Serialize(writer, (object?)value, options);
         }
     }
 }
