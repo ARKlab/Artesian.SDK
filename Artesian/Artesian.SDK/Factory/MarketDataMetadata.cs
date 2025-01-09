@@ -1,8 +1,12 @@
 ﻿using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.DerivedCfg;
+using Artesian.SDK.Dto.DerivedCfg.Enums;
 
 using NodaTime;
 
+using System;
 using System.Collections.Generic;
+using DerivedAlg = Artesian.SDK.Dto.DerivedCfg.Enums.DerivedAlgorithm;
 
 namespace Artesian.SDK.Factory
 {
@@ -64,7 +68,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Authorization Path
         /// </summary>
-        public string Path  { get; set; }
+        public string Path { get; set; }
         /// <summary>
         /// The TimeTransform
         /// </summary>
@@ -89,5 +93,47 @@ namespace Artesian.SDK.Factory
         /// The time the market data has been created
         /// </summary>
         public Instant Created => _output.Created;
+        /// <summary>
+        /// The DerivedAlgorithm if present
+        /// </summary>
+        public DerivedAlgorithm? DerivedAlgorithm => _output.DerivedCfg?.DerivedAlgorithm;
+        /// <summary>
+        /// The OrderedReferencedMarketDataIds if present
+        /// </summary>
+        public int[] OrderedReferencedMarketDataIds
+        {
+            get
+            {
+                if (_output.DerivedCfg == null)
+                    return null;
+
+                switch (_output.DerivedCfg.DerivedAlgorithm)
+                {
+                    case DerivedAlg.Sum:
+                        return ((DerivedCfgSum)_output.DerivedCfg).OrderedReferencedMarketDataIds;
+                    case DerivedAlg.Coalesce:
+                        return ((DerivedCfgCoalesce)_output.DerivedCfg).OrderedReferencedMarketDataIds;
+                    case DerivedAlg.MUV:
+                        return null;
+                    default:
+                        throw new ArgumentException("Invalid configuration DerivedAlgorithm");
+                }
+            }
+            set
+            {
+                if (_output.DerivedCfg != null)
+                {
+                    switch (_output.DerivedCfg.DerivedAlgorithm)
+                    {
+                        case DerivedAlg.Sum:
+                            ((DerivedCfgSum)_output.DerivedCfg).OrderedReferencedMarketDataIds = value;
+                            break;
+                        case DerivedAlg.Coalesce:
+                            ((DerivedCfgCoalesce)_output.DerivedCfg).OrderedReferencedMarketDataIds = value;
+                            break;
+                    }
+                }
+            }
+        }
     }
 }
