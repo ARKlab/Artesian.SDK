@@ -99,13 +99,6 @@ namespace Artesian.SDK.Factory
         public DerivedCfgCoalesce DerivedCfgCoalesce
         {
             get => _output.DerivedCfg as DerivedCfgCoalesce;
-            set
-            {
-                if (_output.DerivedCfg is DerivedCfgCoalesce)
-                {
-                    _output.DerivedCfg = value;
-                }
-            }
         }
         /// <summary>
         /// The DerivedCfgSum
@@ -113,13 +106,6 @@ namespace Artesian.SDK.Factory
         public DerivedCfgSum DerivedCfgSum
         {
             get => _output.DerivedCfg as DerivedCfgSum;
-            set
-            {
-                if (_output.DerivedCfg is DerivedCfgSum)
-                {
-                    _output.DerivedCfg = value;
-                }
-            }
         }
         /// <summary>
         /// The DerivedCfgMuv
@@ -127,13 +113,6 @@ namespace Artesian.SDK.Factory
         public DerivedCfgMuv DerivedCfgMuv
         {
             get => _output.DerivedCfg as DerivedCfgMuv;
-            set
-            {
-                if (_output.DerivedCfg is DerivedCfgMuv)
-                {
-                    _output.DerivedCfg = value;
-                }
-            }
         }
     }
 }
