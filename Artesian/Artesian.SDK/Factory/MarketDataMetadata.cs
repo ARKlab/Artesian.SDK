@@ -94,11 +94,11 @@ namespace Artesian.SDK.Factory
         /// </summary>
         public Instant Created => _output.Created;
         /// <summary>
-        /// The DerivedAlgorithm if present
+        /// The DerivedAlgorithm
         /// </summary>
         public DerivedAlgorithm? DerivedAlgorithm => _output.DerivedCfg?.DerivedAlgorithm;
         /// <summary>
-        /// The OrderedReferencedMarketDataIds if present
+        /// The OrderedReferencedMarketDataIds for the Derived Configuration
         /// </summary>
         public int[] OrderedReferencedMarketDataIds
         {
