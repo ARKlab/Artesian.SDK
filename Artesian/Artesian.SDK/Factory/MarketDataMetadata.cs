@@ -116,7 +116,7 @@ namespace Artesian.SDK.Factory
                     case DerivedAlg.MUV:
                         return null;
                     default:
-                        throw new ArgumentException($"Invalid configuration DerivedAlgorithm {_output.DerivedCfg.DerivedAlgorithm}", _output.DerivedCfg.DerivedAlgorithm.ToString());
+                        return null;
                 }
             }
             set
