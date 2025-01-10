@@ -94,44 +94,44 @@ namespace Artesian.SDK.Factory
         /// </summary>
         public Instant Created => _output.Created;
         /// <summary>
-        /// The DerivedAlgorithm
+        /// The DerivedCfgCoalesce
         /// </summary>
-        public DerivedAlgorithm? DerivedAlgorithm => _output.DerivedCfg?.DerivedAlgorithm;
-        /// <summary>
-        /// The OrderedReferencedMarketDataIds for the Derived Configuration
-        /// </summary>
-        public int[] OrderedReferencedMarketDataIds
+        public DerivedCfgCoalesce DerivedCfgCoalesce
         {
-            get
-            {
-                if (_output.DerivedCfg == null)
-                    return null;
-
-                switch (_output.DerivedCfg.DerivedAlgorithm)
-                {
-                    case DerivedAlg.Sum:
-                        return ((DerivedCfgSum)_output.DerivedCfg).OrderedReferencedMarketDataIds;
-                    case DerivedAlg.Coalesce:
-                        return ((DerivedCfgCoalesce)_output.DerivedCfg).OrderedReferencedMarketDataIds;
-                    case DerivedAlg.MUV:
-                        return null;
-                    default:
-                        return null;
-                }
-            }
+            get => _output.DerivedCfg as DerivedCfgCoalesce;
             set
             {
-                if (_output.DerivedCfg != null)
+                if (_output.DerivedCfg is DerivedCfgCoalesce)
                 {
-                    switch (_output.DerivedCfg.DerivedAlgorithm)
-                    {
-                        case DerivedAlg.Sum:
-                            ((DerivedCfgSum)_output.DerivedCfg).OrderedReferencedMarketDataIds = value;
-                            break;
-                        case DerivedAlg.Coalesce:
-                            ((DerivedCfgCoalesce)_output.DerivedCfg).OrderedReferencedMarketDataIds = value;
-                            break;
-                    }
+                    _output.DerivedCfg = value;
+                }
+            }
+        }
+        /// <summary>
+        /// The DerivedCfgSum
+        /// </summary>
+        public DerivedCfgSum DerivedCfgSum
+        {
+            get => _output.DerivedCfg as DerivedCfgSum;
+            set
+            {
+                if (_output.DerivedCfg is DerivedCfgSum)
+                {
+                    _output.DerivedCfg = value;
+                }
+            }
+        }
+        /// <summary>
+        /// The DerivedCfgMuv
+        /// </summary>
+        public DerivedCfgMuv DerivedCfgMuv
+        {
+            get => _output.DerivedCfg as DerivedCfgMuv;
+            set
+            {
+                if (_output.DerivedCfg is DerivedCfgMuv)
+                {
+                    _output.DerivedCfg = value;
                 }
             }
         }
