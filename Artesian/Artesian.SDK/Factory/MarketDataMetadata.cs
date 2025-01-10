@@ -1,12 +1,9 @@
 ﻿using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.DerivedCfg;
-using Artesian.SDK.Dto.DerivedCfg.Enums;
 
 using NodaTime;
 
-using System;
 using System.Collections.Generic;
-using DerivedAlg = Artesian.SDK.Dto.DerivedCfg.Enums.DerivedAlgorithm;
 
 namespace Artesian.SDK.Factory
 {
@@ -96,23 +93,41 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The DerivedCfgCoalesce
         /// </summary>
-        public DerivedCfgCoalesce DerivedCfgCoalesce
+        public DerivedCfgCoalesceReadOnly? DerivedCfgCoalesce
         {
-            get => _output.DerivedCfg as DerivedCfgCoalesce;
+            get
+            {
+                if (_output.DerivedCfg is DerivedCfgCoalesce)
+                    return new DerivedCfgCoalesceReadOnly(_output.DerivedCfg as DerivedCfgCoalesce);
+                else
+                    return null;
+            }
         }
         /// <summary>
         /// The DerivedCfgSum
         /// </summary>
-        public DerivedCfgSum DerivedCfgSum
+        public DerivedCfgSumReadOnly? DerivedCfgSum
         {
-            get => _output.DerivedCfg as DerivedCfgSum;
+            get
+            {
+                if (_output.DerivedCfg is DerivedCfgSum)
+                    return new DerivedCfgSumReadOnly(_output.DerivedCfg as DerivedCfgSum);
+                else
+                    return null;
+            }
         }
         /// <summary>
         /// The DerivedCfgMuv
         /// </summary>
-        public DerivedCfgMuv DerivedCfgMuv
+        public DerivedCfgMuvReadOnly? DerivedCfgMuv
         {
-            get => _output.DerivedCfg as DerivedCfgMuv;
+            get
+            {
+                if (_output.DerivedCfg is DerivedCfgMuv)
+                    return new DerivedCfgMuvReadOnly(_output.DerivedCfg as DerivedCfgMuv);
+                else
+                    return null;
+            }
         }
     }
 }

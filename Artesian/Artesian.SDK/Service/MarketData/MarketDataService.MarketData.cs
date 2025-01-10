@@ -121,7 +121,7 @@ namespace Artesian.SDK.Service
         {
             var marketDataOutput = ReadMarketDataRegistryAsync(marketDataId, ctk).ConfigureAwait(true).GetAwaiter().GetResult();
 
-            marketDataOutput.ValidateDerivedCfg(derivedCfg);
+            marketDataOutput.ValidateUpdateDerivedCfg(derivedCfg);
 
             var url = "/marketdata/entity/".AppendPathSegment(marketDataId.ToString(CultureInfo.InvariantCulture)).AppendPathSegment("updateDerivedConfiguration")
                 .SetQueryParam("force", force);

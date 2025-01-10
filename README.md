@@ -405,6 +405,8 @@ await marketData.Update();
 await marketData.Load();
 ```
 
+In marketData.Metadata, there are three different read-only properties: DerivedCfgCoalesce, DerivedCfgSum, and DerivedCfgMuv. When the TimeSerie is of type Derived, only the corresponding DerivedCfg property is populated. The other two properties remain null.
+
 Updating the DerivedCfg can be performed with `UpdateDerivedConfiguration` on MarketData. A validation will be done on the existing DerivedCfg of the MarketData, that should be not null and with same type as the update.
 
 ```csharp
@@ -413,7 +415,9 @@ var derivedCfgUpdate = new DerivedCfgCoalesce()
     OrderedReferencedMarketDataIds = new int[]{ 10002, 10001, 10000}.ToArray(),
 };
 
-marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false);
+marketData.UpdateDerivedConfiguration(derivedCfgUpdate);
+// an overload with force parameter (to force the update and rebuild) is provided
+//marketData.UpdateDerivedConfiguration(derivedCfgUpdate, true);
 ```
 
 Using `Write mode` to edit MarketData and `Save` to save the data of the current MarketData providing an instant. Can be used `Delete` specifying a range to delete a specific range of the time serie.
