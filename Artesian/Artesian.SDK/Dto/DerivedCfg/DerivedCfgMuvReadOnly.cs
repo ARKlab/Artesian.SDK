@@ -1,6 +1,6 @@
-﻿using Artesian.SDK.Dto.DerivedCfg.Enums;
+﻿using Artesian.SDK.Dto.Enums;
 
-namespace Artesian.SDK.Dto.DerivedCfg
+namespace Artesian.SDK.Dto
 {
     /// <summary>
     /// DerivedMuv Configuration Readonly

@@ -1,11 +1,11 @@
-﻿using Artesian.SDK.Dto.DerivedCfg.Enums;
-using Artesian.SDK.Dto.DerivedCfg.Serialize;
+﻿using Artesian.SDK.Dto.Enums;
+using Artesian.SDK.Dto.Serialize;
 
 using MessagePack;
 
 using Newtonsoft.Json;
 
-namespace Artesian.SDK.Dto.DerivedCfg
+namespace Artesian.SDK.Dto
 {
     /// <summary>
     /// Base class for Derived Configuration.

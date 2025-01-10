@@ -405,9 +405,15 @@ await marketData.Update();
 await marketData.Load();
 ```
 
-In marketData.Metadata, there are three different read-only properties: DerivedCfgCoalesce, DerivedCfgSum, and DerivedCfgMuv. When the TimeSerie is of type Derived, only the corresponding DerivedCfg property is populated. The other two properties remain null.
+In marketData a public readonly parameter DerivedCfg contains the three possible DerivedCfg types. In case the MarketData is Derived, only one of the three types is populated. The other two are null.
 
-Updating the DerivedCfg can be performed with `UpdateDerivedConfiguration` on MarketData. A validation will be done on the existing DerivedCfg of the MarketData, that should be not null and with same type as the update.
+```csharp
+marketData.DerivedCfg.DerivedCfgCoalesce
+marketData.DerivedCfg.DerivedCfgSum
+marketData.DerivedCfg.DerivedCfgMuv
+```
+
+Updating the DerivedCfg can be performed with `UpdateDerivedConfiguration` on MarketData. A validation will be done on the existing DerivedCfg of the MarketData, that should be not null and with same type as the one used for the update.
 
 ```csharp
 var derivedCfgUpdate = new DerivedCfgCoalesce()

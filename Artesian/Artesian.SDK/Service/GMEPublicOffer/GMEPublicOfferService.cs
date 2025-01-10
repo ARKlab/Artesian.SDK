@@ -30,7 +30,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         {
             _cfg = cfg;
             _policy = policy;
-            _client = new Client(cfg, ArtesianConstants.GMEPublicOfferRoute.AppendPathSegment(ArtesianConstants.GMEPublicOfferVersion), _policy);
+            _client = new Client(cfg, ArtesianConstants._gMEPublicOfferRoute.AppendPathSegment(ArtesianConstants._gMEPublicOfferVersion), _policy);
         }
 
     }

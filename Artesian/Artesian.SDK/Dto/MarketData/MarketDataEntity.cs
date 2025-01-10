@@ -1,7 +1,7 @@
 ﻿// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
-using Artesian.SDK.Dto.DerivedCfg;
+using Artesian.SDK.Dto;
 
 using MessagePack;
 using NodaTime;

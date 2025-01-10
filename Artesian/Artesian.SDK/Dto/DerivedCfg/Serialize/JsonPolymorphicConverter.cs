@@ -2,7 +2,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace Artesian.SDK.Dto.DerivedCfg.Serialize
+namespace Artesian.SDK.Dto.Serialize
 {
     internal abstract class JsonPolymorphicConverter<TBase, TDiscriminatorEnum> : JsonConverter<TBase>
         where TDiscriminatorEnum : struct, Enum

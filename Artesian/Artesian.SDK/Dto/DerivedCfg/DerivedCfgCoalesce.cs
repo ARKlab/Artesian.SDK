@@ -1,8 +1,8 @@
-﻿using Artesian.SDK.Dto.DerivedCfg.Enums;
+﻿using Artesian.SDK.Dto.Enums;
 
 using MessagePack;
 
-namespace Artesian.SDK.Dto.DerivedCfg
+namespace Artesian.SDK.Dto
 {
     /// <summary>
     /// Represents a derived configuration that uses the Coalesce algorithm.

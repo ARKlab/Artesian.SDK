@@ -1,5 +1,4 @@
 ﻿using Artesian.SDK.Dto;
-using Artesian.SDK.Dto.DerivedCfg;
 
 using NodaTime;
 
@@ -28,6 +27,11 @@ namespace Artesian.SDK.Factory
         /// MarketData ReadOnly Entity
         /// </summary>
         MarketDataMetadata Metadata { get; }
+
+        /// <summary>
+        /// DerivedCfg
+        /// </summary>
+        DerivedCfg DerivedCfg { get; }
 
         /// <summary>
         /// MarketData Load Metadata

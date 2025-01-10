@@ -1,5 +1,4 @@
 ﻿using Artesian.SDK.Dto;
-using Artesian.SDK.Dto.DerivedCfg;
 using Artesian.SDK.Factory;
 using Artesian.SDK.Service;
 
@@ -135,7 +134,7 @@ namespace Artesian.SDK.Tests.Samples
             }
 
             // Update DerivedCfg
-            if (marketData.Metadata.DerivedCfgCoalesce != null)
+            if (marketData.DerivedCfg.DerivedCfgCoalesce != null)
             {
                 curveIds.Reverse();
                 var derivedCfgUpdate = new DerivedCfgCoalesce()
@@ -143,7 +142,7 @@ namespace Artesian.SDK.Tests.Samples
                     OrderedReferencedMarketDataIds = curveIds.ToArray(),
                 };
 
-                if (!marketData.Metadata.DerivedCfgCoalesce.OrderedReferencedMarketDataIds.SequenceEqual(derivedCfgUpdate.OrderedReferencedMarketDataIds))
+                if (!marketData.DerivedCfg.DerivedCfgCoalesce.OrderedReferencedMarketDataIds.SequenceEqual(derivedCfgUpdate.OrderedReferencedMarketDataIds))
                 {
                     marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false).ConfigureAwait(true).GetAwaiter().GetResult();
 

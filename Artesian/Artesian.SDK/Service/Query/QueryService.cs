@@ -36,7 +36,7 @@ namespace Artesian.SDK.Service
         {
             _cfg = cfg;
             _policy = policy;
-            _client = new Client(cfg, ArtesianConstants.QueryRoute.AppendPathSegment(ArtesianConstants.QueryVersion), _policy);
+            _client = new Client(cfg, ArtesianConstants._queryRoute.AppendPathSegment(ArtesianConstants._queryVersion), _policy);
         }
 
         /// <summary>

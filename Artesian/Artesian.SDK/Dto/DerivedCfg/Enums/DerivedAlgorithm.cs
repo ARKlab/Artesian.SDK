@@ -1,4 +1,4 @@
-﻿namespace Artesian.SDK.Dto.DerivedCfg.Enums
+﻿namespace Artesian.SDK.Dto.Enums
 {
     /// <summary>
     /// Enumeration for specifying the derived algorithm.

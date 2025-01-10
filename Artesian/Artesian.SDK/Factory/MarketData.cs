@@ -1,6 +1,5 @@
 ﻿using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
-using Artesian.SDK.Dto.DerivedCfg;
 using Artesian.SDK.Dto.MarketData;
 using Artesian.SDK.Service;
 
@@ -33,6 +32,11 @@ namespace Artesian.SDK.Factory
         /// MarketData Entity
         /// </summary>
         public MarketDataMetadata Metadata { get; protected set; }
+
+        /// <summary>
+        /// DerivedCfg
+        /// </summary>
+        public DerivedCfg DerivedCfg { get; protected set; }
 
         /// <summary>
         /// MarketData Constructor by Id
@@ -71,6 +75,8 @@ namespace Artesian.SDK.Factory
 
             _entity = await _marketDataService.RegisterMarketDataAsync(metadata, ctk).ConfigureAwait(false);
 
+            DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
+
             Metadata = new MarketDataMetadata(_entity);
         }
 
@@ -106,7 +112,11 @@ namespace Artesian.SDK.Factory
             _entity = await _marketDataService.ReadMarketDataRegistryAsync(Identifier, ctk).ConfigureAwait(false);
 
             if (_entity != null)
+            {
+                DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
+
                 Metadata = new MarketDataMetadata(_entity);
+            }
         }
 
         /// <summary>
@@ -249,6 +259,8 @@ namespace Artesian.SDK.Factory
 
             _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
 
+            DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
+
             Metadata = new MarketDataMetadata(_entity);
         }
 
@@ -276,6 +288,8 @@ namespace Artesian.SDK.Factory
 
             _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
 
+            DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
+
             Metadata = new MarketDataMetadata(_entity);
         }
 
@@ -302,6 +316,8 @@ namespace Artesian.SDK.Factory
             _entity.ValidateUpdateDerivedCfg(derivedCfg);
 
             _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
+
+            DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
 
             Metadata = new MarketDataMetadata(_entity);
         }

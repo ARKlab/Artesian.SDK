@@ -1,6 +1,4 @@
-﻿using Artesian.SDK.Dto.DerivedCfg;
-
-using System;
+﻿using System;
 
 namespace Artesian.SDK.Dto.MarketData
 {

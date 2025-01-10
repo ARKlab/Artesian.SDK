@@ -85,7 +85,7 @@ namespace Artesian.SDK.Factory
         private AddBidAskOperationResult _addBidAsk(LocalDateTime reportTime, string product, BidAskValue value)
         {
             //Relative products
-            if (ArtesianConstants.RelativeProductValidator.IsMatch(product))
+            if (ArtesianConstants._relativeProductValidator.IsMatch(product))
                 throw new NotSupportedException("Relative Products are not supported");
 
             if (_entity.OriginalGranularity.IsTimeGranularity())

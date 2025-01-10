@@ -1,5 +1,4 @@
 ﻿using Artesian.SDK.Dto;
-using Artesian.SDK.Dto.DerivedCfg;
 
 using NodaTime;
 
@@ -90,44 +89,5 @@ namespace Artesian.SDK.Factory
         /// The time the market data has been created
         /// </summary>
         public Instant Created => _output.Created;
-        /// <summary>
-        /// The DerivedCfgCoalesce
-        /// </summary>
-        public DerivedCfgCoalesceReadOnly? DerivedCfgCoalesce
-        {
-            get
-            {
-                if (_output.DerivedCfg is DerivedCfgCoalesce)
-                    return new DerivedCfgCoalesceReadOnly(_output.DerivedCfg as DerivedCfgCoalesce);
-                else
-                    return null;
-            }
-        }
-        /// <summary>
-        /// The DerivedCfgSum
-        /// </summary>
-        public DerivedCfgSumReadOnly? DerivedCfgSum
-        {
-            get
-            {
-                if (_output.DerivedCfg is DerivedCfgSum)
-                    return new DerivedCfgSumReadOnly(_output.DerivedCfg as DerivedCfgSum);
-                else
-                    return null;
-            }
-        }
-        /// <summary>
-        /// The DerivedCfgMuv
-        /// </summary>
-        public DerivedCfgMuvReadOnly? DerivedCfgMuv
-        {
-            get
-            {
-                if (_output.DerivedCfg is DerivedCfgMuv)
-                    return new DerivedCfgMuvReadOnly(_output.DerivedCfg as DerivedCfgMuv);
-                else
-                    return null;
-            }
-        }
     }
 }

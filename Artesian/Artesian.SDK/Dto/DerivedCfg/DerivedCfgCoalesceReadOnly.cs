@@ -1,8 +1,8 @@
-﻿using Artesian.SDK.Dto.DerivedCfg.Enums;
+﻿using Artesian.SDK.Dto.Enums;
 
 using System.Collections.Generic;
 
-namespace Artesian.SDK.Dto.DerivedCfg
+namespace Artesian.SDK.Dto
 {
     /// <summary>
     /// DerivedCoalesce Configuration Readonly
