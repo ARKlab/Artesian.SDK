@@ -111,5 +111,17 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// </summary>
         [Key(16)]
         public decimal? PrezzoUnitario { get; set; }
+
+        /// <summary>
+        /// 15 Minute Period In Day
+        /// </summary>
+        [Key(17)]
+        public int? Period { get; set; }
+
+        /// <summary>
+        /// MINIMUM ACCEPTANCE RATIO
+        /// </summary>
+        [Key(18)]
+        public decimal? MinimumAcceptanceRatio { get; set; }
     }
 }
