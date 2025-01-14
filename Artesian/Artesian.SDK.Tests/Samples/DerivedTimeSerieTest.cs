@@ -134,7 +134,7 @@ namespace Artesian.SDK.Tests.Samples
             }
 
             // Update DerivedCfg
-            if (marketData.DerivedCfg.DerivedCfgCoalesce != null)
+            if (marketData.DerivedCfg.Coalesce != null)
             {
                 curveIds.Reverse();
                 var derivedCfgUpdate = new DerivedCfgCoalesce()
@@ -142,7 +142,7 @@ namespace Artesian.SDK.Tests.Samples
                     OrderedReferencedMarketDataIds = curveIds.ToArray(),
                 };
 
-                if (!marketData.DerivedCfg.DerivedCfgCoalesce.OrderedReferencedMarketDataIds.SequenceEqual(derivedCfgUpdate.OrderedReferencedMarketDataIds))
+                if (!marketData.DerivedCfg.Coalesce.OrderedReferencedMarketDataIds.SequenceEqual(derivedCfgUpdate.OrderedReferencedMarketDataIds))
                 {
                     marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false).ConfigureAwait(true).GetAwaiter().GetResult();
 

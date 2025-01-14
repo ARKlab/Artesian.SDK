@@ -12,27 +12,27 @@
         internal DerivedCfg(DerivedCfgBase derivedCfg)
         {
             if (derivedCfg is DerivedCfgCoalesce)
-                DerivedCfgCoalesce = new DerivedCfgCoalesceReadOnly(derivedCfg as DerivedCfgCoalesce);
+                Coalesce = new DerivedCfgCoalesceReadOnly(derivedCfg as DerivedCfgCoalesce);
             else if (derivedCfg is DerivedCfgSum)
-                DerivedCfgSum = new DerivedCfgSumReadOnly(derivedCfg as DerivedCfgSum);
+                Sum = new DerivedCfgSumReadOnly(derivedCfg as DerivedCfgSum);
             else if (derivedCfg is DerivedCfgMuv)
-                DerivedCfgMuv = new DerivedCfgMuvReadOnly(derivedCfg as DerivedCfgMuv);
+                Muv = new DerivedCfgMuvReadOnly(derivedCfg as DerivedCfgMuv);
         }
 
         /// <summary>
         /// DerivedCfgCoalesce
         /// </summary>
-        public DerivedCfgCoalesceReadOnly? DerivedCfgCoalesce { get; protected set; } = null;
+        public DerivedCfgCoalesceReadOnly? Coalesce { get; protected set; } = null;
 
         /// <summary>
         /// DerivedCfgSum
         /// </summary>
-        public DerivedCfgSumReadOnly? DerivedCfgSum { get; protected set; } = null;
+        public DerivedCfgSumReadOnly? Sum { get; protected set; } = null;
 
         /// <summary>
         /// DerivedCfgMuv
         /// </summary>
-        public DerivedCfgMuvReadOnly? DerivedCfgMuv { get; protected set; } = null;
+        public DerivedCfgMuvReadOnly? Muv { get; protected set; } = null;
 
     }
 }
