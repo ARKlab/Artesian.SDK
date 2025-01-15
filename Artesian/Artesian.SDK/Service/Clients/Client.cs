@@ -103,7 +103,7 @@ namespace Artesian.SDK.Service
             }
 
             _client = new FlurlClient(_url);
-            _client.WithTimeout(TimeSpan.FromMinutes(ArtesianConstants.ServiceRequestTimeOutMinutes));
+            _client.WithTimeout(TimeSpan.FromMinutes(ArtesianConstants._serviceRequestTimeOutMinutes));
         }
 
        

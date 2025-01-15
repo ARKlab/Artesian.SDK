@@ -1,10 +1,4 @@
-﻿using Artesian.SDK.Dto.DerivedCfg;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Artesian.SDK.Dto.MarketData
 {
@@ -28,13 +22,13 @@ namespace Artesian.SDK.Dto.MarketData
                 throw new ArgumentException("Aggregation Rule must be Undefined if Type is MarketAssessment", nameof(marketDataEntityInput));
         }
 
-        public static void ValidateDerivedCfg(this MarketDataEntity.Output marketDataEntityOutput, DerivedCfgBase derivedCfg)
+        public static void ValidateUpdateDerivedCfg(this MarketDataEntity.Output marketDataEntityOutput, DerivedCfgBase derivedCfg)
         {
             if (marketDataEntityOutput.DerivedCfg == null)
-                throw new ArgumentException("Derived Configuration is null for the MarketData selected", nameof(marketDataEntityOutput));
+                throw new ArgumentException("DerivedCfg cannot be added to a MarketData that has not", nameof(marketDataEntityOutput));
 
             if (marketDataEntityOutput.DerivedCfg.DerivedAlgorithm != derivedCfg.DerivedAlgorithm)
-                throw new ArgumentException("Derived Algorithm is different from the one in the update", nameof(marketDataEntityOutput));
+                throw new ArgumentException("Derived Algorithm cannot be update", nameof(marketDataEntityOutput));
         }
     }
 }

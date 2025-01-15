@@ -9,7 +9,6 @@ using NodaTime;
 using System;
 using Flurl;
 using System.Globalization;
-using Artesian.SDK.Dto.DerivedCfg;
 using Artesian.SDK.Dto.MarketData;
 
 namespace Artesian.SDK.Service
@@ -121,7 +120,7 @@ namespace Artesian.SDK.Service
         {
             var marketDataOutput = ReadMarketDataRegistryAsync(marketDataId, ctk).ConfigureAwait(true).GetAwaiter().GetResult();
 
-            marketDataOutput.ValidateDerivedCfg(derivedCfg);
+            marketDataOutput.ValidateUpdateDerivedCfg(derivedCfg);
 
             var url = "/marketdata/entity/".AppendPathSegment(marketDataId.ToString(CultureInfo.InvariantCulture)).AppendPathSegment("updateDerivedConfiguration")
                 .SetQueryParam("force", force);

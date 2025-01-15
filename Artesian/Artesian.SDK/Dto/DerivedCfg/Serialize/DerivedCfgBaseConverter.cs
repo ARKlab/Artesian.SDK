@@ -1,11 +1,11 @@
-﻿using Artesian.SDK.Dto.DerivedCfg.Enums;
+﻿using Artesian.SDK.Dto.Enums;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using System;
 
-namespace Artesian.SDK.Dto.DerivedCfg.Serialize
+namespace Artesian.SDK.Dto.Serialize
 {
     sealed class DerivedCfgBaseConverter : JsonCreationConverter<DerivedCfgBase>
     {

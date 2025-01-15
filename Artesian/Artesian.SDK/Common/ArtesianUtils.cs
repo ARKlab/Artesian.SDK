@@ -104,7 +104,7 @@ namespace Artesian.SDK.Common
                 throw new ArgumentException($"Invalid string '{validStringCheck}'. Must not be null or empty", callerParamName);
             if (validStringCheck.Length < minLenght || validStringCheck.Length > maxLenght)
                 throw new ArgumentException($"Invalid string '{validStringCheck}'. Must be between 1 and 50 characters.", callerParamName);
-            if (!ArtesianConstants.StringValidator.Match(validStringCheck).Success)
+            if (!ArtesianConstants._stringValidator.Match(validStringCheck).Success)
                 throw new ArgumentException($"Invalid string '{validStringCheck}'. Should not contain trailing or leading whitespaces or any of the following characters: ,:; '\"<space>", callerParamName);
         }
 
@@ -133,7 +133,7 @@ namespace Artesian.SDK.Common
                 throw new ArgumentException($"Invalid MarketData name {name}. Must not be null or empty", callerParamName);
             if (name.Length < minLenght || name.Length > maxLenght)
                 throw new ArgumentException($"Invalid MarketData name {name}. Must be between 1 and 250 characters.", callerParamName);
-            if (!ArtesianConstants.MarketDataNameValidator.Match(name).Success)
+            if (!ArtesianConstants._marketDataNameValidator.Match(name).Success)
                 throw new ArgumentException($"Invalid MarketData name '{name}'. Should not contain trailing or leading whitespaces and no other whitespace than <space> in the middle.", callerParamName);
         }
     }

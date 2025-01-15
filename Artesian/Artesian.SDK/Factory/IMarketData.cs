@@ -1,5 +1,4 @@
 ﻿using Artesian.SDK.Dto;
-using Artesian.SDK.Dto.DerivedCfg;
 
 using NodaTime;
 
@@ -28,6 +27,11 @@ namespace Artesian.SDK.Factory
         /// MarketData ReadOnly Entity
         /// </summary>
         MarketDataMetadata Metadata { get; }
+
+        /// <summary>
+        /// DerivedCfg
+        /// </summary>
+        DerivedCfg DerivedCfg { get; }
 
         /// <summary>
         /// MarketData Load Metadata
@@ -128,7 +132,7 @@ namespace Artesian.SDK.Factory
         /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
-        Task UpdateDerivedConfiguration(DerivedCfgMuv derivedCfg, bool force = false, CancellationToken ctk = default);
+        Task UpdateDerivedConfiguration(DerivedCfgMuv derivedCfg, bool force, CancellationToken ctk = default);
 
         /// <summary>
         /// Update Derived Configuration
@@ -145,7 +149,7 @@ namespace Artesian.SDK.Factory
         /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
-        Task UpdateDerivedConfiguration(DerivedCfgCoalesce derivedCfg, bool force = false, CancellationToken ctk = default);
+        Task UpdateDerivedConfiguration(DerivedCfgCoalesce derivedCfg, bool force, CancellationToken ctk = default);
 
         /// <summary>
         /// Update Derived Configuration
@@ -162,7 +166,7 @@ namespace Artesian.SDK.Factory
         /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
-        Task UpdateDerivedConfiguration(DerivedCfgSum derivedCfg, bool force = false, CancellationToken ctk = default);
+        Task UpdateDerivedConfiguration(DerivedCfgSum derivedCfg, bool force, CancellationToken ctk = default);
     }
 
     /// <summary>

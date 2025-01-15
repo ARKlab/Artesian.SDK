@@ -1,6 +1,6 @@
 ﻿using MessagePack;
 
-namespace Artesian.SDK.Dto.DerivedCfg
+namespace Artesian.SDK.Dto
 {
     /// <summary>
     /// Represents a configuration with referenced market data IDs for derived data.

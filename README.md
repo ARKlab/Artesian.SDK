@@ -405,7 +405,15 @@ await marketData.Update();
 await marketData.Load();
 ```
 
-Updating the DerivedCfg can be performed with `UpdateDerivedConfiguration` on MarketData. A validation will be done on the existing DerivedCfg of the MarketData, that should be not null and with same type as the update.
+In marketData a public readonly parameter DerivedCfg contains the three possible DerivedCfg types. In case the MarketData is Derived, only one of the three types is populated. The other two are null.
+
+```csharp
+marketData.DerivedCfg.DerivedCfgCoalesce
+marketData.DerivedCfg.DerivedCfgSum
+marketData.DerivedCfg.DerivedCfgMuv
+```
+
+Updating the DerivedCfg can be performed with `UpdateDerivedConfiguration` on MarketData. A validation will be done on the existing DerivedCfg of the MarketData, that should be not null and with same type as the one used for the update.
 
 ```csharp
 var derivedCfgUpdate = new DerivedCfgCoalesce()
@@ -413,7 +421,9 @@ var derivedCfgUpdate = new DerivedCfgCoalesce()
     OrderedReferencedMarketDataIds = new int[]{ 10002, 10001, 10000}.ToArray(),
 };
 
-marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false);
+marketData.UpdateDerivedConfiguration(derivedCfgUpdate);
+// an overload with force parameter (to force the update and rebuild) is provided
+//marketData.UpdateDerivedConfiguration(derivedCfgUpdate, true);
 ```
 
 Using `Write mode` to edit MarketData and `Save` to save the data of the current MarketData providing an instant. Can be used `Delete` specifying a range to delete a specific range of the time serie.
