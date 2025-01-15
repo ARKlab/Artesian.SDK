@@ -180,5 +180,35 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         [Key(26)]
         public decimal? PrezzoUnitario { get; set; }
 
+        /// <summary>
+        /// Granularity of the data
+        /// </summary>
+        [Key(27)]
+        public string Granularity { get; set; }
+
+        /// <summary>
+        /// Offer type
+        /// </summary>
+        [Key(28)]
+        public string OfferType { get; set; }
+
+        /// <summary>
+        /// Block ID
+        /// </summary>
+        [Key(29)]
+        public string BlockId { get; set; }
+
+        /// <summary>
+        /// Period
+        /// </summary>
+        [Key(30)]
+        public int? Period { get; set; }
+
+        /// <summary>
+        /// Minimum Acceptance Ratio
+        /// </summary>
+        [Key(31)]
+        public decimal? MinimumAcceptanceRatio { get; set; }
+
     }
 }

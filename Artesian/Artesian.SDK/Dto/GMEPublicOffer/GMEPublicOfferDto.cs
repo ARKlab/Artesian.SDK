@@ -107,6 +107,24 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         [Key(15)]
         public string Filename { get; set; }
 
+        /// <summary>
+        /// Granularity
+        /// </summary>
+        [Key(16)]
+        public string Granularity { get; set; }
+
+        /// <summary>
+        /// Offer Type
+        /// </summary>
+        [Key(17)]
+        public string OfferType { get; set; }
+
+        /// <summary>
+        /// Block ID
+        /// </summary>
+        [Key(18)]
+        public string BlockId { get; set; }
+
         /*
      [GME_PurposeEnum] [PurposeName]      |   [PURPOSE_CD] [nvarchar](10) NOT NULL
      [GME_TypeEnum]  [TypeName]           | , [TYPE_CD] [nvarchar](10) NULL
