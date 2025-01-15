@@ -31,7 +31,7 @@ namespace Artesian.SDK.Service
         {
             _cfg = cfg;
             _policy = policy;
-            _client = new Client(cfg, ArtesianConstants.MetadataVersion, _policy);
+            _client = new Client(cfg, ArtesianConstants._metadataVersion, _policy);
         }
     }
 }

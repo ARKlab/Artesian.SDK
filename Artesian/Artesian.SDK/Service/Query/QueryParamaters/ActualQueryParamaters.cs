@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Dto;
-using Artesian.SDK.Dto.DerivedCfg;
+
 
 using System.Collections.Generic;
 

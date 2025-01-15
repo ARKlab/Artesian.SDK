@@ -1,5 +1,4 @@
 ﻿using Artesian.SDK.Dto;
-using Artesian.SDK.Dto.DerivedCfg;
 using Artesian.SDK.Factory;
 using Artesian.SDK.Service;
 
@@ -135,30 +134,40 @@ namespace Artesian.SDK.Tests.Samples
             }
 
             // Update DerivedCfg
-            curveIds.Reverse();
-            var derivedCfgUpdate = new DerivedCfgCoalesce()
+            if (marketData.DerivedCfg.Coalesce != null)
             {
-                OrderedReferencedMarketDataIds = curveIds.ToArray(),
-            };
+                curveIds.Reverse();
+                var derivedCfgUpdate = new DerivedCfgCoalesce()
+                {
+                    OrderedReferencedMarketDataIds = curveIds.ToArray(),
+                };
 
-            marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false).ConfigureAwait(true).GetAwaiter().GetResult();
+                if (!marketData.DerivedCfg.Coalesce.OrderedReferencedMarketDataIds.SequenceEqual(derivedCfgUpdate.OrderedReferencedMarketDataIds))
+                {
+                    marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false).ConfigureAwait(true).GetAwaiter().GetResult();
 
-            await Task.Delay(2000);
+                    await Task.Delay(2000);
 
-            ts = await qs.CreateActual()
-                       .ForMarketData(new[] { marketData.MarketDataId.Value })
-                       .InGranularity(Granularity.Day)
-                       .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
-                       .ExecuteAsync();
+                    ts = await qs.CreateActual()
+                               .ForMarketData(new[] { marketData.MarketDataId.Value })
+                               .InGranularity(Granularity.Day)
+                               .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
+                               .ExecuteAsync();
 
-            foreach (var item in ts)
-            {
-                if (item.Time.Date <= new DateTime(2018, 10, 3))
-                    ClassicAssert.AreEqual(100, item.Value);
+                    foreach (var item in ts)
+                    {
+                        if (item.Time.Date <= new DateTime(2018, 10, 3))
+                            ClassicAssert.AreEqual(100, item.Value);
 
-                if (item.Time.Date > new DateTime(2018, 10, 3))
-                    ClassicAssert.AreEqual(200, item.Value);
+                        if (item.Time.Date > new DateTime(2018, 10, 3))
+                            ClassicAssert.AreEqual(200, item.Value);
+                    }
+                }
+                else
+                    throw new InvalidOperationException("OrderedReferencedMarketDataIds are not with the expected order");
             }
+            else
+                throw new InvalidOperationException("DerivedCfg is not Coalesce");
 
             /*******************************************************************
              * Tidy Up

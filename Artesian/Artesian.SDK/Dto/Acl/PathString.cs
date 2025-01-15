@@ -237,21 +237,21 @@ namespace Artesian.SDK.Dto
 
                 if (!readEscapeChar && source[i] == _delimiterChar)
                 {
-                    result.Add(UnEscapeString(
+                    result.Add(_unEscapeString(
                       source.Substring(segmentStart, i - segmentStart)));
                     segmentStart = i + 1;
                 }
 
                 if (i == source.Length - 1)
                 {
-                    result.Add(UnEscapeString(source.Substring(segmentStart)));
+                    result.Add(_unEscapeString(source.Substring(segmentStart)));
                 }
             }
 
             return result.ToArray();
         }
 
-        static string UnEscapeString(string src)
+        static string _unEscapeString(string src)
         {
             return src.Replace(_escapeString + _delimiterString, _delimiterString)
               .Replace(_escapeString + _escapeString, _escapeString);

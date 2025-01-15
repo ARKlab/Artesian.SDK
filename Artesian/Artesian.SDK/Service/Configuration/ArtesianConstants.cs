@@ -17,39 +17,39 @@ namespace Artesian.SDK.Service
         public readonly static string SDKVersionHeaderValue = $@"ArtesianSDK-C#:{Assembly.GetExecutingAssembly().GetName().Version},{Environment.OSVersion.Platform}:{Environment.OSVersion.Version},{_frameworkName?.Identifier}:{_frameworkName?.Version}";
  #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
-        internal const string QueryVersion = "v1.0";
-        internal const string GMEPublicOfferVersion = "v2.0";
-        internal const string QueryRoute = "query";
-        internal const string GMEPublicOfferRoute = "gmepublicoffer";
-        internal const string MetadataVersion = "v2.1";
-        internal const int ServiceRequestTimeOutMinutes = 10;
+        internal const string _queryVersion = "v1.0";
+        internal const string _gMEPublicOfferVersion = "v2.0";
+        internal const string _queryRoute = "query";
+        internal const string _gMEPublicOfferRoute = "gmepublicoffer";
+        internal const string _metadataVersion = "v2.1";
+        internal const int _serviceRequestTimeOutMinutes = 10;
 
         private static FrameworkName _frameworkName { get => new FrameworkName(Assembly.GetExecutingAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName); }
 
 
 
-        internal const string CharacterValidatorRegEx = @"^[^'"",:;\s](?:(?:[^'"",:;\s]| )*[^'"",:;\s])?$";
-        internal const string MarketDataNameValidatorRegEx = @"^[^\s](?:(?:[^\s]| )*[^\s])?$";
-        internal const string RelativeProductValidatorRegEx = @"\+\d+$";
+        internal const string _characterValidatorRegEx = @"^[^'"",:;\s](?:(?:[^'"",:;\s]| )*[^'"",:;\s])?$";
+        internal const string _marketDataNameValidatorRegEx = @"^[^\s](?:(?:[^\s]| )*[^\s])?$";
+        internal const string _relativeProductValidatorRegEx = @"\+\d+$";
 
 #if NET8_0_OR_GREATER
-        internal static readonly Regex StringValidator = StringValidatorGenerator();
-        internal static readonly Regex MarketDataNameValidator = MarketDataNameValidatorGenerator();
-        internal static readonly Regex RelativeProductValidator = RelativeProductValidatorGenerator();
+        internal static readonly Regex _stringValidator = StringValidatorGenerator();
+        internal static readonly Regex _marketDataNameValidator = MarketDataNameValidatorGenerator();
+        internal static readonly Regex _relativeProductValidator = RelativeProductValidatorGenerator();
 
-        [GeneratedRegex(CharacterValidatorRegEx, RegexOptions.CultureInvariant, 1000)]
+        [GeneratedRegex(_characterValidatorRegEx, RegexOptions.CultureInvariant, 1000)]
         private static partial Regex StringValidatorGenerator();
 
-        [GeneratedRegex(MarketDataNameValidatorRegEx, RegexOptions.CultureInvariant, 1000)]
+        [GeneratedRegex(_marketDataNameValidatorRegEx, RegexOptions.CultureInvariant, 1000)]
         private static partial Regex MarketDataNameValidatorGenerator();
 
-        [GeneratedRegex(RelativeProductValidatorRegEx, RegexOptions.CultureInvariant, 1000)]
+        [GeneratedRegex(_relativeProductValidatorRegEx, RegexOptions.CultureInvariant, 1000)]
         private static partial Regex RelativeProductValidatorGenerator();
 #else
 
-        internal static readonly Regex StringValidator = new Regex(CharacterValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-        internal static readonly Regex MarketDataNameValidator = new Regex(MarketDataNameValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-        internal static readonly Regex RelativeProductValidator = new Regex(RelativeProductValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+        internal static readonly Regex _stringValidator = new Regex(_characterValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+        internal static readonly Regex _marketDataNameValidator = new Regex(_marketDataNameValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+        internal static readonly Regex _relativeProductValidator = new Regex(_relativeProductValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 #endif
 
     }
