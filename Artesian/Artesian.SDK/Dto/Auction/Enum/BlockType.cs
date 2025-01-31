@@ -2,7 +2,7 @@
 namespace Artesian.SDK.Dto
 {
     /// <summary>
-    /// Block Type for specifing the blocking type of the offer
+    /// Block Type for specifing the the bid block type
     /// </summary>
     public enum BlockType : byte
     {
