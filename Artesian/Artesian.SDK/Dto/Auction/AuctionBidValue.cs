@@ -29,7 +29,7 @@ namespace Artesian.SDK.Dto
         /// <param name="acceptedPrice"></param>
         /// <param name="acceptedQuantity"></param>
         /// <param name="block"></param>
-        public AuctionBidValue(double price, double quantity, double? acceptedPrice, double? acceptedQuantity, OfferType? block = (OfferType?)null)
+        public AuctionBidValue(double price, double quantity, double? acceptedPrice, double? acceptedQuantity, BlockType? block = (BlockType?)null)
         {
             Price = price;
             Quantity = quantity;
@@ -39,14 +39,14 @@ namespace Artesian.SDK.Dto
         }
 
         /// <summary>
-        /// The Bid Price
+        /// The Offered Bid Price
         /// </summary>
         [Required]
         [Key(0)]
         public double Price { get; protected set; }
 
         /// <summary>
-        /// The Bid Quantity
+        /// Quantity, sum of the offered quantities per offered price level
         /// </summary>
         [Required]
         [Key(1)]
@@ -59,16 +59,18 @@ namespace Artesian.SDK.Dto
         public double? AcceptedPrice { get; set; }
 
         /// <summary>
-        /// The Accepted Bid Quantity
+        /// Accepted Quantity, Sum of the accepted quantities per offered price level
         /// </summary>
         [Key(3)]
         public double? AcceptedQuantity { get; set; }
 
         /// <summary>
-        /// Offer Type
-        /// Single OR Block
+        /// Block Type
+        /// Single: bid/offer consists of a specified volume and price for a specific time of the day
+        /// OR 
+        /// Block: bid/offer consists of a specified volume and price for a certain number of consecutive times within the same day
         /// </summary>
         [Key(4)]
-        public OfferType? Block { get; set; }
+        public BlockType? Block { get; set; }
     }
 }
