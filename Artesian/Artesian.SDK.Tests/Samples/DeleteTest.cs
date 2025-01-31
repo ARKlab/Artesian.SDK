@@ -213,8 +213,8 @@ namespace Artesian.SDK.Tests.Samples
             offer2.Add(new AuctionBidValue(220, 22));
             var bid3 = new List<AuctionBidValue>();
             var offer3 = new List<AuctionBidValue>();
-            bid3.Add(new AuctionBidValue(300, 30));
-            offer3.Add(new AuctionBidValue(320, 32));
+            bid3.Add(new AuctionBidValue(300, 30, 290, 29, OfferType.Block));
+            offer3.Add(new AuctionBidValue(320, 32, 310, 31, OfferType.Block));
 
             writeMarketData.AddData(new LocalDate(2018, 09, 24), bid1.ToArray(), offer1.ToArray());
             writeMarketData.AddData(new LocalDate(2018, 09, 25), bid2.ToArray(), offer2.ToArray());

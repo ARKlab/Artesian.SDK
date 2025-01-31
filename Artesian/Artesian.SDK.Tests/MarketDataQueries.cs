@@ -457,6 +457,37 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
+        public async Task UpsertCurve_UpsertCurveDataAsync_AuctionWithAcceptedBids()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var data = new UpsertCurveData()
+                {
+                    ID = new MarketDataIdentifier("test", "testName"),
+                    Timezone = "CET",
+                    DownloadedAt = SystemClock.Instance.GetCurrentInstant(),
+                    AuctionRows = new Dictionary<LocalDateTime, AuctionBids>()
+                };
+
+                var localDateTime = new LocalDateTime(2018, 09, 24, 00, 00);
+                var bid = new List<AuctionBidValue>();
+                var offer = new List<AuctionBidValue>();
+                bid.Add(new AuctionBidValue(100, 10, 101, 10.1));
+                offer.Add(new AuctionBidValue(120, 12, 121, 12.1));
+
+                data.AuctionRows.Add(localDateTime, new AuctionBids(localDateTime, bid.ToArray(), offer.ToArray()));
+
+                await mds.UpsertCurveDataAsync(data);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/upsertdata")
+                    .WithVerb(HttpMethod.Post)
+                    .Times(1);
+            }
+        }
+
+        [Test]
         public async Task UpsertCurve_UpsertCurveDataAsync_Versioned()
         {
             using (var httpTest = new HttpTest())
