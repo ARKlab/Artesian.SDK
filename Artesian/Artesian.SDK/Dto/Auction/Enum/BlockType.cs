@@ -2,16 +2,16 @@
 namespace Artesian.SDK.Dto
 {
     /// <summary>
-    /// Block Type for specifing the the bid block type
+    /// Block Type, for specifing the bid's block type
     /// </summary>
     public enum BlockType : byte
     {
         /// <summary>
-        /// Single bid/offer consists of a specified volume and price for a specific time of the day
+        /// Single - bid/offer refers to a single BidTimestamp
         /// </summary>
         Single = 0,
         /// <summary>
-        /// Block bid/offer consists of a specified volume and price for a certain number of consecutive times within the same day
+        /// Block - bid/offer is part of a block, referencing multiple contiguous BidTimestamp
         /// </summary>
         Block = 1
     }

@@ -28,14 +28,14 @@ namespace Artesian.SDK.Dto
         /// <param name="quantity"></param>
         /// <param name="acceptedPrice"></param>
         /// <param name="acceptedQuantity"></param>
-        /// <param name="block"></param>
-        public AuctionBidValue(double price, double quantity, double? acceptedPrice, double? acceptedQuantity, BlockType? block = (BlockType?)null)
+        /// <param name="blockType"></param>
+        public AuctionBidValue(double price, double quantity, double? acceptedPrice, double? acceptedQuantity, BlockType? blockType = (BlockType?)null)
         {
             Price = price;
             Quantity = quantity;
             AcceptedPrice = acceptedPrice;
             AcceptedQuantity = acceptedQuantity;
-            Block = block;
+            BlockType = blockType;
         }
 
         /// <summary>
@@ -65,12 +65,11 @@ namespace Artesian.SDK.Dto
         public double? AcceptedQuantity { get; set; }
 
         /// <summary>
-        /// Block Type
-        /// Single: bid/offer consists of a specified volume and price for a specific time of the day
-        /// OR 
-        /// Block: bid/offer consists of a specified volume and price for a certain number of consecutive times within the same day
+        /// Block Type the bid's block type:
+        /// Single - bid/offer refers to a single BidTimestamp
+        /// Block - bid/offer is part of a block, referencing multiple contiguous BidTimestamp
         /// </summary>
         [Key(4)]
-        public BlockType? Block { get; set; }
+        public BlockType? BlockType { get; set; }
     }
 }
