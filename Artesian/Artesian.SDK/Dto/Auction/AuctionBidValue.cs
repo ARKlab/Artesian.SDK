@@ -15,21 +15,10 @@ namespace Artesian.SDK.Dto
         /// </summary>
         /// <param name="price"></param>
         /// <param name="quantity"></param>
-        public AuctionBidValue(double price, double quantity)
-        {
-            Price = price;
-            Quantity = quantity;
-        }
-
-        /// <summary>
-        /// The Auction Data for a single Multiple timestamps
-        /// </summary>
-        /// <param name="price"></param>
-        /// <param name="quantity"></param>
         /// <param name="acceptedPrice"></param>
         /// <param name="acceptedQuantity"></param>
         /// <param name="blockType"></param>
-        public AuctionBidValue(double price, double quantity, double? acceptedPrice, double? acceptedQuantity, BlockType? blockType = (BlockType?)null)
+        public AuctionBidValue(double price, double quantity, double? acceptedPrice = null, double? acceptedQuantity = null, BlockType? blockType = null)
         {
             Price = price;
             Quantity = quantity;
