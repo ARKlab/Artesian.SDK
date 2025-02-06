@@ -50,17 +50,40 @@ namespace Artesian.SDK.Dto
         public virtual AuctionSide Side { get; set; }
 
         /// <summary>
-        /// The Price
+        /// The Offer Price
         /// </summary>
         [JsonProperty(PropertyName = "D")]
         [Key(5)]
         public virtual double Price { get; set; }
 
         /// <summary>
-        /// The Quantity
+        /// The Offer Quantity
         /// </summary>
         [JsonProperty(PropertyName = "Q")]
         [Key(6)]
         public virtual double Quantity { get; set; }
+
+        /// <summary>
+        /// The Accepted Bid Price
+        /// </summary>
+        [JsonProperty(PropertyName = "AD")]
+        [Key(7)]
+        public double? AcceptedPrice { get; set; }
+
+        /// <summary>
+        /// Accepted Quantity, Sum of the accepted quantities per offered price level
+        /// </summary>
+        [JsonProperty(PropertyName = "AQ")]
+        [Key(8)]
+        public double? AcceptedQuantity { get; set; }
+
+        /// <summary>
+        /// Block Type the bid's block type:
+        /// Single - bid/offer refers to a single BidTimestamp
+        /// Block - bid/offer is part of a block, referencing multiple contiguous BidTimestamp
+        /// </summary>
+        [JsonProperty(PropertyName = "BT")]
+        [Key(9)]
+        public BlockType? BlockType { get; set; }
     }
 }
