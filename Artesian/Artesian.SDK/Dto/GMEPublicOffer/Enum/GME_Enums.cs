@@ -36,7 +36,8 @@
         REV = 4,
         SUB = 5,
         COM = 6,
-        PCOM = 7
+        PCOM = 7,
+        PREJ = 8
     }
 
     public enum Purpose : byte
