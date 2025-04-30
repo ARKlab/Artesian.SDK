@@ -444,7 +444,7 @@ await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime(
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
 ```
 
-[Go to upsert mode details]#upsert-mode
+[Go to upsert mode details](#upsert-mode)
 
 To delete the whole range of the Actual Time serie, the `Delete` command can be used without specifying any start and end range.
 
@@ -470,7 +470,7 @@ await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime(
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), version);
 ```
 
-[Go to upsert mode details]#upsert-mode
+[Go to upsert mode details](#upsert-mode)
 
 To delete the whole range of the Versioned Time serie, the `Delete` command can be used without specifying any start and end range.
 
@@ -509,7 +509,7 @@ var product = new List<string>(){"Dec-18"};
 
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
 ```
-[Go to upsert mode details]#upsert-mode
+[Go to upsert mode details](#upsert-mode)
 
 To delete the whole range of the Market Assessment Time serie, the `Delete` command can be used without specifying any start and end range.
 
@@ -539,7 +539,7 @@ await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime(
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
 ```
 
-[Go to upsert mode details]#upsert-mode
+[Go to upsert mode details](#upsert-mode)
 
 To delete the whole range of the Auction Time serie, the `Delete` command can be used without specifying any start and end range.
 
@@ -576,7 +576,7 @@ var product = new List<string>(){"Dec-18"};
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
 ```
 
-[Go to upsert mode details]#upsert-mode
+[Go to upsert mode details](#upsert-mode)
 
 To delete the whole range of the Bid Ask Time serie, the `Delete` command can be used without specifying any start and end range.
 
@@ -593,7 +593,7 @@ Specifies the upsert mode to be used while saving the data. If the upsert mode i
 **ActualTimeSeries**
 *Merge* and *Replace* are equivalent to each other each item in the payload is written into the series replacing anything there previously.
 
-[Go to ActualTimeSeries]#actual-time-series
+[Go to ActualTimeSeries](#actual-time-series)
 
 **VersionedTimeSeries**
 *Merge* each datetime in the payload is written into the existing version of the series replacing anything there previously. *Replace* the whole version is replaced with data in the payload.
@@ -617,24 +617,24 @@ Specifies the upsert mode to be used while saving the data. If the upsert mode i
 | 2025-01-14 |        |        |        |        |
 | 2025-01-15 |        |        |        |        |
 
-[Go to VersionedTimeSeries]#versioned-time-series
+[Go to VersionedTimeSeries](#versioned-time-series)
 
 **Auction**
 *Merge* and *Replace* are equivalent the payload effectively replaces the existing data.
 
-[Go to AuctionTimeSeries]#auction-time-series
+[Go to AuctionTimeSeries](#auction-time-series)
 
 **MarketAssessment**
 *Merge* payload replaces the existing products data and the other products for the datetime are left untouched.
 *Replace* any existing products for the datetime are erased and the new product in the payload is written.
 
-[Go to MarketAsseeementTimeSeries]#market-assessment-time-series
+[Go to MarketAsseeementTimeSeries](#market-assessment-time-series)
 
 **BidAsk**
 *Merge* payload replaces the existing products data and the other products for the datetime are left untouched.
 *Replace* any existing products for the datetime are erased and the new product in the payload is written.
 
-[Go to BidAskTimeSeries]#bidask-time-series
+[Go to BidAskTimeSeries](#bidask-time-series)
 
 
 ## Links
