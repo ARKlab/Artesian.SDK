@@ -586,7 +586,7 @@ var writeMarketData = marketdata.EditBidAsk();
 await writeMarketData.Delete();
 ```
 
-#### UpsertMode
+### Upsert Mode
 
 Specifies the upsert mode to be used while saving the data. If the upsert mode is not specified then the default mode is used which is **Merge**.
 
