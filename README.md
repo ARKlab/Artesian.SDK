@@ -577,6 +577,45 @@ var writeMarketData = marketdata.EditBidAsk();
 await writeMarketData.Delete();
 ```
 
+#### UpsertMode
+
+**ActualTimeSeries**
+*Merge* and *Replace* are equivalent to each other each item in the payload is written into the series replacing anything there previously.
+
+**VersionedTimeSeries**
+*Merge* each datetime in the payload is written into the existing version of the series replacing anything there previously. *Replace* the whole version is replaced with data in the payload.
+
+| DATETIME | EXISTING | PAYLOAD | MERGE | REPALACE |
+|---|---|---|---|---|
+| VERSION NAME | 2025-01-01 | 2025-01-01 | 2025-01-01 | 2025-01-01 |
+| 2025-01-01 |        |        |        |        |
+| 2025-01-02 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-03 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-04 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-05 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-06 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-07 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-08 |        | 222.22 | 222.22 | 222.22 |
+| 2025-01-09 |        |        |        |        |
+| 2025-01-10 |        |        |        |        |
+| 2025-01-11 | 999.99 |        | 999.99 |        |
+| 2025-01-12 | 999.99 |        | 999.99 |        |
+| 2025-01-13 | 999.99 |        | 999.99 |        |
+| 2025-01-14 |        |        |        |        |
+| 2025-01-15 |        |        |        |        |
+
+
+**Auction**
+*Merge* and *Replace* are equivalent the payload effectively replaces the existing data.
+
+**MarketAssessment**
+*Merge* payload replaces the existing products data and the other products for the datetime are left untouched.
+*Replace* any existing products for the datetime are erased and the new product in the payload is written.
+
+**BidAsk**
+*Merge* payload replaces the existing products data and the other products for the datetime are left untouched.
+*Replace* any existing products for the datetime are erased and the new product in the payload is written.
+
 ## Links
 
 - [Nuget](https://www.nuget.org/packages/Artesian.SDK/)
