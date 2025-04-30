@@ -579,6 +579,8 @@ await writeMarketData.Delete();
 
 #### UpsertMode
 
+Specifies the upsert mode to be used while saving the data. If the upsert mode is not specified then the default mode is used which is **Merge**.
+
 **ActualTimeSeries**
 *Merge* and *Replace* are equivalent to each other each item in the payload is written into the series replacing anything there previously.
 
