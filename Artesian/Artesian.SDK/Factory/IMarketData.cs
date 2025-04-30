@@ -212,10 +212,11 @@ namespace Artesian.SDK.Factory
         /// <param name="downloadedAt">The instant downloaded</param>
         /// <param name="deferCommandExecution">Defer Command Execution</param>
         /// <param name="deferDataGeneration">Defer Data Generation</param>
+        /// <param name="upsertMode">Upsert Mode</param>
         /// <param name="keepNulls">if <see langword="false"/> Settlement=null are ignored (server-side). That is the default behaviour.</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
-        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default);
+        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
 
         /// <summary>
         /// MarketData Delete
@@ -277,10 +278,11 @@ namespace Artesian.SDK.Factory
         /// <param name="downloadedAt">The instant downloaded</param>
         /// <param name="deferCommandExecution">Defer Command Execution</param>
         /// <param name="deferDataGeneration">Defer Data Generation</param>
+        /// <param name="upsertMode">Upsert Mode</param>
         /// <param name="keepNulls">if <see langword="false"/></param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
-        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default);
+        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
 
         /// <summary>
         /// MarketData Delete
@@ -341,10 +343,11 @@ namespace Artesian.SDK.Factory
         /// <param name="downloadedAt">The instant downloaded</param>
         /// <param name="deferCommandExecution">Defer Command Execution</param>
         /// <param name="deferDataGeneration">Defer Data Generation</param>
+        /// <param name="upsertMode">Upsert Mode</param>
         /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
-        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default);
+        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
 
         /// <summary>
         /// MarketData Delete
@@ -412,9 +415,10 @@ namespace Artesian.SDK.Factory
         /// <param name="deferCommandExecution">Defer Command Execution</param>
         /// <param name="deferDataGeneration">Defer Data Generation</param>
         /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
+        /// <param name="upsertMode">Upsert Mode</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
-        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default);
+        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
 
         /// <summary>
         /// MarketData Delete

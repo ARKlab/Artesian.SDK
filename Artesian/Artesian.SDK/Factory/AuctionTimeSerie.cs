@@ -129,9 +129,10 @@ namespace Artesian.SDK.Factory
         /// <param name="deferCommandExecution">DeferCommandExecution</param>
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
+        /// <param name="upsertMode">Upsert Mode</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default)
+        public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default)
         {
             if (Bids.Any())
             {
@@ -142,7 +143,8 @@ namespace Artesian.SDK.Factory
                     AuctionRows = _bids,
                     DeferCommandExecution = deferCommandExecution,
                     DeferDataGeneration = deferDataGeneration,
-                    KeepNulls = keepNulls
+                    KeepNulls = keepNulls,
+                    UpsertMode = upsertMode
                 };
 
                 await _marketDataService.UpsertCurveDataAsync(data, ctk).ConfigureAwait(false);
