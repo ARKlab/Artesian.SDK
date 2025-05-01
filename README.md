@@ -444,7 +444,7 @@ await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime(
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
 ```
 
-[Go to upsert mode details](#upsert-mode)
+The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
 
 To delete the whole range of the Actual Time serie, the `Delete` command can be used without specifying any start and end range.
 
@@ -470,7 +470,7 @@ await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime(
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), version);
 ```
 
-[Go to upsert mode details](#upsert-mode)
+The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
 
 To delete the whole range of the Versioned Time serie, the `Delete` command can be used without specifying any start and end range.
 
@@ -509,7 +509,7 @@ var product = new List<string>(){"Dec-18"};
 
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
 ```
-[Go to upsert mode details](#upsert-mode)
+The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
 
 To delete the whole range of the Market Assessment Time serie, the `Delete` command can be used without specifying any start and end range.
 
@@ -539,7 +539,7 @@ await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime(
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
 ```
 
-[Go to upsert mode details](#upsert-mode)
+The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
 
 To delete the whole range of the Auction Time serie, the `Delete` command can be used without specifying any start and end range.
 
@@ -576,7 +576,7 @@ var product = new List<string>(){"Dec-18"};
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
 ```
 
-[Go to upsert mode details](#upsert-mode)
+The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
 
 To delete the whole range of the Bid Ask Time serie, the `Delete` command can be used without specifying any start and end range.
 
