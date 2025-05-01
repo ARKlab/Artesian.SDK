@@ -32,7 +32,7 @@ namespace Artesian.SDK.Tests.Samples
             var value1 = 99.99;
             var products1 = new List<string> { "Feb-25", "Mar-25", "Apr-25", "2026", "2027" };
             var value2 = 55.55;
-            var products2 = new List<string> { "May-25" };
+            var products2 = new List<string> { "May-25", "Jun-25", "Jul-25" };
             var originalTimezone = "CET";
             var originalGranularity = Granularity.Day;
             var curveId = 0;
