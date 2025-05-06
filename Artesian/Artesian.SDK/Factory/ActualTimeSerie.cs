@@ -114,6 +114,36 @@ namespace Artesian.SDK.Factory
         /// <param name="deferCommandExecution">DeferCommandExecution</param>
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
+        /// <param name="ctk">The Cancellation Token</param> 
+        /// <returns></returns>
+        public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default)
+        {
+            if (_values.Count != 0)
+            {
+                var data = new UpsertCurveData(_identifier)
+                {
+                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
+                    DownloadedAt = downloadedAt,
+                    Rows = _values,
+                    DeferCommandExecution = deferCommandExecution,
+                    DeferDataGeneration = deferDataGeneration,
+                    KeepNulls = keepNulls,
+                };
+
+                await _marketDataService.UpsertCurveDataAsync(data, ctk).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// MarketData Save
+        /// </summary>
+        /// <remarks>
+        /// Save the Data of the current MarketData
+        /// </remarks>
+        /// <param name="downloadedAt">Downloaded at</param>
+        /// <param name="deferCommandExecution">DeferCommandExecution</param>
+        /// <param name="deferDataGeneration">DeferDataGeneration</param>
+        /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
         /// <param name="upsertMode">Upsert Mode</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
