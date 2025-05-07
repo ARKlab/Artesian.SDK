@@ -126,12 +126,38 @@ namespace Artesian.SDK.Factory
         /// Save the Data of the current MarketData
         /// </remarks>
         /// <param name="downloadedAt">Downloaded at</param>
+        /// <returns></returns>
+        public async Task Save(Instant downloadedAt)
+        {
+            if (Bids.Any())
+            {
+                var data = new UpsertCurveData(_identifier)
+                {
+                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
+                    DownloadedAt = downloadedAt,
+                    AuctionRows = _bids,
+                    DeferCommandExecution = false,
+                    DeferDataGeneration = true,
+                    KeepNulls = false,
+                };
+
+                await _marketDataService.UpsertCurveDataAsync(data).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// MarketData Save
+        /// </summary>
+        /// <remarks>
+        /// Save the Data of the current MarketData
+        /// </remarks>
+        /// <param name="downloadedAt">Downloaded at</param>
         /// <param name="deferCommandExecution">DeferCommandExecution</param>
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default)
+        public async Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls, CancellationToken ctk = default)
         {
             if (Bids.Any())
             {

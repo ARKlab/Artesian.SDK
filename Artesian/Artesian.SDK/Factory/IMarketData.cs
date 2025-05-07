@@ -210,6 +210,30 @@ namespace Artesian.SDK.Factory
         /// MarketAssessment Save
         /// </remarks>
         /// <param name="downloadedAt">The instant downloaded</param>
+        /// <returns></returns>
+        Task Save(Instant downloadedAt);
+
+        /// <summary>
+        /// MarketAssessment Save
+        /// </summary>
+        /// <remarks>
+        /// MarketAssessment Save
+        /// </remarks>
+        /// <param name="downloadedAt">The instant downloaded</param>
+        /// <param name="deferCommandExecution">Defer Command Execution</param>
+        /// <param name="deferDataGeneration">Defer Data Generation</param>
+        /// <param name="keepNulls">if <see langword="false"/> Settlement=null are ignored (server-side). That is the default behaviour.</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls, CancellationToken ctk = default);
+
+        /// <summary>
+        /// MarketAssessment Save
+        /// </summary>
+        /// <remarks>
+        /// MarketAssessment Save
+        /// </remarks>
+        /// <param name="downloadedAt">The instant downloaded</param>
         /// <param name="deferCommandExecution">Defer Command Execution</param>
         /// <param name="deferDataGeneration">Defer Data Generation</param>
         /// <param name="upsertMode">Upsert Mode</param>
@@ -268,6 +292,30 @@ namespace Artesian.SDK.Factory
         /// BidAsk ClearData
         /// </summary>
         void ClearData();
+
+        /// <summary>
+        /// BidAsk Save
+        /// </summary>
+        /// <remarks>
+        /// BidAsk Save
+        /// </remarks>
+        /// <param name="downloadedAt">The instant downloaded</param>
+        /// <returns></returns>
+        Task Save(Instant downloadedAt);
+
+        /// <summary>
+        /// BidAsk Save
+        /// </summary>
+        /// <remarks>
+        /// BidAsk Save
+        /// </remarks>
+        /// <param name="downloadedAt">The instant downloaded</param>
+        /// <param name="deferCommandExecution">Defer Command Execution</param>
+        /// <param name="deferDataGeneration">Defer Data Generation</param>
+        /// <param name="keepNulls">if <see langword="false"/></param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls, CancellationToken ctk = default);
 
         /// <summary>
         /// BidAsk Save
@@ -341,6 +389,30 @@ namespace Artesian.SDK.Factory
         /// Auction Save
         /// </remarks>
         /// <param name="downloadedAt">The instant downloaded</param>
+        /// <returns></returns>
+        Task Save(Instant downloadedAt);
+
+        /// <summary>
+        /// Auction Save
+        /// </summary>
+        /// <remarks>
+        /// Auction Save
+        /// </remarks>
+        /// <param name="downloadedAt">The instant downloaded</param>
+        /// <param name="deferCommandExecution">Defer Command Execution</param>
+        /// <param name="deferDataGeneration">Defer Data Generation</param>
+        /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Auction Save
+        /// </summary>
+        /// <remarks>
+        /// Auction Save
+        /// </remarks>
+        /// <param name="downloadedAt">The instant downloaded</param>
         /// <param name="deferCommandExecution">Defer Command Execution</param>
         /// <param name="deferDataGeneration">Defer Data Generation</param>
         /// <param name="upsertMode">Upsert Mode</param>
@@ -404,6 +476,30 @@ namespace Artesian.SDK.Factory
         /// </remarks>
         /// <returns></returns>
         void ClearData();
+
+        /// <summary>
+        /// TimeSerie Save
+        /// </summary>
+        /// <remarks>
+        /// TimeSerie Save
+        /// </remarks>
+        /// <param name="downloadedAt">The instant downloaded</param>
+        /// <returns></returns>
+        Task Save(Instant downloadedAt);
+
+        /// <summary>
+        /// TimeSerie Save
+        /// </summary>
+        /// <remarks>
+        /// TimeSerie Save
+        /// </remarks>
+        /// <param name="downloadedAt">The instant downloaded</param>
+        /// <param name="deferCommandExecution">Defer Command Execution</param>
+        /// <param name="deferDataGeneration">Defer Data Generation</param>
+        /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls, CancellationToken ctk = default);
 
         /// <summary>
         /// TimeSerie Save
