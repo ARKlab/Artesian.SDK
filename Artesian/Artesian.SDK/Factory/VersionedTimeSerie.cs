@@ -136,40 +136,12 @@ namespace Artesian.SDK.Factory
         /// Save the Data of the current MarketData
         /// </remarks>
         /// <param name="downloadedAt">Downloaded at</param>
-        /// <returns></returns>
-        public async Task Save(Instant downloadedAt)
-        {
-            if (!SelectedVersion.HasValue)
-                throw new VersionedTimeSerieException("No Version has been selected to save Data");
-
-            if (Values.Any())
-            {
-                var data = new UpsertCurveData(_identifier, SelectedVersion.Value)
-                {
-                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
-                    DownloadedAt = downloadedAt,
-                    Rows = _values,
-                    DeferCommandExecution = false,
-                    DeferDataGeneration = true,
-                    KeepNulls = false,
-                };
-
-                await _marketDataService.UpsertCurveDataAsync(data, default).ConfigureAwait(false);
-            }
-        }
-
-        /// <summary>
-        /// MarketData Save
-        /// </summary>
-        /// <remarks>
-        /// Save the Data of the current MarketData
-        /// </remarks>
-        /// <param name="downloadedAt">Downloaded at</param>
         /// <param name="deferCommandExecution">DeferCommandExecution</param>
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
+        /// <param name="ctk">The Cancellation Token</param>
         /// <returns></returns>
-        public async Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls)
+        public async Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls, CancellationToken ctk)
         {          
             if (!SelectedVersion.HasValue)
                 throw new VersionedTimeSerieException("No Version has been selected to save Data");
@@ -186,10 +158,8 @@ namespace Artesian.SDK.Factory
                     KeepNulls = keepNulls,
                 };
 
-                await _marketDataService.UpsertCurveDataAsync(data).ConfigureAwait(false);
+                await _marketDataService.UpsertCurveDataAsync(data, ctk).ConfigureAwait(false);
             }
-            //else
-            //    _logger.Warn("No Data to be saved.");
         }
 
         /// <summary>

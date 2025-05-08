@@ -111,36 +111,6 @@ namespace Artesian.SDK.Factory
             return AddAssessmentOperationResult.AssessmentAdded;
         }
 
-        /// <summary>
-        /// MarketData Save
-        /// </summary>
-        /// <remarks>
-        /// Save the Data of the current MarketData
-        /// </remarks>
-        /// <param name="downloadedAt">Downloaded at</param>
-        /// <returns></returns>
-        public async Task Save(Instant downloadedAt)
-        {
-            if (_values.Count != 0)
-            {
-                var data = new UpsertCurveData(_identifier)
-                {
-                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
-                    DownloadedAt = downloadedAt,
-                    DeferCommandExecution = false,
-                    MarketAssessment = new Dictionary<LocalDateTime, IDictionary<string, MarketAssessmentValue>>(),
-                    KeepNulls = false,
-                };
-
-                foreach (var reportTime in _values.GroupBy(g => g.ReportTime))
-                {
-                    var assessments = reportTime.ToDictionary(key => key.Product, value => value.Value, StringComparer.Ordinal);
-                    data.MarketAssessment.Add(reportTime.Key, assessments);
-                }
-
-                await _marketDataService.UpsertCurveDataAsync(data).ConfigureAwait(false);
-            }
-        }
 
         /// <summary>
         /// MarketData Save
@@ -152,8 +122,9 @@ namespace Artesian.SDK.Factory
         /// <param name="deferCommandExecution">DeferCommandExecution</param>
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
+        /// <param name="ctk">The Cancellation Token</param>
         /// <returns></returns>
-        public async Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls)
+        public async Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls, CancellationToken ctk)
         {
             if (_values.Count != 0)
             {
@@ -172,7 +143,7 @@ namespace Artesian.SDK.Factory
                     data.MarketAssessment.Add(reportTime.Key, assessments);
                 }
 
-                await _marketDataService.UpsertCurveDataAsync(data).ConfigureAwait(false);
+                await _marketDataService.UpsertCurveDataAsync(data, ctk).ConfigureAwait(false);
             }
         }
 
