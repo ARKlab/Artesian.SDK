@@ -230,7 +230,7 @@ namespace Artesian.SDK.Factory
         /// <param name="keepNulls">if <see langword="false"/> Settlement=null are ignored (server-side). That is the default behaviour.</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
-        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
+        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode upsertMode = UpsertMode.Merge, CancellationToken ctk = default);
 
         /// <summary>
         /// MarketData Delete
@@ -310,7 +310,7 @@ namespace Artesian.SDK.Factory
         /// <param name="keepNulls">if <see langword="false"/></param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
-        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
+        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode upsertMode = UpsertMode.Merge, CancellationToken ctk = default);
 
         /// <summary>
         /// MarketData Delete
@@ -389,7 +389,7 @@ namespace Artesian.SDK.Factory
         /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
-        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
+        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode upsertMode = UpsertMode.Merge, CancellationToken ctk = default);
 
         /// <summary>
         /// MarketData Delete
@@ -474,7 +474,7 @@ namespace Artesian.SDK.Factory
         /// <param name="upsertMode">Upsert Mode</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
-        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
+        Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode upsertMode = UpsertMode.Merge, CancellationToken ctk = default);
 
         /// <summary>
         /// MarketData Delete
