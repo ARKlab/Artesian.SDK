@@ -106,6 +106,14 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [MessagePack.Key(10)]
         public IDictionary<LocalDateTime, IDictionary<string, BidAskValue>> BidAsk { get; set; }
+
+        /// <summary>
+        /// The Upsert Mode: Merge or Replace.
+        /// Merge and replace are equivalent for ActualTimeSeries and Auction data for the other data
+        /// types any previous data for version or product is replaced by the rows in the payload
+        /// </summary>
+        [MessagePack.Key(11)]
+        public UpsertMode? UpsertMode { get; set; }
     }
 
     internal static class UpsertCurveDataExt
