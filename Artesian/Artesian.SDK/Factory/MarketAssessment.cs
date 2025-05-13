@@ -111,7 +111,6 @@ namespace Artesian.SDK.Factory
             return AddAssessmentOperationResult.AssessmentAdded;
         }
 
-
         /// <summary>
         /// MarketData Save
         /// </summary>
@@ -124,28 +123,8 @@ namespace Artesian.SDK.Factory
         /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
         /// <param name="ctk">The Cancellation Token</param>
         /// <returns></returns>
-        public async Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls, CancellationToken ctk)
-        {
-            if (_values.Count != 0)
-            {
-                var data = new UpsertCurveData(_identifier)
-                {
-                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
-                    DownloadedAt = downloadedAt,
-                    DeferCommandExecution = deferCommandExecution,
-                    MarketAssessment = new Dictionary<LocalDateTime, IDictionary<string, MarketAssessmentValue>>(),
-                    KeepNulls = keepNulls,
-                };
-
-                foreach (var reportTime in _values.GroupBy(g => g.ReportTime))
-                {
-                    var assessments = reportTime.ToDictionary(key => key.Product, value => value.Value, StringComparer.Ordinal);
-                    data.MarketAssessment.Add(reportTime.Key, assessments);
-                }
-
-                await _marketDataService.UpsertCurveDataAsync(data, ctk).ConfigureAwait(false);
-            }
-        }
+        public async Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls, CancellationToken ctk = default) =>
+                await _save(downloadedAt, deferCommandExecution, deferDataGeneration, keepNulls, null, ctk).ConfigureAwait(false);
 
         /// <summary>
         /// MarketData Save
@@ -160,7 +139,16 @@ namespace Artesian.SDK.Factory
         /// <param name="upsertMode">Upsert Mode</param>
         /// <param name="ctk">The Cancellation Token</param>
         /// <returns></returns>
-        public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default)
+        public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default) =>
+            await _save(downloadedAt, deferCommandExecution, deferDataGeneration, keepNulls, upsertMode, ctk).ConfigureAwait(false);
+
+        private async Task _save(
+            Instant downloadedAt, 
+            bool deferCommandExecution ,
+            bool deferDataGeneration,
+            bool keepNulls, 
+            UpsertMode? upsertMode, 
+            CancellationToken ctk)
         {
             if (_values.Count != 0)
             {
