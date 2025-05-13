@@ -312,6 +312,18 @@ Period Range
  .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
 ```
 
+### UnitOfMeasure and AggregationRule extraction for Actual and Versioned Time Series
+
+Extraction for Actual and Versioned Time Series can be done specifing the UnitOfMeasure and AggregationRule using the `InUnitOfMeasure` and `WithAggregationRule` methods.
+AggregationRule when is not given is using the default given in the registration of the MarketData. The aggregation is done always after the unit of measure conversion.
+
+```csharp
+ .InUnitOfMeasure("kWh")
+ ```
+ ```csharp
+ .WithAggregationRule(AggregationRule.SumAndDivide)
+ ```
+
 ### Filler Strategy
 
 All extraction types (Actual,Versioned and Market Assessment) have an optional filler strategy.
@@ -427,6 +439,23 @@ marketData.UpdateDerivedConfiguration(derivedCfgUpdate);
 ```
 
 Using `Write mode` to edit MarketData and `Save` to save the data of the current MarketData providing an instant. Can be used `Delete` specifying a range to delete a specific range of the time serie.
+
+
+### CheckConversion for a list of UnitOfMeasure to a target UnitOfMeasure
+
+MarketData Service has a method to CheckConversion giving in input a list of UnitOfMeasure and a target UnitOfMeasure.
+
+```csharp
+var inputUnitOfMeasureToCheck = new string[]{ "MW", "s", "kW/s"}.ToArray();
+var outputUnitOfMeasure = "kW";
+
+var checkResults = marketDataService.CheckConversion(inputUnitOfMeasureToCheck, outputUnitOfMeasure);
+ ```
+
+The CheckConversionResults object returned has:
+TargetUnitOfMeasure = the target unit of measure
+ConvertibleInputUnitOfMeasure = list of convertible input UnitOfMeasure
+NotConvertibleInputUnitOfMeasure = list of not convertible input UnitOfMeasure
 
 ### Actual Time Series
 

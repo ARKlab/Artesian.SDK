@@ -34,6 +34,8 @@ namespace Artesian.SDK.Service
         /// <param name="fillerK"></param>
         /// <param name="fillerConfig"></param>
         /// <param name="derivedCfgBase"></param>
+        /// <param name="unitOfMeasure"></param>
+        /// <param name="aggregationRule"></param>
         public ActualQueryParamaters(
             IEnumerable<int> ids, 
             ExtractionRangeSelectionConfig extractionRangeSelectionConfig, 
@@ -44,7 +46,9 @@ namespace Artesian.SDK.Service
             int? transformId,
             FillerKindType fillerK,
             FillerConfig fillerConfig,
-            DerivedCfgBase derivedCfgBase = null
+            DerivedCfgBase derivedCfgBase = null,
+            string unitOfMeasure = "",
+            AggregationRule? aggregationRule = null
             )
             : base(ids,extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
         {           
@@ -52,6 +56,8 @@ namespace Artesian.SDK.Service
             this.TransformId = transformId;
             this.FillerConfig = fillerConfig;
             this.DerivedCfgBase = derivedCfgBase;
+            this.UnitOfMeasure = unitOfMeasure;
+            this.AggregationRule = aggregationRule;
         }
 
         /// <summary>
@@ -66,5 +72,13 @@ namespace Artesian.SDK.Service
         /// Derived Configuration
         /// </summary>
         public DerivedCfgBase DerivedCfgBase { get; set; }
+        /// <summary>
+        /// Unit of Measure
+        /// </summary>
+        public string UnitOfMeasure { get; set; } = string.Empty;
+        /// <summary>
+        /// AggregationRule
+        /// </summary>
+        public AggregationRule? AggregationRule { get; set; }
     }
 }

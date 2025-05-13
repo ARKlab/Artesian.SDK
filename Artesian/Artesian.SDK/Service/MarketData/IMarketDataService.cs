@@ -3,7 +3,7 @@
 // license information. 
 
 using Artesian.SDK.Dto;
-
+using Artesian.SDK.Dto.UnitOfMeasure;
 
 using NodaTime;
 using System.Collections.Generic;
@@ -345,6 +345,17 @@ namespace Artesian.SDK.Service
         /// <param name="ctk">CancellationToken</param>
         /// <returns></returns>
         Task DeleteApiKeyAsync(int id, CancellationToken ctk = default);
+        #endregion
+
+        #region UnitOfMeasure
+        /// <summary>
+        /// Check the conversion between the input unit of measures and the target unit of measure
+        /// </summary>
+        /// <param name="inputUnitOfMeasures">Input unit of measures</param>
+        /// <param name="targetUnitOfMeasure">target unit of measure</param>
+        /// <param name="ctk">CancellationToken</param>
+        /// <returns>CheckConversionResults Entity</returns>
+        Task<CheckConversionResults> CheckConversion(string[] inputUnitOfMeasures, string targetUnitOfMeasure, CancellationToken ctk = default);
         #endregion
     }
 }
