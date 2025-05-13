@@ -52,7 +52,7 @@ namespace Artesian.SDK.Service
             FillerKindType fillerK,
             FillerConfig fillerConfig,
             LocalDate? analysisDate,
-            string unitOfMeasure = "",
+            string unitOfMeasure = null,
             AggregationRule? aggregationRule = null
             )
             : base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
@@ -95,7 +95,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Unit of Measure
         /// </summary>
-        public string UnitOfMeasure { get; set; } = string.Empty;
+        public string UnitOfMeasure { get; set; } = null;
         /// <summary>
         /// AggregationRule
         /// </summary>

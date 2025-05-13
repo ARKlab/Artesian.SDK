@@ -15,7 +15,6 @@ namespace Artesian.SDK.Dto.UnitOfMeasure
         /// </summary>
         public CheckConversionResults()
         {
-            _init();
         }
 
         /// <summary>
@@ -25,16 +24,6 @@ namespace Artesian.SDK.Dto.UnitOfMeasure
         public CheckConversionResults(string targetUnitOfMeasure)
         {
             TargetUnitOfMeasure = targetUnitOfMeasure;
-            _init();
-        }
-
-        /// <summary>
-        /// Initializes the CheckConversionResults object
-        /// </summary>
-        private void _init()
-        {
-            ConvertibleInputUnitOfMeasure = new List<string>();
-            NotConvertibleInputUnitOfMeasures = new List<string>();
         }
 
         /// <summary>
@@ -64,10 +53,10 @@ namespace Artesian.SDK.Dto.UnitOfMeasure
         /// <summary>
         /// ConvertibleInputUnitOfMeasure
         /// </summary>
-        public List<string> ConvertibleInputUnitOfMeasure { get; set; }
+        public List<string> ConvertibleInputUnitOfMeasure { get; set; } = new List<string>();
         /// <summary>
         /// NotConvertibleInputUnitOfMeasures
         /// </summary>
-        public List<string> NotConvertibleInputUnitOfMeasures { get; set; }
+        public List<string> NotConvertibleInputUnitOfMeasures { get; set; } = new List<string>();
     }
 }

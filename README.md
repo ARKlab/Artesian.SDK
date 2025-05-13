@@ -311,18 +311,28 @@ Period Range
 ```csharp
  .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
 ```
+ 
+### UnitOfMeasure conversion for Actual and Versioned Time Series
 
-### UnitOfMeasure and AggregationRule extraction for Actual and Versioned Time Series
-
-Extraction for Actual and Versioned Time Series can be done specifing the UnitOfMeasure and AggregationRule using the `InUnitOfMeasure` and `WithAggregationRule` methods.
-AggregationRule when is not given is using the default given in the registration of the MarketData. The aggregation is done always after the unit of measure conversion.
+In Actual and Versioned Time Series query, can be specified the UnitOfMeasure using the `InUnitOfMeasure` method. When the UnitOfMeasure parameter is given, will be applied the conversion
+from the UnitOfMeasure of the MarketData to the one specified. The conversion is done always before the aggregation.
 
 ```csharp
  .InUnitOfMeasure("kWh")
- ```
- ```csharp
+```
+
+A `CommontUnitOfMeasure` object contains the common supported UnitOfMeasure (kW, MW, kWh, MWh, m, km, day, min, h, s, mo, yr).
+Others UnitOfMeasure supported are the currency 3 digit representation from ISO 4217:2015 (EUR, USD, JPY).
+The UnitOfMeasure con also be composed by {a}/{b} where a and b are the UnitOfMeasure supported by the `CommontUnitOfMeasure` object or currency ISO 4217:2015.
+
+### AggregationRule override on query for Actual and Versioned Time Series
+
+In Actual and Versioned Time Series query, can be done overrided the AggregationRule parameter using the `WithAggregationRule` method.
+In case the AggregationRule parameter is not given, it is used the default one set in the MarketData's registration. The aggregation is done always after the unit of measure conversion.
+
+```csharp
  .WithAggregationRule(AggregationRule.SumAndDivide)
- ```
+```
 
 ### Filler Strategy
 

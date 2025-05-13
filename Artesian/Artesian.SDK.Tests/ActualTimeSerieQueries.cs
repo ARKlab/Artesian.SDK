@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 
@@ -528,7 +529,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public async Task ActWithAggregationRule_InUnitOfMeasure()
+        public async Task ActWithAggregationRule_FilterId()
         {
             using (var httpTest = new HttpTest())
             {
@@ -538,14 +539,36 @@ namespace Artesian.SDK.Tests
                        .ForFilterId(1)
                        .InGranularity(Granularity.Day)
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
-                       .InUnitOfMeasure("kWh")
                        .WithAggregationRule(AggregationRule.SumAndDivide)
                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
                     .WithQueryParam("filterId", 1)
-                    .WithQueryParam("unitOfMeasure", "kWh")
                     .WithQueryParam("aggregationRule", AggregationRule.SumAndDivide)
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .WithHeader("X-Api-Key", TestConstants.APIKey)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task ActInUnitOfMeasure_FilterId()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var qs = new QueryService(_cfg);
+
+                var act = await qs.CreateActual()
+                       .ForFilterId(1)
+                       .InGranularity(Granularity.Day)
+                       .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
+                       .InUnitOfMeasure(CommonUnitOfMeasure.kWh)
+                       .ExecuteAsync();
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                    .WithQueryParam("filterId", 1)
+                    .WithQueryParam("unitOfMeasure", CommonUnitOfMeasure.kWh)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .WithHeader("X-Api-Key", TestConstants.APIKey)
