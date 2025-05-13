@@ -453,7 +453,7 @@ Using `Write mode` to edit MarketData and `Save` to save the data of the current
 
 ### CheckConversion verify UnitOfMeasure compatibility
 
-MarketData Service provides a method called CheckConversion, which allows you to check whether a list of input units of measure can be converted info a spicified target unit of measure.
+MarketData Service provides a method called CheckConversion, which allows you to check whether a list of input units of measure can be converted info a specified target unit of measure.
 
 ```csharp
 var inputUnitOfMeasureToCheck = new string[]{ "MW", "s", "kW/s"}.ToArray();
