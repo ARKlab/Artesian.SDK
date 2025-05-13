@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 
@@ -87,7 +88,8 @@ namespace Artesian.SDK.Tests
                     OriginalGranularity = Granularity.Day,
                     OriginalTimezone = "CET",
                     AggregationRule = AggregationRule.Undefined,
-                    Type = MarketDataType.VersionedTimeSerie
+                    Type = MarketDataType.VersionedTimeSerie,
+                    UnitOfMeasure = CommonUnitOfMeasure.MW,
                 };
 
                 var mdq = await mds.RegisterMarketDataAsync(marketDataEntity);

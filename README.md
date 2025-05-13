@@ -315,13 +315,13 @@ Period Range
 ### UnitOfMeasure conversion for Actual and Versioned Time Series
 
 In Actual and Versioned Time Series query, can be specified the UnitOfMeasure using the `InUnitOfMeasure` method. When the UnitOfMeasure parameter is given, will be applied the conversion
-from the UnitOfMeasure of the MarketData to the one specified. The conversion is done always before the aggregation.
+from the UnitOfMeasure of the MarketData set in registration to the one specified. The conversion is done always before the aggregation.
 
 ```csharp
  .InUnitOfMeasure("kWh")
 ```
 
-A `CommontUnitOfMeasure` object contains the common supported UnitOfMeasure (kW, MW, kWh, MWh, m, km, day, min, h, s, mo, yr).
+A `CommontUnitOfMeasure` object contains the common supported UnitOfMeasure as part of ISO/IEC 80000 (kW, MW, kWh, MWh, m, km, day, min, h, s, mo, yr).
 Others UnitOfMeasure supported are the currency 3 digit representation from ISO 4217:2015 (EUR, USD, JPY).
 The UnitOfMeasure con also be composed by {a}/{b} where a and b are the UnitOfMeasure supported by the `CommontUnitOfMeasure` object or currency ISO 4217:2015.
 
@@ -451,9 +451,9 @@ marketData.UpdateDerivedConfiguration(derivedCfgUpdate);
 Using `Write mode` to edit MarketData and `Save` to save the data of the current MarketData providing an instant. Can be used `Delete` specifying a range to delete a specific range of the time serie.
 
 
-### CheckConversion for a list of UnitOfMeasure to a target UnitOfMeasure
+### CheckConversion verify UnitOfMeasure compatibility
 
-MarketData Service has a method to CheckConversion giving in input a list of UnitOfMeasure and a target UnitOfMeasure.
+MarketData Service provides a method called CheckConversion, which allows you to check whether a list of input units of measure can be converted info a spicified target unit of measure.
 
 ```csharp
 var inputUnitOfMeasureToCheck = new string[]{ "MW", "s", "kW/s"}.ToArray();
@@ -462,10 +462,12 @@ var outputUnitOfMeasure = "kW";
 var checkResults = marketDataService.CheckConversion(inputUnitOfMeasureToCheck, outputUnitOfMeasure);
  ```
 
-The CheckConversionResults object returned has:
-TargetUnitOfMeasure = the target unit of measure
-ConvertibleInputUnitOfMeasure = list of convertible input UnitOfMeasure
-NotConvertibleInputUnitOfMeasure = list of not convertible input UnitOfMeasure
+ Output:
+ The method will return a CheckConversionResults object containing the results of the conversion check.
+
+TargetUnitOfMeasure = the unit of measure you're converting to.
+ConvertibleInputUnitOfMeasure = a list of input units that can be successfully converted to the target unit.
+NotConvertibleInputUnitOfMeasure = a list of input units that cannot be converted to the target unit.
 
 ### Actual Time Series
 
