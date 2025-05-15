@@ -114,6 +114,12 @@ namespace Artesian.SDK.Dto
 
                             break;
                         }
+                    case OperationType.UpdateUnitOfMeasure:
+                        {
+                            var p = op.Params as OperationUpdateUnitOfMeasure;
+
+                            break;
+                        }
                     case OperationType.UpdateProviderDescription:
                         {
                             var p = op.Params as OperationUpdateProviderDescription;
@@ -135,7 +141,8 @@ namespace Artesian.SDK.Dto
                 stringToEvaluate == "OriginalGranularity" ||
                 stringToEvaluate == "OriginalTimezone" ||
                 stringToEvaluate == "MarketDataId" ||
-                stringToEvaluate == "AggregationRule"
+                stringToEvaluate == "AggregationRule" ||
+                stringToEvaluate == "UnitOfMeasure"
                 )
                 return false;
 

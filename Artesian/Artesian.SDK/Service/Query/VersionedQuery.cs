@@ -384,6 +384,26 @@ namespace Artesian.SDK.Service
             return this;
         }
         /// <summary>
+        /// Set the unit of measure for the extracted marketdata
+        /// </summary>
+        /// <param name="unitOfMeasure">The unit of measure in which to extract data.</param>
+        /// <returns>VersionedQuery</returns>
+        public VersionedQuery InUnitOfMeasure(string unitOfMeasure)
+        {
+            QueryParamaters.UnitOfMeasure = unitOfMeasure;
+            return this;
+        }
+        /// <summary>
+        /// Set the AggregationRule for the extracted marketdata
+        /// </summary>
+        /// <param name="aggregationRule">The AggregationRule in which to extract data.</param>
+        /// <returns>VersionedQuery</returns>
+        public VersionedQuery WithAggregationRule(AggregationRule aggregationRule)
+        {
+            QueryParamaters.AggregationRule = aggregationRule;
+            return this;
+        }
+        /// <summary>
         /// Execute VersionedQuery
         /// </summary>
         /// <param name="ctk">CancellationToken</param>
@@ -513,6 +533,8 @@ namespace Artesian.SDK.Service
                                 ?   qp.AnalysisDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
                                 :   null
                             )
+                            .SetQueryParam("aggregationRule", qp.AggregationRule)
+                            .SetQueryParam("unitOfMeasure", qp.UnitOfMeasure)
                             .ToString())
                     .ToList();
             

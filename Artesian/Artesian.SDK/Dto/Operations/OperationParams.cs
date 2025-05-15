@@ -33,6 +33,7 @@ namespace Artesian.SDK.Dto
     [Union(2, typeof(OperationUpdateTimeTransform))]
     [Union(3, typeof(OperationUpdateProviderDescription))]
     [Union(4, typeof(OperationUpdateAggregationRule))]
+    [Union(5, typeof(OperationUpdateUnitOfMeasure))]
 
     public interface IOperationParamsPayload
     { }

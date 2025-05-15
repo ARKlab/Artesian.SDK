@@ -1,10 +1,12 @@
 ﻿// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
-using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.UoM;
 
 using MessagePack;
+
 using NodaTime;
+
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -38,6 +40,7 @@ namespace Artesian.SDK.Dto
                     this.ProviderName = output.ProviderName;
                     this.MarketDataName = output.MarketDataName;
                     this.OriginalGranularity = output.OriginalGranularity;
+                    this.UnitOfMeasure = output.UnitOfMeasure;
                     this.Type = output.Type;
                     this.OriginalTimezone = output.OriginalTimezone;
                     this.AggregationRule = output.AggregationRule;
@@ -141,6 +144,12 @@ namespace Artesian.SDK.Dto
                 set { this._derivedCfg = value; }
 
             }
+            /// <summary>
+            /// The Unit of Measure
+            /// </summary>
+            [MessagePack.Key(19)]
+            public UnitOfMeasure UnitOfMeasure { get; set; } = new UnitOfMeasure();
+
             internal DerivedCfgBase _derivedCfg;
 
             internal string _path;
@@ -181,6 +190,7 @@ namespace Artesian.SDK.Dto
                     this.OriginalGranularity = input.OriginalGranularity;
                     this.Type = input.Type;
                     this.OriginalTimezone = input.OriginalTimezone;
+                    this.UnitOfMeasure = input.UnitOfMeasure;
                     this.AggregationRule = input.AggregationRule;
                     this.TransformID = input.TransformID;
                     this.ProviderDescription = input.ProviderDescription;

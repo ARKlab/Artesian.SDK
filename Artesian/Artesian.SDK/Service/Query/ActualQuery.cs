@@ -148,6 +148,26 @@ namespace Artesian.SDK.Service
             return this;
         }
         /// <summary>
+        /// Set the unit of measure for the extracted marketdata
+        /// </summary>
+        /// <param name="unitOfMeasure">The unit of measure in which to extract data.</param>
+        /// <returns>ActualQuery</returns>
+        public ActualQuery InUnitOfMeasure(string unitOfMeasure)
+        {
+            QueryParamaters.UnitOfMeasure = unitOfMeasure;
+            return this;
+        }
+        /// <summary>
+        /// Set the AggregationRule for the extracted marketdata
+        /// </summary>
+        /// <param name="aggregationRule">The AggregationRule in which to extract data.</param>
+        /// <returns>ActualQuery</returns>
+        public ActualQuery WithAggregationRule(AggregationRule aggregationRule)
+        {
+            QueryParamaters.AggregationRule = aggregationRule;
+            return this;
+        }
+        /// <summary>
         /// Set the Filler strategy to Null
         /// </summary>
         /// <returns>ActualQuery</returns>
@@ -219,6 +239,8 @@ namespace Artesian.SDK.Service
                         .SetQueryParam("fillerK", qp.FillerKindType)
                         .SetQueryParam("fillerDV", qp.FillerConfig.FillerTimeSeriesDV)
                         .SetQueryParam("fillerP", qp.FillerConfig.FillerPeriod)
+                        .SetQueryParam("aggregationRule", qp.AggregationRule)
+                        .SetQueryParam("unitOfMeasure", qp.UnitOfMeasure)
                         .ToString())
                 .ToList();
 

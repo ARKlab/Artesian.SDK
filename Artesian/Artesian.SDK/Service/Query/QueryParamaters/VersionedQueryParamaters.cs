@@ -36,6 +36,8 @@ namespace Artesian.SDK.Service
         /// <param name="fillerK"></param>
         /// <param name="fillerConfig"></param>
         /// <param name="analysisDate"></param>
+        /// <param name="unitOfMeasure"></param>
+        /// <param name="aggregationRule"></param>
         public VersionedQueryParamaters(
             IEnumerable<int> ids, 
             ExtractionRangeSelectionConfig extractionRangeSelectionConfig, 
@@ -49,7 +51,9 @@ namespace Artesian.SDK.Service
             LocalDateTime? versionLimit,
             FillerKindType fillerK,
             FillerConfig fillerConfig,
-            LocalDate? analysisDate
+            LocalDate? analysisDate,
+            string unitOfMeasure,
+            AggregationRule? aggregationRule
             )
             : base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
         {
@@ -60,6 +64,8 @@ namespace Artesian.SDK.Service
             this.VersionLimit = versionLimit;
             this.AnalysisDate = analysisDate;
             this.FillerConfig = fillerConfig;
+            this.UnitOfMeasure = unitOfMeasure;
+            this.AggregationRule = aggregationRule;
         }
 
         /// <summary>
@@ -86,5 +92,13 @@ namespace Artesian.SDK.Service
         /// The analysis date from which apply the relative interval (default Today)
         /// </summary>
         public LocalDate? AnalysisDate { get; set; }
+        /// <summary>
+        /// Unit of Measure
+        /// </summary>
+        public string UnitOfMeasure { get; set; }
+        /// <summary>
+        /// AggregationRule
+        /// </summary>
+        public AggregationRule? AggregationRule { get; set; }
     }
 }
