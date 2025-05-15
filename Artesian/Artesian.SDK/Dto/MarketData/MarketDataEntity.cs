@@ -1,6 +1,8 @@
 ﻿// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
+using Artesian.SDK.Dto.UoM;
+
 using MessagePack;
 
 using NodaTime;
@@ -146,7 +148,7 @@ namespace Artesian.SDK.Dto
             /// The Unit of Measure
             /// </summary>
             [MessagePack.Key(19)]
-            public string UnitOfMeasure { get; set; } = string.Empty;
+            public UnitOfMeasure UnitOfMeasure { get; set; } = new UnitOfMeasure();
 
             internal DerivedCfgBase _derivedCfg;
 

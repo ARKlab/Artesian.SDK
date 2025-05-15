@@ -3,7 +3,7 @@
 // license information. 
 
 using Artesian.SDK.Dto;
-using Artesian.SDK.Dto.UnitOfMeasure;
+using Artesian.SDK.Dto.UoM;
 
 using NodaTime;
 using System.Collections.Generic;

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.UoM;
 using Artesian.SDK.Service;
 
 using Flurl.Http.Testing;
@@ -89,7 +90,7 @@ namespace Artesian.SDK.Tests
                     OriginalTimezone = "CET",
                     AggregationRule = AggregationRule.Undefined,
                     Type = MarketDataType.VersionedTimeSerie,
-                    UnitOfMeasure = CommonUnitOfMeasure.MW,
+                    UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
                 };
 
                 var mdq = await mds.RegisterMarketDataAsync(marketDataEntity);

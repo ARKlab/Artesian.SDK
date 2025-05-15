@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Artesian.SDK.Dto.UnitOfMeasure
+namespace Artesian.SDK.Dto.UoM
 {
     /// <summary>
     /// The CheckConversionResults class.

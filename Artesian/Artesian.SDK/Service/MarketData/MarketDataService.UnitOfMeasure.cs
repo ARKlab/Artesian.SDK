@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System;
 using Flurl;
-using Artesian.SDK.Dto.UnitOfMeasure;
+using Artesian.SDK.Dto.UoM;
 
 namespace Artesian.SDK.Service
 {
