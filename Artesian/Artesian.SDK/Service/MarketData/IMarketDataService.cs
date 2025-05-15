@@ -355,7 +355,7 @@ namespace Artesian.SDK.Service
         /// <param name="targetUnitOfMeasure">target unit of measure</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>CheckConversionResults Entity</returns>
-        Task<CheckConversionResults> CheckConversion(string[] inputUnitOfMeasures, string targetUnitOfMeasure, CancellationToken ctk = default);
+        Task<CheckConversionResults> CheckConversionAsync(string[] inputUnitOfMeasures, string targetUnitOfMeasure, CancellationToken ctk = default);
         #endregion
     }
 }

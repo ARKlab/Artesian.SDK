@@ -165,6 +165,26 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
+        public async Task MarketData_CheckConversionAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var inputUnitOfMeasures = new string[] { CommonUnitOfMeasure.kW, CommonUnitOfMeasure.MW, CommonUnitOfMeasure.s };
+                var targetUnitOfMeasure = CommonUnitOfMeasure.MWh;
+
+                var checkConversionResults = await mds.CheckConversionAsync(inputUnitOfMeasures, targetUnitOfMeasure);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/uom/checkconversion")
+                    .WithQueryParam("inputUnitOfMeasures", inputUnitOfMeasures)
+                    .WithQueryParam("targetUnitOfMeasure", targetUnitOfMeasure)
+                    .WithVerb(HttpMethod.Get)
+                    .Times(1);
+            }
+        }
+
+        [Test]
         public async Task MarketData_DeleteMarketDataAsync()
         {
             using (var httpTest = new HttpTest())
@@ -326,6 +346,39 @@ namespace Artesian.SDK.Tests
                                 Value = "CET"
                             },
                             Type = OperationType.UpdateOriginalTimeZone,
+                        }
+                    }
+                };
+
+                var mdq = await mds.PerformOperationsAsync(operations);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/operations")
+                    .WithVerb(HttpMethod.Post)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task Operations_PerformOperationsAsync_UnitOfMeasure()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var operations = new Operations()
+                {
+                    IDS = new HashSet<MarketDataETag>() { new MarketDataETag(0, "provaEtag") },
+                    OperationList = new List<OperationParams>() {
+                        new  OperationParams()
+                        {
+                            Params = new OperationUpdateUnitOfMeasure()
+                            {
+                                Value = new UnitOfMeasure()
+                                {
+                                    Value = CommonUnitOfMeasure.MW
+                                }
+                            },
+                            Type = OperationType.UpdateUnitOfMeasure,
                         }
                     }
                 };

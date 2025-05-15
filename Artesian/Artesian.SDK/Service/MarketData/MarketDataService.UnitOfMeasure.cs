@@ -19,7 +19,7 @@ namespace Artesian.SDK.Service
         /// <param name="targetUnitOfMeasure">target unit of measure</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>CheckConversionResults Entity</returns>
-        public Task<CheckConversionResults> CheckConversion(string[] inputUnitOfMeasures, string targetUnitOfMeasure, CancellationToken ctk = default)
+        public Task<CheckConversionResults> CheckConversionAsync(string[] inputUnitOfMeasures, string targetUnitOfMeasure, CancellationToken ctk = default)
         {
             if (inputUnitOfMeasures.Length == 0)
                 throw new ArgumentException("InputUnitOfMeasures has no elements", nameof(inputUnitOfMeasures));
