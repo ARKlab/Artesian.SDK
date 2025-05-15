@@ -123,5 +123,12 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// </summary>
         [Key(18)]
         public decimal? MinimumAcceptanceRatio { get; set; }
+
+        /// <summary>
+        /// PRODOTTO
+        /// </summary>
+        [Key(19)]
+        public string Prodotto { get; set; }
+
     }
 }
