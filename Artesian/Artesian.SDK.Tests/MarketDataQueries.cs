@@ -171,13 +171,13 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var inputUnitOfMeasures = new string[] { CommonUnitOfMeasure.kW, CommonUnitOfMeasure.MW, CommonUnitOfMeasure.s };
+                var inputUnitsOfMeasure = new string[] { CommonUnitOfMeasure.kW, CommonUnitOfMeasure.MW, CommonUnitOfMeasure.s };
                 var targetUnitOfMeasure = CommonUnitOfMeasure.MWh;
 
-                var checkConversionResults = await mds.CheckConversionAsync(inputUnitOfMeasures, targetUnitOfMeasure);
+                var checkConversionResult = await mds.CheckConversionAsync(inputUnitsOfMeasure, targetUnitOfMeasure);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/uom/checkconversion")
-                    .WithQueryParam("inputUnitOfMeasures", inputUnitOfMeasures)
+                    .WithQueryParam("inputUnitsOfMeasure", inputUnitsOfMeasure)
                     .WithQueryParam("targetUnitOfMeasure", targetUnitOfMeasure)
                     .WithVerb(HttpMethod.Get)
                     .Times(1);

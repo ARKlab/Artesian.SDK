@@ -3,25 +3,25 @@
 namespace Artesian.SDK.Dto.UoM
 {
     /// <summary>
-    /// The CheckConversionResults class.
+    /// The CheckConversionResult class.
     ///             TargetUnitOfMeasure = the target unit of measure
-    ///             ConvertibleInputUnitOfMeasure = list of convertible input unit of measure
-    ///             NotConvertibleInputUnitOfMeasure = list of not convertible input unit of measure
+    ///             ConvertibleInputUnitsOfMeasure = list of convertible input units of measure
+    ///             NotConvertibleInputUnitsOfMeasure = list of not convertible input units of measure
     /// </summary>
-    public record CheckConversionResults
+    public record CheckConversionResult
     {
         /// <summary>
-        /// CheckConversionResults Constructor
+        /// CheckConversionResult Constructor
         /// </summary>
-        public CheckConversionResults()
+        public CheckConversionResult()
         {
         }
 
         /// <summary>
-        /// CheckConversionResults Constructor
+        /// CheckConversionResult Constructor
         /// </summary>
         /// <param name="targetUnitOfMeasure"></param>
-        public CheckConversionResults(string targetUnitOfMeasure)
+        public CheckConversionResult(string targetUnitOfMeasure)
         {
             TargetUnitOfMeasure = targetUnitOfMeasure;
         }
@@ -32,8 +32,8 @@ namespace Artesian.SDK.Dto.UoM
         /// <param name="inputUnitOfMeasure"></param>
         public void AddConvertibleInputUnitOfMeasure(string inputUnitOfMeasure)
         {
-            if (!ConvertibleInputUnitOfMeasure.Contains(inputUnitOfMeasure))
-                ConvertibleInputUnitOfMeasure.Add(inputUnitOfMeasure);
+            if (!ConvertibleInputUnitsOfMeasure.Contains(inputUnitOfMeasure))
+                ConvertibleInputUnitsOfMeasure.Add(inputUnitOfMeasure);
         }
 
         /// <summary>
@@ -42,8 +42,8 @@ namespace Artesian.SDK.Dto.UoM
         /// <param name="inputUnitOfMeasure"></param>
         public void AddNotConvertibleInputUnitOfMeasure(string inputUnitOfMeasure)
         {
-            if (!NotConvertibleInputUnitOfMeasures.Contains(inputUnitOfMeasure))
-                NotConvertibleInputUnitOfMeasures.Add(inputUnitOfMeasure);
+            if (!NotConvertibleInputUnitsOfMeasure.Contains(inputUnitOfMeasure))
+                NotConvertibleInputUnitsOfMeasure.Add(inputUnitOfMeasure);
         }
 
         /// <summary>
@@ -51,12 +51,12 @@ namespace Artesian.SDK.Dto.UoM
         /// </summary>
         public string TargetUnitOfMeasure { get; set; }
         /// <summary>
-        /// ConvertibleInputUnitOfMeasure
+        /// ConvertibleInputUnitsOfMeasure
         /// </summary>
-        public List<string> ConvertibleInputUnitOfMeasure { get; set; } = new List<string>();
+        public List<string> ConvertibleInputUnitsOfMeasure { get; set; } = new List<string>();
         /// <summary>
-        /// NotConvertibleInputUnitOfMeasures
+        /// NotConvertibleInputUnitsOfMeasure
         /// </summary>
-        public List<string> NotConvertibleInputUnitOfMeasures { get; set; } = new List<string>();
+        public List<string> NotConvertibleInputUnitsOfMeasure { get; set; } = new List<string>();
     }
 }

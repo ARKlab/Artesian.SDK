@@ -1,4 +1,4 @@
-![image](./ark-dark.png)
+﻿![image](./ark-dark.png)
 
 # Artesian.SDK
 
@@ -312,27 +312,121 @@ Period Range
  .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
 ```
  
-### UnitOfMeasure conversion for Actual and Versioned Time Series
+### Unit of Measure Conversion Functionality
 
-In Actual and Versioned Time Series query, can be specified the UnitOfMeasure using the `InUnitOfMeasure` method. When the UnitOfMeasure parameter is given, will be applied the conversion
-from the UnitOfMeasure of the MarketData set in registration to the one specified. The conversion is done always before the aggregation.
+### Overview
+The unit of measure conversion functionality allows users to request a conversion of units for Market Data that was registered using a different unit. This feature is supported only for Actual and Versioned Time Series.
+Supported units are defined in the CommonUnitOfMeasure object and conform to ISO/IEC 80000 (i.e., `kW`, `MW`, `kWh`, `MWh`, `m`, `km`, `day`, `min`, `h`, `s`, `mo`, `yr`).
+Additional supported units include **currency codes** in 3-letter format as per ISO 4217:2015 (e.g., `EUR`, `USD`, `JPY`). These are not part of CommonUnitOfMeasure and must be specified as regular strings.
+Units of measure can also be **composite**, using the {a}/{b} syntax, where both {a} and {b} are either units from CommonUnitOfMeasure or ISO 4217 currency codes.
 
+### Conversion Logic
+Unit conversion is based on the assumption that each unit of measure can be decomposed into a **"BaseDimension"**, which represents a polynomial of base SI units (`m`, `s`, `kg`, etc.) and currencies (`EUR`, `USD`, etc.).
+A unit of measure is represented as a value in BaseDimension UnitOdMeasure.
+Example:
+10 `Wh` = 10 `kg·m²·s⁻³`
+Conversion is allowed when the BaseDimensions **match exactly**, i.e., the same set of base units raised to the same exponents.
+In Artesian, units that differ **only** in the **time dimension** are also potentially convertible, as the time dimension can be inferred from the data’s time interval.
+
+### Example: Power to Energy Conversion
+Converting `W` to `Wh`:
+•	`W` → BaseDimension: `k·m²·s⁻³`
+•	`Wh` → BaseDimension: `kg·m²·s⁻²`
+•	`1 h = 3600 s`
+**Conversion Steps:**
+10 W = 10 kg·m²/s³
+1 h = 3600 s
+10 kg·m²/s³ × 3600 s = 36000 kg·m²/s² = 10 Wh
+
+### MarketData Registration with UnitOfMeasure
+The UnitOfMeasure is defined during registration:
 ```csharp
- .InUnitOfMeasure("kWh")
+var marketDataEntity = new MarketDataEntity.Input {
+    ProviderName = "TestProviderName",
+    MarketDataName = "TestMarketDataName",
+    OriginalGranularity = Granularity.Day,
+    OriginalTimezone = "CET",
+    AggregationRule = AggregationRule.SumAndDivide,
+    Type = MarketDataType.ActualTimeSerie,
+    MarketDataId = 1,
+    UnitOfMeasure = CommonUnitOfMeasure.kW
+};
+
+await marketData.Register(marketDataEntity);
 ```
 
-A `CommontUnitOfMeasure` object contains the common supported UnitOfMeasure as part of ISO/IEC 80000 (kW, MW, kWh, MWh, m, km, day, min, h, s, mo, yr).
-Others UnitOfMeasure supported are the currency 3 digit representation from ISO 4217:2015 (EUR, USD, JPY).
-The UnitOfMeasure con also be composed by {a}/{b} where a and b are the UnitOfMeasure supported by the `CommontUnitOfMeasure` object or currency ISO 4217:2015.
+### UnitOfMeasure Conversion and Aggregation Rule Override
+In the QueryService, there are two supported methods related to unit of measure handling during extraction:
+1. UnitOfMeasure Conversion
+2. Aggregation Rule Override
 
-### AggregationRule override on query for Actual and Versioned Time Series
-
-In Actual and Versioned Time Series query, can be done overrided the AggregationRule parameter using the `WithAggregationRule` method.
-In case the AggregationRule parameter is not given, it is used the default one set in the MarketData's registration. The aggregation is done always after the unit of measure conversion.
-
-```csharp
- .WithAggregationRule(AggregationRule.SumAndDivide)
+ ### UnitOfMeasure Conversion
+To convert a UnitOfMeasure during data extraction, use the `.InUnitOfMeasure()` method. This function converts the data from the unit defined at MarketData registration to the target unit you specify in the query.
+```csharp 
+var actualTimeSeries = await qs.CreateActual()
+    .ForMarketData(new[] { 100000001 })
+    .InGranularity(Granularity.Day)
+    .InUnitOfMeasure(CommonUnitOfMeasure.MW)
+    .InAbsoluteDateRange(new LocalDate(2024,08,01), new LocalDate(2024,08,10))
+    .ExecuteAsync();
 ```
+By default, the aggregation rule used during extraction is the one defined at registration. However, you can override it if needed. The conversion is always applied before aggregation.
+
+### Aggregation Rule Override
+AggregationRule can be overrided using the `.WithAggregationRule()` method in QueryService.
+```csharp
+var actualTimeSeries = await qs.CreateActual()
+    .ForMarketData(new[] { 100000001 })
+    .InGranularity(Granularity.Day)
+    .WithAggregationRule(AggregationRule.AverageAndReplicate)
+    .InAbsoluteDateRange(new LocalDate(2024,08,01), new LocalDate(2024,08,10))
+    .ExecuteAsync();
+```
+
+Sometimes, especially when converting from a **consumption unit** (e.g., `MWh`) to a **power unit** (e.g., `MW`), the registered aggregation rule (e.g., `SumAndDivide`) may not make sense for the new unit.
+
+If you **don’t override the aggregation rule**, the conversion may produce **invalid or misleading results**.
+
+### Example: Convert energy (`MWh`) to power (`MW`):
+```csharp
+var actualTimeSeries = await qs.CreateActual()
+    .ForMarketData(new[] { 100000001 })
+    .InGranularity(Granularity.Day)
+    .InUnitOfMeasure(CommonUnitOfMeasure.MWh)
+    .WithAggregationRule(AggregationRule.AverageAndReplicate)
+    .InAbsoluteDateRange(new LocalDate(2024,08,01), new LocalDate(2024,08,10))
+    .ExecuteAsync();
+```
+
+ ### Composite Unit Example: `MWh/day`
+```csharp 
+var actualTimeSeries = await qs.CreateActual()
+    .ForMarketData(new[] { 100000001 })
+    .InGranularity(Granularity.Day)
+    .InUnitOfMeasure(CommonUnitOfMeasure.MWh / CommonUnitOfMeasure.day)
+    .WithAggregationRule(AggregationRule.AverageAndReplicate)
+    .InAbsoluteDateRange(new LocalDate(2024,08,01), new LocalDate(2024,08,10))
+    .ExecuteAsync();
+```
+
+### CheckConversion: Validate Unit Compatibility
+Use the `CheckConversion` method to verify whether a list of input units can be converted into a specifified target unit:
+```csharp
+var inputUnits = new[] {
+    CommonUnitOfMeasure.MW,
+    CommonUnitOfMeasure.s,
+    CommonUnitOfMeasure.kW / CommonUnitOfMeasure.s
+};
+
+var outputUnit = CommonUnitOfMeasure.kW;
+
+var checkResults = marketDataService.CheckConversion(inputUnits, outputUnit);
+```
+**Returned Object: CheckConversionResult**
+1. TargetUnitOfMeasure: "`kW`"
+2. ConvertibleInputUnitsOfMeasure: [ "`MW`", "`kW/s`" ]
+3. NotConvertibleInputUnitsOfMeasure: [ "`s`" ]
+
 
 ### Filler Strategy
 
@@ -449,25 +543,6 @@ marketData.UpdateDerivedConfiguration(derivedCfgUpdate);
 ```
 
 Using `Write mode` to edit MarketData and `Save` to save the data of the current MarketData providing an instant. Can be used `Delete` specifying a range to delete a specific range of the time serie.
-
-
-### CheckConversion verify UnitOfMeasure compatibility
-
-MarketData Service provides a method called CheckConversion, which allows you to check whether a list of input units of measure can be converted info a specified target unit of measure.
-
-```csharp
-var inputUnitOfMeasureToCheck = new string[]{ "MW", "s", "kW/s"}.ToArray();
-var outputUnitOfMeasure = "kW";
-
-var checkResults = marketDataService.CheckConversion(inputUnitOfMeasureToCheck, outputUnitOfMeasure);
- ```
-
- Output:
- The method will return a CheckConversionResults object containing the results of the conversion check.
-
-TargetUnitOfMeasure = the unit of measure you're converting to.
-ConvertibleInputUnitOfMeasure = a list of input units that can be successfully converted to the target unit.
-NotConvertibleInputUnitOfMeasure = a list of input units that cannot be converted to the target unit.
 
 ### Actual Time Series
 

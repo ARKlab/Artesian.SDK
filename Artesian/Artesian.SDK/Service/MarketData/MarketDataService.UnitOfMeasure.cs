@@ -13,22 +13,25 @@ namespace Artesian.SDK.Service
     public partial class MarketDataService : IMarketDataService
     {
         /// <summary>
-        /// Check the conversion between the input unit of measures and the target unit of measure
+        /// Check the conversion between the input units of measure and the target unit of measure
         /// </summary>
-        /// <param name="inputUnitOfMeasures">Input unit of measures</param>
+        /// <param name="inputUnitsOfMeasure">Input units of measure</param>
         /// <param name="targetUnitOfMeasure">target unit of measure</param>
         /// <param name="ctk">CancellationToken</param>
-        /// <returns>CheckConversionResults Entity</returns>
-        public Task<CheckConversionResults> CheckConversionAsync(string[] inputUnitOfMeasures, string targetUnitOfMeasure, CancellationToken ctk = default)
+        /// <returns>The CheckConversionResult class.
+        ///             TargetUnitOfMeasure = the target unit of measure
+        ///             ConvertibleInputUnitsOfMeasure = list of convertible input units of measure
+        ///             NotConvertibleInputUnitsOfMeasure = list of not convertible input units of measure</returns>
+        public Task<CheckConversionResult> CheckConversionAsync(string[] inputUnitsOfMeasure, string targetUnitOfMeasure, CancellationToken ctk = default)
         {
-            if (inputUnitOfMeasures.Length == 0)
-                throw new ArgumentException("InputUnitOfMeasures has no elements", nameof(inputUnitOfMeasures));
+            if (inputUnitsOfMeasure.Length == 0)
+                throw new ArgumentException("InputUnitsOfMeasure has no elements", nameof(inputUnitsOfMeasure));
 
             var url = "/uom/checkconversion"
-                .SetQueryParam("inputUnitOfMeasures", inputUnitOfMeasures)
+                .SetQueryParam("inputUnitsOfMeasure", inputUnitsOfMeasure)
                 .SetQueryParam("targetUnitOfMeasure", targetUnitOfMeasure);
 
-            return _client.Exec<CheckConversionResults>(HttpMethod.Get, url, ctk: ctk);
+            return _client.Exec<CheckConversionResult>(HttpMethod.Get, url, ctk: ctk);
         }
     }
 }
