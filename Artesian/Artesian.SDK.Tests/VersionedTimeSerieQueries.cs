@@ -6,6 +6,7 @@ using Flurl.Http.Testing;
 using Artesian.SDK.Dto;
 using System.Net.Http;
 using NodaTime;
+using Artesian.SDK.Common;
 
 namespace Artesian.SDK.Tests
 {
@@ -2575,6 +2576,54 @@ namespace Artesian.SDK.Tests
                    .WithQueryParam("filterId", 1)
                    .WithVerb(HttpMethod.Get)
                    //.WithHeader
+                   .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task VerWithAggregationRule_FilterId()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var qs = new QueryService(_cfg);
+
+                var ver = await qs.CreateVersioned()
+                        .ForFilterId(1)
+                        .InGranularity(Granularity.Day)
+                        .ForLastOfMonths(Period.FromMonths(-4))
+                        .InRelativeInterval(RelativeInterval.RollingMonth)
+                        .WithAggregationRule(AggregationRule.SumAndDivide)
+                        .ExecuteAsync();
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/RollingMonth")
+                   .WithQueryParam("filterId", 1)
+                   .WithQueryParam("aggregationRule", AggregationRule.SumAndDivide)
+                   .WithVerb(HttpMethod.Get)
+                   .WithHeadersTest()
+                   .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task VerInUnitOfMeasure_FilterId()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var qs = new QueryService(_cfg);
+
+                var ver = await qs.CreateVersioned()
+                        .ForFilterId(1)
+                        .InGranularity(Granularity.Day)
+                        .ForLastOfMonths(Period.FromMonths(-4))
+                        .InRelativeInterval(RelativeInterval.RollingMonth)
+                        .InUnitOfMeasure(CommonUnitOfMeasure.kWh)
+                        .ExecuteAsync();
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/vts/LastOfMonths/P-4M/Day/RollingMonth")
+                   .WithQueryParam("filterId", 1)
+                   .WithQueryParam("unitOfMeasure", CommonUnitOfMeasure.kWh)
+                   .WithVerb(HttpMethod.Get)
+                   .WithHeadersTest()
                    .Times(1);
             }
         }
