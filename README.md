@@ -393,7 +393,7 @@ Sometimes, especially when converting from a **consumption unit** (e.g., `MWh`) 
 
 If you **don’t override the aggregation rule**, the conversion may produce **invalid or misleading results**.
 
-### Example: Convert energy (`MWh`) to power (`MW`):
+### Example: Convert power (`MW`) to energy (`MWh`):
 ```csharp
 var actualTimeSeries = await qs.CreateActual()
     .ForMarketData(new[] { 100000001 })
