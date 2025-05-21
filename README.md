@@ -317,6 +317,12 @@ Period Range
 ### Overview
 The unit of measure conversion functionality allows users to request a conversion of units for Market Data that was registered using a different unit. This feature is supported only for Actual and Versioned Time Series.
 Supported units are defined in the CommonUnitOfMeasure object and conform to ISO/IEC 80000 (i.e., `kW`, `MW`, `kWh`, `MWh`, `m`, `km`, `day`, `min`, `h`, `s`, `mo`, `yr`).
+
+Note: Duration-based units are interpreted with the following fixed assumptions:
+`1 day = 24 hours`
+`1 mo = 30 days`
+`1 yr = 365 days`
+
 Additional supported units include **currency codes** in 3-letter format as per ISO 4217:2015 (e.g., `EUR`, `USD`, `JPY`). These are not part of CommonUnitOfMeasure and must be specified as regular strings.
 Units of measure can also be **composite**, using the {a}/{b} syntax, where both {a} and {b} are either units from CommonUnitOfMeasure or ISO 4217 currency codes.
 
