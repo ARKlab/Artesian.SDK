@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.UoM;
 using Artesian.SDK.Service;
 
 using Flurl.Http.Testing;
@@ -87,7 +89,8 @@ namespace Artesian.SDK.Tests
                     OriginalGranularity = Granularity.Day,
                     OriginalTimezone = "CET",
                     AggregationRule = AggregationRule.Undefined,
-                    Type = MarketDataType.VersionedTimeSerie
+                    Type = MarketDataType.VersionedTimeSerie,
+                    UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
                 };
 
                 var mdq = await mds.RegisterMarketDataAsync(marketDataEntity);
@@ -157,6 +160,26 @@ namespace Artesian.SDK.Tests
                     .WithVerb(HttpMethod.Put)
                     .WithContentType("application/x.msgpacklz4")
                     .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_CheckConversionAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var inputUnitsOfMeasure = new string[] { CommonUnitOfMeasure.kW, CommonUnitOfMeasure.MW, CommonUnitOfMeasure.s };
+                var targetUnitOfMeasure = CommonUnitOfMeasure.MWh;
+
+                var checkConversionResult = await mds.CheckConversionAsync(inputUnitsOfMeasure, targetUnitOfMeasure);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/uom/checkconversion")
+                    .WithQueryParam("inputUnitsOfMeasure", inputUnitsOfMeasure)
+                    .WithQueryParam("targetUnitOfMeasure", targetUnitOfMeasure)
+                    .WithVerb(HttpMethod.Get)
                     .Times(1);
             }
         }
@@ -323,6 +346,39 @@ namespace Artesian.SDK.Tests
                                 Value = "CET"
                             },
                             Type = OperationType.UpdateOriginalTimeZone,
+                        }
+                    }
+                };
+
+                var mdq = await mds.PerformOperationsAsync(operations);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/operations")
+                    .WithVerb(HttpMethod.Post)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task Operations_PerformOperationsAsync_UnitOfMeasure()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var operations = new Operations()
+                {
+                    IDS = new HashSet<MarketDataETag>() { new MarketDataETag(0, "provaEtag") },
+                    OperationList = new List<OperationParams>() {
+                        new  OperationParams()
+                        {
+                            Params = new OperationUpdateUnitOfMeasure()
+                            {
+                                Value = new UnitOfMeasure()
+                                {
+                                    Value = CommonUnitOfMeasure.MW
+                                }
+                            },
+                            Type = OperationType.UpdateUnitOfMeasure,
                         }
                     }
                 };
