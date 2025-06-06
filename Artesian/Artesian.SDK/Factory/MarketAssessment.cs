@@ -123,7 +123,32 @@ namespace Artesian.SDK.Factory
         /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
         /// <param name="ctk">The Cancellation Token</param>
         /// <returns></returns>
-        public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, CancellationToken ctk = default)
+        public async Task Save(Instant downloadedAt, bool deferCommandExecution, bool deferDataGeneration, bool keepNulls, CancellationToken ctk = default) =>
+                await _save(downloadedAt, deferCommandExecution, deferDataGeneration, keepNulls, null, ctk).ConfigureAwait(false);
+
+        /// <summary>
+        /// MarketData Save
+        /// </summary>
+        /// <remarks>
+        /// Save the Data of the current MarketData
+        /// </remarks>
+        /// <param name="downloadedAt">Downloaded at</param>
+        /// <param name="deferCommandExecution">DeferCommandExecution</param>
+        /// <param name="deferDataGeneration">DeferDataGeneration</param>
+        /// <param name="keepNulls">if <see langword="false"/> nulls are ignored (server-side). That is the default behaviour.</param>
+        /// <param name="upsertMode">Upsert Mode</param>
+        /// <param name="ctk">The Cancellation Token</param>
+        /// <returns></returns>
+        public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default) =>
+            await _save(downloadedAt, deferCommandExecution, deferDataGeneration, keepNulls, upsertMode, ctk).ConfigureAwait(false);
+
+        private async Task _save(
+            Instant downloadedAt, 
+            bool deferCommandExecution ,
+            bool deferDataGeneration,
+            bool keepNulls, 
+            UpsertMode? upsertMode, 
+            CancellationToken ctk)
         {
             if (_values.Count != 0)
             {
@@ -133,7 +158,8 @@ namespace Artesian.SDK.Factory
                     DownloadedAt = downloadedAt,
                     DeferCommandExecution = deferCommandExecution,
                     MarketAssessment = new Dictionary<LocalDateTime, IDictionary<string, MarketAssessmentValue>>(),
-                    KeepNulls = keepNulls
+                    KeepNulls = keepNulls,
+                    UpsertMode = upsertMode
                 };
 
                 foreach (var reportTime in _values.GroupBy(g => g.ReportTime))

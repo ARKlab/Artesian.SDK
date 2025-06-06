@@ -550,7 +550,7 @@ marketData.UpdateDerivedConfiguration(derivedCfgUpdate);
 
 Using `Write mode` to edit MarketData and `Save` to save the data of the current MarketData providing an instant. Can be used `Delete` specifying a range to delete a specific range of the time serie.
 
-### Actual Time Series
+### Update Actual Time Series
 
 `EditActual` starts the write mode for an Actual Time serie. Checks are done to verify registration and MarketDataType to verify it is an Actual Time Serie.
 Using `AddData` to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
@@ -566,6 +566,8 @@ await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime(
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
 ```
 
+The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
+
 To delete the whole range of the Actual Time serie, the `Delete` command can be used without specifying any start and end range.
 
 ```csharp
@@ -574,7 +576,7 @@ var writeMarketData = marketdata.EditActual();
 await writeMarketData.Delete();
 ```
 
-### Versioned Time Series
+### Update Versioned Time Series
 
 `EditVersioned` starts the write mode for a Versioned Time serie. Checks are done to verify registration and MarketDataType to verify it is a Versioned Time Serie.
 Using `AddData` to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
@@ -590,6 +592,8 @@ await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime(
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), version);
 ```
 
+The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
+
 To delete the whole range of the Versioned Time serie, the `Delete` command can be used without specifying any start and end range.
 
 ```csharp
@@ -598,7 +602,7 @@ var writeMarketData = marketdata.EditVersioned(new LocalDateTime(2018, 10, 18, 0
 await writeMarketData.Delete();
 ```
 
-### Market Assessment Time Series
+### Update Market Assessment Time Series
 
 `EditMarketAssessment` starts the write mode for a Market Assessment. Checks are done to verify registration and MarketDataType to verify it is a Market Assessment.
 Using `AddData` to provide a local date time and a MarketAssessmentValue to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
@@ -627,6 +631,7 @@ var product = new List<string>(){"Dec-18"};
 
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
 ```
+The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
 
 To delete the whole range of the Market Assessment Time serie, the `Delete` command can be used without specifying any start and end range.
 
@@ -636,7 +641,7 @@ var writeMarketData = marketdata.EditMarketAssessment();
 await writeMarketData.Delete();
 ```
 
-### Auction Time Series
+### Update Auction Time Series
 
 `EditAuction` starts the write mode for an Auction entity. Checks are done to verify registration and MarketDataType to verify it is an Auction entity.
 Using `AddData` to provide a local date time and Auction bid and offer arrays to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
@@ -656,6 +661,8 @@ await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime(
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
 ```
 
+The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
+
 To delete the whole range of the Auction Time serie, the `Delete` command can be used without specifying any start and end range.
 
 ```csharp
@@ -664,7 +671,7 @@ var writeMarketData = marketdata.EditAuction();
 await writeMarketData.Delete();
 ```
 
-### Bid Ask Time Series
+### Update Bid Ask Time Series
 
 `EditBidAsk` starts the write mode for a Bid Ask. Checks are done to verify registration and MarketDataType to verify it is a Bid Ask.
 Using `AddData` to provide a local date time and a BidAskValue to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
@@ -691,6 +698,8 @@ var product = new List<string>(){"Dec-18"};
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
 ```
 
+The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
+
 To delete the whole range of the Bid Ask Time serie, the `Delete` command can be used without specifying any start and end range.
 
 ```csharp
@@ -698,6 +707,57 @@ var writeMarketData = marketdata.EditBidAsk();
 
 await writeMarketData.Delete();
 ```
+
+### Upsert Mode
+
+Specifies the upsert mode to be used while saving the data. If the upsert mode is not specified then **Merge** is used.
+
+**ActualTimeSeries**
+*Merge* and *Replace* are equivalent to each other each item in the payload is written into the series replacing anything there previously.
+
+[Go to ActualTimeSeries](#update-actual-time-series)
+
+**VersionedTimeSeries**
+*Merge* each datetime in the payload is written into the existing version of the series replacing anything there previously. *Replace* the whole version is replaced with data in the payload.
+
+| DATETIME | EXISTING | PAYLOAD | MERGE | REPALACE |
+|---|---|---|---|---|
+| VERSION NAME | 2025-01-01 | 2025-01-01 | 2025-01-01 | 2025-01-01 |
+| 2025-01-01 |        |        |        |        |
+| 2025-01-02 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-03 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-04 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-05 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-06 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-07 | 999.99 | 222.22 | 222.22 | 222.22 |
+| 2025-01-08 |        | 222.22 | 222.22 | 222.22 |
+| 2025-01-09 |        |        |        |        |
+| 2025-01-10 |        |        |        |        |
+| 2025-01-11 | 999.99 |        | 999.99 |        |
+| 2025-01-12 | 999.99 |        | 999.99 |        |
+| 2025-01-13 | 999.99 |        | 999.99 |        |
+| 2025-01-14 |        |        |        |        |
+| 2025-01-15 |        |        |        |        |
+
+[Go to VersionedTimeSeries](#update-versioned-time-series)
+
+**Auction**
+*Merge* and *Replace* are equivalent the payload effectively replaces the existing data.
+
+[Go to AuctionTimeSeries](#update-auction-time-series)
+
+**MarketAssessment**
+*Merge* payload replaces the existing products data and the other products for the datetime are left untouched.
+*Replace* any existing products for the datetime are erased and the new product in the payload is written.
+
+[Go to MarketAsseeementTimeSeries](#update-market-assessment-time-series)
+
+**BidAsk**
+*Merge* payload replaces the existing products data and the other products for the datetime are left untouched.
+*Replace* any existing products for the datetime are erased and the new product in the payload is written.
+
+[Go to BidAskTimeSeries](#update-bidask-time-series)
+
 
 ## Links
 
