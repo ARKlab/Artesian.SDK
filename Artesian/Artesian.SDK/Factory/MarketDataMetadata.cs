@@ -1,4 +1,5 @@
 ﻿using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.UoM;
 
 using NodaTime;
 
@@ -41,6 +42,10 @@ namespace Artesian.SDK.Factory
         /// The Original Granularity
         /// </summary>
         public Granularity OriginalGranularity => _output.OriginalGranularity;
+        /// <summary>
+        /// The Unit of Measure
+        /// </summary>
+        public UnitOfMeasure UnitOfMeasure => _output.UnitOfMeasure;
         /// <summary>
         /// The Type
         /// </summary>
