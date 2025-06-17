@@ -45,7 +45,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Unit of Measure
         /// </summary>
-        public UnitOfMeasure UnitOfMeasure => _output.UnitOfMeasure;
+        public UnitOfMeasure UnitOfMeasure { get => _output.UnitOfMeasure; set => _output.UnitOfMeasure = value; }
         /// <summary>
         /// The Type
         /// </summary>
