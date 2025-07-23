@@ -355,7 +355,7 @@ var marketDataEntity = new MarketDataEntity.Input {
     AggregationRule = AggregationRule.SumAndDivide,
     Type = MarketDataType.ActualTimeSerie,
     MarketDataId = 1,
-    UnitOfMeasure = CommonUnitOfMeasure.kW
+    UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.kW }
 };
 
 await marketData.Register(marketDataEntity);
