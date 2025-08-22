@@ -20,13 +20,13 @@
 	<PackageReference Include="Flurl.Http.Newtonsoft" Version="0.9.1" />
 	<PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.2.0" />
     <PackageReference Include="MessagePack.NodaTime" Version="3.4.4" />
-    <PackageReference Include="Polly" Version="8.6.1" />
+    <PackageReference Include="Polly" Version="8.6.3" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-	<PackageReference Include="Microsoft.Identity.Client" Version="4.73.1" />
+	<PackageReference Include="Microsoft.Identity.Client" Version="4.76.0" />
   </ItemGroup>
 
 	<ItemGroup Label="Vulnerabilities Overrides">
-		<PackageReference Include="System.Text.Json" Version="8.0.5" />
+		<PackageReference Include="System.Text.Json" Version="8.0.6" />
 	</ItemGroup>
 
 </Project>
