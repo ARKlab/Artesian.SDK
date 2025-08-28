@@ -7,7 +7,6 @@ using Flurl;
 
 using NodaTime;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -19,7 +18,7 @@ namespace Artesian.SDK.Service
     /// <summary>
     /// Market Assessment Query Class
     /// </summary>
-    public class MasQuery : QueryWithFillAndInterval<MasQueryParamaters>, IMasQuery<MasQuery>
+    public sealed class MasQuery : QueryWithFillAndInterval<MasQueryParamaters>, IMasQuery<MasQuery>
     {        
         private readonly string _routePrefix = "mas";
         private readonly Client _client;
