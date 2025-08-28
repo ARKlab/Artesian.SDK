@@ -26,17 +26,17 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// MarketData Identifier
         /// </summary>
-        public MarketDataIdentifier Identifier { get; set; }
+        public MarketDataIdentifier Identifier { get; private set; }
 
         /// <summary>
         /// MarketData Entity
         /// </summary>
-        public MarketDataMetadata Metadata { get; set; }
+        public MarketDataMetadata Metadata { get; private set; }
 
         /// <summary>
         /// DerivedCfg
         /// </summary>
-        public DerivedCfg DerivedCfg { get; set; }
+        public DerivedCfg DerivedCfg { get; private set; }
 
         /// <summary>
         /// MarketData Constructor by Id
