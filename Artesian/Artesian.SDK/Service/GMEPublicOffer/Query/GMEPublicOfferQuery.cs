@@ -15,7 +15,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
     /// <summary>
     /// GME Public Offer Query Class
     /// </summary>
-    public class GMEPublicOfferQuery: IGMEPublicOfferQuery
+    public sealed class GMEPublicOfferQuery: IGMEPublicOfferQuery
     {
         private readonly Client _client;
         private readonly GMEPublicOfferQueryParamaters _queryParamaters = new GMEPublicOfferQueryParamaters();
@@ -223,7 +223,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <summary>
         /// Validate query
         /// </summary>
-        protected void ValidateQuery()
+        public void ValidateQuery()
         {
             if (_queryParamaters.Date == null)
                 throw new ArtesianSdkClientException("Date filter must be provided. Use .ForDate() to set date");
