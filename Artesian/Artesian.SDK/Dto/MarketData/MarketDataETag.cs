@@ -20,7 +20,7 @@ namespace Artesian.SDK.Dto
         {
             //  Ensure.Bool.IsTrue(id >= ArtesianConstants.CurveIDMin, "id out of accepted Range");
             //  Ensure.Bool.IsTrue(id <= ArtesianConstants.CurveIDMax, "id out of accepted Range");
-            if (eTag != null && eTag.Length == 0)
+            if (eTag != null && string.IsNullOrWhiteSpace(eTag))
                 throw new ArgumentException("ETag cannot be empty string", nameof(eTag));
 
             ID = id;
@@ -38,7 +38,7 @@ namespace Artesian.SDK.Dto
         /// The MarketData ETag
         /// </summary>
         [MessagePack.Key(1)]
-        public string? ETag { get; protected set; }
+        public string ETag { get; protected set; }
 
     }
 }

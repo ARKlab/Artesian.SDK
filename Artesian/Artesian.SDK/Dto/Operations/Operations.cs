@@ -50,8 +50,8 @@ namespace Artesian.SDK.Dto
                 if (id == null)
                     throw new ArgumentException("Operations: any single ID must be valorized", nameof(operations));
 
-                if (String.IsNullOrWhiteSpace(id.ETag))
-                    throw new ArgumentException("Operations: any single ETAG must be valorized", nameof(operations));
+                if (id.ETag != null && string.IsNullOrWhiteSpace(id.ETag))
+                    throw new ArgumentException("Operations: ETag cannot be empty string", nameof(operations));
             }
 
             foreach (var op in operations.OperationList)

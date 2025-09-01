@@ -161,7 +161,7 @@ namespace Artesian.SDK.Service
         /// Build extraction range
         /// </summary>
         /// <returns>string</returns>
-        protected string _buildExtractionRangeRoute(QueryWithRangeParamaters queryParamaters)
+        private string _buildExtractionRangeRoute(QueryWithRangeParamaters queryParamaters)
         {
             string subPath;
             switch (queryParamaters.ExtractionRangeType)
