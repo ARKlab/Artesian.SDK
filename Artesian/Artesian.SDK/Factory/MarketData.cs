@@ -13,7 +13,7 @@ namespace Artesian.SDK.Factory
     /// <summary>
     /// Market Data Generic class
     /// </summary>
-    public class MarketData : IMarketData
+    public sealed class MarketData : IMarketData
     {
         internal IMarketDataService _marketDataService;
         internal MarketDataEntity.Output _entity = null;
@@ -26,17 +26,17 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// MarketData Identifier
         /// </summary>
-        public MarketDataIdentifier Identifier { get; protected set; }
+        public MarketDataIdentifier Identifier { get; private set; }
 
         /// <summary>
         /// MarketData Entity
         /// </summary>
-        public MarketDataMetadata Metadata { get; protected set; }
+        public MarketDataMetadata Metadata { get; private set; }
 
         /// <summary>
         /// DerivedCfg
         /// </summary>
-        public DerivedCfg DerivedCfg { get; protected set; }
+        public DerivedCfg DerivedCfg { get; private set; }
 
         /// <summary>
         /// MarketData Constructor by Id

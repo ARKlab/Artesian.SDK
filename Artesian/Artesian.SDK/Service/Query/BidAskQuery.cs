@@ -18,7 +18,7 @@ namespace Artesian.SDK.Service
     /// <summary>
     ///  Bid Ask Query Class
     /// </summary>
-    public class BidAskQuery : QueryWithFillAndInterval<BidAskQueryParamaters>, IBidAskQuery<BidAskQuery>
+    public sealed class BidAskQuery : QueryWithFillAndInterval<BidAskQueryParamaters>, IBidAskQuery<BidAskQuery>
     {        
         private const string _routePrefix = "ba";
         private readonly Client _client;

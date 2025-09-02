@@ -19,7 +19,7 @@ namespace Artesian.SDK.Service
     /// <summary>
     /// Auction Time Serie Query Class
     /// </summary>
-    public class AuctionQuery : QueryWithRange<AuctionQueryParamaters>, IAuctionQuery<AuctionQuery>
+    public sealed class AuctionQuery : QueryWithRange<AuctionQueryParamaters>, IAuctionQuery<AuctionQuery>
     {
         private readonly Client _client;
         private readonly IPartitionStrategy _partition;

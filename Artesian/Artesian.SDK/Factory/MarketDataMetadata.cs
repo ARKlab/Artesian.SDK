@@ -10,7 +10,7 @@ namespace Artesian.SDK.Factory
     /// <summary>
     /// Read Only Class for MarketData Entity
     /// </summary>
-    public class MarketDataMetadata
+    public sealed class MarketDataMetadata
     {
         private readonly MarketDataEntity.Output _output;
 
