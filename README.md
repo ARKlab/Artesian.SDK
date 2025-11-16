@@ -10,8 +10,6 @@ This Library provides read access to the Artesian API
 
 This library is provided in NuGet.
 
-Support for .NET Standard 2.0 and NET 8.
-
 In the Package Manager Console -
 
 ```
