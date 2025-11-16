@@ -26,7 +26,7 @@
   </ItemGroup>
 
 	<ItemGroup Label="Vulnerabilities Overrides">
-		<PackageReference Include="System.Text.Json" Version="8.0.6" />
+		<PackageReference Include="System.Text.Json" Version="10.0.0" />
 	</ItemGroup>
 
 </Project>
