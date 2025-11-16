@@ -13,7 +13,6 @@ using Flurl.Http.Testing;
 using NodaTime;
 
 using NUnit.Framework;
-using NUnit.Framework.Legacy;
 
 namespace Artesian.SDK.Tests
 {
@@ -592,7 +591,7 @@ namespace Artesian.SDK.Tests
                 data.BidAsk[localDateTime].Add("test", new BidAskValue());
 
                 var ex = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
-                ClassicAssert.AreEqual("UpsertCurveData BidAsk must be NULL if Rows are Valorized (Parameter 'upsertCurveData')", ex.Message);
+                Assert.That(ex.Message, Does.StartWith("UpsertCurveData BidAsk must be NULL if Rows are Valorized"));
             }
         }
 
@@ -625,7 +624,7 @@ namespace Artesian.SDK.Tests
                 data.MarketAssessment[localDateTime].Add("test", new MarketAssessmentValue());
 
                 var ex = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
-                ClassicAssert.AreEqual("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized (Parameter 'upsertCurveData')", ex.Message);
+                Assert.That(ex.Message, Does.StartWith("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized"));
             }
         }
         #endregion

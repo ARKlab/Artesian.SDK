@@ -280,7 +280,7 @@ namespace Artesian.SDK.Tests
 
                 //ArtesianSDK-C#: 2.2.1.0,Win32NT: 10.0.19041.0,.NETFramework: 4.6.1
 
-                Assert.That(headerXAgent.Value, Does.Contain("ArtesianSDK-C#:").And.Contain("Win32NT:").And.Contain(".NETCoreApp:"));
+                Assert.That(headerXAgent.Value, Does.Contain("ArtesianSDK-C#:").And.Contain("Win32NT:") & ( Does.Contain(".NETCoreApp:").Or.Contain(".NETFramework") ) );
             }
         }
 

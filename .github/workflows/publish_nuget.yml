@@ -25,7 +25,7 @@ jobs:
         working-directory: ./Artesian
 
     name: 'Build'
-    runs-on: 'windows-latest'
+    runs-on: 'windows-2025'
     steps:
     - name: 'Checkout'
       uses: actions/checkout@v5
@@ -33,6 +33,9 @@ jobs:
     - name: 'Install dotnet'
       uses: actions/setup-dotnet@v5
       with:
+        dotnet-version: | 
+            8.x
+            10.x
         global-json-file: global.json
       
     - name: 'Restore packages'
@@ -42,16 +45,26 @@ jobs:
       run: dotnet build --no-restore --configuration Debug
 
     - name: Test
-      run: dotnet test --no-restore --configuration Debug --logger "trx;LogFileName=test-results.trx" || true
+      run: dotnet test --no-restore --configuration Debug -- --coverage --coverage-output-format cobertura --report-trx
 
     - name: Test Report
       uses: dorny/test-reporter@v1
       if: always()
       with:
         name: DotNET Tests
-        path: "**/test-results.trx"                            
+        path: "**/*.trx"                            
         reporter: dotnet-trx
-        fail-on-error: true  
+        fail-on-error: true 
+
+    - name: Create code coverage report
+      if: always()
+      run: |
+        dotnet tool install -g dotnet-reportgenerator-globaltool
+        reportgenerator -reports:**/*.cobertura.xml -targetdir:CodeCoverage -reporttypes:'MarkdownSummaryGithub;Cobertura'
+
+    - name: Write to Job Summary
+      if: always()
+      run: cat CodeCoverage/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
   deploy:
     defaults:
