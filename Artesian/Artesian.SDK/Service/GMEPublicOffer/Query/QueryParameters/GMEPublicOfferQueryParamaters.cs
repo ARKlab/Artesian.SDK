@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Artesian.SDK.Service.GMEPublicOffer
 {
-    internal record GMEPublicOfferQueryParamaters
+    internal sealed record GMEPublicOfferQueryParamaters
     {
         public LocalDate? Date { get; set; }
         public Purpose? Purpose { get; set; }
