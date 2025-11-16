@@ -48,7 +48,7 @@ jobs:
       run: dotnet test --no-restore --configuration Debug -- --coverage --coverage-output-format cobertura --report-trx
 
     - name: Test Report
-      uses: dorny/test-reporter@v1
+      uses: dorny/test-reporter@v2
       if: always()
       with:
         name: DotNET Tests
