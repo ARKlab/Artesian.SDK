@@ -310,6 +310,56 @@ Period Range
  .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
 ```
  
+
+### GME Public Offer
+
+Artesian supports querying GME Public Offers which come in a custom and dedicated format.
+
+Performance note:
+GME Public Offer data is partitioned by date, offerType, status, and market. Requesting very narrow subsets (for example a single status or offerType in several separate requests) does not improve performance and can cause the same file to be fetched multiple times.
+For this reason:
+	•	Use a large page size so that all data for a given (date, market, filters) is typically returned in a single page.
+	•	Loop over markets explicitly to cover all required markets without redundant fetches.
+
+### Extract GME Public Offer
+            const int PAGE_SIZE = 250000;
+
+            /* your Artesian configuration */;
+
+            var _cfg = new ArtesianServiceConfig(
+            new Uri("https://arkive.artesian.cloud/{TENANT_NAME}/"),
+            your_API_Key);
+
+            var poService = new GMEPublicOfferService(_cfg);
+
+            # List of markets to cover. Extend as needed for your use case.
+            var markets = new Market[]
+            {
+                Market.MGP,
+                # Market.MSD,
+                # Market.MIA1
+            };
+
+
+            var gmePoResults = await poService.CreateRawCurveQuery()
+                .ForDate(new LocalDate(2025, 11, 1))
+                .ForStatus(Status.ACC)
+                .ForPurpose(Purpose.BID)
+                .ForMarket(markets)
+                .WithPagination(1, PAGE_SIZE)
+                .ExecuteAsync();
+
+        Console.WriteLine($"Total offers fetched: {allData.Count}");
+
+        To construct a GME Public Offer Extraction the following must be provided.
+
+<table>
+  <tr><th>GME Public Offer Query</th><th>Description</th></tr>
+  <tr><td>Time Extraction Window</td><td>An extraction time window for data to be queried</td></tr>
+  <tr><td>Status</td><td>Provide a status to query</td></tr>
+  <tr><td>Purpose</td><td>Provide a purpose or set of purposes to query</td></tr>
+</table>
+
 ### Unit of Measure Conversion Functionality
 
 ### Overview
