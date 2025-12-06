@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information.
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 
 using Flurl.Http.Testing;
+
+using MessagePack;
 
 using NodaTime;
 
@@ -140,6 +143,10 @@ namespace Artesian.SDK.Tests
                 });
 
                 Assert.That(ex.Message, Does.Contain("Bad Request"));
+                Assert.That(ex.ProblemDetail, Is.Not.Null);
+                Assert.That(ex.ProblemDetail.Title, Is.EqualTo("Bad Request"));
+                Assert.That(ex.ProblemDetail.Status, Is.EqualTo(400));
+                Assert.That(ex.ProblemDetail.Detail, Is.EqualTo("Invalid request parameters"));
             }
         }
 
@@ -173,6 +180,10 @@ namespace Artesian.SDK.Tests
                 });
 
                 Assert.That(ex.Message, Does.Contain("Conflict"));
+                Assert.That(ex.ProblemDetail, Is.Not.Null);
+                Assert.That(ex.ProblemDetail.Title, Is.EqualTo("Conflict"));
+                Assert.That(ex.ProblemDetail.Status, Is.EqualTo(409));
+                Assert.That(ex.ProblemDetail.Detail, Is.EqualTo("Resource conflict"));
             }
         }
 
@@ -241,7 +252,8 @@ namespace Artesian.SDK.Tests
                 var data = new UpsertCurveData()
                 {
                     ID = new MarketDataIdentifier("test", "testName"),
-                    Timezone = "UTC"
+                    Timezone = "UTC",
+                    DownloadedAt = Instant.FromDateTimeUtc(DateTime.UtcNow)
                 };
 
                 await md.UpsertCurveDataAsync(data).ConfigureAwait(false);
@@ -268,7 +280,7 @@ namespace Artesian.SDK.Tests
                     .InRelativeInterval(RelativeInterval.RollingMonth)
                     .ExecuteAsync().ConfigureAwait(false);
 
-                Assert.That(result, Is.Null);
+                Assert.That(result, Is.Empty);
             }
         }
 
@@ -287,7 +299,93 @@ namespace Artesian.SDK.Tests
                     .InRelativeInterval(RelativeInterval.RollingMonth)
                     .ExecuteAsync().ConfigureAwait(false);
 
-                Assert.That(result, Is.Null);
+                Assert.That(result, Is.Empty);
+            }
+        }
+
+        [Test]
+        public async Task Should_Deserialize_MessagePack_Response()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var testData = new TimeSerieRow.Actual
+                {
+                    TSID = 100000001,
+                    Time = new DateTimeOffset(2023, 1, 1, 0, 0, 0, TimeSpan.Zero),
+                    Value = 42.5
+                };
+
+                // Serialize test data using MessagePack
+                var msgPackBytes = MessagePackSerializer.Serialize(new[] { testData }, MessagePackSerializerOptions.Standard);
+
+                // Use Latin-1 encoding (codepage 28591) to preserve binary data as string
+                var binaryString = System.Text.Encoding.GetEncoding(28591).GetString(msgPackBytes);
+                httpTest.RespondWith(status: 200, body: binaryString, headers: new { ContentType = "application/x-msgpack" });
+
+                var qs = new QueryService(_cfg);
+
+                var result = await qs.CreateActual()
+                    .ForMarketData(new[] { 100000001 })
+                    .InGranularity(Granularity.Day)
+                    .InRelativeInterval(RelativeInterval.RollingMonth)
+                    .ExecuteAsync().ConfigureAwait(false);
+
+                var resultArray = result.ToArray();
+                Assert.That(resultArray, Is.Not.Null);
+                Assert.That(resultArray.Length, Is.EqualTo(1));
+                Assert.That(resultArray[0].Value, Is.EqualTo(42.5));
+                Assert.That(resultArray[0].TSID, Is.EqualTo(100000001));
+            }
+        }
+
+        [Test]
+        public async Task Should_Deserialize_MessagePack_Response_With_Multiple_Rows()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var testData = new[]
+                {
+                    new TimeSerieRow.Actual
+                    {
+                        TSID = 100000001,
+                        Time = new DateTimeOffset(2023, 1, 1, 0, 0, 0, TimeSpan.Zero),
+                        Value = 42.5
+                    },
+                    new TimeSerieRow.Actual
+                    {
+                        TSID = 100000001,
+                        Time = new DateTimeOffset(2023, 1, 2, 0, 0, 0, TimeSpan.Zero),
+                        Value = 43.5
+                    },
+                    new TimeSerieRow.Actual
+                    {
+                        TSID = 100000001,
+                        Time = new DateTimeOffset(2023, 1, 3, 0, 0, 0, TimeSpan.Zero),
+                        Value = 44.5
+                    }
+                };
+
+                // Serialize test data using MessagePack
+                var msgPackBytes = MessagePackSerializer.Serialize(testData, MessagePackSerializerOptions.Standard);
+
+                // Use Latin-1 encoding (codepage 28591) to preserve binary data as string
+                var binaryString = System.Text.Encoding.GetEncoding(28591).GetString(msgPackBytes);
+                httpTest.RespondWith(status: 200, body: binaryString, headers: new { ContentType = "application/x-msgpack" });
+
+                var qs = new QueryService(_cfg);
+
+                var result = await qs.CreateActual()
+                    .ForMarketData(new[] { 100000001 })
+                    .InGranularity(Granularity.Day)
+                    .InRelativeInterval(RelativeInterval.RollingMonth)
+                    .ExecuteAsync().ConfigureAwait(false);
+
+                var resultArray = result.ToArray();
+                Assert.That(resultArray, Is.Not.Null);
+                Assert.That(resultArray.Length, Is.EqualTo(3));
+                Assert.That(resultArray[0].Value, Is.EqualTo(42.5));
+                Assert.That(resultArray[1].Value, Is.EqualTo(43.5));
+                Assert.That(resultArray[2].Value, Is.EqualTo(44.5));
             }
         }
     }
