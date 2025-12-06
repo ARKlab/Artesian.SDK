@@ -145,63 +145,46 @@ namespace Artesian.SDK.Service
                                 var contentType = res.ResponseMessage.Content.Headers.ContentType?.MediaType;
                                 
                                 // Flurl.Http.Testing might set Content-Type as a response header instead of content header
-                                // Try both "Content-Type" and "ContentType" (Flurl might not convert the property name)
+                                // Try multiple variations: "Content-Type", "Content_Type", and "ContentType"
                                 if (string.IsNullOrEmpty(contentType))
                                 {
                                     if (res.ResponseMessage.Headers.TryGetValues("Content-Type", out var ct1Values))
                                     {
                                         contentType = ct1Values.FirstOrDefault()?.Split(';')[0].Trim();
                                     }
-                                    else if (res.ResponseMessage.Headers.TryGetValues("ContentType", out var ct2Values))
+                                    else if (res.ResponseMessage.Headers.TryGetValues("Content_Type", out var ct2Values))
                                     {
                                         contentType = ct2Values.FirstOrDefault()?.Split(';')[0].Trim();
                                     }
+                                    else if (res.ResponseMessage.Headers.TryGetValues("ContentType", out var ct3Values))
+                                    {
+                                        contentType = ct3Values.FirstOrDefault()?.Split(';')[0].Trim();
+                                    }
                                 }
-                                
-                                var baseMediaType = _getBaseMediaType(contentType);
 
-                                // Read response content once to avoid stream consumption issues
-                                var responseBytes = await res.ResponseMessage.Content.ReadAsByteArrayAsync(
-#if NET6_0_OR_GREATER
-                                    ctk
-#endif
-                                ).ConfigureAwait(false);
-
-                                // Try to deserialize as ProblemDetail only if content type is exactly "application/problem+json"
+                                // If content type is exactly "application/problem+json", deserialize directly as ProblemDetail without buffering
+                                // The server guarantees this is a ProblemDetail response, so let any deserialization exceptions bubble up
                                 if (string.Equals(contentType, "application/problem+json", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    try
-                                    {
-                                        using (var stream = new MemoryStream(responseBytes))
-                                        {
-                                            problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(stream, ctk).ConfigureAwait(false);
-                                        }
-                                    }
-                                    catch
-                                    {
-                                        // If deserialization as ProblemDetail fails, fall back to responseText
-                                        responseText = System.Text.Encoding.UTF8.GetString(responseBytes);
-                                    }
-                                }
-                                else if (res.ResponseMessage.StatusCode == HttpStatusCode.BadRequest)
-                                {
-                                    var serializer = _getSerializer(baseMediaType);
-                                    if (serializer != null)
-                                    {
-                                        using (var stream = new MemoryStream(responseBytes))
-                                        {
-                                            var obj = await serializer.DeserializeAsync<object>(stream, ctk).ConfigureAwait(false);
-                                            responseText = _tryDecodeText(obj);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        responseText = System.Text.Encoding.UTF8.GetString(responseBytes);
-                                    }
+                                    var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
+#if NET6_0_OR_GREATER
+                                        ctk
+#endif
+                                    ).ConfigureAwait(false);
+                                    
+                                    problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(stream, ctk).ConfigureAwait(false);
                                 }
                                 else
                                 {
-                                    responseText = System.Text.Encoding.UTF8.GetString(responseBytes);
+                                    // For other error responses, read as text directly (no deserialization needed)
+                                    // Include first 1000 chars in exception details
+                                    var fullText = await res.ResponseMessage.Content.ReadAsStringAsync(
+#if NET6_0_OR_GREATER
+                                        ctk
+#endif
+                                    ).ConfigureAwait(false);
+                                    
+                                    responseText = fullText.Length > 1000 ? fullText.Substring(0, 1000) : fullText;
                                 }
 
                                 var detailMessage = problemDetail?.Detail ?? problemDetail?.Title ?? problemDetail?.Type ?? "Content:" + Environment.NewLine + responseText;
@@ -244,9 +227,13 @@ namespace Artesian.SDK.Service
                                 {
                                     responseContentType = ct1Values.FirstOrDefault()?.Split(';')[0].Trim();
                                 }
-                                else if (res.ResponseMessage.Headers.TryGetValues("ContentType", out var ct2Values))
+                                else if (res.ResponseMessage.Headers.TryGetValues("Content_Type", out var ct2Values))
                                 {
                                     responseContentType = ct2Values.FirstOrDefault()?.Split(';')[0].Trim();
+                                }
+                                else if (res.ResponseMessage.Headers.TryGetValues("ContentType", out var ct3Values))
+                                {
+                                    responseContentType = ct3Values.FirstOrDefault()?.Split(';')[0].Trim();
                                 }
                             }
                             
@@ -323,36 +310,6 @@ namespace Artesian.SDK.Service
                 return null;
 
             return _serializers.FirstOrDefault(s => string.Equals(s.MediaType, baseMediaType, StringComparison.OrdinalIgnoreCase));
-        }
-
-        private static string _tryDecodeText(object responseDeserialized)
-        {
-            switch (responseDeserialized)
-            {
-                case Dictionary<object, object> dc:
-                    {
-                        if (dc.Count > 0)
-                        {
-                            if (dc.ContainsKey("ErrorMessage"))
-                            {
-                                return dc["ErrorMessage"].ToString();
-                            }
-                        }
-                        break;
-                    }
-                case String st:
-                    {
-                        return st;
-                    }
-                case Int32 i:
-                    {
-                        return i.ToString(CultureInfo.InvariantCulture);
-                    }
-                default:
-                    return "Not parsed error message";
-            }
-
-            return null;
         }
 
         public async Task Exec(HttpMethod method, string resource, CancellationToken ctk = default)
