@@ -130,119 +130,124 @@ namespace Artesian.SDK.Service
                         content.Headers.ContentType = new MediaTypeHeaderValue(_lz4msgPackSerializer.MediaType);
                     }
 
-                    using (var res = await _resilienceStrategy.ExecuteAsync(() => req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseHeadersRead, cancellationToken: ctk)).ConfigureAwait(false))
+                    return await _resilienceStrategy.ExecuteAsync(async () =>
                     {
-                        if (res.ResponseMessage.StatusCode == HttpStatusCode.NoContent || res.ResponseMessage.StatusCode == HttpStatusCode.NotFound)
-                            return default;
-
-                        if (!res.ResponseMessage.IsSuccessStatusCode)
+                        using (var res = await req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseHeadersRead, cancellationToken: ctk).ConfigureAwait(false))
                         {
-                            ArtesianSdkProblemDetail problemDetail = null;
-                            string responseText = string.Empty;
+                            if (res.ResponseMessage.StatusCode == HttpStatusCode.NoContent || res.ResponseMessage.StatusCode == HttpStatusCode.NotFound)
+                                return default;
 
-                            if (res.ResponseMessage.Content.Headers.ContentType?.MediaType == "application/problem+json")
+                            if (!res.ResponseMessage.IsSuccessStatusCode)
                             {
-                                var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
+                                ArtesianSdkProblemDetail problemDetail = null;
+                                string responseText = string.Empty;
+
+                                if (res.ResponseMessage.Content.Headers.ContentType?.MediaType == "application/problem+json")
+                                {
+                                    var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
 #if NET6_0_OR_GREATER
-                                    ctk
+                                        ctk
 #endif
-                                ).ConfigureAwait(false);
-                                
-                                try
-                                {
-                                    problemDetail = await _jsonSerializer.DeserializeAsync(typeof(ArtesianSdkProblemDetail), stream, ctk).ConfigureAwait(false) as ArtesianSdkProblemDetail;
-                                }
-                                catch
-                                {
-                                    // If deserialization as ProblemDetail fails, try reading as text
-                                    stream.Position = 0;
-                                    using (var reader = new StreamReader(stream))
+                                    ).ConfigureAwait(false);
+                                    
+                                    try
                                     {
-                                        responseText = await reader.ReadToEndAsync(
+                                        problemDetail = await _jsonSerializer.DeserializeAsync(typeof(ArtesianSdkProblemDetail), stream, ctk).ConfigureAwait(false) as ArtesianSdkProblemDetail;
+                                    }
+                                    catch
+                                    {
+                                        // If deserialization as ProblemDetail fails, try reading as text
+                                        stream.Position = 0;
+                                        using (var reader = new StreamReader(stream))
+                                        {
+                                            responseText = await reader.ReadToEndAsync(
 #if NET6_0_OR_GREATER
-                                            ctk
+                                                ctk
 #endif
-                                        ).ConfigureAwait(false);
+                                            ).ConfigureAwait(false);
+                                        }
                                     }
                                 }
-                            }
-                            else if (res.ResponseMessage.StatusCode == HttpStatusCode.BadRequest)
-                            {
-                                var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
-#if NET6_0_OR_GREATER
-                                    ctk
-#endif
-                                ).ConfigureAwait(false);
-                                
-                                var serializer = _getSerializer(res.ResponseMessage.Content.Headers.ContentType?.MediaType);
-                                if (serializer != null)
+                                else if (res.ResponseMessage.StatusCode == HttpStatusCode.BadRequest)
                                 {
-                                    var obj = await serializer.DeserializeAsync(typeof(object), stream, ctk).ConfigureAwait(false);
-                                    responseText = _tryDecodeText(obj);
+                                    var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
+#if NET6_0_OR_GREATER
+                                        ctk
+#endif
+                                    ).ConfigureAwait(false);
+                                    
+                                    var serializer = _getSerializer(res.ResponseMessage.Content.Headers.ContentType?.MediaType);
+                                    if (serializer != null)
+                                    {
+                                        var obj = await serializer.DeserializeAsync(typeof(object), stream, ctk).ConfigureAwait(false);
+                                        responseText = _tryDecodeText(obj);
+                                    }
+                                    else
+                                    {
+                                        using (var reader = new StreamReader(stream))
+                                        {
+                                            responseText = await reader.ReadToEndAsync(
+#if NET6_0_OR_GREATER
+                                                ctk
+#endif
+                                            ).ConfigureAwait(false);
+                                        }
+                                    }
                                 }
                                 else
                                 {
-                                    using (var reader = new StreamReader(stream))
-                                    {
-                                        responseText = await reader.ReadToEndAsync(
+                                    responseText = await res.ResponseMessage.Content.ReadAsStringAsync(
 #if NET6_0_OR_GREATER
-                                            ctk
+                                        ctk
 #endif
-                                        ).ConfigureAwait(false);
-                                    }
+                                    ).ConfigureAwait(false);
+                                }
+
+                                var detailMessage = problemDetail?.Detail ?? problemDetail?.Title ?? problemDetail?.Type ?? "Content:" + Environment.NewLine + responseText;
+                                var exceptionMessage = $"Failed handling REST call to WebInterface {method} {_url + resource}. Returned status: {res.StatusCode}. {detailMessage}";
+
+                                // Throw appropriate exception based on status code
+                                // 4xx errors should not be retried by the resilience strategy
+                                switch (res.ResponseMessage.StatusCode)
+                                {
+                                    case HttpStatusCode.BadRequest:
+                                        throw new ArtesianSdkValidationException(exceptionMessage, problemDetail);
+                                    case HttpStatusCode.Conflict:
+                                    case HttpStatusCode.PreconditionFailed:
+                                        throw new ArtesianSdkOptimisticConcurrencyException(exceptionMessage, problemDetail);
+                                    case HttpStatusCode.Forbidden:
+                                        throw new ArtesianSdkForbiddenException(exceptionMessage, problemDetail);
+                                    default:
+                                        throw new ArtesianSdkRemoteException(exceptionMessage, problemDetail);
                                 }
                             }
-                            else
-                            {
-                                responseText = await res.ResponseMessage.Content.ReadAsStringAsync(
+
+                            // For successful responses, handle deserialization
+                            var contentLength = res.ResponseMessage.Content.Headers.ContentLength;
+                            if (contentLength == 0)
+                                return default;
+
+                            var responseStream = await res.ResponseMessage.Content.ReadAsStreamAsync(
 #if NET6_0_OR_GREATER
-                                    ctk
+                                ctk
 #endif
-                                ).ConfigureAwait(false);
+                            ).ConfigureAwait(false);
+
+                            // Check if stream is empty
+                            if (responseStream.Length == 0)
+                                return default;
+
+                            var responseSerializer = _getSerializer(res.ResponseMessage.Content.Headers.ContentType?.MediaType);
+                            if (responseSerializer == null)
+                            {
+                                // If we don't have a serializer for this content type, return default for successful responses
+                                // This handles cases like text/plain responses from test mocks
+                                return default;
                             }
 
-                            var detailMessage = problemDetail?.Detail ?? problemDetail?.Title ?? problemDetail?.Type ?? "Content:" + Environment.NewLine + responseText;
-                            var exceptionMessage = $"Failed handling REST call to WebInterface {method} {_url + resource}. Returned status: {res.StatusCode}. {detailMessage}";
-
-                            switch (res.ResponseMessage.StatusCode)
-                            {
-                                case HttpStatusCode.BadRequest:
-                                    throw new ArtesianSdkValidationException(exceptionMessage, problemDetail);
-                                case HttpStatusCode.Conflict:
-                                case HttpStatusCode.PreconditionFailed:
-                                    throw new ArtesianSdkOptimisticConcurrencyException(exceptionMessage, problemDetail);
-                                case HttpStatusCode.Forbidden:
-                                    throw new ArtesianSdkForbiddenException(exceptionMessage, problemDetail);
-                                default:
-                                    throw new ArtesianSdkRemoteException(exceptionMessage, problemDetail);
-                            }
+                            return (TResult)await responseSerializer.DeserializeAsync(typeof(TResult), responseStream, ctk).ConfigureAwait(false);
                         }
-
-                        // For successful responses, handle deserialization
-                        var contentLength = res.ResponseMessage.Content.Headers.ContentLength;
-                        if (contentLength == 0)
-                            return default;
-
-                        var responseStream = await res.ResponseMessage.Content.ReadAsStreamAsync(
-#if NET6_0_OR_GREATER
-                            ctk
-#endif
-                        ).ConfigureAwait(false);
-
-                        // Check if stream is empty
-                        if (responseStream.Length == 0)
-                            return default;
-
-                        var responseSerializer = _getSerializer(res.ResponseMessage.Content.Headers.ContentType?.MediaType);
-                        if (responseSerializer == null)
-                        {
-                            // If we don't have a serializer for this content type, return default for successful responses
-                            // This handles cases like text/plain responses from test mocks
-                            return default;
-                        }
-
-                        return (TResult)await responseSerializer.DeserializeAsync(typeof(TResult), responseStream, ctk).ConfigureAwait(false);
-                    }
+                    }).ConfigureAwait(false);
                 }
                 finally
                 {

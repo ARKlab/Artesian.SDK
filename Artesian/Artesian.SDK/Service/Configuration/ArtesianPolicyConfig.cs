@@ -55,6 +55,15 @@ namespace Artesian.SDK.Service
             _retryPolicy = Policy
                 .Handle<Exception>(x =>
                 {
+                    // Do not retry on 4xx client errors
+                    if (x is ArtesianSdkValidationException ||
+                        x is ArtesianSdkOptimisticConcurrencyException ||
+                        x is ArtesianSdkForbiddenException)
+                    {
+                        return false;
+                    }
+
+                    // Retry on HttpRequestException (network errors, 5xx, etc.)
                     var result = x.InnerException is HttpRequestException;
                     return result;
                 })
