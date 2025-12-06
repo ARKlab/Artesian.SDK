@@ -55,8 +55,27 @@ namespace Artesian.SDK.Service
             _retryPolicy = Policy
                 .Handle<Exception>(x =>
                 {
-                    var result = x.InnerException is HttpRequestException;
-                    return result;
+                    // Check if the exception itself is a non-retriable 4xx client error
+                    if (x is ArtesianSdkValidationException ||
+                        x is ArtesianSdkOptimisticConcurrencyException ||
+                        x is ArtesianSdkForbiddenException)
+                    {
+                        return false;
+                    }
+
+                    // Check if it's an AggregateException
+                    // Don't retry only if ALL inner exceptions are non-retriable 4xx client errors
+                    if (x is AggregateException aggregateException &&
+                        aggregateException.InnerExceptions.All(inner =>
+                            inner is ArtesianSdkValidationException ||
+                            inner is ArtesianSdkOptimisticConcurrencyException ||
+                            inner is ArtesianSdkForbiddenException))
+                    {
+                        return false;
+                    }
+
+                    // Retry all other exceptions
+                    return true;
                 })
                 .WaitAndRetryAsync(
                     DecorrelatedJitterBackoff(TimeSpan.FromMilliseconds(retryWaitTime), TimeSpan.FromSeconds(10), retryCount, fastFirst: true)
