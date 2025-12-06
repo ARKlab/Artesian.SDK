@@ -128,6 +128,92 @@ var result = await qs.CreateActual()
 - Support custom partition strategies (default: `PartitionByIDStrategy`)
 - Allow policy configuration to be optional with sensible defaults
 
+### Commit Message Conventions
+
+This project follows the [Conventional Commits](https://www.conventionalcommits.org/) specification for commit messages. This provides an easy set of rules for creating an explicit commit history and enables automated tooling.
+
+#### Commit Message Format
+
+Each commit message consists of a **header**, an optional **body**, and an optional **footer**:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+The **header** is mandatory and must conform to the format above.
+
+#### Types
+
+Use one of the following types for each commit:
+
+- **feat**: A new feature for the user or a particular subsystem
+- **fix**: A bug fix for the user, not a fix to build scripts
+- **docs**: Documentation only changes (README, XML docs, etc.)
+- **style**: Changes that do not affect the meaning of the code (white-space, formatting, etc.)
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **perf**: A code change that improves performance
+- **test**: Adding missing tests or correcting existing tests
+- **build**: Changes that affect the build system or external dependencies
+- **ci**: Changes to CI configuration files and scripts
+- **chore**: Other changes that don't modify src or test files
+- **revert**: Reverts a previous commit
+
+#### Scope
+
+The scope is optional and should be the name of the affected component or module (e.g., `QueryService`, `MarketData`, `Authentication`, `GMEPublicOffer`).
+
+#### Description
+
+- Use the imperative, present tense: "change" not "changed" nor "changes"
+- Don't capitalize the first letter
+- No period (.) at the end
+- Limit to 72 characters or less
+
+#### Body
+
+The body is optional and should include the motivation for the change and contrast this with previous behavior.
+
+#### Footer
+
+The footer is optional and should contain any information about **Breaking Changes** and reference GitHub issues that this commit closes.
+
+**Breaking Changes** should start with the word `BREAKING CHANGE:` followed by a space or two newlines.
+
+#### Examples
+
+```
+feat(QueryService): add support for auction time series queries
+
+Add new query builder for auction data with support for filtering
+by auction status and time range.
+
+Closes #123
+```
+
+```
+fix(Authentication): handle token refresh race condition
+
+Multiple concurrent requests could cause duplicate token refresh
+attempts. Added locking mechanism to ensure thread-safe refresh.
+```
+
+```
+docs: update API examples in README
+
+Add examples for new versioned time series query methods.
+```
+
+```
+refactor(MarketData)!: change partition strategy interface
+
+BREAKING CHANGE: IPartitionStrategy now requires additional method
+GetPartitionCount(). Existing custom implementations must be updated.
+```
+
 ## Building and Testing
 
 - Build: `dotnet build`
