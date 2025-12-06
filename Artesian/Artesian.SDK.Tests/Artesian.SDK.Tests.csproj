@@ -23,7 +23,7 @@
 	  <!-- important or you will get v2 from dotnet 10 -->
 	  <PackageVersion Include="Microsoft.Testing.Platform" Version="1.9.1" />
 	  <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="1.9.1" />
-	  <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.1.0" />
+	  <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.0.4" />
 	<PackageReference Include="NUnit" Version="4.4.0" />
 	<PackageReference Include="NUnit3TestAdapter" Version="5.2.0" />	  
   </ItemGroup>
