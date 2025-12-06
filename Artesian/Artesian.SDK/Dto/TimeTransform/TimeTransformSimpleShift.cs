@@ -16,17 +16,20 @@ namespace Artesian.SDK.Dto
         /// The Granularity of the Time transform
         /// </summary>
         [Key("Period")]
-        public Granularity Period { get; set; }
+        public Granularity Period { get; set; } = default;
+
         /// <summary>
         /// The Positive Shift
         /// </summary>
         [Key(">")]
-        public string PositiveShift { get; set; }
+        public string PositiveShift { get; set; } = null!;
+
         /// <summary>
         /// The Negative Shift
         /// </summary>
         [Key("<")]
-        public string NegativeShift { get; set; }
+        public string NegativeShift { get; set; } = null!;
+
 
         /// <summary>
         /// The Transform Type

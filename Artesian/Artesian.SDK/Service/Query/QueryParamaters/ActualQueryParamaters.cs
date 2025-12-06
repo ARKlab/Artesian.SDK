@@ -71,11 +71,13 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Derived Configuration
         /// </summary>
-        public DerivedCfgBase DerivedCfgBase { get; set; }
+        public DerivedCfgBase DerivedCfgBase { get; set; } = null!;
+
         /// <summary>
         /// Unit of Measure
         /// </summary>
-        public string UnitOfMeasure { get; set; }
+        public string UnitOfMeasure { get; set; } = null!;
+
         /// <summary>
         /// AggregationRule
         /// </summary>

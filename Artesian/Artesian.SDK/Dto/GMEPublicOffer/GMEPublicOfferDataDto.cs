@@ -14,7 +14,8 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Date
         /// </summary>
         [Key(0)]
-        public LocalDate Date { get; set; }
+        public LocalDate Date { get; set; } = default;
+
 
         /// <summary>
         /// The Hour
@@ -80,37 +81,39 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Transaction Reference
         /// </summary>
         [Key(11)]
-        public string TransactionReference { get; set; }
+        public string TransactionReference { get; set; } = null!;
+
 
         /// <summary>
         /// Grid Supply Point No
         /// </summary>
         [Key(12)]
-        public string GridSupplyPoint { get; set; }
+        public string GridSupplyPoint { get; set; } = null!;
+
 
         /// <summary>
         /// Bilateral
         /// </summary>
         [Key(13)]
-        public bool? Bilateral { get; set; }
+        public bool Bilateral { get; set; } = default;
 
         /// <summary>
         /// SubmittedAt
         /// </summary>
         [Key(14)]
-        public LocalDateTime? SubmittedAt { get; set; }
+        public LocalDateTime SubmittedAt { get; set; } = default;
 
         /// <summary>
         /// Timestamp for Xbid data
         /// </summary>
         [Key(15)]
-        public LocalDateTime? Timestamp { get; set; }
+        public LocalDateTime Timestamp { get; set; } = default;
 
         /// <summary>
         /// PrezzoUnitario for Xbid data
         /// </summary>
         [Key(16)]
-        public decimal? PrezzoUnitario { get; set; }
+        public decimal PrezzoUnitario { get; set; } = default;
 
         /// <summary>
         /// 15 Minute Period In Day
@@ -122,13 +125,14 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// MINIMUM ACCEPTANCE RATIO
         /// </summary>
         [Key(18)]
-        public decimal? MinimumAcceptanceRatio { get; set; }
+        public decimal MinimumAcceptanceRatio { get; set; } = default;
 
         /// <summary>
         /// PRODOTTO
         /// </summary>
         [Key(19)]
-        public string Prodotto { get; set; }
+        public string Prodotto { get; set; } = null!;
+
 
     }
 }

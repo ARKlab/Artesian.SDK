@@ -30,14 +30,16 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public ISet<MarketDataETag> IDS { get; set; }
+        public ISet<MarketDataETag> IDS { get; set; } = null!;
+
 
         /// <summary>
         /// The Operations to be executed
         /// </summary>
         [Required]
         [MessagePack.Key(1)]
-        public IList<OperationParams> OperationList { get; set; }
+        public IList<OperationParams> OperationList { get; set; } = null!;
+
     }
 
 

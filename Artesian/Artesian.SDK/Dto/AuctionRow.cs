@@ -19,14 +19,16 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [JsonProperty(PropertyName = "P")]
         [Key(0)]
-        public virtual string ProviderName { get; set; }
+        public virtual string ProviderName { get; set; } = null!;
+
 
         /// <summary>
         /// Curve Name
         /// </summary>
         [JsonProperty(PropertyName = "N")]
         [Key(1)]
-        public virtual string CurveName { get; set; }
+        public virtual string CurveName { get; set; } = null!;
+
 
         /// <summary>
         /// Market Data ID
@@ -40,14 +42,16 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [JsonProperty(PropertyName = "T")]
         [Key(3)]
-        public virtual DateTimeOffset BidTimestamp { get; set; }
+        public virtual DateTimeOffset BidTimestamp { get; set; } = default;
+
 
         /// <summary>
         /// Side
         /// </summary>
         [JsonProperty(PropertyName = "S")]
         [Key(4)]
-        public virtual AuctionSide Side { get; set; }
+        public virtual AuctionSide Side { get; set; } = default;
+
 
         /// <summary>
         /// The Offer Price

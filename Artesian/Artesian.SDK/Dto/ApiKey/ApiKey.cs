@@ -26,7 +26,8 @@ namespace Artesian.SDK.Dto
             /// The ApiKey ETag
             /// </summary>
             [Key(1)]
-            public string ETag { get; set; }
+            public string ETag { get; set; } = null!;
+
             /// <summary>
             /// The ApiKey UsagePerDay
             /// </summary>
@@ -41,7 +42,8 @@ namespace Artesian.SDK.Dto
             /// Desctiption
             /// </summary>
             [Key(4)]
-            public string Description { get; set; }
+            public string Description { get; set; } = null!;
+
 
         }
 
@@ -60,7 +62,8 @@ namespace Artesian.SDK.Dto
             /// The ApiKey ETag
             /// </summary>
             [Key(1)]
-            public string ETag { get; set; }
+            public string ETag { get; set; } = null!;
+
             /// <summary>
             /// The ApiKey UsagePerDay
             /// </summary>
@@ -75,22 +78,26 @@ namespace Artesian.SDK.Dto
             /// Desctiption
             /// </summary>
             [Key(4)]
-            public string Description { get; set; }
+            public string Description { get; set; } = null!;
+
             /// <summary>
             /// The ApiKey UserId
             /// </summary>
             [Key(5)]
-            public string UserId { get; set; }
+            public string UserId { get; set; } = null!;
+
             /// <summary>
             /// The ApiKey Key
             /// </summary>
             [Key(6)]
-            public string Key { get; set; }
+            public string Key { get; set; } = null!;
+
             /// <summary>
             /// The Creation time of ApiKey
             /// </summary>
             [Key(7)]
-            public Instant CreatedAt { get; set; }
+            public Instant? CreatedAt { get; set; }
+
         }
     }
 

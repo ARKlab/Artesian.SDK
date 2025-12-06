@@ -14,6 +14,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public AggregationRule Value { get; set; }
+        public AggregationRule Value { get; set; } = null!;
+
     }
 }

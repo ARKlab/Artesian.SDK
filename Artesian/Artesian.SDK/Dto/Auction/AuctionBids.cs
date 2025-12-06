@@ -28,18 +28,19 @@ namespace Artesian.SDK.Dto
         [Key(0)]
         public LocalDateTime BidTimestamp { get; set; }
 
+
         /// <summary>
         /// The BID
         /// </summary>
         [Required]
         [Key(1)]
-        public AuctionBidValue[] Bid { get; set; }
+        public AuctionBidValue[] Bid { get; set; } = null!;
 
         /// <summary>
         /// The OFFER
         /// </summary>
         [Required]
         [Key(2)]
-        public AuctionBidValue[] Offer { get; set; }
+        public AuctionBidValue[] Offer { get; set; } = null!;
     }
 }

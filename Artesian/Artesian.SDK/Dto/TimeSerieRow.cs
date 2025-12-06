@@ -23,14 +23,16 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [JsonProperty(PropertyName = "P")]
             [Key(0)]
-            public virtual string ProviderName { get; set; }
+            public virtual string ProviderName { get; set; } = null!;
+
 
             /// <summary>
             /// Curve Name
             /// </summary>
             [JsonProperty(PropertyName = "C")]
             [Key(1)]
-            public virtual string CurveName { get; set; }
+            public virtual string CurveName { get; set; } = null!;
+
 
             /// <summary>
             /// Time serie Identifier
@@ -51,7 +53,8 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [JsonProperty(PropertyName = "T")]
             [Key(4)]
-            public virtual DateTimeOffset Time { get; set; }
+            public virtual DateTimeOffset Time { get; set; } = default;
+
 
             /// <summary>
             /// Time serie Version
@@ -65,14 +68,16 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [JsonProperty(PropertyName = "S")]
             [Key(6)]
-            public virtual DateTimeOffset CompetenceStart { get; set; }
+            public virtual DateTimeOffset CompetenceStart { get; set; } = default;
+
 
             /// <summary>
             /// End of last competence
             /// </summary>
             [JsonProperty(PropertyName = "E")]
             [Key(7)]
-            public virtual DateTimeOffset CompetenceEnd { get; set; }
+            public virtual DateTimeOffset CompetenceEnd { get; set; } = default;
+
         }
 
         /// <summary>
@@ -86,14 +91,16 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [JsonProperty(PropertyName = "P")]
             [Key(0)]
-            public virtual string ProviderName { get; set; }
+            public virtual string ProviderName { get; set; } = null!;
+
 
             /// <summary>
             /// The Curve display name
             /// </summary>
             [JsonProperty(PropertyName = "C")]
             [Key(1)]
-            public virtual string CurveName { get; set; }
+            public virtual string CurveName { get; set; } = null!;
+
 
             /// <summary>
             /// The Market Data ID
@@ -107,7 +114,8 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [JsonProperty(PropertyName = "T")]
             [Key(3)]
-            public virtual DateTimeOffset Time { get; set; }
+            public virtual DateTimeOffset Time { get; set; } = default;
+
 
             /// <summary>
             /// The Value
@@ -120,14 +128,16 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [JsonProperty(PropertyName = "S")]
             [Key(5)]
-            public virtual DateTimeOffset CompetenceStart { get; set; }
+            public virtual DateTimeOffset CompetenceStart { get; set; } = default;
+
 
             /// <summary>
             /// End of last competence
             /// </summary>
             [JsonProperty(PropertyName = "E")]
             [Key(6)]
-            public virtual DateTimeOffset CompetenceEnd { get; set; }
+            public virtual DateTimeOffset CompetenceEnd { get; set; } = default;
+
         }
     }
 }

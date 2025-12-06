@@ -25,17 +25,20 @@ namespace Artesian.SDK.Dto
         /// The Time transform Name
         /// </summary>
         [Key("Name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
+
         /// <summary>
         /// The Time transform Etag
         /// </summary>
         [Key("Etag")]
-        public Guid ETag { get; set; }
+        public Guid ETag { get; set; } = null!;
+
         /// <summary>
         /// The information regarding who defined a time transformation
         /// </summary>
         [Key("DefinedBy")]
-        public TransformDefinitionType DefinedBy { get; set; }
+        public TransformDefinitionType DefinedBy { get; set; } = null!;
+
 
         /// <summary>
         /// The Transform Type

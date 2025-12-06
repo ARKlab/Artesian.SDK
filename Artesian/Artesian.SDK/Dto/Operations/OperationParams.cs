@@ -15,14 +15,16 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key("Type")]
-        public OperationType Type { get; set; }
+        public OperationType Type { get; set; } = null!;
+
 
         /// <summary>
         /// The Operation specific input.
         /// </summary>
         [Required]
         [MessagePack.Key("Params")]
-        public IOperationParamsPayload Params { get; set; }
+        public IOperationParamsPayload Params { get; set; } = null!;
+
     }
 
     /// <summary>

@@ -12,6 +12,7 @@ namespace Artesian.SDK.Dto.UoM
         /// The UnitOfMeasure
         /// </summary>
         [Key("Value")]
-        public string Value { get; set; }
+        public string Value { get; set; } = null!;
+
     }
 }

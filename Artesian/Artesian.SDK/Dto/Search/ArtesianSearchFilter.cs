@@ -18,7 +18,8 @@ namespace Artesian.SDK.Dto
         /// Free search text
         /// </summary>
         [Required]
-        public string SearchText { get; set; }
+        public string SearchText { get; set; } = null!;
+
         /// <summary>
         /// Filter by facet name, facet values
         /// </summary>
@@ -26,7 +27,8 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// sort by field name
         /// </summary>
-        public IList<string> Sorts { get; set; }
+        public IList<string> Sorts { get; set; } = null!;
+
         /// <summary>
         /// page size
         /// </summary>

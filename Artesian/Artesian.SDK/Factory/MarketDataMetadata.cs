@@ -69,7 +69,8 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Authorization Path
         /// </summary>
-        public string Path { get; set; }
+        public string Path { get; set; } = null!;
+
         /// <summary>
         /// The TimeTransform
         /// </summary>

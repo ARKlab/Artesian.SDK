@@ -47,6 +47,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Products
         /// </summary>
-        public IEnumerable<string> Products { get; set; }
+        public IEnumerable<string> Products { get; set; } = null!;
+
     }
 }

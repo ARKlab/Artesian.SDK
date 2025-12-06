@@ -221,15 +221,18 @@ namespace Artesian.SDK.Factory
             /// <summary>
             /// AssessmentElement ReportTime
             /// </summary>
-            public LocalDateTime ReportTime { get; set; }
+            public LocalDateTime ReportTime { get; set; } = default;
+
             /// <summary>
             /// AssessmentElement Product
             /// </summary>
-            public string Product { get; set; }
+            public string Product { get; set; } = null!;
+
             /// <summary>
             /// AssessmentElement MarketAssessmentValue
             /// </summary>
-            public MarketAssessmentValue Value { get; set; }
+            public MarketAssessmentValue Value { get; set; } = null!;
+
         }
     }
 }

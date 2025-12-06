@@ -60,42 +60,49 @@ namespace Artesian.SDK.Dto
             /// The Market Data Etag
             /// </summary>
             [MessagePack.Key(1)]
-            public string ETag { get; set; }
+            public string ETag { get; set; } = null!;
+
             /// <summary>
             /// The Market Data Provider Name
             /// </summary>
             [Required]
             [MessagePack.Key(2)]
-            public string ProviderName { get; set; }
+            public string ProviderName { get; set; } = null!;
+
             /// <summary>
             /// The Market Data Name
             /// </summary>
             [Required]
             [MessagePack.Key(3)]
-            public string MarketDataName { get; set; }
+            public string MarketDataName { get; set; } = null!;
+
             /// <summary>
             /// The Original Granularity
             /// </summary>
             [Required]
             [MessagePack.Key(4)]
-            public Granularity OriginalGranularity { get; set; }
+            public Granularity OriginalGranularity { get; set; } = default;
+
             /// <summary>
             /// The Type
             /// </summary>
             [Required]
             [MessagePack.Key(5)]
-            public MarketDataType Type { get; set; }
+            public MarketDataType Type { get; set; } = null!;
+
             /// <summary>
             /// The Original Timezone
             /// </summary>
             [Required]
             [MessagePack.Key(6)]
-            public string OriginalTimezone { get; set; }
+            public string OriginalTimezone { get; set; } = null!;
+
             /// <summary>
             /// The Aggregation Rule
             /// </summary>
             [MessagePack.Key(7)]
-            public AggregationRule AggregationRule { get; set; }
+            public AggregationRule AggregationRule { get; set; } = null!;
+
             /// <summary>
             /// The TimeTransformID
             /// </summary>
@@ -105,12 +112,14 @@ namespace Artesian.SDK.Dto
             /// The Provider description
             /// </summary>
             [MessagePack.Key(9)]
-            public string ProviderDescription { get; set; }
+            public string ProviderDescription { get; set; } = null!;
+
             /// <summary>
             /// The custom Tags assigned to the data
             /// </summary>
             [MessagePack.Key(10)]
-            public IDictionary<string, List<string>> Tags { get; set; }
+            public IDictionary<string, List<string>> Tags { get; set; } = null!;
+
             /// <summary>
             /// The Authorization Path
             /// </summary>
@@ -207,7 +216,8 @@ namespace Artesian.SDK.Dto
             /// The Last time the metadata has been updated
             /// </summary>
             [MessagePack.Key(12)]
-            public Instant LastUpdated { get; set; }
+            public Instant? LastUpdated { get; set; }
+
             /// <summary>
             /// The Last time the data has been written at
             /// </summary>
@@ -217,17 +227,18 @@ namespace Artesian.SDK.Dto
             /// Start date of range for this curve  
             /// </summary>
             [MessagePack.Key(14)]
-            public LocalDate? DataRangeStart { get; set; }
+            public LocalDate DataRangeStart { get; set; } = default;
             /// <summary>
             /// End date of range for this curve  
             /// </summary>
             [MessagePack.Key(15)]
-            public LocalDate? DataRangeEnd { get; set; }
+            public LocalDate DataRangeEnd { get; set; } = default;
             /// <summary>
             /// The time the market data has been created
             /// </summary>
             [MessagePack.Key(16)]
-            public Instant Created { get; set; }
+            public Instant? Created { get; set; }
+
         }
 
         /// <summary>
@@ -238,7 +249,8 @@ namespace Artesian.SDK.Dto
             /// <summary>
             /// The Curve Ranges
             /// </summary>
-            public IEnumerable<CurveRange> Curves { get; set; }
+            public IEnumerable<CurveRange> Curves { get; set; } = null!;
+
         }
     }
 }

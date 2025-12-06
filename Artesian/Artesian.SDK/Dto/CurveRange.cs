@@ -22,36 +22,41 @@ namespace Artesian.SDK.Dto
         /// The product for MAS
         /// </summary>
         [Key(1)]
-        public string Product { get; set; }
+        public string Product { get; set; } = null!;
+
 
         /// <summary>
         /// The version date for Versioned 
         /// </summary>
         [Key(2)]
-        public LocalDateTime? Version { get; set; }
+        public LocalDateTime Version { get; set; } = default;
 
         /// <summary>
         /// Last Update for this curve
         /// </summary>
         [Key(3)]
-        public Instant LastUpdated { get; set; }
+        public Instant? LastUpdated { get; set; }
+
 
         /// <summary>
         /// Creation date for this curve 
         /// </summary>
         [Key(4)]
-        public Instant Created { get; set; }
+        public Instant? Created { get; set; }
+
 
         /// <summary>
         /// Start date of range for this curve  
         /// </summary>
         [Key(5)]
-        public LocalDate RangeStart { get; set; }
+        public LocalDate RangeStart { get; set; } = default;
+
 
         /// <summary>
         /// End date of range for this curve  
         /// </summary>
         [Key(6)]
-        public LocalDate RangeEnd { get; set; }
+        public LocalDate RangeEnd { get; set; } = default;
+
     }
 }

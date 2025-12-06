@@ -43,40 +43,45 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public MarketDataIdentifier ID { get; set; }
+        public MarketDataIdentifier ID { get; set; } = null!;
+
 
         /// <summary>
         /// The Version to operate on
         /// </summary>
         [MessagePack.Key(1)]
-        public LocalDateTime? Version { get; set; }
+        public LocalDateTime Version { get; set; } = default;
 
         /// <summary>
         /// For DateSeries if provided must be equal to MarketData OrignalTimezone Default:MarketData OrignalTimezone. For TimeSeries Default:CET
         /// </summary>
         [Required]
         [MessagePack.Key(2)]
-        public string Timezone { get; set; }
+        public string Timezone { get; set; } = null!;
+
 
         /// <summary>
         /// Start date of range to be deleted  
         /// </summary>
         [Required]
         [MessagePack.Key(3)]
-        public LocalDateTime RangeStart { get; set; }
+        public LocalDateTime RangeStart { get; set; } = default;
+
 
         /// <summary>
         /// End date of range to be deleted   
         /// </summary>
         [Required]
         [MessagePack.Key(4)]
-        public LocalDateTime RangeEnd { get; set; }
+        public LocalDateTime RangeEnd { get; set; } = default;
+
 
         /// <summary>
         /// The list of Product. Only *, is special character for 'delete all products in the range'
         /// </summary>
         [MessagePack.Key(5)]
-        public IList<string> Product { get; set; }
+        public IList<string> Product { get; set; } = null!;
+
 
         /// <summary>
         /// Flag to choose between synchronous and asynchronous command execution

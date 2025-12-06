@@ -24,12 +24,14 @@ namespace Artesian.SDK.Dto
         /// The Principal Type
         /// </summary>
         [Key(0)]
-        public PrincipalType PrincipalType { get; set; }
+        public PrincipalType PrincipalType { get; set; } = null!;
+
         /// <summary>
         /// The Principal Identifier
         /// </summary>
         [Key(1)]
-        public string PrincipalId { get; set; }
+        public string PrincipalId { get; set; } = null!;
+
 
         /// <summary>
         /// 
@@ -77,17 +79,20 @@ namespace Artesian.SDK.Dto
         /// The Role
         /// </summary>
         [Key(0)]
-        public string Role { get; set; }
+        public string Role { get; set; } = null!;
+
         /// <summary>
         /// The Principal
         /// </summary>
         [Key(1)]
-        public Principal Principal { get; set; }
+        public Principal Principal { get; set; } = null!;
+
         /// <summary>
         /// The information regarding Inheritance
         /// </summary>
         [Key(2)]
-        public string InheritedFrom { get; set; }
+        public string InheritedFrom { get; set; } = null!;
+
 
         /// <summary>
         /// Encode principal Enum

@@ -12,11 +12,13 @@ namespace Artesian.SDK.Dto
         /// The Principals name
         /// </summary>
         [Key("Principal")]
-        public string Principal { get; set; }
+        public string Principal { get; set; } = null!;
+
         /// <summary>
         /// The Principals type
         /// </summary>
         [Key("Type")]
-        public string Type { get; set; }
+        public string Type { get; set; } = null!;
+
     }
 }

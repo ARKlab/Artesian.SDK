@@ -14,55 +14,64 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Purpose
         /// </summary>
         [Key(0)]
-        public Purpose Purpose { get; set; }
+        public Purpose Purpose { get; set; } = default;
+
 
         /// <summary>
         /// The Type
         /// </summary>
         [Key(1)]
-        public Type Type { get; set; }
+        public Type Type { get; set; } = null!;
+
 
         /// <summary>
         /// The Status
         /// </summary>
         [Key(2)]
-        public Status Status { get; set; }
+        public Status Status { get; set; } = default;
+
 
         /// <summary>
         /// The Market
         /// </summary>
         [Key(3)]
-        public Market Market { get; set; }
+        public Market Market { get; set; } = default;
+
 
         /// <summary>
         /// The Unit Type
         /// </summary>
         [Key(4)]
-        public string UnitReference { get; set; }
+        public string UnitReference { get; set; } = null!;
+
 
         /// <summary>
         /// The Zone
         /// </summary>
         [Key(5)]
-        public Zone Zone { get; set; }
+        public Zone Zone { get; set; } = default;
+
 
         /// <summary>
         /// The Operator
         /// </summary>
         [Key(6)]
-        public string Operator { get; set; }
+        public string Operator { get; set; } = null!;
+
 
         /// <summary>
         /// The Scope
         /// </summary>
         [Key(7)]
-        public Scope Scope { get; set; }
+        public Scope Scope { get; set; } = default;
+
 
         /// <summary>
         /// The BAType
         /// </summary>
         [Key(8)]
-        public BAType BAType { get; set; }
+        public BAType BAType { get; set; } = default;
+
 
 
         //--------------------------
@@ -71,7 +80,8 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Data
         /// </summary>
         [Key(10)]
-        public IList<GMEPublicOfferDataDto> Data { get; set; }
+        public IList<GMEPublicOfferDataDto> Data { get; set; } = null!;
+
 
         //---------------------------
 
@@ -81,13 +91,15 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// MARKET_PARTECIPANT_XREF_NO
         /// </summary>
         [Key(11)]
-        public string MARKET_PARTECIPANT_XREF_NO { get; set; }
+        public string MARKET_PARTECIPANT_XREF_NO { get; set; } = null!;
+
 
         /// <summary>
         /// BALANCED_REFERENCE_NO
         /// </summary>
         [Key(12)]
-        public string BALANCED_REFERENCE_NO { get; set; }
+        public string BALANCED_REFERENCE_NO { get; set; } = null!;
+
 
         /// <summary>
         /// CODICE_OFFERTA
@@ -99,31 +111,36 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// STORAGE_SOURCE
         /// </summary>
         [Key(14)]
-        public string STORAGE_SOURCE { get; set; }
+        public string STORAGE_SOURCE { get; set; } = null!;
+
 
         /// <summary>
         /// Filename
         /// </summary>
         [Key(15)]
-        public string Filename { get; set; }
+        public string Filename { get; set; } = null!;
+
 
         /// <summary>
         /// Granularity
         /// </summary>
         [Key(16)]
-        public string Granularity { get; set; }
+        public string Granularity { get; set; } = null!;
+
 
         /// <summary>
         /// Offer Type
         /// </summary>
         [Key(17)]
-        public string OfferType { get; set; }
+        public string OfferType { get; set; } = null!;
+
 
         /// <summary>
         /// Block ID
         /// </summary>
         [Key(18)]
-        public string BlockId { get; set; }
+        public string BlockId { get; set; } = null!;
+
 
         /*
      [GME_PurposeEnum] [PurposeName]      |   [PURPOSE_CD] [nvarchar](10) NOT NULL

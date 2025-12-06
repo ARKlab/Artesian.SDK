@@ -19,22 +19,26 @@ namespace Artesian.SDK.Dto
         /// The CustomFilter Name
         /// </summary>
         [Key(1)]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
+
         /// <summary>
         /// The CustomFilter Search Text
         /// </summary>
         [Key(2)]
-        public string SearchText { get; set; }
+        public string SearchText { get; set; } = null!;
+
         /// <summary>
         /// The CustomFilter values
         /// </summary>
         [Key(3)]
-        public Dictionary<string, List<string>> Filters { get; set; }
+        public Dictionary<string, List<string>> Filters { get; set; } = null!;
+
         /// <summary>
         /// The CustomFilter Etag
         /// </summary>
         [Key(4)]
-        public string ETag { get; set; }
+        public string ETag { get; set; } = null!;
+
     }
 
     internal static class CustomFilterExt

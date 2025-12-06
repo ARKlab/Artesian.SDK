@@ -18,12 +18,14 @@ namespace Artesian.SDK.Dto
             /// The Authorization Path
             /// </summary>
             [Key(0)]
-            public string Path { get; set; }
+            public string Path { get; set; } = null!;
+
             /// <summary>
             /// The Authorization Roles related
             /// </summary>
             [Key(1)]
-            public IEnumerable<AuthorizationPrincipalRole> Roles { get; set; }
+            public IEnumerable<AuthorizationPrincipalRole> Roles { get; set; } = null!;
+
         }
 
         /// <summary>

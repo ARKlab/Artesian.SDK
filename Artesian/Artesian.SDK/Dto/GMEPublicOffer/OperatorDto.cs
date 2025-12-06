@@ -18,6 +18,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Operator
         /// </summary>
         [Key(1)]
-        public string Operator { get; set; }
+        public string Operator { get; set; } = null!;
+
     }
 }

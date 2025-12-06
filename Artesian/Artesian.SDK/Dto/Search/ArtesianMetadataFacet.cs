@@ -16,17 +16,20 @@ namespace Artesian.SDK.Dto
         /// Facet Name
         /// </summary>
         [Key(0)]
-        public string FacetName { get; set; }
+        public string FacetName { get; set; } = null!;
+
         /// <summary>
         /// Facet Type
         /// </summary>
         [Key(1)]
-        public ArtesianMetadataFacetType FacetType { get; set; }
+        public ArtesianMetadataFacetType FacetType { get; set; } = null!;
+
         /// <summary>
         /// Facet Values
         /// </summary>
         [Key(2)]
-        public List<ArtesianMetadataFacetCount> Values { get; set; }
+        public List<ArtesianMetadataFacetCount> Values { get; set; } = null!;
+
     }
 
     /// <summary>
@@ -39,12 +42,13 @@ namespace Artesian.SDK.Dto
         /// Metadata Facet Entity Value
         /// </summary>
         [Key(0)]
-        public string Value { get; set; }
+        public string Value { get; set; } = null!;
+
         /// <summary>
         /// Metadata Facet Entity Count
         /// </summary>
         [Key(1)]
-        public long? Count { get; set; }
+        public long Count { get; set; } = default;
     }
 
     /// <summary>

@@ -37,11 +37,13 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// IDs
         /// </summary>
-        public IEnumerable<int> Ids { get; set; }
+        public IEnumerable<int> Ids { get; set; } = null!;
+
         /// <summary>
         /// Timezone
         /// </summary>
-        public string TimeZone { get; set; }
+        public string TimeZone { get; set; } = null!;
+
         /// <summary>
         /// FilterId
         /// </summary>

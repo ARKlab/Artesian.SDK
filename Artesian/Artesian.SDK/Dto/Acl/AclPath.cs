@@ -13,12 +13,14 @@ namespace Artesian.SDK.Dto
         /// The Acl Path
         /// </summary>
         [Key(0)]
-        public string Path { get; set; }
+        public string Path { get; set; } = null!;
+
         /// <summary>
         /// The AclPath ETag
         /// </summary>
         [Key(1)]
-        public string ETag { get; set; }
+        public string ETag { get; set; } = null!;
+
         /// <summary>
         /// The AclPathRule list
         /// </summary>

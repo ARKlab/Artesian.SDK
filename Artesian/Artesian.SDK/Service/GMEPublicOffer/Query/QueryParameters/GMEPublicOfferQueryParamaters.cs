@@ -10,15 +10,24 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         public Purpose? Purpose { get; set; }
         public Status? Status { get; set; }
 
-        public IEnumerable<string> Operator { get; set; }
-        public IEnumerable<string> Unit { get; set; }
-        public IEnumerable<Market> Market { get; set; }
-        public IEnumerable<Scope> Scope { get; set; }
-        public IEnumerable<BAType> BAType { get; set; }
-        public IEnumerable<Zone> Zone { get; set; }
-        public IEnumerable<UnitType> UnitType { get; set; }
-        public IEnumerable<GenerationType> GenerationType { get; set; }
-        public IEnumerable<string> Sort { get; set; }
+        public IEnumerable<string> Operator { get; set; } = null!;
+
+        public IEnumerable<string> Unit { get; set; } = null!;
+
+        public IEnumerable<Market> Market { get; set; } = null!;
+
+        public IEnumerable<Scope> Scope { get; set; } = null!;
+
+        public IEnumerable<BAType> BAType { get; set; } = null!;
+
+        public IEnumerable<Zone> Zone { get; set; } = null!;
+
+        public IEnumerable<UnitType> UnitType { get; set; } = null!;
+
+        public IEnumerable<GenerationType> GenerationType { get; set; } = null!;
+
+        public IEnumerable<string> Sort { get; set; } = null!;
+
         public int? Page { get; set; }
         public int? PageSize { get; set; }
 

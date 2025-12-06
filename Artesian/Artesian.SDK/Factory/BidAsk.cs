@@ -218,15 +218,18 @@ namespace Artesian.SDK.Factory
             /// <summary>
             /// BidAskElement ReportTime
             /// </summary>
-            public LocalDateTime ReportTime { get; set; }
+            public LocalDateTime ReportTime { get; set; } = default;
+
             /// <summary>
             /// BidAskElement Product
             /// </summary>
-            public string Product { get; set; }
+            public string Product { get; set; } = null!;
+
             /// <summary>
             /// BidAskElement BidAskValue
             /// </summary>
-            public BidAskValue Value { get; set; }
+            public BidAskValue Value { get; set; } = null!;
+
         }
     }
 }

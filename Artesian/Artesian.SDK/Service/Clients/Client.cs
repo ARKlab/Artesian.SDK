@@ -44,7 +44,7 @@ namespace Artesian.SDK.Service
         private readonly string _apiKey;
         private readonly IArtesianServiceConfig _config;
 
-        private readonly IConfidentialClientApplication _confidentialClientApplication;
+        private readonly IConfidentialClientApplication? _confidentialClientApplication;
 
         /// <summary>
         /// Client constructor Auth credentials / ApiKey can be passed through config

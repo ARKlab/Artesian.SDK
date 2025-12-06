@@ -11,7 +11,7 @@ namespace Artesian.SDK.Service
     public class ArtesianSdkRemoteException : Exception
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        public ArtesianSdkProblemDetail ProblemDetail { get; }
+        public ArtesianSdkProblemDetail ProblemDetail { get; } = null!;
 
         public ArtesianSdkRemoteException(string message)
             : base(message)

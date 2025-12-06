@@ -21,11 +21,12 @@ namespace Artesian.SDK.Dto
         /// Facets
         /// </summary>
         [Key(1)]
-        public List<ArtesianMetadataFacet> Facets { get; set; }
+        public List<ArtesianMetadataFacet> Facets { get; set; } = null!;
+
         /// <summary>
         /// Results count
         /// </summary>
         [Key(2)]
-        public long? CountResults { get; set; }
+        public long CountResults { get; set; } = default;
     }
 }
