@@ -182,7 +182,7 @@ namespace Artesian.SDK.Service
 
             var res = await Task.WhenAll(taskList).ConfigureAwait(false);
 
-            return res.SelectMany(x => x);
+            return res.Where(x => x != null).SelectMany(x => x);
         }
 
         #region private
