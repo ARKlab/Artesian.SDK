@@ -63,18 +63,15 @@ namespace Artesian.SDK.Service
                         return false;
                     }
 
-                    // Check if it's an AggregateException containing non-retriable errors
-                    if (x is AggregateException aggregateException)
+                    // Check if it's an AggregateException
+                    // Don't retry only if ALL inner exceptions are non-retriable 4xx client errors
+                    if (x is AggregateException aggregateException &&
+                        aggregateException.InnerExceptions.All(inner =>
+                            inner is ArtesianSdkValidationException ||
+                            inner is ArtesianSdkOptimisticConcurrencyException ||
+                            inner is ArtesianSdkForbiddenException))
                     {
-                        foreach (var inner in aggregateException.InnerExceptions)
-                        {
-                            if (inner is ArtesianSdkValidationException ||
-                                inner is ArtesianSdkOptimisticConcurrencyException ||
-                                inner is ArtesianSdkForbiddenException)
-                            {
-                                return false;
-                            }
-                        }
+                        return false;
                     }
 
                     // Retry all other exceptions
