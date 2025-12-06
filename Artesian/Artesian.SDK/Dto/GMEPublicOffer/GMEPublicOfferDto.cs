@@ -21,7 +21,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Type
         /// </summary>
         [Key(1)]
-        public Type Type { get; set; } = null!;
+        public Type? Type { get; set; }
 
 
         /// <summary>

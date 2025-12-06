@@ -31,13 +31,13 @@ namespace Artesian.SDK.Dto
         /// The Time transform Etag
         /// </summary>
         [Key("Etag")]
-        public Guid ETag { get; set; } = null!;
+        public Guid? ETag { get; set; }
 
         /// <summary>
         /// The information regarding who defined a time transformation
         /// </summary>
         [Key("DefinedBy")]
-        public TransformDefinitionType DefinedBy { get; set; } = null!;
+        public TransformDefinitionType? DefinedBy { get; set; }
 
 
         /// <summary>

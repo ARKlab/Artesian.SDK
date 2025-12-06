@@ -17,7 +17,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Local date time version
         /// </summary>
-        public LocalDateTime Version { get; set; } = null!;
+        public LocalDateTime? Version { get; set; }
 
         /// <summary>
         /// last of version <see cref="LastOfSelectionConfig"/>

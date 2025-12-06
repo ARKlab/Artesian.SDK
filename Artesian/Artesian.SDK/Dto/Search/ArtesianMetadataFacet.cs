@@ -22,7 +22,7 @@ namespace Artesian.SDK.Dto
         /// Facet Type
         /// </summary>
         [Key(1)]
-        public ArtesianMetadataFacetType FacetType { get; set; } = null!;
+        public ArtesianMetadataFacetType? FacetType { get; set; }
 
         /// <summary>
         /// Facet Values

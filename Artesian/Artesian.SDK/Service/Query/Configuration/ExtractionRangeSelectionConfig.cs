@@ -13,12 +13,12 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Start date for Date Range for extraction
         /// </summary>
-        public LocalDate DateStart{ get; set; } = null!;
+        public LocalDate? DateStart{ get; set; }
 
         /// <summary>
         /// End date for Date Range for extraction
         /// </summary>
-        public LocalDate DateEnd { get; set; } = null!;
+        public LocalDate? DateEnd { get; set; }
 
         /// <summary>
         /// Period for extraction
@@ -38,7 +38,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Relative Interval for extraction
         /// </summary>
-        public RelativeInterval Interval { get; set; } = null!;
+        public RelativeInterval? Interval { get; set; }
 
     }
 }

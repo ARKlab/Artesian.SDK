@@ -88,7 +88,7 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [Required]
             [MessagePack.Key(5)]
-            public MarketDataType Type { get; set; } = null!;
+            public MarketDataType? Type { get; set; }
 
             /// <summary>
             /// The Original Timezone
@@ -101,7 +101,7 @@ namespace Artesian.SDK.Dto
             /// The Aggregation Rule
             /// </summary>
             [MessagePack.Key(7)]
-            public AggregationRule AggregationRule { get; set; } = null!;
+            public AggregationRule? AggregationRule { get; set; }
 
             /// <summary>
             /// The TimeTransformID

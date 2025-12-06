@@ -24,7 +24,7 @@ namespace Artesian.SDK.Dto
         /// The Principal Type
         /// </summary>
         [Key(0)]
-        public PrincipalType PrincipalType { get; set; } = null!;
+        public PrincipalType? PrincipalType { get; set; }
 
         /// <summary>
         /// The Principal Identifier

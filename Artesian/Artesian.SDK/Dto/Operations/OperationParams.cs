@@ -15,7 +15,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key("Type")]
-        public OperationType Type { get; set; } = null!;
+        public OperationType? Type { get; set; }
 
 
         /// <summary>
