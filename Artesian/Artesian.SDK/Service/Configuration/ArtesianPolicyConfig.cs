@@ -61,6 +61,14 @@ namespace Artesian.SDK.Service
                              x is ArtesianSdkForbiddenException);
                 })
                 .Or<HttpRequestException>()
+                .OrInner<HttpRequestException>()
+                .OrInner<Exception>(x =>
+                {
+                    // Do not retry on 4xx client errors in inner exceptions
+                    return !(x is ArtesianSdkValidationException ||
+                             x is ArtesianSdkOptimisticConcurrencyException ||
+                             x is ArtesianSdkForbiddenException);
+                })
                 .WaitAndRetryAsync(
                     DecorrelatedJitterBackoff(TimeSpan.FromMilliseconds(retryWaitTime), TimeSpan.FromSeconds(10), retryCount, fastFirst: true)
                 );
