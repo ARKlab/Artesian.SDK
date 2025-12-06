@@ -187,7 +187,25 @@ namespace Artesian.SDK.Service
                                     responseText = fullText.Length > 1000 ? fullText.Substring(0, 1000) : fullText;
                                 }
 
-                                var detailMessage = problemDetail?.Detail ?? problemDetail?.Title ?? problemDetail?.Type ?? "Content:" + Environment.NewLine + responseText;
+                                string detailMessage;
+                                if (problemDetail != null)
+                                {
+                                    // Build message from ProblemDetail fields
+                                    var parts = new List<string>();
+                                    if (!string.IsNullOrEmpty(problemDetail.Title))
+                                        parts.Add(problemDetail.Title);
+                                    if (!string.IsNullOrEmpty(problemDetail.Detail))
+                                        parts.Add(problemDetail.Detail);
+                                    if (parts.Count == 0 && !string.IsNullOrEmpty(problemDetail.Type))
+                                        parts.Add(problemDetail.Type);
+                                    
+                                    detailMessage = parts.Count > 0 ? string.Join(": ", parts) : responseText;
+                                }
+                                else
+                                {
+                                    detailMessage = "Content:" + Environment.NewLine + responseText;
+                                }
+                                
                                 var exceptionMessage = $"Failed handling REST call to WebInterface {method} {_url + resource}. Returned status: {res.StatusCode}. {detailMessage}";
 
                                 // Throw appropriate exception based on status code
