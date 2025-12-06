@@ -20,10 +20,14 @@
 	
   <ItemGroup>
 	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-	  <!-- important or you will get v2 from dotnet 10 -->
-	  <PackageVersion Include="Microsoft.Testing.Platform" Version="1.9.1" />
-	  <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="1.9.1" />
-	  <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.0.4" />
+	  <!-- Upgraded to v2 for compatibility with CodeCoverage 18.1.0 -->
+	  <PackageVersion Include="Microsoft.Testing.Platform" Version="2.0.2" />
+	  <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="2.0.2" />
+	  <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.1.0" />
+	  <!-- Explicitly reference v2 packages to override transitive v1.9.0 from Microsoft.NET.Test.Sdk -->
+	  <PackageReference Include="Microsoft.Testing.Platform.MSBuild" Version="2.0.2" />
+	  <PackageReference Include="Microsoft.Testing.Extensions.VSTestBridge" Version="2.0.2" />
+	  <PackageReference Include="Microsoft.Testing.Extensions.Telemetry" Version="2.0.2" />
 	<PackageReference Include="NUnit" Version="4.4.0" />
 	<PackageReference Include="NUnit3TestAdapter" Version="5.2.0" />	  
   </ItemGroup>
