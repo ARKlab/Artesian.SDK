@@ -56,14 +56,9 @@ namespace Artesian.SDK.Service
                 .Handle<Exception>(x =>
                 {
                     // Do not retry on 4xx client errors
-                    if (x is ArtesianSdkValidationException ||
-                        x is ArtesianSdkOptimisticConcurrencyException ||
-                        x is ArtesianSdkForbiddenException)
-                    {
-                        return false;
-                    }
-
-                    return true;
+                    return !(x is ArtesianSdkValidationException ||
+                             x is ArtesianSdkOptimisticConcurrencyException ||
+                             x is ArtesianSdkForbiddenException);
                 })
                 .Or<HttpRequestException>()
                 .WaitAndRetryAsync(

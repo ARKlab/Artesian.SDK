@@ -236,7 +236,7 @@ namespace Artesian.SDK.Service
                             
                             if (responseSerializer == null)
                             {
-                                throw new ArtesianSdkClientException($"Unsupported content type: {responseContentType}");
+                                throw new ArtesianSdkClientException($"Unsupported content type: {responseContentType}. Supported types are: application/json, application/x-msgpack, application/x.msgpacklz4");
                             }
 
                             return await responseSerializer.DeserializeAsync<TResult>(responseStream, ctk).ConfigureAwait(false);
