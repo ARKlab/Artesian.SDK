@@ -14,7 +14,8 @@ env:
   NUGET_SOURCE_URL: 'https://api.nuget.org/v3/index.json'
 
 permissions:
-  contents: read
+  id-token: write
+  contents: write
   statuses: write
   checks: write
 
@@ -46,6 +47,9 @@ jobs:
 
     - name: Test
       run: dotnet test --no-restore --configuration Debug -- --coverage --coverage-output-format cobertura --report-trx
+
+    - name: Component detection
+      uses: advanced-security/component-detection-dependency-submission-action@v0.1.0
 
     - name: Test Report
       uses: dorny/test-reporter@v1
