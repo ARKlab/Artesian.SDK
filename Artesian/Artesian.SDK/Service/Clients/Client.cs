@@ -125,14 +125,12 @@ namespace Artesian.SDK.Service
                 {
                     if (body != null)
                     {
-                        var bodyStream = new MemoryStream();
-                        await _lz4msgPackSerializer.SerializeAsync(typeof(TBody), body, bodyStream, ctk).ConfigureAwait(false);
-                        bodyStream.Position = 0;
-                        content = new StreamContent(bodyStream);
+                        // Create a custom HttpContent that serializes directly without buffering
+                        content = new SerializerStreamContent(_lz4msgPackSerializer, typeof(TBody), body);
                         content.Headers.ContentType = new MediaTypeHeaderValue(_lz4msgPackSerializer.MediaType);
                     }
 
-                    using (var res = await _resilienceStrategy.ExecuteAsync(() => req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseContentRead, cancellationToken: ctk)).ConfigureAwait(false))
+                    using (var res = await _resilienceStrategy.ExecuteAsync(() => req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseHeadersRead, cancellationToken: ctk)).ConfigureAwait(false))
                     {
                         if (res.ResponseMessage.StatusCode == HttpStatusCode.NoContent || res.ResponseMessage.StatusCode == HttpStatusCode.NotFound)
                             return default;
@@ -142,8 +140,7 @@ namespace Artesian.SDK.Service
                             ArtesianSdkProblemDetail problemDetail = null;
                             string responseText = string.Empty;
 
-                            if (res.ResponseMessage.Content.Headers.ContentType?.MediaType == "application/problem+json" ||
-                                res.ResponseMessage.Content.Headers.ContentType?.MediaType == "application/json")
+                            if (res.ResponseMessage.Content.Headers.ContentType?.MediaType == "application/problem+json")
                             {
                                 var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
 #if NET6_0_OR_GREATER
