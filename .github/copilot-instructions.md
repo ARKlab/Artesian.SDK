@@ -50,7 +50,7 @@ The SDK additionally offers fluent business objects that enhance developer exper
 
 1. **Indentation**: Use 4 spaces, not tabs
 2. **Line Endings**: CRLF (Windows-style)
-3. **Var Usage**: Avoid using `var` - explicitly declare types
+3. **Var Usage**: Prefer `var` for local variables
 4. **Braces**: Always use braces for control flow statements
 5. **New Lines**: Open braces on new lines (Allman style)
 6. **Null Checks**: Use nullable reference types (`#nullable enable`) where appropriate
@@ -180,7 +180,7 @@ The SDK uses semantic versioning (MAJOR.MINOR.PATCH):
 
 ## When Suggesting Code
 
-1. Always use explicit types instead of `var`
+1. Prefer `var` for local variables
 2. Include proper null checks and parameter validation using Guard clauses
 3. Use NodaTime types for dates and times
 4. Follow the established fluent API patterns for query builders and write objects
