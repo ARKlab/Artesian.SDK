@@ -23,21 +23,21 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Determines if this serializer can serialize the specified type
         /// </summary>
-        bool CanSerialize(Type type);
+        bool CanSerialize<T>();
 
         /// <summary>
         /// Determines if this serializer can deserialize the specified type
         /// </summary>
-        bool CanDeserialize(Type type);
+        bool CanDeserialize<T>();
 
         /// <summary>
         /// Serializes an object to a stream
         /// </summary>
-        Task SerializeAsync(Type type, object? value, Stream stream, CancellationToken cancellationToken = default);
+        Task SerializeAsync<T>(T value, Stream stream, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Deserializes an object from a stream
         /// </summary>
-        Task<object?> DeserializeAsync(Type type, Stream stream, CancellationToken cancellationToken = default);
+        Task<T?> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken = default);
     }
 }

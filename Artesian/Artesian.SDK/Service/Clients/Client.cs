@@ -126,7 +126,7 @@ namespace Artesian.SDK.Service
                     if (body != null)
                     {
                         // Create a custom HttpContent that serializes directly without buffering
-                        content = new SerializerStreamContent(_lz4msgPackSerializer, typeof(TBody), body, ctk);
+                        content = new SerializerStreamContent<TBody>(_lz4msgPackSerializer, body, ctk);
                         content.Headers.ContentType = new MediaTypeHeaderValue(_lz4msgPackSerializer.MediaType);
                     }
 
@@ -142,7 +142,11 @@ namespace Artesian.SDK.Service
                                 ArtesianSdkProblemDetail problemDetail = null;
                                 string responseText = string.Empty;
 
-                                if (res.ResponseMessage.Content.Headers.ContentType?.MediaType == "application/problem+json")
+                                var contentType = res.ResponseMessage.Content.Headers.ContentType?.MediaType;
+                                var baseMediaType = _getBaseMediaType(contentType);
+
+                                // Try to deserialize as ProblemDetail if the base media type is JSON
+                                if (baseMediaType == "application/json")
                                 {
                                     var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
 #if NET6_0_OR_GREATER
@@ -152,7 +156,7 @@ namespace Artesian.SDK.Service
                                     
                                     try
                                     {
-                                        problemDetail = await _jsonSerializer.DeserializeAsync(typeof(ArtesianSdkProblemDetail), stream, ctk).ConfigureAwait(false) as ArtesianSdkProblemDetail;
+                                        problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(stream, ctk).ConfigureAwait(false);
                                     }
                                     catch
                                     {
@@ -169,10 +173,10 @@ namespace Artesian.SDK.Service
 #endif
                                     ).ConfigureAwait(false);
                                     
-                                    var serializer = _getSerializer(res.ResponseMessage.Content.Headers.ContentType?.MediaType);
+                                    var serializer = _getSerializer(baseMediaType);
                                     if (serializer != null)
                                     {
-                                        var obj = await serializer.DeserializeAsync(typeof(object), stream, ctk).ConfigureAwait(false);
+                                        var obj = await serializer.DeserializeAsync<object>(stream, ctk).ConfigureAwait(false);
                                         responseText = _tryDecodeText(obj);
                                     }
                                     else
@@ -226,15 +230,16 @@ namespace Artesian.SDK.Service
 #endif
                             ).ConfigureAwait(false);
 
-                            var responseSerializer = _getSerializer(res.ResponseMessage.Content.Headers.ContentType?.MediaType);
+                            var responseContentType = res.ResponseMessage.Content.Headers.ContentType?.MediaType;
+                            var responseBaseMediaType = _getBaseMediaType(responseContentType);
+                            var responseSerializer = _getSerializer(responseBaseMediaType);
+                            
                             if (responseSerializer == null)
                             {
-                                // If we don't have a serializer for this content type, return default for successful responses
-                                // This handles cases like text/plain responses from test mocks
-                                return default;
+                                throw new ArtesianSdkClientException($"Unsupported content type: {responseContentType}");
                             }
 
-                            return (TResult)await responseSerializer.DeserializeAsync(typeof(TResult), responseStream, ctk).ConfigureAwait(false);
+                            return await responseSerializer.DeserializeAsync<TResult>(responseStream, ctk).ConfigureAwait(false);
                         }
                     }).ConfigureAwait(false);
                 }
@@ -253,15 +258,38 @@ namespace Artesian.SDK.Service
             }
         }
 
-        private IContentSerializer _getSerializer(string mediaType)
+        private string _getBaseMediaType(string mediaType)
         {
             if (string.IsNullOrEmpty(mediaType))
                 return null;
 
-            // Normalize media type by removing parameters (e.g., "application/json; charset=utf-8" -> "application/json")
-            var normalizedMediaType = mediaType.Split(';')[0].Trim();
+            // Remove parameters (e.g., "application/json; charset=utf-8" -> "application/json")
+            var semicolonIndex = mediaType.IndexOf(';');
+            var baseType = semicolonIndex >= 0 ? mediaType.Substring(0, semicolonIndex).Trim() : mediaType.Trim();
 
-            return _serializers.FirstOrDefault(s => string.Equals(s.MediaType, normalizedMediaType, StringComparison.OrdinalIgnoreCase));
+            // Remove subtype extensions (e.g., "application/problem+json" -> "application/json")
+            var plusIndex = baseType.IndexOf('+');
+            if (plusIndex >= 0)
+            {
+                var lastPart = baseType.Substring(plusIndex + 1);
+                var slashIndex = baseType.IndexOf('/');
+                if (slashIndex >= 0)
+                {
+#pragma warning disable CA1845 // Use span-based 'string.Concat'
+                    baseType = string.Concat(baseType.Substring(0, slashIndex + 1), lastPart);
+#pragma warning restore CA1845 // Use span-based 'string.Concat'
+                }
+            }
+
+            return baseType;
+        }
+
+        private IContentSerializer _getSerializer(string baseMediaType)
+        {
+            if (string.IsNullOrEmpty(baseMediaType))
+                return null;
+
+            return _serializers.FirstOrDefault(s => string.Equals(s.MediaType, baseMediaType, StringComparison.OrdinalIgnoreCase));
         }
 
         private static string _tryDecodeText(object responseDeserialized)

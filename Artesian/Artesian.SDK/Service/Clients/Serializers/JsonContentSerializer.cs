@@ -35,18 +35,14 @@ namespace Artesian.SDK.Service
         }
 
         /// <inheritdoc/>
-        public bool CanSerialize(Type type) => true;
+        public bool CanSerialize<T>() => true;
 
         /// <inheritdoc/>
-        public bool CanDeserialize(Type type) => true;
+        public bool CanDeserialize<T>() => true;
 
         /// <inheritdoc/>
-        public Task SerializeAsync(Type type, object? value, Stream stream, CancellationToken cancellationToken = default)
+        public Task SerializeAsync<T>(T value, Stream stream, CancellationToken cancellationToken = default)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
             if (stream == null)
             {
                 throw new ArgumentNullException(nameof(stream));
@@ -56,7 +52,7 @@ namespace Artesian.SDK.Service
             using (var writer = new StreamWriter(stream, System.Text.Encoding.UTF8, bufferSize: 1024, leaveOpen: true))
             using (var jsonWriter = new JsonTextWriter(writer))
             {
-                _serializer.Serialize(jsonWriter, value, type);
+                _serializer.Serialize(jsonWriter, value);
             }
 #pragma warning restore MA0042 // Prefer using 'await using'
 
@@ -64,12 +60,8 @@ namespace Artesian.SDK.Service
         }
 
         /// <inheritdoc/>
-        public Task<object?> DeserializeAsync(Type type, Stream stream, CancellationToken cancellationToken = default)
+        public Task<T?> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken = default)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
             if (stream == null)
             {
                 throw new ArgumentNullException(nameof(stream));
@@ -79,7 +71,7 @@ namespace Artesian.SDK.Service
             using (var reader = new StreamReader(stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true))
             using (var jsonReader = new JsonTextReader(reader))
             {
-                var result = _serializer.Deserialize(jsonReader, type);
+                var result = _serializer.Deserialize<T>(jsonReader);
                 return Task.FromResult(result);
             }
 #pragma warning restore MA0042 // Prefer using 'await using'

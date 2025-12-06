@@ -63,10 +63,9 @@ namespace Artesian.SDK.Service
                         return false;
                     }
 
-                    // Retry on HttpRequestException (network errors, 5xx, etc.)
-                    var result = x.InnerException is HttpRequestException;
-                    return result;
+                    return true;
                 })
+                .Or<HttpRequestException>()
                 .WaitAndRetryAsync(
                     DecorrelatedJitterBackoff(TimeSpan.FromMilliseconds(retryWaitTime), TimeSpan.FromSeconds(10), retryCount, fastFirst: true)
                 );

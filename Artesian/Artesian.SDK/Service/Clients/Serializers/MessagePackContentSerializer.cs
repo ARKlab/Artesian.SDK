@@ -36,45 +36,37 @@ namespace Artesian.SDK.Service
         }
 
         /// <inheritdoc/>
-        public bool CanSerialize(Type type)
+        public bool CanSerialize<T>()
         {
-            return _options.Resolver.GetFormatterDynamic(type) != null;
+            return _options.Resolver.GetFormatterDynamic(typeof(T)) != null;
         }
 
         /// <inheritdoc/>
-        public bool CanDeserialize(Type type)
+        public bool CanDeserialize<T>()
         {
-            return _options.Resolver.GetFormatterDynamic(type) != null;
+            return _options.Resolver.GetFormatterDynamic(typeof(T)) != null;
         }
 
         /// <inheritdoc/>
-        public Task SerializeAsync(Type type, object? value, Stream stream, CancellationToken cancellationToken = default)
+        public Task SerializeAsync<T>(T value, Stream stream, CancellationToken cancellationToken = default)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
             if (stream == null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            return MessagePackSerializer.SerializeAsync(type, stream, value, _options, cancellationToken);
+            return MessagePackSerializer.SerializeAsync(stream, value, _options, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<object?> DeserializeAsync(Type type, Stream stream, CancellationToken cancellationToken = default)
+        public async Task<T?> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken = default)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
             if (stream == null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            return await MessagePackSerializer.DeserializeAsync(type, stream, _options, cancellationToken).ConfigureAwait(false);
+            return await MessagePackSerializer.DeserializeAsync<T>(stream, _options, cancellationToken).ConfigureAwait(false);
         }
     }
 }
