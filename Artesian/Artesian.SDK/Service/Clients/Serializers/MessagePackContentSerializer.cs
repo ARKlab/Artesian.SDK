@@ -29,12 +29,10 @@ namespace Artesian.SDK.Service
         {
             if (resolver == null)
             {
-                _options = MessagePackSerializer.DefaultOptions;
+                throw new ArgumentNullException(nameof(resolver));
             }
-            else
-            {
-                _options = MessagePackSerializer.DefaultOptions.WithResolver(resolver);
-            }
+
+            _options = MessagePackSerializer.DefaultOptions.WithResolver(resolver);
         }
 
         /// <inheritdoc/>

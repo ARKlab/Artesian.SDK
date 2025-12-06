@@ -18,6 +18,7 @@ namespace Artesian.SDK.Service
         private readonly IContentSerializer _serializer;
         private readonly Type _type;
         private readonly object _value;
+        private readonly CancellationToken _cancellationToken;
 
         /// <summary>
         /// Initializes a new instance of SerializerStreamContent
@@ -25,16 +26,18 @@ namespace Artesian.SDK.Service
         /// <param name="serializer">The content serializer to use</param>
         /// <param name="type">The type of the value to serialize</param>
         /// <param name="value">The value to serialize</param>
-        public SerializerStreamContent(IContentSerializer serializer, Type type, object value)
+        /// <param name="cancellationToken">Cancellation token for the serialization</param>
+        public SerializerStreamContent(IContentSerializer serializer, Type type, object value, CancellationToken cancellationToken = default)
         {
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             _type = type ?? throw new ArgumentNullException(nameof(type));
             _value = value;
+            _cancellationToken = cancellationToken;
         }
 
         protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
         {
-            await _serializer.SerializeAsync(_type, _value, stream, CancellationToken.None).ConfigureAwait(false);
+            await _serializer.SerializeAsync(_type, _value, stream, _cancellationToken).ConfigureAwait(false);
         }
 
         protected override bool TryComputeLength(out long length)

@@ -126,7 +126,7 @@ namespace Artesian.SDK.Service
                     if (body != null)
                     {
                         // Create a custom HttpContent that serializes directly without buffering
-                        content = new SerializerStreamContent(_lz4msgPackSerializer, typeof(TBody), body);
+                        content = new SerializerStreamContent(_lz4msgPackSerializer, typeof(TBody), body, ctk);
                         content.Headers.ContentType = new MediaTypeHeaderValue(_lz4msgPackSerializer.MediaType);
                     }
 
@@ -156,16 +156,9 @@ namespace Artesian.SDK.Service
                                     }
                                     catch
                                     {
-                                        // If deserialization as ProblemDetail fails, try reading as text
-                                        stream.Position = 0;
-                                        using (var reader = new StreamReader(stream))
-                                        {
-                                            responseText = await reader.ReadToEndAsync(
-#if NET6_0_OR_GREATER
-                                                ctk
-#endif
-                                            ).ConfigureAwait(false);
-                                        }
+                                        // If deserialization as ProblemDetail fails, the stream is already consumed
+                                        // We cannot reread it, so just leave responseText empty
+                                        // The error message will use the exception detail instead
                                     }
                                 }
                                 else if (res.ResponseMessage.StatusCode == HttpStatusCode.BadRequest)
@@ -224,7 +217,7 @@ namespace Artesian.SDK.Service
 
                             // For successful responses, handle deserialization
                             var contentLength = res.ResponseMessage.Content.Headers.ContentLength;
-                            if (contentLength == 0)
+                            if (contentLength.HasValue && contentLength.Value == 0)
                                 return default;
 
                             var responseStream = await res.ResponseMessage.Content.ReadAsStreamAsync(
@@ -232,10 +225,6 @@ namespace Artesian.SDK.Service
                                 ctk
 #endif
                             ).ConfigureAwait(false);
-
-                            // Check if stream is empty
-                            if (responseStream.Length == 0)
-                                return default;
 
                             var responseSerializer = _getSerializer(res.ResponseMessage.Content.Headers.ContentType?.MediaType);
                             if (responseSerializer == null)
