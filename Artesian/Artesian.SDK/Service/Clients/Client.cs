@@ -252,6 +252,10 @@ namespace Artesian.SDK.Service
             {
                 throw;
             }
+            catch (ArtesianSdkClientException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 throw new ArtesianSdkClientException($"Failed handling REST call to WebInterface: {method} " + _url + resource, e);

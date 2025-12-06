@@ -55,19 +55,30 @@ namespace Artesian.SDK.Service
             _retryPolicy = Policy
                 .Handle<Exception>(x =>
                 {
-                    // Do not retry on 4xx client errors
-                    return !(x is ArtesianSdkValidationException ||
-                             x is ArtesianSdkOptimisticConcurrencyException ||
-                             x is ArtesianSdkForbiddenException);
-                })
-                .Or<HttpRequestException>()
-                .OrInner<HttpRequestException>()
-                .OrInner<Exception>(x =>
-                {
-                    // Do not retry on 4xx client errors in inner exceptions
-                    return !(x is ArtesianSdkValidationException ||
-                             x is ArtesianSdkOptimisticConcurrencyException ||
-                             x is ArtesianSdkForbiddenException);
+                    // Check if the exception itself is a non-retriable 4xx client error
+                    if (x is ArtesianSdkValidationException ||
+                        x is ArtesianSdkOptimisticConcurrencyException ||
+                        x is ArtesianSdkForbiddenException)
+                    {
+                        return false;
+                    }
+
+                    // Check if it's an AggregateException containing non-retriable errors
+                    if (x is AggregateException aggregateException)
+                    {
+                        foreach (var inner in aggregateException.InnerExceptions)
+                        {
+                            if (inner is ArtesianSdkValidationException ||
+                                inner is ArtesianSdkOptimisticConcurrencyException ||
+                                inner is ArtesianSdkForbiddenException)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                    // Retry all other exceptions
+                    return true;
                 })
                 .WaitAndRetryAsync(
                     DecorrelatedJitterBackoff(TimeSpan.FromMilliseconds(retryWaitTime), TimeSpan.FromSeconds(10), retryCount, fastFirst: true)
