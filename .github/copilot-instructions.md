@@ -2,7 +2,37 @@
 
 ## Project Overview
 
-Artesian.SDK is a .NET library that provides read access to the Artesian API for querying time series data including market data, assessments, and auction information. This is a multi-framework library targeting net10.0, net8.0, netstandard2.1, netstandard2.0, and net462.
+Artesian.SDK is a .NET library that provides a client SDK for the Artesian API. The SDK represents the Artesian OpenAPI services 1:1 while additionally offering fluent business objects and query builders to enhance developer experience (DX) for core areas like reading and writing market data time series. This is a multi-framework library targeting net10.0, net8.0, netstandard2.1, netstandard2.0, and net462.
+
+## Architecture
+
+### Services (1:1 Mapping to Artesian OpenAPI)
+
+The SDK has services that represent 1:1 the OpenAPI services exposed by Artesian. Their names end in "Service":
+
+- **MarketDataService**: Manages market data metadata and write operations
+  - OpenAPI spec: https://arkive.artesian.cloud/ArkDemo/swagger/docs/v2.1
+- **QueryService**: Handles querying time series data
+  - OpenAPI spec: https://arkive.artesian.cloud/ArkDemo/query/swagger/docs/v1.0
+- **GMEPublicOfferService**: Manages GME public offer data
+  - OpenAPI spec: https://arkive.artesian.cloud/ArkDemo/gmepublicoffer/swagger/docs/v2.0
+
+**Service Responsibilities**:
+- Manage client connection including serialization/deserialization (serde)
+- Handle authentication (API-Key and OAuth Client Credentials)
+- Manage error handling
+- Implement retry policies, circuit breakers, and bulkhead isolation using Polly
+
+### Fluent Business Objects (Enhanced DX)
+
+The SDK additionally offers fluent business objects that enhance developer experience by:
+- Helping create complex request payloads correctly
+- Providing client-side validations
+- Offering intuitive APIs for common operations
+
+**Key Fluent Objects**:
+- **Query Builders**: Fluent APIs for building queries (Actual, Versioned, Market Assessment, Auction)
+- **Write Data Objects**: Fluent APIs for writing time series data (ActualTimeSerie, VersionedTimeSerie, MarketAssessment, Auction, BidAsk)
 
 ## Key Technologies & Dependencies
 
@@ -86,9 +116,11 @@ var result = await qs.CreateActual()
 
 ### XML Documentation
 
+- **All public methods and DTOs must be well documented** by mimicking the OpenAPI specifications
 - Add XML documentation comments for public APIs
 - Use `#pragma warning disable CS1591` to suppress missing documentation warnings for internal enum values when appropriate
 - Document parameters, return values, and exceptions
+- Ensure documentation is comprehensive and matches the OpenAPI specs
 
 ### Dependency Injection & Service Creation
 
@@ -101,23 +133,66 @@ var result = await qs.CreateActual()
 - Build: `dotnet build`
 - Test: `dotnet test`
 - The project uses Directory.Build.props for shared MSBuild properties
+- **All code paths must be tested** - comprehensive test coverage is required
+
+## Versioning and API Compatibility
+
+### API Version Strategy
+
+- **SDK always uses the latest version of Artesian APIs**
+- Services must stay in sync with the latest OpenAPI specifications
+
+### Semantic Versioning
+
+The SDK uses semantic versioning (MAJOR.MINOR.PATCH):
+
+- **MAJOR**: Breaking changes
+  - Changes that cause existing client code to break at compile time
+  - Upgrading to a major version of the Artesian service API
+- **MINOR**: Non-breaking API changes
+  - Changes that require recompilation but no client code changes
+  - Can change API in ways that still allow client code to compile cleanly
+  - May change interface methods as long as client code compiles due to new extensions or defaults
+  - Clients are not expected to provide their own implementations of interfaces
+- **PATCH**: Assembly-identical changes
+  - Can be upgraded without requiring recompilation
+  - Bug fixes and internal improvements only
+
+### API Design Guidelines
+
+- **Be thoughtful in avoiding unneeded API breakage**
+- **Prefer extension methods for new overloads in MINOR versions** to avoid growing interfaces
+- Changing interface methods is acceptable in MINOR versions as long as:
+  - Client code still compiles cleanly
+  - New extensions or default parameters maintain compatibility
+- Remember: clients don't implement SDK interfaces, so interface changes are less breaking than in typical library design
 
 ## Important Notes
 
-1. This SDK focuses on **read access** to the Artesian API
-2. Market data is queried through different time series types: Actual, Versioned, Market Assessment, and Auction
-3. Queries require Market Data IDs and time extraction windows (absolute or relative intervals)
-4. The library supports multi-framework targeting - ensure code is compatible across all target frameworks
-5. Use Polly policies for resilience: retry, circuit breaker, and bulkhead patterns
-6. Partition strategies control how requests are batched/grouped
+1. The SDK provides both **read and write access** to the Artesian API with focus on excellent DX for core time series operations
+2. Services (MarketDataService, QueryService, GMEPublicOfferService) are 1:1 representations of Artesian OpenAPI services
+3. Market data is queried through different time series types: Actual, Versioned, Market Assessment, Auction, and BidAsk
+4. Queries require Market Data IDs and time extraction windows (absolute or relative intervals)
+5. Write operations use fluent objects (ActualTimeSerie, VersionedTimeSerie, etc.) for enhanced developer experience
+6. The library supports multi-framework targeting - ensure code is compatible across all target frameworks
+7. Use Polly policies for resilience: retry, circuit breaker, and bulkhead patterns
+8. Partition strategies control how requests are batched/grouped
 
 ## When Suggesting Code
 
 1. Always use explicit types instead of `var`
-2. Include proper null checks and parameter validation
+2. Include proper null checks and parameter validation using Guard clauses
 3. Use NodaTime types for dates and times
-4. Follow the established fluent API patterns for query builders
-5. Add appropriate XML documentation for public APIs
+4. Follow the established fluent API patterns for query builders and write objects
+5. **Add comprehensive XML documentation for all public APIs** by mimicking OpenAPI specifications
 6. Ensure compatibility with all target frameworks
 7. Use async/await consistently for I/O operations
 8. Follow the existing project structure and organization patterns
+9. **Ensure all code paths are tested** with appropriate NUnit tests
+10. When adding new features:
+    - Consider versioning impact (MAJOR vs MINOR vs PATCH)
+    - Prefer extension methods for new overloads in MINOR versions
+    - Avoid unnecessary API breakage
+    - Maintain 1:1 mapping with Artesian OpenAPI services
+11. Services should handle client connections, serialization, authentication, and error handling
+12. Use fluent objects to enhance developer experience for complex operations
