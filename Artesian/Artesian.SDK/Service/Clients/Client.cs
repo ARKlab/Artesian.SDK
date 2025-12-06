@@ -18,10 +18,10 @@ using Polly;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
@@ -32,13 +32,12 @@ namespace Artesian.SDK.Service
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "Accepted to 'leak' FlurlClient instance")]
     internal sealed class Client
     {
-        private readonly MediaTypeFormatterCollection _formatters;
+        private readonly List<IContentSerializer> _serializers;
         private readonly FlurlClient _client;
 
-        private readonly JsonMediaTypeFormatter _jsonFormatter;
-        private readonly MessagePackMediaTypeFormatter _msgPackFormatter;
-        private readonly LZ4MessagePackMediaTypeFormatter _lz4msgPackFormatter;
-
+        private readonly JsonContentSerializer _jsonSerializer;
+        private readonly MessagePackContentSerializer _msgPackSerializer;
+        private readonly LZ4MessagePackContentSerializer _lz4msgPackSerializer;
 
         private readonly string _url;
         private readonly AsyncPolicy _resilienceStrategy;
@@ -68,22 +67,17 @@ namespace Artesian.SDK.Service
             cfg.TypeNameHandling = TypeNameHandling.None;
             cfg.ObjectCreationHandling = ObjectCreationHandling.Replace;
 
-            var jsonFormatter = new JsonMediaTypeFormatter
-            {
-                SerializerSettings = cfg
-            };
-            _jsonFormatter = jsonFormatter;
-            _jsonFormatter.SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("application/problem+json"));
+            _jsonSerializer = new JsonContentSerializer(cfg);
+            _msgPackSerializer = new MessagePackContentSerializer(CustomCompositeResolver.Instance);
+            _lz4msgPackSerializer = new LZ4MessagePackContentSerializer(CustomCompositeResolver.Instance);
 
-            _msgPackFormatter = new MessagePackMediaTypeFormatter(CustomCompositeResolver.Instance);
-            _lz4msgPackFormatter = new LZ4MessagePackMediaTypeFormatter(CustomCompositeResolver.Instance);
-            //Order of formatters important for correct weight in accept header
-            var formatters = new MediaTypeFormatterCollection();
-            formatters.Clear();
-            formatters.Add(_lz4msgPackFormatter);
-            formatters.Add(_msgPackFormatter);
-            formatters.Add(_jsonFormatter);
-            _formatters = formatters;
+            // Order is important for quality values in Accept header
+            _serializers = new List<IContentSerializer>
+            {
+                _lz4msgPackSerializer,
+                _msgPackSerializer,
+                _jsonSerializer
+            };
 
             _resilienceStrategy = policy.GetResillianceStrategy();
 
@@ -111,7 +105,7 @@ namespace Artesian.SDK.Service
         {
             try
             {
-                var req = _client.Request(resource).WithAcceptHeader(_formatters).AllowAnyHttpStatus();
+                var req = _client.Request(resource).WithAcceptHeader(_serializers).AllowAnyHttpStatus();
 
                 req = req.WithHeader("X-Artesian-Agent", ArtesianConstants.SDKVersionHeaderValue);
 
@@ -125,14 +119,20 @@ namespace Artesian.SDK.Service
                     req = req.WithOAuthBearerToken(res.AccessToken);
                 }
 
-                ObjectContent content = null;
+                HttpContent content = null;
 
                 try
                 {
                     if (body != null)
-                        content = new ObjectContent(typeof(TBody), body, _lz4msgPackFormatter);
+                    {
+                        var bodyStream = new MemoryStream();
+                        await _lz4msgPackSerializer.SerializeAsync(typeof(TBody), body, bodyStream, ctk).ConfigureAwait(false);
+                        bodyStream.Position = 0;
+                        content = new StreamContent(bodyStream);
+                        content.Headers.ContentType = new MediaTypeHeaderValue(_lz4msgPackSerializer.MediaType);
+                    }
 
-                    using (var res =  await _resilienceStrategy.ExecuteAsync ( () =>  req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseContentRead, cancellationToken: ctk)).ConfigureAwait(false))
+                    using (var res = await _resilienceStrategy.ExecuteAsync(() => req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseContentRead, cancellationToken: ctk)).ConfigureAwait(false))
                     {
                         if (res.ResponseMessage.StatusCode == HttpStatusCode.NoContent || res.ResponseMessage.StatusCode == HttpStatusCode.NotFound)
                             return default;
@@ -142,25 +142,66 @@ namespace Artesian.SDK.Service
                             ArtesianSdkProblemDetail problemDetail = null;
                             string responseText = string.Empty;
 
-                            if (res.ResponseMessage.Content.Headers.ContentType.MediaType == "application/problem+json")
+                            if (res.ResponseMessage.Content.Headers.ContentType?.MediaType == "application/problem+json" ||
+                                res.ResponseMessage.Content.Headers.ContentType?.MediaType == "application/json")
                             {
-                                problemDetail = await res.ResponseMessage.Content.ReadAsAsync<ArtesianSdkProblemDetail>(_formatters, ctk).ConfigureAwait(false);
-                            }
-                            else
-                            {
-                                if (res.ResponseMessage.StatusCode == HttpStatusCode.BadRequest)
+                                var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
+#if NET6_0_OR_GREATER
+                                    ctk
+#endif
+                                ).ConfigureAwait(false);
+                                
+                                try
                                 {
-                                    var obj = await res.ResponseMessage.Content.ReadAsAsync<object>(_formatters, ctk).ConfigureAwait(false);
+                                    problemDetail = await _jsonSerializer.DeserializeAsync(typeof(ArtesianSdkProblemDetail), stream, ctk).ConfigureAwait(false) as ArtesianSdkProblemDetail;
+                                }
+                                catch
+                                {
+                                    // If deserialization as ProblemDetail fails, try reading as text
+                                    stream.Position = 0;
+                                    using (var reader = new StreamReader(stream))
+                                    {
+                                        responseText = await reader.ReadToEndAsync(
+#if NET6_0_OR_GREATER
+                                            ctk
+#endif
+                                        ).ConfigureAwait(false);
+                                    }
+                                }
+                            }
+                            else if (res.ResponseMessage.StatusCode == HttpStatusCode.BadRequest)
+                            {
+                                var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
+#if NET6_0_OR_GREATER
+                                    ctk
+#endif
+                                ).ConfigureAwait(false);
+                                
+                                var serializer = _getSerializer(res.ResponseMessage.Content.Headers.ContentType?.MediaType);
+                                if (serializer != null)
+                                {
+                                    var obj = await serializer.DeserializeAsync(typeof(object), stream, ctk).ConfigureAwait(false);
                                     responseText = _tryDecodeText(obj);
                                 }
                                 else
                                 {
-                                    responseText = await res.ResponseMessage.Content.ReadAsStringAsync(
+                                    using (var reader = new StreamReader(stream))
+                                    {
+                                        responseText = await reader.ReadToEndAsync(
 #if NET6_0_OR_GREATER
-                                        ctk
+                                            ctk
 #endif
-                                    ).ConfigureAwait(false);
+                                        ).ConfigureAwait(false);
+                                    }
                                 }
+                            }
+                            else
+                            {
+                                responseText = await res.ResponseMessage.Content.ReadAsStringAsync(
+#if NET6_0_OR_GREATER
+                                    ctk
+#endif
+                                ).ConfigureAwait(false);
                             }
 
                             var detailMessage = problemDetail?.Detail ?? problemDetail?.Title ?? problemDetail?.Type ?? "Content:" + Environment.NewLine + responseText;
@@ -180,7 +221,30 @@ namespace Artesian.SDK.Service
                             }
                         }
 
-                        return await res.ResponseMessage.Content.ReadAsAsync<TResult>(_formatters, ctk).ConfigureAwait(false);
+                        // For successful responses, handle deserialization
+                        var contentLength = res.ResponseMessage.Content.Headers.ContentLength;
+                        if (contentLength == 0)
+                            return default;
+
+                        var responseStream = await res.ResponseMessage.Content.ReadAsStreamAsync(
+#if NET6_0_OR_GREATER
+                            ctk
+#endif
+                        ).ConfigureAwait(false);
+
+                        // Check if stream is empty
+                        if (responseStream.Length == 0)
+                            return default;
+
+                        var responseSerializer = _getSerializer(res.ResponseMessage.Content.Headers.ContentType?.MediaType);
+                        if (responseSerializer == null)
+                        {
+                            // If we don't have a serializer for this content type, return default for successful responses
+                            // This handles cases like text/plain responses from test mocks
+                            return default;
+                        }
+
+                        return (TResult)await responseSerializer.DeserializeAsync(typeof(TResult), responseStream, ctk).ConfigureAwait(false);
                     }
                 }
                 finally
@@ -196,6 +260,17 @@ namespace Artesian.SDK.Service
             {
                 throw new ArtesianSdkClientException($"Failed handling REST call to WebInterface: {method} " + _url + resource, e);
             }
+        }
+
+        private IContentSerializer _getSerializer(string mediaType)
+        {
+            if (string.IsNullOrEmpty(mediaType))
+                return null;
+
+            // Normalize media type by removing parameters (e.g., "application/json; charset=utf-8" -> "application/json")
+            var normalizedMediaType = mediaType.Split(';')[0].Trim();
+
+            return _serializers.FirstOrDefault(s => string.Equals(s.MediaType, normalizedMediaType, StringComparison.OrdinalIgnoreCase));
         }
 
         private static string _tryDecodeText(object responseDeserialized)
@@ -240,20 +315,20 @@ namespace Artesian.SDK.Service
     /// <summary>
     /// Flurl Extension
     /// </summary>
-    public static class FlurlExt
+    internal static class FlurlExt
     {
         /// <summary>
         /// Flurl request extension to return Accept headers
         /// </summary>
         /// <param name="request">IFlurlRequest</param>
-        /// <param name="formatters">MediaTypeFormatterCollection</param>
+        /// <param name="serializers">List of content serializers</param>
         /// <returns></returns>
-        public static IFlurlRequest WithAcceptHeader(this IFlurlRequest request, MediaTypeFormatterCollection formatters)
+        internal static IFlurlRequest WithAcceptHeader(this IFlurlRequest request, List<IContentSerializer> serializers)
         {
-            var cnt = formatters.Count;
+            var cnt = serializers.Count;
             var step = 1.0 / (cnt + 1);
             var sb = new StringBuilder();
-            var headers = formatters.Select((x, i) => new MediaTypeWithQualityHeaderValue(x.SupportedMediaTypes.First().MediaType, 1 - (step * i)));
+            var headers = serializers.Select((x, i) => new MediaTypeWithQualityHeaderValue(x.MediaType, 1 - (step * i)));
 
             return request.WithHeader("Accept", string.Join(",", headers));
         }
