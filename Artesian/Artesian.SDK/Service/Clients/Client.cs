@@ -145,8 +145,8 @@ namespace Artesian.SDK.Service
                                 var contentType = res.ResponseMessage.Content.Headers.ContentType?.MediaType;
                                 var baseMediaType = _getBaseMediaType(contentType);
 
-                                // Try to deserialize as ProblemDetail if the base media type is JSON
-                                if (baseMediaType == "application/json")
+                                // Try to deserialize as ProblemDetail only if content type is exactly "application/problem+json"
+                                if (string.Equals(contentType, "application/problem+json", StringComparison.OrdinalIgnoreCase))
                                 {
                                     var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
 #if NET6_0_OR_GREATER
@@ -265,19 +265,29 @@ namespace Artesian.SDK.Service
 
             // Remove parameters (e.g., "application/json; charset=utf-8" -> "application/json")
             var semicolonIndex = mediaType.IndexOf(';');
+#if NET6_0_OR_GREATER
+            var baseType = semicolonIndex >= 0 ? mediaType[..semicolonIndex].Trim() : mediaType.Trim();
+#else
             var baseType = semicolonIndex >= 0 ? mediaType.Substring(0, semicolonIndex).Trim() : mediaType.Trim();
+#endif
 
             // Remove subtype extensions (e.g., "application/problem+json" -> "application/json")
             var plusIndex = baseType.IndexOf('+');
             if (plusIndex >= 0)
             {
+#if NET6_0_OR_GREATER
+                var lastPart = baseType[(plusIndex + 1)..];
+#else
                 var lastPart = baseType.Substring(plusIndex + 1);
+#endif
                 var slashIndex = baseType.IndexOf('/');
                 if (slashIndex >= 0)
                 {
-#pragma warning disable CA1845 // Use span-based 'string.Concat'
+#if NET6_0_OR_GREATER
+                    baseType = string.Concat(baseType[..(slashIndex + 1)], lastPart);
+#else
                     baseType = string.Concat(baseType.Substring(0, slashIndex + 1), lastPart);
-#pragma warning restore CA1845 // Use span-based 'string.Concat'
+#endif
                 }
             }
 
