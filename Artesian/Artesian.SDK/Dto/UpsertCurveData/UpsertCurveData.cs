@@ -79,7 +79,7 @@ namespace Artesian.SDK.Dto
         /// The timeserie data in OriginalTimezone or, when Hourly, must be UTC.
         /// </summary>
         [MessagePack.Key(5)]
-        public IDictionary<LocalDateTime, double?> Rows { get; set; }
+        public IDictionary<LocalDateTime, double?> Rows { get; set; } = null!;
 
         /// <summary>
         /// Flag to choose between synchronous and asynchronous command execution

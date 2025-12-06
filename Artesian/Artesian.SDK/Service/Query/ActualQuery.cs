@@ -20,8 +20,10 @@ namespace Artesian.SDK.Service
     /// </summary>
     public sealed class ActualQuery : QueryWithFillAndInterval<ActualQueryParamaters>, IActualQuery<ActualQuery>
     {
-        private readonly Client _client;
-        private readonly IPartitionStrategy _partition;
+        private readonly Client _client = null!;
+
+        private readonly IPartitionStrategy _partition = null!;
+
 
         private const string _routePrefix = "ts";
 

@@ -8,9 +8,12 @@ namespace Artesian.SDK.Service.GMEPublicOffer
     /// </summary>
     public partial class GMEPublicOfferService : IGMEPublicOfferService
     {
-        private readonly IArtesianServiceConfig _cfg;
-        private readonly ArtesianPolicyConfig _policy;
-        private readonly Client _client;
+        private readonly IArtesianServiceConfig _cfg = null!;
+
+        private readonly ArtesianPolicyConfig _policy = null!;
+
+        private readonly Client _client = null!;
+
 
         /// <summary>
         /// GME Public offer service

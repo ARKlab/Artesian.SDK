@@ -16,7 +16,8 @@ namespace Artesian.SDK.Service
     /// </summary>
     internal sealed class LZ4MessagePackContentSerializer : IContentSerializer
     {
-        private readonly MessagePackSerializerOptions _options;
+        private readonly MessagePackSerializerOptions _options = null!;
+
 
         /// <inheritdoc/>
         public string MediaType => "application/x.msgpacklz4";

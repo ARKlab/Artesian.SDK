@@ -32,17 +32,24 @@ namespace Artesian.SDK.Service
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "Accepted to 'leak' FlurlClient instance")]
     internal sealed class Client
     {
-        private readonly List<IContentSerializer> _serializers;
-        private readonly FlurlClient _client;
+        private readonly List<IContentSerializer> _serializers = null!;
 
-        private readonly JsonContentSerializer _jsonSerializer;
-        private readonly MessagePackContentSerializer _msgPackSerializer;
-        private readonly LZ4MessagePackContentSerializer _lz4msgPackSerializer;
+        private readonly FlurlClient _client = null!;
+
+
+        private readonly JsonContentSerializer _jsonSerializer = null!;
+
+        private readonly MessagePackContentSerializer _msgPackSerializer = null!;
+
+        private readonly LZ4MessagePackContentSerializer _lz4msgPackSerializer = null!;
+
 
         private readonly string _url;
-        private readonly AsyncPolicy _resilienceStrategy;
+        private readonly AsyncPolicy _resilienceStrategy = null!;
+
         private readonly string _apiKey;
-        private readonly IArtesianServiceConfig _config;
+        private readonly IArtesianServiceConfig _config = null!;
+
 
         private readonly IConfidentialClientApplication? _confidentialClientApplication;
 

@@ -22,8 +22,10 @@ namespace Artesian.SDK.Service
     /// </summary>
     public sealed class VersionedQuery : QueryWithFillAndInterval<VersionedQueryParamaters>, IVersionedQuery<VersionedQuery>
     {
-        private readonly Client _client;
-        private readonly IPartitionStrategy _partition;
+        private readonly Client _client = null!;
+
+        private readonly IPartitionStrategy _partition = null!;
+
         private readonly string _routePrefix = "vts";
 
         internal VersionedQuery(Client client, IPartitionStrategy partiton)

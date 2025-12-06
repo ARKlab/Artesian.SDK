@@ -17,9 +17,11 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class AuctionTimeSerie : IAuctionMarketDataWritable
     {
-        private readonly IMarketDataService _marketDataService;
+        private readonly IMarketDataService _marketDataService = null!;
+
         private readonly MarketDataEntity.Output _entity;
-        private readonly MarketDataIdentifier _identifier;
+        private readonly MarketDataIdentifier _identifier = null!;
+
         private readonly Dictionary<LocalDateTime, AuctionBids> _bids = new Dictionary<LocalDateTime, AuctionBids>();
 
         /// <summary>
@@ -188,7 +190,7 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = null!, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
             var data = new DeleteCurveData(_identifier)
             {

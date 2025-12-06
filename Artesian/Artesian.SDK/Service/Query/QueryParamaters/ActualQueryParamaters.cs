@@ -46,8 +46,8 @@ namespace Artesian.SDK.Service
             int? transformId,
             FillerKindType fillerK,
             FillerConfig fillerConfig,
-            DerivedCfgBase derivedCfgBase = null,
-            string unitOfMeasure = null,
+            DerivedCfgBase derivedCfgBase = null!,
+            string unitOfMeasure = null!,
             AggregationRule? aggregationRule = null
             )
             : base(ids,extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)

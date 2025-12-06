@@ -21,8 +21,10 @@ namespace Artesian.SDK.Service
     public sealed class MasQuery : QueryWithFillAndInterval<MasQueryParamaters>, IMasQuery<MasQuery>
     {        
         private readonly string _routePrefix = "mas";
-        private readonly Client _client;
-        private readonly IPartitionStrategy _partition;
+        private readonly Client _client = null!;
+
+        private readonly IPartitionStrategy _partition = null!;
+
 
         internal MasQuery(Client client, IPartitionStrategy partiton)
         {

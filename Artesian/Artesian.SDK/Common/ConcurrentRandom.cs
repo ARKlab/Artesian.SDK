@@ -19,7 +19,8 @@ namespace Artesian.SDK.Common
         // being highly correlated. On NetFx this is maybe due to the same seed somehow being used
         // in each instance, but either way the singleton approach mitigated the problem.
         private static readonly Random _staticrandom = new Random();
-        private readonly Random _random;
+        private readonly Random _random = null!;
+
 
         /// <summary>
         /// Creates an instance of the <see cref="ConcurrentRandom"/> class.

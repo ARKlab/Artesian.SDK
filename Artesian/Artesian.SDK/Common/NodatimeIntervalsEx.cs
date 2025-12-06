@@ -79,7 +79,7 @@ namespace Artesian.SDK.Common
             };
         }
 
-        private static void _ensureIsoCalendar(LocalDate date, [CallerArgumentExpression(nameof(date))] string parameterName = null)
+        private static void _ensureIsoCalendar(LocalDate date, [CallerArgumentExpression(nameof(date))] string parameterName = null!)
         {
             if (date.Calendar != CalendarSystem.Iso)
                 throw new ArgumentException($"LocalDate.Calendar should be CalendarSystem.Iso. Found '{date.Calendar}'", parameterName);

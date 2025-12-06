@@ -10,7 +10,8 @@
             ParameterName = parameterName;
         }
 
-        public string ParameterName { get; }
+        public string ParameterName { get; } = null!;
+
     }
 
 #endif

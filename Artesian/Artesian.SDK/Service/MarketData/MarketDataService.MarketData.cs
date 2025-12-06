@@ -55,7 +55,7 @@ namespace Artesian.SDK.Service
         /// <param name="versionTo">End date of version range</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>Paged result of CurveRange entity</returns>
-        public Task<PagedResult<CurveRange>> ReadCurveRangeAsync(int id, int page, int pageSize, string product = null, LocalDateTime? versionFrom = null, LocalDateTime? versionTo = null, CancellationToken ctk = default)
+        public Task<PagedResult<CurveRange>> ReadCurveRangeAsync(int id, int page, int pageSize, string product = null!, LocalDateTime? versionFrom = null, LocalDateTime? versionTo = null, CancellationToken ctk = default)
         {
 
             var url = "/marketdata/entity/".AppendPathSegment(id.ToString(CultureInfo.InvariantCulture)).AppendPathSegment("curves")

@@ -211,7 +211,7 @@ namespace Artesian.SDK.Dto
             /// The TimeTransform
             /// </summary>
             [MessagePack.Key(11)]
-            public TimeTransform Transform { get; set; } //NULLABLE
+            public TimeTransform Transform { get; set; } = null!; //NULLABLE
             /// <summary>
             /// The Last time the metadata has been updated
             /// </summary>

@@ -23,7 +23,7 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// Filter by facet name, facet values
         /// </summary>
-        public IDictionary<string, string[]> Filters { get; set; }
+        public IDictionary<string, string[]> Filters { get; set; } = null!;
         /// <summary>
         /// sort by field name
         /// </summary>

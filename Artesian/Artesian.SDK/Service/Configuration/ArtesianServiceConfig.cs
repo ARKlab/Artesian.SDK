@@ -13,27 +13,28 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Base address of the Artesian service
         /// </summary>
-        public Uri BaseAddress { get; }
+        public Uri BaseAddress { get; } = null!;
+
         /// <summary>
         /// Audience of Artesian service. Required when authenticating with Bearer Token
         /// </summary>
-        public string Audience { get; }
+        public string Audience { get; } = null!;
         /// <summary>
         /// IDP Domain. Required when authenticating with Bearer Token
         /// </summary>
-        public string Domain { get; }
+        public string Domain { get; } = null!;
         /// <summary>
         /// Client ID. Required when authenticating with Bearer Token
         /// </summary>
-        public string ClientId { get; }
+        public string ClientId { get; } = null!;
         /// <summary>
         /// Client Secret. Required when authenticating with Bearer Token
         /// </summary>
-        public string ClientSecret { get; }
+        public string ClientSecret { get; } = null!;
         /// <summary>
         /// ApiKey used for access to the service
         /// </summary>s
-        public string ApiKey { get; }
+        public string ApiKey { get; } = null!;
 
         /// <summary>
         /// Config for ApiKey service access
