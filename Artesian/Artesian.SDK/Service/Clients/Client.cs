@@ -143,61 +143,65 @@ namespace Artesian.SDK.Service
                                 string responseText = string.Empty;
 
                                 var contentType = res.ResponseMessage.Content.Headers.ContentType?.MediaType;
+                                
+                                // Flurl.Http.Testing might set Content-Type as a response header instead of content header
+                                // Try both "Content-Type" and "ContentType" (Flurl might not convert the property name)
+                                if (string.IsNullOrEmpty(contentType))
+                                {
+                                    if (res.ResponseMessage.Headers.TryGetValues("Content-Type", out var ct1Values))
+                                    {
+                                        contentType = ct1Values.FirstOrDefault()?.Split(';')[0].Trim();
+                                    }
+                                    else if (res.ResponseMessage.Headers.TryGetValues("ContentType", out var ct2Values))
+                                    {
+                                        contentType = ct2Values.FirstOrDefault()?.Split(';')[0].Trim();
+                                    }
+                                }
+                                
                                 var baseMediaType = _getBaseMediaType(contentType);
+
+                                // Read response content once to avoid stream consumption issues
+                                var responseBytes = await res.ResponseMessage.Content.ReadAsByteArrayAsync(
+#if NET6_0_OR_GREATER
+                                    ctk
+#endif
+                                ).ConfigureAwait(false);
 
                                 // Try to deserialize as ProblemDetail only if content type is exactly "application/problem+json"
                                 if (string.Equals(contentType, "application/problem+json", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
-#if NET6_0_OR_GREATER
-                                        ctk
-#endif
-                                    ).ConfigureAwait(false);
-                                    
                                     try
                                     {
-                                        problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(stream, ctk).ConfigureAwait(false);
+                                        using (var stream = new MemoryStream(responseBytes))
+                                        {
+                                            problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(stream, ctk).ConfigureAwait(false);
+                                        }
                                     }
                                     catch
                                     {
-                                        // If deserialization as ProblemDetail fails, the stream is already consumed
-                                        // We cannot reread it, so just leave responseText empty
-                                        // The error message will use the exception detail instead
+                                        // If deserialization as ProblemDetail fails, fall back to responseText
+                                        responseText = System.Text.Encoding.UTF8.GetString(responseBytes);
                                     }
                                 }
                                 else if (res.ResponseMessage.StatusCode == HttpStatusCode.BadRequest)
                                 {
-                                    var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
-#if NET6_0_OR_GREATER
-                                        ctk
-#endif
-                                    ).ConfigureAwait(false);
-                                    
                                     var serializer = _getSerializer(baseMediaType);
                                     if (serializer != null)
                                     {
-                                        var obj = await serializer.DeserializeAsync<object>(stream, ctk).ConfigureAwait(false);
-                                        responseText = _tryDecodeText(obj);
+                                        using (var stream = new MemoryStream(responseBytes))
+                                        {
+                                            var obj = await serializer.DeserializeAsync<object>(stream, ctk).ConfigureAwait(false);
+                                            responseText = _tryDecodeText(obj);
+                                        }
                                     }
                                     else
                                     {
-                                        using (var reader = new StreamReader(stream))
-                                        {
-                                            responseText = await reader.ReadToEndAsync(
-#if NET6_0_OR_GREATER
-                                                ctk
-#endif
-                                            ).ConfigureAwait(false);
-                                        }
+                                        responseText = System.Text.Encoding.UTF8.GetString(responseBytes);
                                     }
                                 }
                                 else
                                 {
-                                    responseText = await res.ResponseMessage.Content.ReadAsStringAsync(
-#if NET6_0_OR_GREATER
-                                        ctk
-#endif
-                                    ).ConfigureAwait(false);
+                                    responseText = System.Text.Encoding.UTF8.GetString(responseBytes);
                                 }
 
                                 var detailMessage = problemDetail?.Detail ?? problemDetail?.Title ?? problemDetail?.Type ?? "Content:" + Environment.NewLine + responseText;
@@ -231,6 +235,21 @@ namespace Artesian.SDK.Service
                             ).ConfigureAwait(false);
 
                             var responseContentType = res.ResponseMessage.Content.Headers.ContentType?.MediaType;
+                            
+                            // Flurl.Http.Testing might set Content-Type as a response header instead of content header
+                            // Try both "Content-Type" and "ContentType" (Flurl might not convert the property name)
+                            if (string.IsNullOrEmpty(responseContentType))
+                            {
+                                if (res.ResponseMessage.Headers.TryGetValues("Content-Type", out var ct1Values))
+                                {
+                                    responseContentType = ct1Values.FirstOrDefault()?.Split(';')[0].Trim();
+                                }
+                                else if (res.ResponseMessage.Headers.TryGetValues("ContentType", out var ct2Values))
+                                {
+                                    responseContentType = ct2Values.FirstOrDefault()?.Split(';')[0].Trim();
+                                }
+                            }
+                            
                             var responseBaseMediaType = _getBaseMediaType(responseContentType);
                             var responseSerializer = _getSerializer(responseBaseMediaType);
                             

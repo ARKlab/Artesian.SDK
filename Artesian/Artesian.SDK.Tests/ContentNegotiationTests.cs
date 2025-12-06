@@ -66,7 +66,7 @@ namespace Artesian.SDK.Tests
 
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(new[] { testData });
 
-                httpTest.RespondWith(json, 200, headers: new { ContentType = "application/json" });
+                httpTest.RespondWith(json, 200, headers: new { Content_Type = "application/json" });
 
                 var qs = new QueryService(_cfg);
 
@@ -97,7 +97,7 @@ namespace Artesian.SDK.Tests
 
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(new[] { testData });
 
-                httpTest.RespondWith(json, 200, headers: new { ContentType = "application/json; charset=utf-8" });
+                httpTest.RespondWith(json, 200, headers: new { Content_Type = "application/json; charset=utf-8" });
 
                 var qs = new QueryService(_cfg);
 
@@ -129,7 +129,7 @@ namespace Artesian.SDK.Tests
 
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(problemDetail);
 
-                httpTest.RespondWith(json, 400, headers: new { ContentType = "application/problem+json" });
+                httpTest.RespondWith(json, 400, headers: new { Content_Type = "application/problem+json" });
 
                 var qs = new QueryService(_cfg);
 
@@ -166,7 +166,7 @@ namespace Artesian.SDK.Tests
 
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(problemDetail);
 
-                httpTest.RespondWith(json, 409, headers: new { ContentType = "application/problem+json" });
+                httpTest.RespondWith(json, 409, headers: new { Content_Type = "application/problem+json" });
 
                 var qs = new QueryService(_cfg);
 
@@ -192,7 +192,7 @@ namespace Artesian.SDK.Tests
         {
             using (var httpTest = new HttpTest())
             {
-                httpTest.RespondWith("Some text", 200, headers: new { ContentType = "text/plain" });
+                httpTest.RespondWith("Some text", 200, headers: new { Content_Type = "text/plain" });
 
                 var qs = new QueryService(_cfg);
 
@@ -222,7 +222,7 @@ namespace Artesian.SDK.Tests
                 var errorResponse = new { error = "Something went wrong" };
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(errorResponse);
 
-                httpTest.RespondWith(json, 400, headers: new { ContentType = "application/json" });
+                httpTest.RespondWith(json, 400, headers: new { Content_Type = "application/json" });
 
                 var qs = new QueryService(_cfg);
 
@@ -320,7 +320,7 @@ namespace Artesian.SDK.Tests
 
                 // Use Latin-1 encoding (codepage 28591) to preserve binary data as string
                 var binaryString = System.Text.Encoding.GetEncoding(28591).GetString(msgPackBytes);
-                httpTest.RespondWith(status: 200, body: binaryString, headers: new { ContentType = "application/x-msgpack" });
+                httpTest.RespondWith(status: 200, body: binaryString, headers: new { Content_Type = "application/x-msgpack" });
 
                 var qs = new QueryService(_cfg);
 
@@ -370,7 +370,7 @@ namespace Artesian.SDK.Tests
 
                 // Use Latin-1 encoding (codepage 28591) to preserve binary data as string
                 var binaryString = System.Text.Encoding.GetEncoding(28591).GetString(msgPackBytes);
-                httpTest.RespondWith(status: 200, body: binaryString, headers: new { ContentType = "application/x-msgpack" });
+                httpTest.RespondWith(status: 200, body: binaryString, headers: new { Content_Type = "application/x-msgpack" });
 
                 var qs = new QueryService(_cfg);
 
