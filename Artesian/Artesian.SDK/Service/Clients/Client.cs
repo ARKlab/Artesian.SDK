@@ -134,8 +134,19 @@ namespace Artesian.SDK.Service
                     {
                         using (var res = await req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseHeadersRead, cancellationToken: ctk).ConfigureAwait(false))
                         {
+                            // For 204 No Content and 404 Not Found, return appropriate default
                             if (res.ResponseMessage.StatusCode == HttpStatusCode.NoContent || res.ResponseMessage.StatusCode == HttpStatusCode.NotFound)
+                            {
+                                // If TResult is IEnumerable<T>, return empty array instead of null to avoid SelectMany issues
+                                var resultType = typeof(TResult);
+                                if (resultType.IsGenericType && resultType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                                {
+                                    var elementType = resultType.GetGenericArguments()[0];
+                                    var emptyArray = Array.CreateInstance(elementType, 0);
+                                    return (TResult)(object)emptyArray;
+                                }
                                 return default;
+                            }
 
                             if (!res.ResponseMessage.IsSuccessStatusCode)
                             {
