@@ -24,7 +24,7 @@ namespace Artesian.SDK.Dto
         public static readonly TimeTransformSimpleShift GASDAY66 = new TimeTransformSimpleShift()
         {
             ID = 1,
-            Name = SystemTimeTransform.GASDAY66.ToString(),
+            Name = "GASDAY6-6",
             ETag = Guid.Empty,
             DefinedBy = TransformDefinitionType.System,
             Period = Granularity.Day,

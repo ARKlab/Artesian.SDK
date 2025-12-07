@@ -30,7 +30,7 @@ namespace Artesian.SDK.Service
                             .Select(g => new ActualQueryParamaters(g,
                                 queryParamater.ExtractionRangeSelectionConfig ?? throw new InvalidOperationException("ExtractionRangeSelectionConfig is required"),
                                 queryParamater.ExtractionRangeType,
-                                queryParamater.TimeZone ?? "UTC",
+                                queryParamater.TimeZone,
                                 queryParamater.FilterId,
                                 queryParamater.Granularity,
                                 queryParamater.TransformId,
@@ -55,7 +55,7 @@ namespace Artesian.SDK.Service
                             .Select(g => new VersionedQueryParamaters(g,
                                 queryParamater.ExtractionRangeSelectionConfig ?? throw new InvalidOperationException("ExtractionRangeSelectionConfig is required"),
                                 queryParamater.ExtractionRangeType,
-                                queryParamater.TimeZone ?? "UTC",
+                                queryParamater.TimeZone,
                                 queryParamater.FilterId,
                                 queryParamater.Granularity,
                                 queryParamater.TransformId,
@@ -65,7 +65,7 @@ namespace Artesian.SDK.Service
                                 queryParamater.FillerKindType,
                                 queryParamater.FillerConfig ?? throw new InvalidOperationException("FillerConfig is required"),
                                 queryParamater.AnalysisDate,
-                                queryParamater.UnitOfMeasure ?? string.Empty,
+                                queryParamater.UnitOfMeasure,
                                 queryParamater.AggregationRule
                                 )));
         }

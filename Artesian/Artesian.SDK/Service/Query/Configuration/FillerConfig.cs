@@ -15,14 +15,14 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Filler MAS Default Value
         /// </summary>
-        public MarketAssessmentValue? FillerMasDV { get; set; } = new MarketAssessmentValue();
+        public MarketAssessmentValue FillerMasDV { get; set; } = new MarketAssessmentValue();
         /// <summary>
         /// Filler Bid Ask Default Value
         /// </summary>
-        public BidAskValue? FillerBidAskDV { get; set; } = new BidAskValue();
+        public BidAskValue FillerBidAskDV { get; set; } = new BidAskValue();
         /// <summary>
         /// Filler Period
         /// </summary>
-        public Period? FillerPeriod { get; set; }
+        public Period FillerPeriod { get; set; }
     }
 }

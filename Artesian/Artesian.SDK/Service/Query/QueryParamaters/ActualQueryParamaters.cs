@@ -50,7 +50,7 @@ namespace Artesian.SDK.Service
             string? unitOfMeasure = null,
             AggregationRule? aggregationRule = null
             )
-            : base(ids,extractionRangeSelectionConfig, extractionRangeType, timezone ?? "UTC", filterId, fillerK, fillerConfig)
+            : base(ids,extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
         {           
             this.Granularity = granularity;
             this.TransformId = transformId;
