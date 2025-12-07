@@ -15,7 +15,7 @@ namespace Artesian.SDK.Service
     /// </summary>
     internal sealed class SerializerStreamContent<T> : HttpContent
     {
-        private readonly IContentSerializer? _serializer;
+        private readonly IContentSerializer _serializer;
         private readonly T? _value;
         private readonly CancellationToken _cancellationToken;
 
