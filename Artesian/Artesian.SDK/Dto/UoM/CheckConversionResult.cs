@@ -49,7 +49,7 @@ namespace Artesian.SDK.Dto.UoM
         /// <summary>
         /// TargetUnitOfMeasure
         /// </summary>
-        public string? TargetUnitOfMeasure { get; set; }
+        public required string TargetUnitOfMeasure { get; set; }
         /// <summary>
         /// ConvertibleInputUnitsOfMeasure
         /// </summary>

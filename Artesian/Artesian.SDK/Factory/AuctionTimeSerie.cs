@@ -163,9 +163,10 @@ namespace Artesian.SDK.Factory
         {
             if (Bids.Any())
             {
-                var data = new UpsertCurveData(_identifier)
+                var data = new UpsertCurveData
                 {
-                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
+                    ID = _identifier,
+                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone ?? throw new InvalidOperationException("OriginalTimezone is required"),
                     DownloadedAt = downloadedAt,
                     AuctionRows = _bids,
                     DeferCommandExecution = deferCommandExecution,

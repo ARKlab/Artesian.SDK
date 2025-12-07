@@ -24,7 +24,7 @@ namespace Artesian.SDK.Service
         internal const string _metadataVersion = "v2.1";
         internal const int _serviceRequestTimeOutMinutes = 10;
 
-        private static FrameworkName? _frameworkName { get => new FrameworkName(Assembly.GetExecutingAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName ?? ".NETStandard,Version=v2.0"); }
+        private static FrameworkName? _frameworkName { get => new FrameworkName(Assembly.GetExecutingAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName ?? ".NETStandard,Version=unknown"); }
 
 
 

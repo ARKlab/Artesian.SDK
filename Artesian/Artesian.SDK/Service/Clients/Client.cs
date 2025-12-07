@@ -40,7 +40,7 @@ namespace Artesian.SDK.Service
         private readonly LZ4MessagePackContentSerializer _lz4msgPackSerializer;
 
         private readonly string _url;
-        private readonly AsyncPolicy? _resilienceStrategy;
+        private readonly AsyncPolicy _resilienceStrategy;
         private readonly string? _apiKey;
         private readonly IArtesianServiceConfig _config;
 

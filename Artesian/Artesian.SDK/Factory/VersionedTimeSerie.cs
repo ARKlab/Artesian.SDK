@@ -179,9 +179,11 @@ namespace Artesian.SDK.Factory
 
             if (Values.Any())
             {
-                var data = new UpsertCurveData(_identifier, SelectedVersion.Value)
+                var data = new UpsertCurveData
                 {
-                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
+                    ID = _identifier,
+                    Version = SelectedVersion.Value,
+                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone ?? throw new InvalidOperationException("OriginalTimezone is required"),
                     DownloadedAt = downloadedAt,
                     Rows = _values,
                     DeferCommandExecution = deferCommandExecution,

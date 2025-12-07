@@ -45,7 +45,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public MarketDataIdentifier? ID { get; init; }
+        public required MarketDataIdentifier ID { get; init; }
 
         /// <summary>
         /// The Version to operate on
@@ -58,7 +58,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(2)]
-        public string? Timezone { get; init; }
+        public required string Timezone { get; init; }
 
         /// <summary>
         /// The UTC timestamp at which this assessment has been acquired/generated.

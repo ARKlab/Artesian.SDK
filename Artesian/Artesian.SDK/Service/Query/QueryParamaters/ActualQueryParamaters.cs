@@ -40,7 +40,7 @@ namespace Artesian.SDK.Service
             IEnumerable<int> ids, 
             ExtractionRangeSelectionConfig extractionRangeSelectionConfig, 
             ExtractionRangeType? extractionRangeType,
-            string timezone,
+            string? timezone,
             int? filterId,
             Granularity? granularity, 
             int? transformId,

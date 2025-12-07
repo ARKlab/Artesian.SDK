@@ -154,9 +154,10 @@ namespace Artesian.SDK.Factory
         {
             if (_values.Count != 0)
             {
-                var data = new UpsertCurveData(_identifier)
+                var data = new UpsertCurveData
                 {
-                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
+                    ID = _identifier,
+                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone ?? throw new InvalidOperationException("OriginalTimezone is required"),
                     DownloadedAt = downloadedAt,
                     DeferCommandExecution = deferCommandExecution,
                     MarketAssessment = new Dictionary<LocalDateTime, IDictionary<string, MarketAssessmentValue>>(),

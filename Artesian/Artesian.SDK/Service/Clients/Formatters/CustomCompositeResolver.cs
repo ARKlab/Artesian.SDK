@@ -10,9 +10,9 @@ namespace Artesian.SDK.Service
 {
     internal sealed class CustomCompositeResolver : IFormatterResolver
     {
-        public static IFormatterResolver? Instance = new CustomCompositeResolver();
+        public static readonly IFormatterResolver Instance = new CustomCompositeResolver();
 
-        static readonly IFormatterResolver[]? _resolvers = new[]
+        static readonly IFormatterResolver[] _resolvers = new[]
         {
             BuiltinResolver.Instance,
             NodatimeResolver.Instance,

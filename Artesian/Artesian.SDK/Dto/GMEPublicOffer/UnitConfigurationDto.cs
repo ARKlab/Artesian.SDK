@@ -14,7 +14,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Unit name
         /// </summary>
         [Key(0)]
-        public string? Unit { get; init; }
+        public required string Unit { get; init; }
         /// <summary>
         /// Generation type mappings
         /// </summary>

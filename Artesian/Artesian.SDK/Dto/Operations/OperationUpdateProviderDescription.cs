@@ -14,6 +14,6 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public string? Value { get; init; }
+        public required string Value { get; init; }
     }
 }

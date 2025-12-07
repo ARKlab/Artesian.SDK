@@ -18,6 +18,6 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Operator
         /// </summary>
         [Key(1)]
-        public string? Operator { get; init; }
+        public required string Operator { get; init; }
     }
 }

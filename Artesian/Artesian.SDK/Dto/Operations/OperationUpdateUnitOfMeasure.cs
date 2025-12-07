@@ -17,6 +17,6 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public UnitOfMeasure? Value { get; init; }
+        public required UnitOfMeasure Value { get; init; }
     }
 }
