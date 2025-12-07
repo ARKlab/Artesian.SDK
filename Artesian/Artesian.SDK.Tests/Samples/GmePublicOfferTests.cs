@@ -81,13 +81,13 @@ namespace Artesian.SDK.Tests.Samples
                 .ForStatus(Status.ACC)
                 .ExecuteAsync();
 
-            var data = gmePoResults.Data.FirstOrDefault();
+            var data = gmePoResults.Data.FirstOrDefault()!;
             
-            var inputData = upsertDto.GMEPublicOffer.FirstOrDefault().Data.FirstOrDefault();
+            var inputData = upsertDto.GMEPublicOffer.FirstOrDefault()!.Data!.FirstOrDefault();
 
-            ClassicAssert.AreEqual(inputData.ADJEnergyPrice, data.ADJEnergyPrice);
-            ClassicAssert.AreEqual(inputData.AwardedPrice, data.AwardedPrice);
-            ClassicAssert.AreEqual(inputData.Prodotto, data.Prodotto);
+            ClassicAssert.AreEqual(inputData!.ADJEnergyPrice, data.ADJEnergyPrice);
+            ClassicAssert.AreEqual(inputData!.AwardedPrice, data.AwardedPrice);
+            ClassicAssert.AreEqual(inputData!.Prodotto, data.Prodotto);
         }
     }
 }

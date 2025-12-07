@@ -591,7 +591,7 @@ namespace Artesian.SDK.Tests
                 data.BidAsk[localDateTime].Add("test", new BidAskValue());
 
                 var ex = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
-                Assert.That(ex.Message, Does.StartWith("UpsertCurveData BidAsk must be NULL if Rows are Valorized"));
+                Assert.That(ex!.Message, Does.StartWith("UpsertCurveData BidAsk must be NULL if Rows are Valorized"));
             }
         }
 
@@ -624,7 +624,7 @@ namespace Artesian.SDK.Tests
                 data.MarketAssessment[localDateTime].Add("test", new MarketAssessmentValue());
 
                 var ex = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
-                Assert.That(ex.Message, Does.StartWith("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized"));
+                Assert.That(ex!.Message, Does.StartWith("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized"));
             }
         }
         #endregion
