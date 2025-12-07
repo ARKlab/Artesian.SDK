@@ -6,6 +6,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
+	<!-- Suppress nullable warnings in tests where assertions verify non-null before access -->
 	<NoWarn>CS1591;CS8602;CS8604;CS8629</NoWarn>
 	<Nullable>enable</Nullable>
   </PropertyGroup>
