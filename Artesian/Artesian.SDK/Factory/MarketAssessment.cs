@@ -18,10 +18,10 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class MarketAssessment : IMarketAssessmentWritable
     {
-        private readonly IMarketDataService? _marketDataService;
+        private readonly IMarketDataService _marketDataService;
         private readonly MarketDataEntity.Output _entity;
-        private readonly MarketDataIdentifier? _identifier;
-        private readonly List<AssessmentElement>? _values = new();
+        private readonly MarketDataIdentifier _identifier;
+        private readonly List<AssessmentElement> _values = new();
 
         /// <summary>
         /// MarketAssessment Constructor

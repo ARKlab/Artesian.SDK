@@ -14,9 +14,9 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class ActualTimeSerie : ITimeserieWritable
     {
-        private readonly IMarketDataService? _marketDataService;
+        private readonly IMarketDataService _marketDataService;
         private readonly MarketDataEntity.Output _entity;
-        private readonly MarketDataIdentifier? _identifier;
+        private readonly MarketDataIdentifier _identifier;
         private readonly Dictionary<LocalDateTime, double?> _values = new Dictionary<LocalDateTime, double?>();
 
         /// <summary>

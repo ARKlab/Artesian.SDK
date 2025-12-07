@@ -18,10 +18,10 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class BidAsk : IBidAskWritable
     {
-        private readonly IMarketDataService? _marketDataService;
+        private readonly IMarketDataService _marketDataService;
         private readonly MarketDataEntity.Output _entity;
-        private readonly MarketDataIdentifier? _identifier;
-        private readonly List<BidAskElement>? _values = new();
+        private readonly MarketDataIdentifier _identifier;
+        private readonly List<BidAskElement> _values = new();
 
         /// <summary>
         /// BidAsks Constructor

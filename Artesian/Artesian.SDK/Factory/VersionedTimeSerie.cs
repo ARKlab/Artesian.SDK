@@ -17,9 +17,9 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class VersionedTimeSerie : ITimeserieWritable
     {
-        private readonly IMarketDataService? _marketDataService;
-        private readonly MarketDataEntity.Output _entity = null;
-        private readonly MarketDataIdentifier? _identifier = null;
+        private readonly IMarketDataService _marketDataService;
+        private readonly MarketDataEntity.Output _entity;
+        private readonly MarketDataIdentifier _identifier;
         private Dictionary<LocalDateTime, double?> _values = new Dictionary<LocalDateTime, double?>();
 
         /// <summary>
@@ -27,6 +27,9 @@ namespace Artesian.SDK.Factory
         /// </summary>
         internal VersionedTimeSerie(MarketData marketData)
         {
+            Guard.IsNotNull(marketData._entity);
+            Guard.IsNotNull(marketData._marketDataService);
+            
             _entity = marketData._entity;
             _marketDataService = marketData._marketDataService;
 
