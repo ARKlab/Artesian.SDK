@@ -9,9 +9,9 @@ namespace Artesian.SDK.Service
     /// </summary>
     public partial class MarketDataService : IMarketDataService
     {
-        private readonly IArtesianServiceConfig? _cfg;
-        private readonly ArtesianPolicyConfig? _policy;
-        private readonly Client? _client;
+        private readonly IArtesianServiceConfig _cfg;
+        private readonly ArtesianPolicyConfig _policy;
+        private readonly Client _client;
 
         /// <summary>
         /// Metadata service
