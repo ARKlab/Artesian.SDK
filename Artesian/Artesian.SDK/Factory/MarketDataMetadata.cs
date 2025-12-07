@@ -29,15 +29,15 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Market Data Etag
         /// </summary>
-        public string ETag => _output.ETag;
+        public string? ETag => _output.ETag;
         /// <summary>
         /// The Market Data Provider Name
         /// </summary>
-        public string ProviderName => _output.ProviderName;
+        public string? ProviderName => _output.ProviderName;
         /// <summary>
         /// The Market Data Name
         /// </summary>
-        public string MarketDataName => _output.MarketDataName;
+        public string? MarketDataName => _output.MarketDataName;
         /// <summary>
         /// The Original Granularity
         /// </summary>
@@ -53,7 +53,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Original Timezone
         /// </summary>
-        public string OriginalTimezone { get => _output.OriginalTimezone; set => _output.OriginalTimezone = value; }
+        public string? OriginalTimezone { get => _output.OriginalTimezone; set => _output.OriginalTimezone = value; }
         /// <summary>
         /// The Aggregation Rule
         /// </summary>
@@ -61,7 +61,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Provider description
         /// </summary>
-        public string ProviderDescription { get => _output.ProviderDescription; set => _output.ProviderDescription = value; }
+        public string? ProviderDescription { get => _output.ProviderDescription; set => _output.ProviderDescription = value; }
         /// <summary>
         /// The custom Tags assigned to the data
         /// </summary>
