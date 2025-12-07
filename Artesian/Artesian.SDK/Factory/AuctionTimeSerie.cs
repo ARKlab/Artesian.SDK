@@ -29,15 +29,15 @@ namespace Artesian.SDK.Factory
         internal AuctionTimeSerie(MarketData marketData)
         {
             Guard.IsNotNull(marketData);
-            Guard.IsNotNull(marketData._entity);
-            Guard.IsNotNull(marketData._marketDataService);
+            var entity = Guard.IsNotNull(marketData._entity);
+            var marketDataService = Guard.IsNotNull(marketData._marketDataService);
 
-            _entity = marketData._entity;
-            _marketDataService = marketData._marketDataService;
+            _entity = entity;
+            _marketDataService = marketDataService;
 
             _identifier = new MarketDataIdentifier(
-                _entity.ProviderName ?? throw new InvalidOperationException("ProviderName is required"), 
-                _entity.MarketDataName ?? throw new InvalidOperationException("MarketDataName is required"));
+                entity.ProviderName ?? throw new InvalidOperationException("ProviderName is required"), 
+                entity.MarketDataName ?? throw new InvalidOperationException("MarketDataName is required"));
 
             Bids = new ReadOnlyDictionary<LocalDateTime, AuctionBids>(_bids);
         }
@@ -118,7 +118,7 @@ namespace Artesian.SDK.Factory
                     throw new ArtesianSdkClientException("Trying to insert Time {0} with wrong format to serie {1}. Should be of period {2}", bidTime, _identifier, period);
             }
 
-            _bids.Add(bidTime, new AuctionBids(bidTime, bid, offer));
+            _bids.Add(bidTime, new AuctionBids { BidTimestamp = bidTime, Bid = bid, Offer = offer });
             return AddAuctionTimeSerieOperationResult.ValueAdded;
         }
 
@@ -193,9 +193,10 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string? timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
-            var data = new DeleteCurveData(_identifier)
+            var data = new DeleteCurveData
             {
-                Timezone = timezone,
+                ID = _identifier,
+                Timezone = timezone ?? "CET",
                 // LocalDate.MinIsoValue has year -9998 and yearOfEra 9999. Using it without any string formatting, we got date 01-01-9999.
                 // So we use default(LocalDateTime) 01/01/0001
                 RangeStart = rangeStart ?? default(LocalDateTime),

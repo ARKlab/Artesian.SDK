@@ -28,15 +28,15 @@ namespace Artesian.SDK.Factory
         /// </summary>
         internal VersionedTimeSerie(MarketData marketData)
         {
-            Guard.IsNotNull(marketData._entity);
-            Guard.IsNotNull(marketData._marketDataService);
-            
-            _entity = marketData._entity;
-            _marketDataService = marketData._marketDataService;
+            var entity = Guard.IsNotNull(marketData._entity);
+            var marketDataService = Guard.IsNotNull(marketData._marketDataService);
+
+            _entity = entity;
+            _marketDataService = marketDataService;
 
             _identifier = new MarketDataIdentifier(
-                _entity.ProviderName ?? throw new InvalidOperationException("ProviderName is required"), 
-                _entity.MarketDataName ?? throw new InvalidOperationException("MarketDataName is required"));
+                entity.ProviderName ?? throw new InvalidOperationException("ProviderName is required"), 
+                entity.MarketDataName ?? throw new InvalidOperationException("MarketDataName is required"));
 
             Values = new ReadOnlyDictionary<LocalDateTime, double?>(_values);
         }
@@ -211,9 +211,10 @@ namespace Artesian.SDK.Factory
         {
             Guard.IsNotNull(_entity);
 
-            var data = new DeleteCurveData(_identifier)
+            var data = new DeleteCurveData
             {
-                Timezone = timezone,
+                ID = _identifier,
+                Timezone = timezone ?? "CET",
                 // LocalDate.MinIsoValue has year -9998 and yearOfEra 9999. Using it without any string formatting, we got date 01-01-9999.
                 // So we use default(LocalDateTime) 01/01/0001
                 RangeStart = rangeStart ?? default(LocalDateTime),
