@@ -45,7 +45,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// AuctionData Bid
         /// </summary>
-        public IReadOnlyDictionary<LocalDateTime, AuctionBids>? Bids { get; private set; }
+        public IReadOnlyDictionary<LocalDateTime, AuctionBids> Bids { get; private set; }
 
         /// <summary>
         /// MarketData ClearData

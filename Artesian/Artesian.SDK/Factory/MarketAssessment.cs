@@ -45,7 +45,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// MarketData AssessmentElement
         /// </summary>
-        public IReadOnlyCollection<AssessmentElement>? Assessments { get; internal set; }
+        public IReadOnlyCollection<AssessmentElement> Assessments { get; internal set; }
 
         /// <summary>
         /// MarketData ClearData

@@ -45,7 +45,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// BidAsk BidAskElement
         /// </summary>
-        public IReadOnlyCollection<BidAskElement>? BidAsks { get; internal set; }
+        public IReadOnlyCollection<BidAskElement> BidAsks { get; internal set; }
 
         /// <summary>
         /// MarketData ClearData
