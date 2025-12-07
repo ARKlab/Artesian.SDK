@@ -84,6 +84,7 @@ namespace Artesian.SDK.Service
                 }
 
                 var propertyName = reader.Value?.ToString();
+                if (propertyName == null) continue;
                 if (propertyName == "Key")
                 {
                     reader.Read();

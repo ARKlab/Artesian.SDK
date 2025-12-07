@@ -443,7 +443,7 @@ namespace Artesian.SDK.Service
 
             if (QueryParamaters.FillerKindType == FillerKindType.LatestValidValue)
             {
-                if (QueryParamaters.FillerConfig.FillerPeriod == null || QueryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true)
+                if (QueryParamaters.FillerConfig.FillerPeriod == null || QueryParamaters.FillerConfig.FillerPeriod?.ToString()?.Contains('-') == true)
                 {
                     throw new ArtesianSdkClientException("Latest valid value filler must contain a non negative Period");
                 }
