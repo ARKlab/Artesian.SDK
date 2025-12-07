@@ -113,7 +113,7 @@ namespace Artesian.SDK.Service
         }
 
        
-        public async Task<TResult> Exec<TResult, TBody>(HttpMethod method, string resource, TBody body = default, CancellationToken ctk = default)
+        public async Task<TResult> Exec<TResult, TBody>(HttpMethod method, string resource, TBody? body = default, CancellationToken ctk = default)
         {
             try
             {

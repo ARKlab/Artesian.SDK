@@ -32,7 +32,7 @@ namespace Artesian.SDK.Service
             _cancellationToken = cancellationToken;
         }
 
-        protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
+        protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context)
         {
             await _serializer.SerializeAsync(_value, stream, _cancellationToken).ConfigureAwait(false);
         }
@@ -45,7 +45,7 @@ namespace Artesian.SDK.Service
         }
 
 #if NET5_0_OR_GREATER
-        protected override Task SerializeToStreamAsync(Stream stream, TransportContext context, CancellationToken cancellationToken)
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken cancellationToken)
         {
             return _serializer.SerializeAsync(_value, stream, cancellationToken);
         }
