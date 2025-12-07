@@ -214,11 +214,11 @@ namespace Artesian.SDK.Service
                                 {
                                     // Build message from ProblemDetail fields
                                     var parts = new List<string>();
-                                    if (!string.IsNullOrEmpty(problemDetail.Title))
+                                    if (problemDetail.Title != null && !string.IsNullOrEmpty(problemDetail.Title))
                                         parts.Add(problemDetail.Title);
-                                    if (!string.IsNullOrEmpty(problemDetail.Detail))
+                                    if (problemDetail.Detail != null && !string.IsNullOrEmpty(problemDetail.Detail))
                                         parts.Add(problemDetail.Detail);
-                                    if (parts.Count == 0 && !string.IsNullOrEmpty(problemDetail.Type))
+                                    if (parts.Count == 0 && problemDetail.Type != null && !string.IsNullOrEmpty(problemDetail.Type))
                                         parts.Add(problemDetail.Type);
                                     
                                     detailMessage = parts.Count > 0 ? string.Join(": ", parts) : responseText;
@@ -353,10 +353,10 @@ namespace Artesian.SDK.Service
         }
 
         public async Task Exec(HttpMethod method, string resource, CancellationToken ctk = default)
-            => await Exec<object, object>(method, resource, null, ctk).ConfigureAwait(false);
+            => await Exec<object?, object?>(method, resource, default, ctk).ConfigureAwait(false);
 
         public Task<TResult> Exec<TResult>(HttpMethod method, string resource, CancellationToken ctk = default)
-            => Exec<TResult, object>(method, resource, null, ctk);
+            => Exec<TResult, object?>(method, resource, default, ctk);
 
         public async Task Exec<TBody>(HttpMethod method, string resource, TBody body, CancellationToken ctk = default)
             => await Exec<object, TBody>(method, resource, body, ctk).ConfigureAwait(false);
