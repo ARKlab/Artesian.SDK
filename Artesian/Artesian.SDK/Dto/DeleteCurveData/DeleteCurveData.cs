@@ -12,83 +12,59 @@ namespace Artesian.SDK.Dto
     /// The curve data for a delete command.
     /// </summary>
     [MessagePackObject]
-    public class DeleteCurveData
+    public record DeleteCurveData
     {
-        /// <summary>
-        /// The default constructor
-        /// </summary>
-        public DeleteCurveData()
-        {
-        }
-
-        /// <summary>
-        /// The constructor with id
-        /// </summary>
-        public DeleteCurveData(MarketDataIdentifier id)
-        {
-            ID = id;
-        }
-
-        /// <summary>
-        /// The constructor with id and version
-        /// </summary>
-        public DeleteCurveData(MarketDataIdentifier id, LocalDateTime version)
-        {
-            ID = id;
-            Version = version;
-        }
-
         /// <summary>
         /// The Market Data Identifier
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public MarketDataIdentifier ID { get; set; } = default!;
+        public required MarketDataIdentifier ID { get; init; }
 
         /// <summary>
         /// The Version to operate on
         /// </summary>
         [MessagePack.Key(1)]
-        public LocalDateTime? Version { get; set; }
+        public LocalDateTime? Version { get; init; }
 
         /// <summary>
         /// For DateSeries if provided must be equal to MarketData OrignalTimezone Default:MarketData OrignalTimezone. For TimeSeries Default:CET
         /// </summary>
         [Required]
         [MessagePack.Key(2)]
-        public string Timezone { get; set; } = string.Empty;
+        public required string Timezone { get; init; }
 
         /// <summary>
         /// Start date of range to be deleted  
         /// </summary>
         [Required]
         [MessagePack.Key(3)]
-        public LocalDateTime RangeStart { get; set; }
+        public required LocalDateTime RangeStart { get; init; }
 
         /// <summary>
         /// End date of range to be deleted   
         /// </summary>
         [Required]
         [MessagePack.Key(4)]
-        public LocalDateTime RangeEnd { get; set; }
+        public required LocalDateTime RangeEnd { get; init; }
 
         /// <summary>
         /// The list of Product. Only *, is special character for 'delete all products in the range'
         /// </summary>
         [MessagePack.Key(5)]
-        public IList<string>? Product { get; set; }
+        public IList<string>? Product { get; init; }
 
         /// <summary>
         /// Flag to choose between synchronous and asynchronous command execution
         /// </summary>
         [MessagePack.Key(6)]
-        public bool DeferCommandExecution { get; set; } = true;
+        public bool DeferCommandExecution { get; init; } = true;
 
         /// <summary>
         /// Flag to choose between synchronous and asynchronous precomputed data generation
         /// </summary>
         [MessagePack.Key(7)]
-        public bool DeferDataGeneration { get; set; } = true;
+        public bool DeferDataGeneration { get; init; } = true;
     }
 
     internal static class DeleteCurveDataExt
