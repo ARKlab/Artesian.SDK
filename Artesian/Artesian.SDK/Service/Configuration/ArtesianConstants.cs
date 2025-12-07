@@ -33,9 +33,9 @@ namespace Artesian.SDK.Service
         internal const string _relativeProductValidatorRegEx = @"\+\d+$";
 
 #if NET8_0_OR_GREATER
-        internal static readonly Regex? _stringValidator = StringValidatorGenerator();
-        internal static readonly Regex? _marketDataNameValidator = MarketDataNameValidatorGenerator();
-        internal static readonly Regex? _relativeProductValidator = RelativeProductValidatorGenerator();
+        internal static readonly Regex _stringValidator = StringValidatorGenerator();
+        internal static readonly Regex _marketDataNameValidator = MarketDataNameValidatorGenerator();
+        internal static readonly Regex _relativeProductValidator = RelativeProductValidatorGenerator();
 
         [GeneratedRegex(_characterValidatorRegEx, RegexOptions.CultureInvariant, 1000)]
         private static partial Regex StringValidatorGenerator();
@@ -47,9 +47,9 @@ namespace Artesian.SDK.Service
         private static partial Regex RelativeProductValidatorGenerator();
 #else
 
-        internal static readonly Regex? _stringValidator = new Regex(_characterValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-        internal static readonly Regex? _marketDataNameValidator = new Regex(_marketDataNameValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-        internal static readonly Regex? _relativeProductValidator = new Regex(_relativeProductValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+        internal static readonly Regex _stringValidator = new Regex(_characterValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+        internal static readonly Regex _marketDataNameValidator = new Regex(_marketDataNameValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+        internal static readonly Regex _relativeProductValidator = new Regex(_relativeProductValidatorRegEx, RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 #endif
 
     }
