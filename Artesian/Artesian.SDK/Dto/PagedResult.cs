@@ -27,6 +27,10 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Key(2)]
         public long Count { get; init; }
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PagedResult{T}"/> class.
+        /// </summary>
         [SerializationConstructor]
         public PagedResult()
         {

@@ -12,6 +12,9 @@ namespace Artesian.SDK.Dto
     [MessagePackObject]
     public record ArtesianSearchResults
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArtesianSearchResults"/> class.
+        /// </summary>
         [SerializationConstructor]
         public ArtesianSearchResults()
         {

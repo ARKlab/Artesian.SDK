@@ -152,7 +152,7 @@ namespace Artesian.SDK.Service
                         throw new InvalidOperationException("Resilience strategy not initialized");
                     }
 
-                    return await _resilienceStrategy.ExecuteAsync(async () =>
+                    return (await _resilienceStrategy.ExecuteAsync(async () =>
                     {
                         using (var res = await req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseHeadersRead, cancellationToken: ctk).ConfigureAwait(false))
                         {
@@ -287,7 +287,7 @@ namespace Artesian.SDK.Service
 
                             return await responseSerializer.DeserializeAsync<TResult>(responseStream, ctk).ConfigureAwait(false);
                         }
-                    }).ConfigureAwait(false);
+                    }).ConfigureAwait(false))!;
                 }
                 finally
                 {

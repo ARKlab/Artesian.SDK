@@ -9,6 +9,9 @@ namespace Artesian.SDK.Dto
     // [MessagePackObject] // this is not a serializable object type: only an helper for common properties
     public abstract record DerivedCfgWithReferencedIds : DerivedCfgBase
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DerivedCfgWithReferencedIds"/> class.
+        /// </summary>
         protected DerivedCfgWithReferencedIds()
         {
             OrderedReferencedMarketDataIds = Array.Empty<int>();

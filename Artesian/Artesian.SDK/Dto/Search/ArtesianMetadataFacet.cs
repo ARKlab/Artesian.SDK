@@ -12,6 +12,10 @@ namespace Artesian.SDK.Dto
     [MessagePackObject]
     public record ArtesianMetadataFacet
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArtesianMetadataFacet"/> class.
+        /// </summary>
+        /// <param name="facetName">Facet name</param>
         [SerializationConstructor]
         public ArtesianMetadataFacet(string facetName)
         {

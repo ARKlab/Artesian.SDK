@@ -10,6 +10,10 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
     [MessagePackObject]
     public record UnitConfigurationDto
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnitConfigurationDto"/> class.
+        /// </summary>
+        /// <param name="unit">Unit name</param>
         [SerializationConstructor]
         public UnitConfigurationDto(string unit)
         {
