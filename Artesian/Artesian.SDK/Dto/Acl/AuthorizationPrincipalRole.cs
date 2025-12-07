@@ -33,20 +33,6 @@ namespace Artesian.SDK.Dto
         public required string PrincipalId { get; init; }
 
         /// <summary>
-        /// Default constructor for serialization
-        /// </summary>
-        public Principal()
-        {
-            PrincipalId = string.Empty;
-        }
-
-        private Principal(string s)
-        {
-            PrincipalId = s.Substring(2);
-            PrincipalType = AuthorizationPrincipalRole.DecodePrincipalEnum(s.Substring(0, 1));
-        }
-
-        /// <summary>
         /// Encodes the Principal to "g:group" or "u:user"
         /// </summary>
         /// <returns></returns>
@@ -62,10 +48,17 @@ namespace Artesian.SDK.Dto
         public static implicit operator string(Principal p) { return p.ToString(); }
 
         /// <summary>
-        /// Implicit conversion from Principal to string
+        /// Implicit conversion from Principal to string - decodes "g:group" or "u:user" to Principal
         /// </summary>
         /// <param name="p"></param>
-        public static implicit operator Principal(string p) { return new Principal { PrincipalId = p }; }
+        public static implicit operator Principal(string p) 
+        { 
+            return new Principal 
+            { 
+                PrincipalId = p.Substring(2),
+                PrincipalType = AuthorizationPrincipalRole.DecodePrincipalEnum(p.Substring(0, 1))
+            }; 
+        }
     }
 
     /// <summary>

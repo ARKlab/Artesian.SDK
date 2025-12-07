@@ -18,35 +18,35 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [JsonProperty(PropertyName = "P")]
         [Key(0)]
-        public virtual string? ProviderName { get; init; }
+        public string? ProviderName { get; init; }
 
         /// <summary>
         /// Curve Name
         /// </summary>
         [JsonProperty(PropertyName = "N")]
         [Key(1)]
-        public virtual string? CurveName { get; init; }
+        public string? CurveName { get; init; }
 
         /// <summary>
         /// Market Data ID
         /// </summary>
         [JsonProperty(PropertyName = "ID")]
         [Key(2)]
-        public virtual int TSID { get; init; }
+        public int TSID { get; init; }
 
         /// <summary>
         /// Product Name
         /// </summary>
         [JsonProperty(PropertyName = "PR")]
         [Key(3)]
-        public virtual string? Product { get; init; }
+        public string? Product { get; init; }
 
         /// <summary>
         /// Timestamp
         /// </summary>
         [JsonProperty(PropertyName = "T")]
         [Key(4)]
-        public virtual DateTimeOffset Time { get; init; }
+        public DateTimeOffset Time { get; init; }
 
         #region Bid Ask Values
 
