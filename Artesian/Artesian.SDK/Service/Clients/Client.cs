@@ -41,7 +41,7 @@ namespace Artesian.SDK.Service
 
         private readonly string _url;
         private readonly AsyncPolicy? _resilienceStrategy;
-        private readonly string _apiKey;
+        private readonly string? _apiKey;
         private readonly IArtesianServiceConfig? _config;
 
         private readonly IConfidentialClientApplication? _confidentialClientApplication;

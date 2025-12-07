@@ -21,17 +21,17 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// MarketData Identifier
         /// </summary>
-        MarketDataIdentifier Identifier { get; }
+        MarketDataIdentifier? Identifier { get; }
 
         /// <summary>
         /// MarketData ReadOnly Entity
         /// </summary>
-        MarketDataMetadata Metadata { get; }
+        MarketDataMetadata? Metadata { get; }
 
         /// <summary>
         /// DerivedCfg
         /// </summary>
-        DerivedCfg DerivedCfg { get; }
+        DerivedCfg? DerivedCfg { get; }
 
         /// <summary>
         /// MarketData Load Metadata

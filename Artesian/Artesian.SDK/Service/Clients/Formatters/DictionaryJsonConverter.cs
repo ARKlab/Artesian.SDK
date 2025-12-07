@@ -11,9 +11,9 @@ namespace Artesian.SDK.Service
 {
     internal sealed class DictionaryJsonConverter : JsonConverter
     {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            var dictionary = (IDictionary)value;
+            var dictionary = (IDictionary)value!;
 
             writer.WriteStartArray();
 
@@ -35,7 +35,7 @@ namespace Artesian.SDK.Service
             writer.WriteEndArray();
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (!CanConvert(objectType))
                 throw new NotSupportedException(string.Format("This converter is not for {0}.", objectType));

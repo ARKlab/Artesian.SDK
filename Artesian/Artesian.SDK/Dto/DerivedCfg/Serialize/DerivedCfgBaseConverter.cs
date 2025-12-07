@@ -69,14 +69,14 @@ namespace Artesian.SDK.Dto.Serialize
             get { return false; }
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             throw new NotSupportedException();
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object? ReadJson(JsonReader reader,
                                         Type objectType,
-                                         object existingValue,
+                                         object? existingValue,
                                          JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null) return null;
