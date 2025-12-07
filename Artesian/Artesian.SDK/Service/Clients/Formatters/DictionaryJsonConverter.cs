@@ -71,8 +71,8 @@ namespace Artesian.SDK.Service
 
         private void _addObjectToDictionary(JsonReader reader, IDictionary result, JsonSerializer serializer, Type keyType, Type valueType)
         {
-            object key = null;
-            object value = null;
+            object? key = null;
+            object? value = null;
 
 #pragma warning disable MA0045 // Do not use blocking calls in a sync method (need to make calling method async)
             while (reader.Read())
@@ -83,7 +83,7 @@ namespace Artesian.SDK.Service
                     return;
                 }
 
-                var propertyName = reader.Value.ToString();
+                var propertyName = reader.Value?.ToString();
                 if (propertyName == "Key")
                 {
                     reader.Read();

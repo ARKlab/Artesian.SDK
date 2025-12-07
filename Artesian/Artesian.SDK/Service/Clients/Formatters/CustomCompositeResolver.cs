@@ -25,7 +25,7 @@ namespace Artesian.SDK.Service
         {
         }
 
-        public IMessagePackFormatter<T> GetFormatter<T>()
+        public IMessagePackFormatter<T>? GetFormatter<T>()
         {
             return FormatterCache<T>.formatter;
         }

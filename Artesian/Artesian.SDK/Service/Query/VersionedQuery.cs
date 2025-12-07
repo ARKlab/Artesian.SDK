@@ -443,7 +443,7 @@ namespace Artesian.SDK.Service
 
             if (QueryParamaters.FillerKindType == FillerKindType.LatestValidValue)
             {
-                if (QueryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true || QueryParamaters.FillerConfig.FillerPeriod == null)
+                if (QueryParamaters.FillerConfig.FillerPeriod == null || QueryParamaters.FillerConfig.FillerPeriod.ToString().Contains('-') == true)
                 {
                     throw new ArtesianSdkClientException("Latest valid value filler must contain a non negative Period");
                 }
@@ -457,7 +457,7 @@ namespace Artesian.SDK.Service
         {
             string subPath;
 
-            switch (queryParamaters.VersionSelectionType.Value)
+            switch (queryParamaters.VersionSelectionType!.Value)
             {
                 case VersionSelectionType.LastN:
                     subPath = $"Last{queryParamaters.VersionSelectionConfig.LastN}";
