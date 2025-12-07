@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Common;
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.GMEPublicOffer;
 
@@ -27,7 +27,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <param name="sort">Sort by</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>Paged result of OperatorDto</returns>
-        public Task<PagedResult<OperatorDto>> ReadOperatorsAsync(int page, int pageSize, string operatorFilter = null, string[] sort = null, CancellationToken ctk = default)
+        public Task<PagedResult<OperatorDto>> ReadOperatorsAsync(int page, int pageSize, string? operatorFilter = null, string[] sort = null, CancellationToken ctk = default)
         {
             if (page < 1)
                 throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
@@ -53,7 +53,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <param name="sort">Sort by</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>Paged result of UnitDto</returns>
-        public Task<PagedResult<UnitDto>> ReadUnitsAsync(int page, int pageSize, string unitFilter = null, string[] sort = null, CancellationToken ctk = default)
+        public Task<PagedResult<UnitDto>> ReadUnitsAsync(int page, int pageSize, string? unitFilter = null, string[] sort = null, CancellationToken ctk = default)
         {
             if (page < 1)
                 throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
@@ -95,7 +95,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <param name="sort">Sort by</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>UnitConfiguration result</returns>
-        public Task<PagedResult<UnitConfigurationDto>> ReadUnitConfigurationMappingsAsync(int page, int pageSize, string unitFilter = null, string[] sort = null, CancellationToken ctk = default)
+        public Task<PagedResult<UnitConfigurationDto>> ReadUnitConfigurationMappingsAsync(int page, int pageSize, string? unitFilter = null, string[] sort = null, CancellationToken ctk = default)
         {
             if (page < 1)
                 throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));

@@ -21,14 +21,14 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Period
         /// </summary>
-        public Period? Period { get; set; }
+        public Period Period { get; set; } = default;
         /// <summary>
         /// Period start for period range
         /// </summary>
-        public Period? PeriodFrom { get; set; }
+        public Period PeriodFrom { get; set; } = default;
         /// <summary>
         /// Period start for period range
         /// </summary>
-        public Period? PeriodTo { get; set; }
+        public Period PeriodTo { get; set; } = default;
     }
 }
