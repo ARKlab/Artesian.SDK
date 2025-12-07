@@ -14,13 +14,13 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public string? TagKey { get; init; }
+        public required string TagKey { get; init; }
 
         /// <summary>
         /// The Facet Value.
         /// </summary>
         [Required]
         [MessagePack.Key(1)]
-        public string? TagValue { get; init; }
+        public required string TagValue { get; init; }
     }
 }

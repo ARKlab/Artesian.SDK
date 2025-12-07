@@ -65,7 +65,7 @@ namespace Artesian.SDK.Dto
         /// Implicit conversion from Principal to string
         /// </summary>
         /// <param name="p"></param>
-        public static implicit operator Principal(string p) { return new Principal(p); }
+        public static implicit operator Principal(string p) { return new Principal { PrincipalId = p }; }
     }
 
     /// <summary>

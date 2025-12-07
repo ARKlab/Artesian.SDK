@@ -132,13 +132,17 @@ namespace Artesian.SDK.Dto
 
         public static implicit operator PathString(string url) { return PathString.Parse(url); }
 
-        public static bool operator ==(PathString obj1, PathString obj2)
+        public static bool operator ==(PathString? obj1, PathString? obj2)
         {
+            if (obj1 is null && obj2 is null) return true;
+            if (obj1 is null || obj2 is null) return false;
             return obj1.Equals(obj2);
         }
 
-        public static bool operator !=(PathString obj1, PathString obj2)
+        public static bool operator !=(PathString? obj1, PathString? obj2)
         {
+            if (obj1 is null && obj2 is null) return false;
+            if (obj1 is null || obj2 is null) return true;
             return !obj1.Equals(obj2);
         }
 

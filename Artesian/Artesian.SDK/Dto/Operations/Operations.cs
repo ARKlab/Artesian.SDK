@@ -110,7 +110,7 @@ namespace Artesian.SDK.Dto
                         {
                             if (op.Params is OperationUpdateOriginalTimeZone p)
                             {
-                                if (!String.IsNullOrWhiteSpace(p.Value) && DateTimeZoneProviders.Tzdb.GetZoneOrNull(p.Value) == null)
+                                if (!String.IsNullOrWhiteSpace(p.Value) && DateTimeZoneProviders.Tzdb.GetZoneOrNull(p.Value!) == null)
                                     throw new ArgumentException("Operations: any single Params Value must be in IANA database if valorized", nameof(operations));
                             }
                             else
