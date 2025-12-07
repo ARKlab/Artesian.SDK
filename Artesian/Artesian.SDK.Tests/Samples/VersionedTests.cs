@@ -198,7 +198,7 @@ namespace Artesian.SDK.Tests.Samples
             {
                 var testResult = vtsResults.Where(x => x.Time == v.Key);
 
-                ClassicAssert.AreEqual(v.Value, testResult.FirstOrDefault()!.Value);
+                ClassicAssert.AreEqual(v.Value, testResult.First().Value);
             }
 
             await marketDataService.DeleteMarketDataAsync(curveId);

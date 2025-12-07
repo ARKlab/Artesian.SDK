@@ -24,11 +24,11 @@ namespace Artesian.SDK.Dto
         public static readonly TimeTransformSimpleShift GASDAY66 = new TimeTransformSimpleShift()
         {
             ID = 1,
-            Name = "GASDAY6-6",
+            Name = SystemTimeTransform.GASDAY66.ToString(),
             ETag = Guid.Empty,
             DefinedBy = TransformDefinitionType.System,
             Period = Granularity.Day,
-            PositiveShift = "",
+            PositiveShift = "PT6H",
             NegativeShift = "",
         };
 
@@ -43,7 +43,7 @@ namespace Artesian.SDK.Dto
             DefinedBy = TransformDefinitionType.System,
             Period = Granularity.Year,
             PositiveShift = "",
-            NegativeShift = "P3M",
+            NegativeShift = "",
         };
     }
 }

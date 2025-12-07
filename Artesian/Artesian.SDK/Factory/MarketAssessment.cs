@@ -210,7 +210,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// AssessmentElement entity
         /// </summary>
-        public sealed class AssessmentElement
+        public sealed record AssessmentElement
         {
             /// <summary>
             /// AssessmentElement constructor
@@ -225,15 +225,15 @@ namespace Artesian.SDK.Factory
             /// <summary>
             /// AssessmentElement ReportTime
             /// </summary>
-            public LocalDateTime ReportTime { get; set; }
+            public LocalDateTime ReportTime { get; init; }
             /// <summary>
             /// AssessmentElement Product
             /// </summary>
-            public string Product { get; set; }
+            public string Product { get; init; }
             /// <summary>
             /// AssessmentElement MarketAssessmentValue
             /// </summary>
-            public MarketAssessmentValue? Value { get; set; }
+            public MarketAssessmentValue Value { get; init; }
         }
     }
 }

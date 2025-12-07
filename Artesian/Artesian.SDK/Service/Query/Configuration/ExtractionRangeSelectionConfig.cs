@@ -35,6 +35,6 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Relative Interval for extraction
         /// </summary>
-        public RelativeInterval? Interval { get; set; }
+        public RelativeInterval Interval { get; set; }
     }
 }

@@ -13,13 +13,6 @@ namespace Artesian.SDK.Dto.UoM
         /// <summary>
         /// CheckConversionResult Constructor
         /// </summary>
-        public CheckConversionResult()
-        {
-        }
-
-        /// <summary>
-        /// CheckConversionResult Constructor
-        /// </summary>
         /// <param name="targetUnitOfMeasure"></param>
         public CheckConversionResult(string targetUnitOfMeasure)
         {

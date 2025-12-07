@@ -143,11 +143,12 @@ namespace Artesian.SDK.Tests
                         .ExecuteAsync().ConfigureAwait(false);
                 });
 
+                Assert.That(ex, Is.Not.Null);
                 Assert.That(ex!.Message, Does.Contain("Bad Request"));
-                Assert.That(ex!.ProblemDetail, Is.Not.Null);
+                Assert.That(ex.ProblemDetail, Is.Not.Null);
                 Assert.That(ex.ProblemDetail!.Title, Is.EqualTo("Bad Request"));
-                Assert.That(ex.ProblemDetail!.Status, Is.EqualTo(400));
-                Assert.That(ex.ProblemDetail!.Detail, Is.EqualTo("Invalid request parameters"));
+                Assert.That(ex.ProblemDetail.Status, Is.EqualTo(400));
+                Assert.That(ex.ProblemDetail.Detail, Is.EqualTo("Invalid request parameters"));
             }
         }
 
@@ -180,11 +181,12 @@ namespace Artesian.SDK.Tests
                         .ExecuteAsync().ConfigureAwait(false);
                 });
 
+                Assert.That(ex, Is.Not.Null);
                 Assert.That(ex!.Message, Does.Contain("Conflict"));
-                Assert.That(ex!.ProblemDetail, Is.Not.Null);
+                Assert.That(ex.ProblemDetail, Is.Not.Null);
                 Assert.That(ex.ProblemDetail!.Title, Is.EqualTo("Conflict"));
-                Assert.That(ex.ProblemDetail!.Status, Is.EqualTo(409));
-                Assert.That(ex.ProblemDetail!.Detail, Is.EqualTo("Resource conflict"));
+                Assert.That(ex.ProblemDetail.Status, Is.EqualTo(409));
+                Assert.That(ex.ProblemDetail.Detail, Is.EqualTo("Resource conflict"));
             }
         }
 
@@ -206,11 +208,12 @@ namespace Artesian.SDK.Tests
                         .ExecuteAsync().ConfigureAwait(false);
                 });
 
+                Assert.That(ex, Is.Not.Null);
                 Assert.That(ex!.Message, Does.Contain("Unsupported content type"));
-                Assert.That(ex!.Message, Does.Contain("text/plain"));
-                Assert.That(ex!.Message, Does.Contain("application/json"));
-                Assert.That(ex!.Message, Does.Contain("application/x-msgpack"));
-                Assert.That(ex!.Message, Does.Contain("application/x.msgpacklz4"));
+                Assert.That(ex.Message, Does.Contain("text/plain"));
+                Assert.That(ex.Message, Does.Contain("application/json"));
+                Assert.That(ex.Message, Does.Contain("application/x-msgpack"));
+                Assert.That(ex.Message, Does.Contain("application/x.msgpacklz4"));
             }
         }
 

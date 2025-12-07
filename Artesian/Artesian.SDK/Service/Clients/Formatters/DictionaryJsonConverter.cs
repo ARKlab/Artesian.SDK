@@ -87,7 +87,8 @@ namespace Artesian.SDK.Service
                 }
 
                 var propertyName = reader.Value?.ToString();
-                if (propertyName == null) continue;
+                if (propertyName == null) 
+                    throw new JsonSerializationException("Dictionary key property name is null");
                 if (propertyName == "Key")
                 {
                     reader.Read();

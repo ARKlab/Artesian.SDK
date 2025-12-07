@@ -191,7 +191,7 @@ namespace Artesian.SDK.Factory
             var data = new DeleteCurveData
             {
                 ID = _identifier,
-                Timezone = timezone ?? "CET",
+                Timezone = timezone,
                 // LocalDate.MinIsoValue has year -9998 and yearOfEra 9999. Using it without any string formatting, we got date 01-01-9999.
                 // So we use default(LocalDateTime) 01/01/0001
                 RangeStart = rangeStart ?? default(LocalDateTime),
@@ -207,7 +207,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// BidAskElement entity
         /// </summary>
-        public sealed class BidAskElement
+        public sealed record BidAskElement
         {
             /// <summary>
             /// BidAskElement constructor
@@ -222,15 +222,15 @@ namespace Artesian.SDK.Factory
             /// <summary>
             /// BidAskElement ReportTime
             /// </summary>
-            public LocalDateTime ReportTime { get; set; }
+            public LocalDateTime ReportTime { get; init; }
             /// <summary>
             /// BidAskElement Product
             /// </summary>
-            public string Product { get; set; }
+            public string Product { get; init; }
             /// <summary>
             /// BidAskElement BidAskValue
             /// </summary>
-            public BidAskValue? Value { get; set; }
+            public BidAskValue Value { get; init; }
         }
     }
 }

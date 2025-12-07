@@ -30,9 +30,8 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// For DateSeries if provided must be equal to MarketData OrignalTimezone Default:MarketData OrignalTimezone. For TimeSeries Default:CET
         /// </summary>
-        [Required]
         [MessagePack.Key(2)]
-        public required string Timezone { get; init; }
+        public string? Timezone { get; init; }
 
         /// <summary>
         /// Start date of range to be deleted  
