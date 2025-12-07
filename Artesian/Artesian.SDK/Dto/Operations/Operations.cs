@@ -30,14 +30,14 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public ISet<MarketDataETag>? IDS { get; set; }
+        public ISet<MarketDataETag> IDS { get; set; }
 
         /// <summary>
         /// The Operations to be executed
         /// </summary>
         [Required]
         [MessagePack.Key(1)]
-        public IList<OperationParams>? OperationList { get; set; }
+        public IList<OperationParams> OperationList { get; set; }
     }
 
 
@@ -66,7 +66,8 @@ namespace Artesian.SDK.Dto
                 {
                     case OperationType.EnableTag:
                         {
-                            var p = op.Params as OperationEnableDisableTag;
+                            if (op.Params is not OperationEnableDisableTag p)
+                                throw new InvalidOperationException("Operations: Data cannot be used as OperationEnableDisableTag");
 
                             if (!p.TagKey._isValidTagKey())
                                 throw new ArgumentException("Operations: any single Params TagKey must have specific values", nameof(operations));
@@ -79,7 +80,8 @@ namespace Artesian.SDK.Dto
                         }
                     case OperationType.DisableTag:
                         {
-                            var p = op.Params as OperationEnableDisableTag;
+                            if (op.Params is not OperationEnableDisableTag p)
+                                throw new InvalidOperationException("Operations: Data cannot be used as OperationEnableDisableTag");
 
                             if (!p.TagKey._isValidTagKey())
                                 throw new ArgumentException("Operations: any single Params TagKey must have specific values", nameof(operations));
@@ -92,13 +94,15 @@ namespace Artesian.SDK.Dto
                         }
                     case OperationType.UpdateTimeTransformID:
                         {
-                            var p = op.Params as OperationUpdateTimeTransform;
+                            if (op.Params is not OperationUpdateTimeTransform p)
+                                throw new InvalidOperationException("Operations: Data cannot be used as OperationUpdateTimeTransform");
 
                             break;
                         }
                     case OperationType.UpdateAggregationRule:
                         {
-                            var p = op.Params as OperationUpdateAggregationRule;
+                            if (op.Params is not OperationUpdateAggregationRule p)
+                                throw new InvalidOperationException("Operations: Data cannot be used as OperationUpdateAggregationRule");
 
                             break;
                         }
@@ -116,13 +120,15 @@ namespace Artesian.SDK.Dto
                         }
                     case OperationType.UpdateUnitOfMeasure:
                         {
-                            var p = op.Params as OperationUpdateUnitOfMeasure;
+                            if (op.Params is not OperationUpdateUnitOfMeasure p)
+                                throw new InvalidOperationException("Operations: Data cannot be used as OperationUpdateUnitOfMeasure");
 
                             break;
                         }
                     case OperationType.UpdateProviderDescription:
                         {
-                            var p = op.Params as OperationUpdateProviderDescription;
+                            if (op.Params is not OperationUpdateProviderDescription p)
+                                throw new InvalidOperationException("Operations: Data cannot be used as OperationUpdateProviderDescription");
 
                             break;
                         }
