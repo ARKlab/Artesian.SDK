@@ -164,7 +164,7 @@ namespace Artesian.SDK.Factory
 
                 foreach (var reportTime in _values.GroupBy(g => g.ReportTime))
                 {
-                    var bidAsks = reportTime.ToDictionary<BidAskElement, string, BidAskValue>(key => key.Product, value => value.Value, StringComparer.Ordinal);
+                    var bidAsks = reportTime.ToDictionary<BidAskElement, string, BidAskValue>(key => key.Product, value => value.Value!, StringComparer.Ordinal);
                     data.BidAsk.Add(reportTime.Key, bidAsks);
                 }
 

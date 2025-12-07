@@ -167,7 +167,7 @@ namespace Artesian.SDK.Factory
 
                 foreach (var reportTime in _values.GroupBy(g => g.ReportTime))
                 {
-                    var assessments = reportTime.ToDictionary<AssessmentElement, string, MarketAssessmentValue>(key => key.Product, value => value.Value, StringComparer.Ordinal);
+                    var assessments = reportTime.ToDictionary<AssessmentElement, string, MarketAssessmentValue>(key => key.Product, value => value.Value!, StringComparer.Ordinal);
                     data.MarketAssessment.Add(reportTime.Key, assessments);
                 }
 

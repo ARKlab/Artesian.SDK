@@ -65,7 +65,7 @@ namespace Artesian.SDK.Service
                                 queryParamater.FillerKindType,
                                 queryParamater.FillerConfig ?? throw new InvalidOperationException("FillerConfig is required"),
                                 queryParamater.AnalysisDate,
-                                queryParamater.UnitOfMeasure,
+                                queryParamater.UnitOfMeasure ?? string.Empty,
                                 queryParamater.AggregationRule
                                 )));
         }

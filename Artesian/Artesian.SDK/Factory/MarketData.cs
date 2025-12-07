@@ -5,6 +5,7 @@ using Artesian.SDK.Service;
 
 using NodaTime;
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -257,7 +258,7 @@ namespace Artesian.SDK.Factory
         {
             _entity!.ValidateUpdateDerivedCfg(derivedCfg);
 
-            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
+            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false) ?? throw new InvalidOperationException("UpdateDerivedConfigurationAsync returned null");
 
             DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
 

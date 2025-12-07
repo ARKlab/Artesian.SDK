@@ -120,8 +120,8 @@ namespace Artesian.SDK.Dto
                 get
                 {
                     if (string.IsNullOrWhiteSpace(_path))
-                        return $@"/marketdata/system/{(ProviderName ?? "").Replace("/", "\\/")}/{(MarketDataName ?? "").Replace("/", "\\/")}";//new PathString(new[] { "marketdata", "system", ProviderName, MarketDataName });
-                    return _path;
+                        return $@"/marketdata/system/{(ProviderName ?? string.Empty).Replace("/", "\\/")}/{(MarketDataName ?? string.Empty).Replace("/", "\\/")}";//new PathString(new[] { "marketdata", "system", ProviderName, MarketDataName });
+                    return _path!;
                 }
                 set { _path = value; }
             }
