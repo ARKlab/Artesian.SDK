@@ -120,10 +120,10 @@ namespace Artesian.SDK.Dto
                 get
                 {
                     if (string.IsNullOrWhiteSpace(_path))
-                        return $@"/marketdata/system/{ProviderName.Replace("/", "\\/")}/{MarketDataName.Replace("/", "\\/")}";//new PathString(new[] { "marketdata", "system", ProviderName, MarketDataName });
-                    return this._path;
+                        return $@"/marketdata/system/{(ProviderName ?? "").Replace("/", "\\/")}/{(MarketDataName ?? "").Replace("/", "\\/")}";//new PathString(new[] { "marketdata", "system", ProviderName, MarketDataName });
+                    return _path;
                 }
-                set { this._path = value; }
+                set { _path = value; }
             }
             /// <summary>
             /// The Derived Configuration
@@ -134,14 +134,20 @@ namespace Artesian.SDK.Dto
                 get
                 {
                     if (_derivedCfg == null)
+                    {
                         if (this.Type == MarketDataType.VersionedTimeSerie)
+                        {
                             return new DerivedCfgMuv()
                             {
                                 Version = 1
                             };
-                    return this._derivedCfg;
+                        }
+                        // Return a default configuration if not VersionedTimeSerie
+                        return new DerivedCfgMuv() { Version = 1 };
+                    }
+                    return _derivedCfg;
                 }
-                set { this._derivedCfg = value; }
+                set { _derivedCfg = value; }
 
             }
             /// <summary>

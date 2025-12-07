@@ -41,7 +41,7 @@ namespace Artesian.SDK.Dto
 
     internal static class ArtesianSearchFilterExt
     {
-        private static Regex? _validSorts = new Regex(
+        private static readonly Regex _validSorts = new Regex(
             "^(MarketDataId|ProviderName|MarketDataName|OriginalGranularity|Type|OriginalTimezone|Created|LastUpdated)( (asc|desc))?$"
             , RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1));
 
