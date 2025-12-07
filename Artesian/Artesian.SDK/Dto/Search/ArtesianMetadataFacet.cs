@@ -10,41 +10,41 @@ namespace Artesian.SDK.Dto
     /// Facet Entity
     /// </summary>
     [MessagePackObject]
-    public class ArtesianMetadataFacet
+    public record ArtesianMetadataFacet
     {
         /// <summary>
         /// Facet Name
         /// </summary>
         [Key(0)]
-        public string? FacetName { get; set; }
+        public string? FacetName { get; init; }
         /// <summary>
         /// Facet Type
         /// </summary>
         [Key(1)]
-        public ArtesianMetadataFacetType? FacetType { get; set; }
+        public ArtesianMetadataFacetType? FacetType { get; init; }
         /// <summary>
         /// Facet Values
         /// </summary>
         [Key(2)]
-        public List<ArtesianMetadataFacetCount>? Values { get; set; }
+        public List<ArtesianMetadataFacetCount>? Values { get; init; }
     }
 
     /// <summary>
     /// Metadata Facet Entity
     /// </summary>
     [MessagePackObject]
-    public class ArtesianMetadataFacetCount
+    public record ArtesianMetadataFacetCount
     {
         /// <summary>
         /// Metadata Facet Entity Value
         /// </summary>
         [Key(0)]
-        public string? Value { get; set; }
+        public string? Value { get; init; }
         /// <summary>
         /// Metadata Facet Entity Count
         /// </summary>
         [Key(1)]
-        public long? Count { get; set; }
+        public long? Count { get; init; }
     }
 
     /// <summary>

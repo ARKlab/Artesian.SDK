@@ -7,13 +7,13 @@ namespace Artesian.SDK.Dto
     /// The Operation for Update Provider Description
     /// </summary>
     [MessagePackObject]
-    public class OperationUpdateProviderDescription : IOperationParamsPayload
+    public record OperationUpdateProviderDescription : IOperationParamsPayload
     {
         /// <summary>
         /// The Provider Description Update value
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public string? Value { get; set; }
+        public string? Value { get; init; }
     }
 }

@@ -10,13 +10,13 @@ namespace Artesian.SDK.Dto
     /// The Operation for Update the UnitOfMeasure
     /// </summary>
     [MessagePackObject]
-    public class OperationUpdateUnitOfMeasure : IOperationParamsPayload
+    public record OperationUpdateUnitOfMeasure : IOperationParamsPayload
     {
         /// <summary>
         /// Value
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public UnitOfMeasure? Value { get; set; }
+        public UnitOfMeasure? Value { get; init; }
     }
 }

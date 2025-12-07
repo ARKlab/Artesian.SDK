@@ -7,13 +7,13 @@ namespace Artesian.SDK.Dto
     /// The Operation for Update Aggregation rule
     /// </summary>
     [MessagePackObject]
-    public class OperationUpdateAggregationRule : IOperationParamsPayload
+    public record OperationUpdateAggregationRule : IOperationParamsPayload
     {
         /// <summary>
         /// The AggregationRule Update value
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public AggregationRule Value { get; set; }
+        public AggregationRule Value { get; init; }
     }
 }

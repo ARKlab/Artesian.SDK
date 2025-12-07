@@ -10,7 +10,7 @@ namespace Artesian.SDK.Dto
     /// The curve data for a save command.
     /// </summary>
     [MessagePackObject]
-    public class UpsertCurveData
+    public record UpsertCurveData
     {
         /// <summary>
         /// The default constructor
@@ -41,27 +41,27 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public MarketDataIdentifier? ID { get; set; }
+        public MarketDataIdentifier? ID { get; init; }
 
         /// <summary>
         /// The Version to operate on
         /// </summary>
         [MessagePack.Key(1)]
-        public LocalDateTime? Version { get; set; }
+        public LocalDateTime? Version { get; init; }
 
         /// <summary>
         /// The timezone of the Rows. Must be the OriginalTimezone or, when Hourly, must be "UTC".
         /// </summary>
         [Required]
         [MessagePack.Key(2)]
-        public string? Timezone { get; set; }
+        public string? Timezone { get; init; }
 
         /// <summary>
         /// The UTC timestamp at which this assessment has been acquired/generated.
         /// </summary>
         [Required]
         [MessagePack.Key(3)]
-        public Instant DownloadedAt { get; set; }
+        public Instant DownloadedAt { get; init; }
 
         /// <summary>
         /// The Market Data Identifier to upsert
@@ -69,43 +69,43 @@ namespace Artesian.SDK.Dto
         /// - IDictionary value is The Market Data Identifier to upsert
         /// </summary>
         [MessagePack.Key(4)]
-        public IDictionary<LocalDateTime, IDictionary<string, MarketAssessmentValue>>? MarketAssessment { get; set; }
+        public IDictionary<LocalDateTime, IDictionary<string, MarketAssessmentValue>>? MarketAssessment { get; init; }
 
         /// <summary>
         /// The timeserie data in OriginalTimezone or, when Hourly, must be UTC.
         /// </summary>
         [MessagePack.Key(5)]
-        public IDictionary<LocalDateTime, double?>? Rows { get; set; }
+        public IDictionary<LocalDateTime, double?>? Rows { get; init; }
 
         /// <summary>
         /// Flag to choose between synchronous and asynchronous command execution
         /// </summary>
         [MessagePack.Key(6)]
-        public bool DeferCommandExecution { get; set; } = true;
+        public bool DeferCommandExecution { get; init; } = true;
 
         /// <summary>
         /// Flag to choose between synchronous and asynchronous precomputed data generation
         /// </summary>
         [MessagePack.Key(7)]
-        public bool DeferDataGeneration { get; set; } = true;
+        public bool DeferDataGeneration { get; init; } = true;
 
         /// <summary>
         /// Flag to choose between syncronoys and asyncronous precomputed data generation
         /// </summary>
         [MessagePack.Key(8)]
-        public bool KeepNulls { get; set; } = false;
+        public bool KeepNulls { get; init; } = false;
 
         /// <summary>
         /// The timeserie data in OriginalTimezone or, when Hourly, must be UTC.
         /// </summary>
         [MessagePack.Key(9)]
-        public IDictionary<LocalDateTime, AuctionBids>? AuctionRows { get; set; }
+        public IDictionary<LocalDateTime, AuctionBids>? AuctionRows { get; init; }
 
         /// <summary>
         /// The BidAsk
         /// </summary>
         [MessagePack.Key(10)]
-        public IDictionary<LocalDateTime, IDictionary<string, BidAskValue>>? BidAsk { get; set; }
+        public IDictionary<LocalDateTime, IDictionary<string, BidAskValue>>? BidAsk { get; init; }
 
         /// <summary>
         /// The Upsert Mode: Merge or Replace.
@@ -113,7 +113,7 @@ namespace Artesian.SDK.Dto
         /// types any previous data for version or product is replaced by the rows in the payload
         /// </summary>
         [MessagePack.Key(11)]
-        public UpsertMode? UpsertMode { get; set; }
+        public UpsertMode? UpsertMode { get; init; }
     }
 
     internal static class UpsertCurveDataExt

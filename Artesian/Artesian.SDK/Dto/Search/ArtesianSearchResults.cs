@@ -10,22 +10,22 @@ namespace Artesian.SDK.Dto
     /// Artesian search results
     /// </summary>
     [MessagePackObject]
-    public class ArtesianSearchResults
+    public record ArtesianSearchResults
     {
         /// <summary>
         /// Results
         /// </summary>
         [Key(0)]
-        public List<MarketDataEntity.Output>? Results { get; set; }
+        public List<MarketDataEntity.Output>? Results { get; init; }
         /// <summary>
         /// Facets
         /// </summary>
         [Key(1)]
-        public List<ArtesianMetadataFacet>? Facets { get; set; }
+        public List<ArtesianMetadataFacet>? Facets { get; init; }
         /// <summary>
         /// Results count
         /// </summary>
         [Key(2)]
-        public long? CountResults { get; set; }
+        public long? CountResults { get; init; }
     }
 }
