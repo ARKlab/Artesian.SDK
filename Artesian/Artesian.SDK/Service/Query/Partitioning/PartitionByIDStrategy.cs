@@ -103,6 +103,7 @@ namespace Artesian.SDK.Service
         public IEnumerable<AuctionQueryParamaters> Partition(IEnumerable<AuctionQueryParamaters> queryParamaters)
         {
             if (queryParamaters.Any(g => g.Ids == null)) return queryParamaters;
+            
             return queryParamaters.SelectMany(queryParamater =>
                         _partitionIds(queryParamater.Ids!)
                             .Select(g => new AuctionQueryParamaters(g,
