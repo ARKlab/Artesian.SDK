@@ -14,7 +14,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// GMEPublicOffer
         /// </summary>
         [Key(0)]
-        public IList<GMEPublicOfferDto>? GMEPublicOffer { get; init; }
+        public required IList<GMEPublicOfferDto> GMEPublicOffer { get; init; }
         /// <summary>
         /// Flag to choose between syncronoys and asyncronous command execution
         /// </summary>

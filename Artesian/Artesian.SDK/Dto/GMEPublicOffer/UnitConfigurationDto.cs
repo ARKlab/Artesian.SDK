@@ -19,7 +19,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Generation type mappings
         /// </summary>
         [Key(1)]
-        public List<GenerationTypeMapping>? Mappings { get; init; }
+        public List<GenerationTypeMapping> Mappings { get; init; } = new();
 
         /// <summary>
         /// ETag
@@ -39,7 +39,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// GenerationType
         /// </summary>
         [Key(0)]
-        public GenerationType? GenerationType { get; init; }
+        public GenerationType GenerationType { get; init; }
 
         /// <summary>
         /// From date

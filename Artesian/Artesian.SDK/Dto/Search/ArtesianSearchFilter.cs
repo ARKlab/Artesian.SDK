@@ -12,7 +12,7 @@ namespace Artesian.SDK.Dto
     /// <summary>
     /// The dto for a new search facet based
     /// </summary>
-    public class ArtesianSearchFilter
+    public partial record ArtesianSearchFilter
     {
         /// <summary>
         /// Free search text
@@ -37,14 +37,22 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         public int Page { get; set; }
+
+#if NET7_0_OR_GREATER
+        [GeneratedRegex(
+            "^(MarketDataId|ProviderName|MarketDataName|OriginalGranularity|Type|OriginalTimezone|Created|LastUpdated)( (asc|desc))?$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture, 1000)]
+        internal static partial Regex ValidSortsRegex();
+#else
+        internal static Regex ValidSortsRegex() => _validSorts;
+        private static readonly Regex _validSorts = new Regex(
+            "^(MarketDataId|ProviderName|MarketDataName|OriginalGranularity|Type|OriginalTimezone|Created|LastUpdated)( (asc|desc))?$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1));
+#endif
     }
 
     internal static class ArtesianSearchFilterExt
     {
-        private static readonly Regex _validSorts = new Regex(
-            "^(MarketDataId|ProviderName|MarketDataName|OriginalGranularity|Type|OriginalTimezone|Created|LastUpdated)( (asc|desc))?$"
-            , RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1));
-
         public static void Validate(this ArtesianSearchFilter artesianSearchFilter)
         {
 
@@ -52,7 +60,7 @@ namespace Artesian.SDK.Dto
             {
                 foreach (string element in artesianSearchFilter.Sorts)
                 {
-                    if (!_validSorts.IsMatch(element))
+                    if (!ArtesianSearchFilter.ValidSortsRegex().IsMatch(element))
                         throw new ArgumentException($"Invalid search param {element}", nameof(artesianSearchFilter));
                 }
             }

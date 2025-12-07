@@ -36,6 +36,6 @@ namespace Artesian.SDK.Dto
         ///Data
         /// </summary>
         [Key(4)]
-        public IEnumerable<T>? Data { get; init; }
+        public IEnumerable<T> Data { get; init; } = new List<T>();
     }
 }

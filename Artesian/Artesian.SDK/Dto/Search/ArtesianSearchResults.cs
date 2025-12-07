@@ -16,12 +16,12 @@ namespace Artesian.SDK.Dto
         /// Results
         /// </summary>
         [Key(0)]
-        public List<MarketDataEntity.Output>? Results { get; init; }
+        public List<MarketDataEntity.Output> Results { get; init; } = new();
         /// <summary>
         /// Facets
         /// </summary>
         [Key(1)]
-        public List<ArtesianMetadataFacet>? Facets { get; init; }
+        public List<ArtesianMetadataFacet> Facets { get; init; } = new();
         /// <summary>
         /// Results count
         /// </summary>

@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using System;
 
 namespace Artesian.SDK.Dto
 {
@@ -12,6 +13,6 @@ namespace Artesian.SDK.Dto
         /// The referenced market data IDs: order MAY be relevant depending on the selected algorithm.
         /// </summary>
         [Key("OrderedReferencedMarketDataIds")]
-        public int[]? OrderedReferencedMarketDataIds { get; init; }
+        public int[] OrderedReferencedMarketDataIds { get; init; } = Array.Empty<int>();
     }
 }

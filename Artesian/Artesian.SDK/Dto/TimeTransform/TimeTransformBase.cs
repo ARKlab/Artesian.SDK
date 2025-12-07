@@ -25,7 +25,7 @@ namespace Artesian.SDK.Dto
         /// The Time transform Name
         /// </summary>
         [Key("Name")]
-        public string? Name { get; init; }
+        public required string Name { get; init; }
         /// <summary>
         /// The Time transform Etag
         /// </summary>
