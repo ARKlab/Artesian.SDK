@@ -11,7 +11,7 @@ namespace Artesian.SDK.Dto
     public class PathString : IEquatable<PathString>
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        private static readonly Regex? _regexSplit = new Regex(@"(?<!\\)\/", RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+        private static readonly Regex _regexSplit = new Regex(@"(?<!\\)\/", RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
         public const int MaxLenghtPaths = 10;
         public const int MaxTokenLen = 50;
 
@@ -72,7 +72,7 @@ namespace Artesian.SDK.Dto
             return new PathString(tokens.Take(tokens.Length-1).ToArray(), tokens[tokens.Length-1]);
         }
 
-        public static bool TryParse(string path, out PathString retVal)
+        public static bool TryParse(string path, out PathString? retVal)
         {
             try
             {
@@ -141,12 +141,13 @@ namespace Artesian.SDK.Dto
             return !obj1.Equals(obj2);
         }
 
-        public bool Equals(PathString other)
+        public bool Equals(PathString? other)
         {
+            if (other == null) return false;
             return Enumerable.SequenceEqual(_tokens, other._tokens, StringComparer.Ordinal);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is PathString p && this.Equals(p);
         }
