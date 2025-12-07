@@ -10,32 +10,32 @@ namespace Artesian.SDK.Dto
     /// Paged Result entity
     /// </summary>
     [MessagePackObject]
-    public class PagedResult<T>
+    public record PagedResult<T>
     {
         /// <summary>
         /// Page Number
         /// </summary>
         [Key(0)]
-        public int Page { get; set; }
+        public int Page { get; init; }
         /// <summary>
         /// Page size (number of elements by page)
         /// </summary>
         [Key(1)]
-        public int PageSize { get; set; }
+        public int PageSize { get; init; }
         /// <summary>
         ///Number of pages
         /// </summary>
         [Key(2)]
-        public long Count { get; set; }
+        public long Count { get; init; }
         /// <summary>
         /// Indicated if the count is partial
         /// </summary>
         [Key(3)]
-        public bool IsCountPartial { get; set; }
+        public bool IsCountPartial { get; init; }
         /// <summary>
         ///Data
         /// </summary>
         [Key(4)]
-        public IEnumerable<T>? Data { get; set; }
+        public IEnumerable<T>? Data { get; init; }
     }
 }

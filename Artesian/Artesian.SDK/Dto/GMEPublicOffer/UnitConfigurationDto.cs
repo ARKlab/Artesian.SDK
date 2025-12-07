@@ -8,24 +8,24 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
     /// UnitConfiguration class
     /// </summary>
     [MessagePackObject]
-    public class UnitConfigurationDto
+    public record UnitConfigurationDto
     {
         /// <summary>
         /// Unit name
         /// </summary>
         [Key(0)]
-        public string? Unit { get; set; }
+        public string? Unit { get; init; }
         /// <summary>
         /// Generation type mappings
         /// </summary>
         [Key(1)]
-        public List<GenerationTypeMapping>? Mappings { get; set; }
+        public List<GenerationTypeMapping>? Mappings { get; init; }
 
         /// <summary>
         /// ETag
         /// </summary>
         [Key(2)]
-        public string? ETag { get; set; }
+        public string? ETag { get; init; }
     }
 
 
@@ -33,24 +33,24 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
     /// GenerationTypeMapping class
     /// </summary>
     [MessagePackObject]
-    public class GenerationTypeMapping
+    public record GenerationTypeMapping
     {
         /// <summary>
         /// GenerationType
         /// </summary>
         [Key(0)]
-        public GenerationType? GenerationType { get; set; }
+        public GenerationType? GenerationType { get; init; }
 
         /// <summary>
         /// From date
         /// </summary>
         [Key(1)]
-        public LocalDate From { get; set; }
+        public LocalDate From { get; init; }
 
         /// <summary>
         /// To date
         /// </summary>
         [Key(2)]
-        public LocalDate To { get; set; }
+        public LocalDate To { get; init; }
     }
 }

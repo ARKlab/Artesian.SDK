@@ -10,48 +10,48 @@ namespace Artesian.SDK.Dto
     /// The Curve Range
     /// </summary>
     [MessagePackObject]
-    public class CurveRange
+    public record CurveRange
     {
         /// <summary>
         /// The Market Data Identifier
         /// </summary>
         [Key(0)]
-        public int MarketDataId { get; set; }
+        public int MarketDataId { get; init; }
 
         /// <summary>
         /// The product for MAS
         /// </summary>
         [Key(1)]
-        public string? Product { get; set; }
+        public string? Product { get; init; }
 
         /// <summary>
         /// The version date for Versioned 
         /// </summary>
         [Key(2)]
-        public LocalDateTime? Version { get; set; }
+        public LocalDateTime? Version { get; init; }
 
         /// <summary>
         /// Last Update for this curve
         /// </summary>
         [Key(3)]
-        public Instant LastUpdated { get; set; }
+        public Instant LastUpdated { get; init; }
 
         /// <summary>
         /// Creation date for this curve 
         /// </summary>
         [Key(4)]
-        public Instant Created { get; set; }
+        public Instant Created { get; init; }
 
         /// <summary>
         /// Start date of range for this curve  
         /// </summary>
         [Key(5)]
-        public LocalDate RangeStart { get; set; }
+        public LocalDate RangeStart { get; init; }
 
         /// <summary>
         /// End date of range for this curve  
         /// </summary>
         [Key(6)]
-        public LocalDate RangeEnd { get; set; }
+        public LocalDate RangeEnd { get; init; }
     }
 }

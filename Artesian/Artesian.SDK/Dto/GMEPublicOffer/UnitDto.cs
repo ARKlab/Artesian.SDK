@@ -6,18 +6,18 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
     /// UnitDto class
     /// </summary>
     [MessagePackObject]
-    public class UnitDto
+    public record UnitDto
     {
         /// <summary>
         /// Unit Id
         /// </summary>
         [Key(0)]
-        public int Id { get; set; }
+        public int Id { get; init; }
 
         /// <summary>
         /// Unit
         /// </summary>
         [Key(1)]
-        public string? Unit { get; set; }
+        public string? Unit { get; init; }
     }
 }
