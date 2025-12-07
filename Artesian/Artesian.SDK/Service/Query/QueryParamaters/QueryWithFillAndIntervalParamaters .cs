@@ -50,6 +50,6 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Filler config
         /// </summary>
-        public FillerConfig? FillerConfig { get; set; } = new FillerConfig();
+        public FillerConfig FillerConfig { get; set; } = new FillerConfig();
     }
 }

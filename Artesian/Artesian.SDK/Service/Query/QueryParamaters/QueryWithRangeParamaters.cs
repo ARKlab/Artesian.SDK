@@ -45,7 +45,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Extraction range config
         /// </summary>
-        public ExtractionRangeSelectionConfig? ExtractionRangeSelectionConfig { get; set; } = new ExtractionRangeSelectionConfig();
+        public ExtractionRangeSelectionConfig ExtractionRangeSelectionConfig { get; set; } = new ExtractionRangeSelectionConfig();
         /// <summary>
         /// Extraction range type
         /// </summary>
