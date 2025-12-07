@@ -17,6 +17,6 @@ namespace Artesian.SDK.Dto
         /// The Acl Role
         /// </summary>
         [Key(1)]
-        public string Role { get; set; }
+        public string? Role { get; set; }
     }
 }

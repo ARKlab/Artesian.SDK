@@ -18,14 +18,14 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [JsonProperty(PropertyName = "P")]
         [Key(0)]
-        public virtual string ProviderName { get; set; }
+        public virtual string? ProviderName { get; set; }
 
         /// <summary>
         /// Curve Name
         /// </summary>
         [JsonProperty(PropertyName = "N")]
         [Key(1)]
-        public virtual string CurveName { get; set; }
+        public virtual string? CurveName { get; set; }
 
         /// <summary>
         /// Market Data ID
@@ -39,7 +39,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [JsonProperty(PropertyName = "PR")]
         [Key(3)]
-        public virtual string Product { get; set; }
+        public virtual string? Product { get; set; }
 
         /// <summary>
         /// Timestamp

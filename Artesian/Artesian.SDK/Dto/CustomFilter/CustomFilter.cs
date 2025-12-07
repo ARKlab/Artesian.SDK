@@ -19,12 +19,12 @@ namespace Artesian.SDK.Dto
         /// The CustomFilter Name
         /// </summary>
         [Key(1)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         /// <summary>
         /// The CustomFilter Search Text
         /// </summary>
         [Key(2)]
-        public string SearchText { get; set; }
+        public string? SearchText { get; set; }
         /// <summary>
         /// The CustomFilter values
         /// </summary>
@@ -34,7 +34,7 @@ namespace Artesian.SDK.Dto
         /// The CustomFilter Etag
         /// </summary>
         [Key(4)]
-        public string ETag { get; set; }
+        public string? ETag { get; set; }
     }
 
     internal static class CustomFilterExt

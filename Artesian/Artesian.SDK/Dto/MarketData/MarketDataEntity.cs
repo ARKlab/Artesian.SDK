@@ -60,19 +60,19 @@ namespace Artesian.SDK.Dto
             /// The Market Data Etag
             /// </summary>
             [MessagePack.Key(1)]
-            public string ETag { get; set; }
+            public string? ETag { get; set; }
             /// <summary>
             /// The Market Data Provider Name
             /// </summary>
             [Required]
             [MessagePack.Key(2)]
-            public string ProviderName { get; set; }
+            public string? ProviderName { get; set; }
             /// <summary>
             /// The Market Data Name
             /// </summary>
             [Required]
             [MessagePack.Key(3)]
-            public string MarketDataName { get; set; }
+            public string? MarketDataName { get; set; }
             /// <summary>
             /// The Original Granularity
             /// </summary>
@@ -90,7 +90,7 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [Required]
             [MessagePack.Key(6)]
-            public string OriginalTimezone { get; set; }
+            public string? OriginalTimezone { get; set; }
             /// <summary>
             /// The Aggregation Rule
             /// </summary>
@@ -105,7 +105,7 @@ namespace Artesian.SDK.Dto
             /// The Provider description
             /// </summary>
             [MessagePack.Key(9)]
-            public string ProviderDescription { get; set; }
+            public string? ProviderDescription { get; set; }
             /// <summary>
             /// The custom Tags assigned to the data
             /// </summary>
@@ -152,7 +152,7 @@ namespace Artesian.SDK.Dto
 
             internal DerivedCfgBase? _derivedCfg;
 
-            internal string _path;
+            internal string? _path;
 
         }
 

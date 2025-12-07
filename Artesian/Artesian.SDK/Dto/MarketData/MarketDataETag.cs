@@ -16,7 +16,7 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// The MarketData Constructor by id and Etag
         /// </summary>
-        public MarketDataETag(int id, string eTag)
+        public MarketDataETag(int id, string? eTag)
         {
             //  Ensure.Bool.IsTrue(id >= ArtesianConstants.CurveIDMin, "id out of accepted Range");
             //  Ensure.Bool.IsTrue(id <= ArtesianConstants.CurveIDMax, "id out of accepted Range");
@@ -38,7 +38,7 @@ namespace Artesian.SDK.Dto
         /// The MarketData ETag
         /// </summary>
         [MessagePack.Key(1)]
-        public string ETag { get; protected set; }
+        public string? ETag { get; protected set; }
 
     }
 }

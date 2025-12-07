@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 
 using NodaTime;
 
@@ -26,7 +26,7 @@ namespace Artesian.SDK.Dto
             /// The ApiKey ETag
             /// </summary>
             [Key(1)]
-            public string ETag { get; set; }
+            public string? ETag { get; set; }
             /// <summary>
             /// The ApiKey UsagePerDay
             /// </summary>
@@ -41,7 +41,7 @@ namespace Artesian.SDK.Dto
             /// Desctiption
             /// </summary>
             [Key(4)]
-            public string Description { get; set; }
+            public string? Description { get; set; }
 
         }
 
@@ -60,7 +60,7 @@ namespace Artesian.SDK.Dto
             /// The ApiKey ETag
             /// </summary>
             [Key(1)]
-            public string ETag { get; set; }
+            public string? ETag { get; set; }
             /// <summary>
             /// The ApiKey UsagePerDay
             /// </summary>
@@ -75,17 +75,17 @@ namespace Artesian.SDK.Dto
             /// Desctiption
             /// </summary>
             [Key(4)]
-            public string Description { get; set; }
+            public string? Description { get; set; }
             /// <summary>
             /// The ApiKey UserId
             /// </summary>
             [Key(5)]
-            public string UserId { get; set; }
+            public string? UserId { get; set; }
             /// <summary>
             /// The ApiKey Key
             /// </summary>
             [Key(6)]
-            public string Key { get; set; }
+            public string? Key { get; set; }
             /// <summary>
             /// The Creation time of ApiKey
             /// </summary>

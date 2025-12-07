@@ -18,7 +18,7 @@ namespace Artesian.SDK.Dto
         /// Free search text
         /// </summary>
         [Required]
-        public string SearchText { get; set; }
+        public string? SearchText { get; set; }
         /// <summary>
         /// Filter by facet name, facet values
         /// </summary>

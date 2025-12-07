@@ -17,23 +17,23 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Audience of Artesian service. Required when authenticating with Bearer Token
         /// </summary>
-        public string Audience { get; }
+        public string? Audience { get; }
         /// <summary>
         /// IDP Domain. Required when authenticating with Bearer Token
         /// </summary>
-        public string Domain { get; }
+        public string? Domain { get; }
         /// <summary>
         /// Client ID. Required when authenticating with Bearer Token
         /// </summary>
-        public string ClientId { get; }
+        public string? ClientId { get; }
         /// <summary>
         /// Client Secret. Required when authenticating with Bearer Token
         /// </summary>
-        public string ClientSecret { get; }
+        public string? ClientSecret { get; }
         /// <summary>
         /// ApiKey used for access to the service
         /// </summary>s
-        public string ApiKey { get; }
+        public string? ApiKey { get; }
 
         /// <summary>
         /// Config for ApiKey service access

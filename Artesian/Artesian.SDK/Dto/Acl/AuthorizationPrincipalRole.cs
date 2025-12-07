@@ -29,7 +29,7 @@ namespace Artesian.SDK.Dto
         /// The Principal Identifier
         /// </summary>
         [Key(1)]
-        public string PrincipalId { get; set; }
+        public string? PrincipalId { get; set; }
 
         /// <summary>
         /// 
@@ -77,7 +77,7 @@ namespace Artesian.SDK.Dto
         /// The Role
         /// </summary>
         [Key(0)]
-        public string Role { get; set; }
+        public string? Role { get; set; }
         /// <summary>
         /// The Principal
         /// </summary>
@@ -87,7 +87,7 @@ namespace Artesian.SDK.Dto
         /// The information regarding Inheritance
         /// </summary>
         [Key(2)]
-        public string InheritedFrom { get; set; }
+        public string? InheritedFrom { get; set; }
 
         /// <summary>
         /// Encode principal Enum

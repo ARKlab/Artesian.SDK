@@ -16,7 +16,7 @@ namespace Artesian.SDK.Dto
         /// Facet Name
         /// </summary>
         [Key(0)]
-        public string FacetName { get; set; }
+        public string? FacetName { get; set; }
         /// <summary>
         /// Facet Type
         /// </summary>
@@ -39,7 +39,7 @@ namespace Artesian.SDK.Dto
         /// Metadata Facet Entity Value
         /// </summary>
         [Key(0)]
-        public string Value { get; set; }
+        public string? Value { get; set; }
         /// <summary>
         /// Metadata Facet Entity Count
         /// </summary>

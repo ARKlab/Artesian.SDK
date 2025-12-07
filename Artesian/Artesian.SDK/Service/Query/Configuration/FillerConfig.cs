@@ -23,6 +23,6 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Filler Period
         /// </summary>
-        public Period FillerPeriod { get; set; }
+        public Period? FillerPeriod { get; set; }
     }
 }

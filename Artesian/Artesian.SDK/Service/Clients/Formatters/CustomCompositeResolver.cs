@@ -32,11 +32,11 @@ namespace Artesian.SDK.Service
 
         static class FormatterCache<T>
         {
-            public static readonly IMessagePackFormatter<T> formatter;
+            public static readonly IMessagePackFormatter<T>? formatter;
 
             static FormatterCache()
             {
-                foreach (var item in _resolvers)
+                foreach (var item in _resolvers!)
                 {
                     var f = item.GetFormatter<T>();
                     if (f != null)

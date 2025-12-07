@@ -75,7 +75,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Unit of Measure
         /// </summary>
-        public string UnitOfMeasure { get; set; }
+        public string? UnitOfMeasure { get; set; }
         /// <summary>
         /// AggregationRule
         /// </summary>

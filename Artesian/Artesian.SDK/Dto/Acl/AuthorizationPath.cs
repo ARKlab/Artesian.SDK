@@ -18,7 +18,7 @@ namespace Artesian.SDK.Dto
             /// The Authorization Path
             /// </summary>
             [Key(0)]
-            public string Path { get; set; }
+            public string? Path { get; set; }
             /// <summary>
             /// The Authorization Roles related
             /// </summary>

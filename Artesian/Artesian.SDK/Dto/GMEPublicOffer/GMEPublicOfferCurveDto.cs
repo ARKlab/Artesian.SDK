@@ -74,13 +74,13 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// </summary>
         /// <remarks>can be NULL for XBID, never NULL otherwise</remarks>
         [Key(10)]
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
 
         /// <summary>
         /// The Operator
         /// </summary>
         [Key(11)]
-        public string Operator { get; set; }
+        public string? Operator { get; set; }
 
         /// <summary>
         /// The Quantity
@@ -146,13 +146,13 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Transaction Reference
         /// </summary>
         [Key(21)]
-        public string TransactionReference { get; set; }
+        public string? TransactionReference { get; set; }
 
         /// <summary>
         /// Grid Supply Point No
         /// </summary>
         [Key(22)]
-        public string GridSupplyPoint { get; set; }
+        public string? GridSupplyPoint { get; set; }
 
         /// <summary>
         /// Bilateral
@@ -184,19 +184,19 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Granularity of the data
         /// </summary>
         [Key(27)]
-        public string Granularity { get; set; }
+        public string? Granularity { get; set; }
 
         /// <summary>
         /// Offer type
         /// </summary>
         [Key(28)]
-        public string OfferType { get; set; }
+        public string? OfferType { get; set; }
 
         /// <summary>
         /// Block ID
         /// </summary>
         [Key(29)]
-        public string BlockId { get; set; }
+        public string? BlockId { get; set; }
 
         /// <summary>
         /// Period
@@ -214,7 +214,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// PRODOTTO
         /// </summary>
         [Key(32)]
-        public string Prodotto { get; set; }
+        public string? Prodotto { get; set; }
 
     }
 }

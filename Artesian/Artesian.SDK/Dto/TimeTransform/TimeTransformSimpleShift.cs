@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using MessagePack;
@@ -21,12 +21,12 @@ namespace Artesian.SDK.Dto
         /// The Positive Shift
         /// </summary>
         [Key(">")]
-        public string PositiveShift { get; set; }
+        public string? PositiveShift { get; set; }
         /// <summary>
         /// The Negative Shift
         /// </summary>
         [Key("<")]
-        public string NegativeShift { get; set; }
+        public string? NegativeShift { get; set; }
 
         /// <summary>
         /// The Transform Type

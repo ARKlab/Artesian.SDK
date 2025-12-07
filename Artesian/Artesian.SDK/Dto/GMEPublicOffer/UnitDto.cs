@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 
 namespace Artesian.SDK.Dto.GMEPublicOffer
 {
@@ -18,6 +18,6 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Unit
         /// </summary>
         [Key(1)]
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
     }
 }

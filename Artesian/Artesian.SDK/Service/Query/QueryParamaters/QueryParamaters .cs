@@ -41,7 +41,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Timezone
         /// </summary>
-        public string TimeZone { get; set; }
+        public string? TimeZone { get; set; }
         /// <summary>
         /// FilterId
         /// </summary>

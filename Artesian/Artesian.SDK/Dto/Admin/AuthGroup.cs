@@ -18,12 +18,12 @@ namespace Artesian.SDK.Dto
         /// The AuthGroup ETag
         /// </summary>
         [Key("ETag")]
-        public string ETag { get; set; }
+        public string? ETag { get; set; }
         /// <summary>
         /// The AuthGroup Name
         /// </summary>
         [Key("Name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         /// <summary>
         /// The AuthGroup Users
         /// </summary>

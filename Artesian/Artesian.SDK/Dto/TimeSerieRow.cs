@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using MessagePack;
@@ -23,14 +23,14 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [JsonProperty(PropertyName = "P")]
             [Key(0)]
-            public virtual string ProviderName { get; set; }
+            public virtual string? ProviderName { get; set; }
 
             /// <summary>
             /// Curve Name
             /// </summary>
             [JsonProperty(PropertyName = "C")]
             [Key(1)]
-            public virtual string CurveName { get; set; }
+            public virtual string? CurveName { get; set; }
 
             /// <summary>
             /// Time serie Identifier
@@ -86,14 +86,14 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [JsonProperty(PropertyName = "P")]
             [Key(0)]
-            public virtual string ProviderName { get; set; }
+            public virtual string? ProviderName { get; set; }
 
             /// <summary>
             /// The Curve display name
             /// </summary>
             [JsonProperty(PropertyName = "C")]
             [Key(1)]
-            public virtual string CurveName { get; set; }
+            public virtual string? CurveName { get; set; }
 
             /// <summary>
             /// The Market Data ID

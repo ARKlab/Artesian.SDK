@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using NodaTime;
 
 namespace Artesian.SDK.Dto.GMEPublicOffer
@@ -80,13 +80,13 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Transaction Reference
         /// </summary>
         [Key(11)]
-        public string TransactionReference { get; set; }
+        public string? TransactionReference { get; set; }
 
         /// <summary>
         /// Grid Supply Point No
         /// </summary>
         [Key(12)]
-        public string GridSupplyPoint { get; set; }
+        public string? GridSupplyPoint { get; set; }
 
         /// <summary>
         /// Bilateral
@@ -128,7 +128,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// PRODOTTO
         /// </summary>
         [Key(19)]
-        public string Prodotto { get; set; }
+        public string? Prodotto { get; set; }
 
     }
 }

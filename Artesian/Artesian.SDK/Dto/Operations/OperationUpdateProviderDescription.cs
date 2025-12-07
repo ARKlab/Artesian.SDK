@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System.ComponentModel.DataAnnotations;
 
 namespace Artesian.SDK.Dto
@@ -14,6 +14,6 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public string Value { get; set; }
+        public string? Value { get; set; }
     }
 }

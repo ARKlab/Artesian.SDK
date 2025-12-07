@@ -56,7 +56,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(2)]
-        public string Timezone { get; set; }
+        public string? Timezone { get; set; }
 
         /// <summary>
         /// Start date of range to be deleted  

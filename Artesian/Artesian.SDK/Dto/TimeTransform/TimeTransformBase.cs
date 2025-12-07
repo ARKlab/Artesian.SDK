@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Service;
@@ -25,7 +25,7 @@ namespace Artesian.SDK.Dto
         /// The Time transform Name
         /// </summary>
         [Key("Name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         /// <summary>
         /// The Time transform Etag
         /// </summary>

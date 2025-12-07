@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System.ComponentModel.DataAnnotations;
 
 namespace Artesian.SDK.Dto
@@ -14,13 +14,13 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public string TagKey { get; set; }
+        public string? TagKey { get; set; }
 
         /// <summary>
         /// The Facet Value.
         /// </summary>
         [Required]
         [MessagePack.Key(1)]
-        public string TagValue { get; set; }
+        public string? TagValue { get; set; }
     }
 }

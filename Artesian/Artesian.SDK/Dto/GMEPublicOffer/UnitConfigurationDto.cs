@@ -14,7 +14,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Unit name
         /// </summary>
         [Key(0)]
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
         /// <summary>
         /// Generation type mappings
         /// </summary>
@@ -25,7 +25,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// ETag
         /// </summary>
         [Key(2)]
-        public string ETag { get; set; }
+        public string? ETag { get; set; }
     }
 
 

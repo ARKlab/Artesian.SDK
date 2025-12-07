@@ -38,7 +38,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Unit Type
         /// </summary>
         [Key(4)]
-        public string UnitReference { get; set; }
+        public string? UnitReference { get; set; }
 
         /// <summary>
         /// The Zone
@@ -50,7 +50,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Operator
         /// </summary>
         [Key(6)]
-        public string Operator { get; set; }
+        public string? Operator { get; set; }
 
         /// <summary>
         /// The Scope
@@ -81,13 +81,13 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// MARKET_PARTECIPANT_XREF_NO
         /// </summary>
         [Key(11)]
-        public string MARKET_PARTECIPANT_XREF_NO { get; set; }
+        public string? MARKET_PARTECIPANT_XREF_NO { get; set; }
 
         /// <summary>
         /// BALANCED_REFERENCE_NO
         /// </summary>
         [Key(12)]
-        public string BALANCED_REFERENCE_NO { get; set; }
+        public string? BALANCED_REFERENCE_NO { get; set; }
 
         /// <summary>
         /// CODICE_OFFERTA
@@ -99,31 +99,31 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// STORAGE_SOURCE
         /// </summary>
         [Key(14)]
-        public string STORAGE_SOURCE { get; set; }
+        public string? STORAGE_SOURCE { get; set; }
 
         /// <summary>
         /// Filename
         /// </summary>
         [Key(15)]
-        public string Filename { get; set; }
+        public string? Filename { get; set; }
 
         /// <summary>
         /// Granularity
         /// </summary>
         [Key(16)]
-        public string Granularity { get; set; }
+        public string? Granularity { get; set; }
 
         /// <summary>
         /// Offer Type
         /// </summary>
         [Key(17)]
-        public string OfferType { get; set; }
+        public string? OfferType { get; set; }
 
         /// <summary>
         /// Block ID
         /// </summary>
         [Key(18)]
-        public string BlockId { get; set; }
+        public string? BlockId { get; set; }
 
         /*
      [GME_PurposeEnum] [PurposeName]      |   [PURPOSE_CD] [nvarchar](10) NOT NULL

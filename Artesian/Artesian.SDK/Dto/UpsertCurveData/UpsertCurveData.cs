@@ -54,7 +54,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(2)]
-        public string Timezone { get; set; }
+        public string? Timezone { get; set; }
 
         /// <summary>
         /// The UTC timestamp at which this assessment has been acquired/generated.
@@ -75,7 +75,7 @@ namespace Artesian.SDK.Dto
         /// The timeserie data in OriginalTimezone or, when Hourly, must be UTC.
         /// </summary>
         [MessagePack.Key(5)]
-        public IDictionary<LocalDateTime, double?> Rows { get; set; }
+        public IDictionary<LocalDateTime, double?>? Rows { get; set; }
 
         /// <summary>
         /// Flag to choose between synchronous and asynchronous command execution
