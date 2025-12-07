@@ -53,10 +53,10 @@ namespace Artesian.SDK.Dto.UoM
         /// <summary>
         /// ConvertibleInputUnitsOfMeasure
         /// </summary>
-        public List<string>? ConvertibleInputUnitsOfMeasure { get; set; } = new List<string>();
+        public List<string> ConvertibleInputUnitsOfMeasure { get; set; } = new List<string>();
         /// <summary>
         /// NotConvertibleInputUnitsOfMeasure
         /// </summary>
-        public List<string>? NotConvertibleInputUnitsOfMeasure { get; set; } = new List<string>();
+        public List<string> NotConvertibleInputUnitsOfMeasure { get; set; } = new List<string>();
     }
 }
