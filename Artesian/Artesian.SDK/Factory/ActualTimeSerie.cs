@@ -2,6 +2,7 @@ using Artesian.SDK.Dto;
 using Artesian.SDK.Common;
 using Artesian.SDK.Service;
 using NodaTime;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
@@ -31,7 +32,9 @@ namespace Artesian.SDK.Factory
             _entity = marketData._entity;
             _marketDataService = marketData._marketDataService;
 
-            _identifier = new MarketDataIdentifier(_entity.ProviderName, _entity.MarketDataName);
+            _identifier = new MarketDataIdentifier(
+                _entity.ProviderName ?? throw new InvalidOperationException("ProviderName is required"), 
+                _entity.MarketDataName ?? throw new InvalidOperationException("MarketDataName is required"));
 
             Values = new ReadOnlyDictionary<LocalDateTime, double?>(_values);
         }
