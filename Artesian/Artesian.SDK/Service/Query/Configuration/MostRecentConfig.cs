@@ -18,7 +18,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Period
         /// </summary>
-        public Period Period { get; set; } = default;
+        public Period Period { get; set; };
         /// <summary>
         /// Period start for period range
         /// </summary>

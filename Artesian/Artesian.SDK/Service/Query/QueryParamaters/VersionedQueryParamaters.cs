@@ -71,7 +71,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Version selection config
         /// </summary>
-        public VersionSelectionConfig? VersionSelectionConfig { get; set; } = new VersionSelectionConfig();
+        public VersionSelectionConfig VersionSelectionConfig { get; set; } = new VersionSelectionConfig();
         /// <summary>
         /// Version selection type
         /// </summary>
