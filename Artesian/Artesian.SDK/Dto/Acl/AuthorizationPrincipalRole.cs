@@ -51,7 +51,7 @@ namespace Artesian.SDK.Dto
         /// <returns></returns>
         public override string ToString()
         {
-            return $"{AuthorizationPrincipalRole.EncodePrincipalEnum(PrincipalType)}:{PrincipalId}";
+            return $"{AuthorizationPrincipalRole.EncodePrincipalEnum(PrincipalType ?? Dto.PrincipalType.User)}:{PrincipalId}";
         }
 
         /// <summary>

@@ -46,7 +46,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Filler Kind
         /// </summary>
-        public FillerKindType? FillerKindType { get; set; } = FillerKindType.Default;
+        public FillerKindType FillerKindType { get; set; } = Service.FillerKindType.Default;
         /// <summary>
         /// Filler config
         /// </summary>
