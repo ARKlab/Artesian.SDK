@@ -34,7 +34,16 @@ namespace Artesian.SDK.Dto
         /// The CustomFilter values
         /// </summary>
         [Key(3)]
-        public Dictionary<string, List<string>> Filters { get; init; } = new Dictionary<string, List<string>>();
+        public Dictionary<string, List<string>> Filters { get; init; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        [SerializationConstructor]
+        public CustomFilter()
+        {
+            Filters = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        }
         
         /// <summary>
         /// The CustomFilter Etag

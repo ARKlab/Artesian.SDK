@@ -24,7 +24,16 @@ namespace Artesian.SDK.Dto
             /// The Authorization Roles related
             /// </summary>
             [Key(1)]
-            public IEnumerable<AuthorizationPrincipalRole> Roles { get; init; } = new List<AuthorizationPrincipalRole>();
+            public IEnumerable<AuthorizationPrincipalRole> Roles { get; init; }
+
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            [SerializationConstructor]
+            public Input()
+            {
+                Roles = new List<AuthorizationPrincipalRole>();
+            }
         }
 
         /// <summary>

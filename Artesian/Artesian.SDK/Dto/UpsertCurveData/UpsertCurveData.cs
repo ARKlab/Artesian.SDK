@@ -15,8 +15,12 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// The default constructor
         /// </summary>
+        [MessagePack.SerializationConstructor]
         public UpsertCurveData()
         {
+            DeferCommandExecution = true;
+            DeferDataGeneration = true;
+            KeepNulls = false;
         }
 
         /// <summary>
@@ -81,19 +85,19 @@ namespace Artesian.SDK.Dto
         /// Flag to choose between synchronous and asynchronous command execution
         /// </summary>
         [MessagePack.Key(6)]
-        public bool DeferCommandExecution { get; init; } = true;
+        public bool DeferCommandExecution { get; init; }
 
         /// <summary>
         /// Flag to choose between synchronous and asynchronous precomputed data generation
         /// </summary>
         [MessagePack.Key(7)]
-        public bool DeferDataGeneration { get; init; } = true;
+        public bool DeferDataGeneration { get; init; }
 
         /// <summary>
         /// Flag to choose between syncronoys and asyncronous precomputed data generation
         /// </summary>
         [MessagePack.Key(8)]
-        public bool KeepNulls { get; init; } = false;
+        public bool KeepNulls { get; init; }
 
         /// <summary>
         /// The timeserie data in OriginalTimezone or, when Hourly, must be UTC.

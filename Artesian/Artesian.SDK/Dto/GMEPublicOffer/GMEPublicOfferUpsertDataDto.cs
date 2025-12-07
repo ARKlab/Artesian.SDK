@@ -19,13 +19,23 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Flag to choose between syncronoys and asyncronous command execution
         /// </summary>
         [Key(1)]
-        public bool DeferCommandExecution { get; init; } = true;
+        public bool DeferCommandExecution { get; init; }
 
         /// <summary>
         /// Flag to choose between syncronoys and asyncronous precomputed data generation
         /// </summary>
         [Key(2)]
-        public bool DeferDataGeneration { get; init; } = true;
+        public bool DeferDataGeneration { get; init; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        [SerializationConstructor]
+        public GMEPublicOfferUpsertDataDto()
+        {
+            DeferCommandExecution = true;
+            DeferDataGeneration = true;
+        }
     }
 
     internal static class GMEPublicOfferUpsertDataDtoExt

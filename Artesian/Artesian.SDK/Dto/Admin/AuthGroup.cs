@@ -33,6 +33,15 @@ namespace Artesian.SDK.Dto
         /// The AuthGroup Users
         /// </summary>
         [Key("Users")]
-        public List<string> Users { get; init; } = new List<string>();
+        public List<string> Users { get; init; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        [SerializationConstructor]
+        public AuthGroup()
+        {
+            Users = new List<string>();
+        }
     }
 }

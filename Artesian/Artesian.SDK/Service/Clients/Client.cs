@@ -157,7 +157,7 @@ namespace Artesian.SDK.Service
                         using (var res = await req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseHeadersRead, cancellationToken: ctk).ConfigureAwait(false))
                         {
                             if (res.ResponseMessage.StatusCode == HttpStatusCode.NoContent || res.ResponseMessage.StatusCode == HttpStatusCode.NotFound)
-                                return default;
+                                return default!;
 
                             if (!res.ResponseMessage.IsSuccessStatusCode)
                             {
@@ -314,7 +314,7 @@ namespace Artesian.SDK.Service
                 return null;
 
             // Remove parameters (e.g., "application/json; charset=utf-8" -> "application/json")
-            var semicolonIndex = mediaType.IndexOf(';');
+            var semicolonIndex = mediaType!.IndexOf(';');
 #if NET6_0_OR_GREATER
             var baseType = semicolonIndex >= 0 ? mediaType[..semicolonIndex].Trim() : mediaType.Trim();
 #else

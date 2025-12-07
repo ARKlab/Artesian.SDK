@@ -1,6 +1,7 @@
 ﻿using Artesian.SDK.Dto.Enums;
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Artesian.SDK.Dto
 {

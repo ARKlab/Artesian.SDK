@@ -50,7 +50,7 @@ namespace Artesian.SDK.Dto.Serialize
                 DerivedAlgorithm.MUV => typeof(DerivedCfgMuv),
                 DerivedAlgorithm.Coalesce => typeof(DerivedCfgCoalesce),
                 DerivedAlgorithm.Sum => typeof(DerivedCfgSum),
-                _ => null,
+                _ => typeof(DerivedCfgBase)
             };
         }
     }
@@ -88,7 +88,7 @@ namespace Artesian.SDK.Dto.Serialize
             T target = Create(objectType, jObject);
 
             // Populate the object properties
-            serializer.Populate(jObject.CreateReader(), target);
+            serializer.Populate(jObject.CreateReader(), target!);
 
             return target;
         }
