@@ -21,7 +21,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// MarketData Identifier
         /// </summary>
-        MarketDataIdentifier? Identifier { get; }
+        MarketDataIdentifier Identifier { get; }
 
         /// <summary>
         /// MarketData ReadOnly Entity

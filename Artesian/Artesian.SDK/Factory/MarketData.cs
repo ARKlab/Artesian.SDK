@@ -15,8 +15,8 @@ namespace Artesian.SDK.Factory
     /// </summary>
     public sealed class MarketData : IMarketData
     {
-        internal IMarketDataService? _marketDataService;
-        internal MarketDataEntity.Output _entity = null;
+        internal IMarketDataService _marketDataService;
+        internal MarketDataEntity.Output? _entity = null;
 
         /// <summary>
         /// MarketData Id
@@ -26,7 +26,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// MarketData Identifier
         /// </summary>
-        public MarketDataIdentifier? Identifier { get; private set; }
+        public MarketDataIdentifier Identifier { get; private set; }
 
         /// <summary>
         /// MarketData Entity

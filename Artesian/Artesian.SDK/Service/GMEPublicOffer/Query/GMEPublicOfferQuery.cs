@@ -17,9 +17,9 @@ namespace Artesian.SDK.Service.GMEPublicOffer
     /// </summary>
     public sealed class GMEPublicOfferQuery: IGMEPublicOfferQuery
     {
-        private readonly Client? _client;
-        private readonly GMEPublicOfferQueryParamaters? _queryParamaters = new GMEPublicOfferQueryParamaters();
-        private static readonly LocalDatePattern? _localDatePattern = LocalDatePattern.Iso;
+        private readonly Client _client;
+        private readonly GMEPublicOfferQueryParamaters _queryParamaters = new GMEPublicOfferQueryParamaters();
+        private static readonly LocalDatePattern _localDatePattern = LocalDatePattern.Iso;
 
         internal GMEPublicOfferQuery(Client client)
         {

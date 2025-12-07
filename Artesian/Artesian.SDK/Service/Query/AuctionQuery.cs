@@ -21,8 +21,8 @@ namespace Artesian.SDK.Service
     /// </summary>
     public sealed class AuctionQuery : QueryWithRange<AuctionQueryParamaters>, IAuctionQuery<AuctionQuery>
     {
-        private readonly Client? _client;
-        private readonly IPartitionStrategy? _partition;
+        private readonly Client _client;
+        private readonly IPartitionStrategy _partition;
 
         private const string _routePrefix = "auction";
 
