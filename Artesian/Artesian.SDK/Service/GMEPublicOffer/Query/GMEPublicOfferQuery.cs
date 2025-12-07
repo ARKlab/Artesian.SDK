@@ -203,7 +203,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         {
             ValidateQuery();
 
-            var url = $"/extract/{_localDatePattern.Format(_queryParamaters.Date.Value)}/{_queryParamaters.Purpose}/{_queryParamaters.Status}"
+            var url = $"/extract/{_localDatePattern.Format(_queryParamaters.Date!.Value)}/{_queryParamaters.Purpose}/{_queryParamaters.Status}"
                         .SetQueryParam("operators", _queryParamaters.Operator)
                         .SetQueryParam("unit", _queryParamaters.Unit)
                         .SetQueryParam("market", _queryParamaters.Market)

@@ -42,7 +42,7 @@ namespace Artesian.SDK.Service
             IEnumerable<int> ids, 
             ExtractionRangeSelectionConfig extractionRangeSelectionConfig, 
             ExtractionRangeType? extractionRangeType,
-            string timezone,
+            string? timezone,
             int? filterId,
             Granularity? granularity,
             int? transformId,
@@ -52,7 +52,7 @@ namespace Artesian.SDK.Service
             FillerKindType fillerK,
             FillerConfig fillerConfig,
             LocalDate? analysisDate,
-            string unitOfMeasure,
+            string? unitOfMeasure,
             AggregationRule? aggregationRule
             )
             : base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)

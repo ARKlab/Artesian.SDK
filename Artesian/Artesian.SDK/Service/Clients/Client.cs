@@ -249,7 +249,7 @@ namespace Artesian.SDK.Service
                             // For successful responses, handle deserialization
                             var contentLength = res.ResponseMessage.Content.Headers.ContentLength;
                             if (contentLength.HasValue && contentLength.Value == 0)
-                                return default;
+                                return default!;
 
                             var responseStream = await res.ResponseMessage.Content.ReadAsStreamAsync(
 #if NET6_0_OR_GREATER

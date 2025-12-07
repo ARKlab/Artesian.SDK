@@ -43,10 +43,13 @@ namespace Artesian.SDK.Service
             var keyType = objectType.GetGenericArguments()[0];
             var valueType = objectType.GetGenericArguments()[1];
             var dictionaryType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
-            var result = (IDictionary)Activator.CreateInstance(dictionaryType);
+            var result = (IDictionary?)Activator.CreateInstance(dictionaryType);
 
             if (reader.TokenType == JsonToken.Null)
                 return null;
+
+            if (result == null)
+                throw new JsonSerializationException("Failed to create dictionary instance");
 
             while (reader.Read())
             {

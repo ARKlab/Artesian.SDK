@@ -33,7 +33,7 @@ namespace Artesian.SDK.Service
             extractionRangeSelectionConfig, 
             ExtractionRangeType? 
             extractionRangeType, 
-            string timezone, 
+            string? timezone, 
             int? filterId,
             FillerKindType fillerKind,
             FillerConfig fillerConfig

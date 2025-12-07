@@ -77,6 +77,9 @@ namespace Artesian.SDK.Service
             // Create target object based on JObject
             T target = Create(objectType, jObject);
 
+            if (target == null)
+                throw new JsonSerializationException("Failed to create target object");
+
             // Populate the object properties
             serializer.Populate(jObject.CreateReader(), target);
 

@@ -31,7 +31,7 @@ namespace Artesian.SDK.Service
             extractionRangeSelectionConfig, 
             ExtractionRangeType? 
             extractionRangeType, 
-            string timezone, 
+            string? timezone, 
             int? filterId
             ) : base(ids,timezone,filterId)
         {
