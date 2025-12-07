@@ -27,7 +27,7 @@ namespace Artesian.SDK.Service
         {
         }
 
-        public ArtesianSdkForbiddenException(string message, ArtesianSdkProblemDetail problemDetail)
+        public ArtesianSdkForbiddenException(string message, ArtesianSdkProblemDetail? problemDetail)
          : base(message)
         {
             this.ProblemDetail = problemDetail;

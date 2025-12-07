@@ -32,17 +32,17 @@ namespace Artesian.SDK.Service
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "Accepted to 'leak' FlurlClient instance")]
     internal sealed class Client
     {
-        private readonly List<IContentSerializer>? _serializers;
-        private readonly FlurlClient? _client;
+        private readonly List<IContentSerializer> _serializers;
+        private readonly FlurlClient _client;
 
-        private readonly JsonContentSerializer? _jsonSerializer;
-        private readonly MessagePackContentSerializer? _msgPackSerializer;
-        private readonly LZ4MessagePackContentSerializer? _lz4msgPackSerializer;
+        private readonly JsonContentSerializer _jsonSerializer;
+        private readonly MessagePackContentSerializer _msgPackSerializer;
+        private readonly LZ4MessagePackContentSerializer _lz4msgPackSerializer;
 
         private readonly string _url;
         private readonly AsyncPolicy? _resilienceStrategy;
         private readonly string? _apiKey;
-        private readonly IArtesianServiceConfig? _config;
+        private readonly IArtesianServiceConfig _config;
 
         private readonly IConfidentialClientApplication? _confidentialClientApplication;
 
@@ -54,6 +54,9 @@ namespace Artesian.SDK.Service
         /// /// <param name="policy">String</param>
         public Client(IArtesianServiceConfig config, string Url, ArtesianPolicyConfig policy)
         {
+            if (config.BaseAddress == null)
+                throw new ArgumentException("BaseAddress cannot be null", nameof(config));
+            
             _url = config.BaseAddress.ToString().AppendPathSegment(Url);
             _apiKey = config.ApiKey;
             _config = config;
@@ -68,8 +71,8 @@ namespace Artesian.SDK.Service
             cfg.ObjectCreationHandling = ObjectCreationHandling.Replace;
 
             _jsonSerializer = new JsonContentSerializer(cfg);
-            _msgPackSerializer = new MessagePackContentSerializer(CustomCompositeResolver.Instance);
-            _lz4msgPackSerializer = new LZ4MessagePackContentSerializer(CustomCompositeResolver.Instance);
+            _msgPackSerializer = new MessagePackContentSerializer(CustomCompositeResolver.Instance ?? throw new InvalidOperationException("CustomCompositeResolver.Instance is null"));
+            _lz4msgPackSerializer = new LZ4MessagePackContentSerializer(CustomCompositeResolver.Instance ?? throw new InvalidOperationException("CustomCompositeResolver.Instance is null"));
 
             // Order is important for quality values in Accept header
             _serializers = new List<IContentSerializer>
@@ -83,6 +86,15 @@ namespace Artesian.SDK.Service
 
             if (config.ApiKey == null)
             {
+                if (config.Domain == null)
+                    throw new ArgumentException("Domain cannot be null when ApiKey is not provided", nameof(config));
+                if (config.ClientId == null)
+                    throw new ArgumentException("ClientId cannot be null when ApiKey is not provided", nameof(config));
+                if (config.ClientSecret == null)
+                    throw new ArgumentException("ClientSecret cannot be null when ApiKey is not provided", nameof(config));
+                if (config.Audience == null)
+                    throw new ArgumentException("Audience cannot be null when ApiKey is not provided", nameof(config));
+                
                 var domain = new Uri(config.Domain);
 
                 var tenantId = domain.Segments
@@ -113,13 +125,18 @@ namespace Artesian.SDK.Service
                     req = req.WithHeader("X-Api-Key", _apiKey);
                 else
                 {
+                    if (_confidentialClientApplication == null)
+                        throw new InvalidOperationException("ConfidentialClientApplication not initialized");
+                    if (_config.Audience == null)
+                        throw new InvalidOperationException("Audience not configured");
+                    
                     var c = _confidentialClientApplication
                         .AcquireTokenForClient(new[] { _config.Audience });
                     var res = await c.ExecuteAsync(ctk).ConfigureAwait(false);
                     req = req.WithOAuthBearerToken(res.AccessToken);
                 }
 
-                HttpContent content = null;
+                HttpContent? content = null;
 
                 try
                 {
@@ -128,6 +145,11 @@ namespace Artesian.SDK.Service
                         // Create a custom HttpContent that serializes directly without buffering
                         content = new SerializerStreamContent<TBody>(_lz4msgPackSerializer, body, ctk);
                         content.Headers.ContentType = new MediaTypeHeaderValue(_lz4msgPackSerializer.MediaType);
+                    }
+
+                    if (_resilienceStrategy == null)
+                    {
+                        throw new InvalidOperationException("Resilience strategy not initialized");
                     }
 
                     return await _resilienceStrategy.ExecuteAsync(async () =>
@@ -139,7 +161,7 @@ namespace Artesian.SDK.Service
 
                             if (!res.ResponseMessage.IsSuccessStatusCode)
                             {
-                                ArtesianSdkProblemDetail problemDetail = null;
+                                ArtesianSdkProblemDetail? problemDetail = null;
                                 string responseText = string.Empty;
 
                                 var contentType = res.ResponseMessage.Content.Headers.ContentType?.MediaType;
@@ -286,7 +308,7 @@ namespace Artesian.SDK.Service
             }
         }
 
-        private string _getBaseMediaType(string mediaType)
+        private string? _getBaseMediaType(string? mediaType)
         {
             if (string.IsNullOrEmpty(mediaType))
                 return null;
@@ -322,7 +344,7 @@ namespace Artesian.SDK.Service
             return baseType;
         }
 
-        private IContentSerializer _getSerializer(string baseMediaType)
+        private IContentSerializer? _getSerializer(string? baseMediaType)
         {
             if (string.IsNullOrEmpty(baseMediaType))
                 return null;

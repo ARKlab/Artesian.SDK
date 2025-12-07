@@ -28,7 +28,7 @@ namespace Artesian.SDK.Service
         {
         }
 
-        public ArtesianSdkRemoteException(string message, ArtesianSdkProblemDetail problemDetail)
+        public ArtesianSdkRemoteException(string message, ArtesianSdkProblemDetail? problemDetail)
          : base(message)
         {
             this.ProblemDetail = problemDetail;
