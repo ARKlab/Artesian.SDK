@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Dto;
@@ -21,8 +21,8 @@ namespace Artesian.SDK.Service
     public sealed class BidAskQuery : QueryWithFillAndInterval<BidAskQueryParamaters>, IBidAskQuery<BidAskQuery>
     {        
         private const string _routePrefix = "ba";
-        private readonly Client _client;
-        private readonly IPartitionStrategy _partition;
+        private readonly Client? _client;
+        private readonly IPartitionStrategy? _partition;
 
         internal BidAskQuery(Client client, IPartitionStrategy partiton)
         {

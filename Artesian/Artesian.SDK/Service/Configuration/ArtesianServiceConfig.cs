@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using System;
@@ -13,7 +13,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Base address of the Artesian service
         /// </summary>
-        public Uri BaseAddress { get; }
+        public Uri? BaseAddress { get; }
         /// <summary>
         /// Audience of Artesian service. Required when authenticating with Bearer Token
         /// </summary>

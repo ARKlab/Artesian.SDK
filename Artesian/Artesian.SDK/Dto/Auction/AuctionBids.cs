@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using NodaTime;
 using System.ComponentModel.DataAnnotations;
 using KeyAttribute = MessagePack.KeyAttribute;
@@ -33,13 +33,13 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [Key(1)]
-        public AuctionBidValue[] Bid { get; set; }
+        public AuctionBidValue[]? Bid { get; set; }
 
         /// <summary>
         /// The OFFER
         /// </summary>
         [Required]
         [Key(2)]
-        public AuctionBidValue[] Offer { get; set; }
+        public AuctionBidValue[]? Offer { get; set; }
     }
 }

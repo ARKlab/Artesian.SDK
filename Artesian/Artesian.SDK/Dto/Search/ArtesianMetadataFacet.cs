@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using MessagePack;
@@ -21,12 +21,12 @@ namespace Artesian.SDK.Dto
         /// Facet Type
         /// </summary>
         [Key(1)]
-        public ArtesianMetadataFacetType FacetType { get; set; }
+        public ArtesianMetadataFacetType? FacetType { get; set; }
         /// <summary>
         /// Facet Values
         /// </summary>
         [Key(2)]
-        public List<ArtesianMetadataFacetCount> Values { get; set; }
+        public List<ArtesianMetadataFacetCount>? Values { get; set; }
     }
 
     /// <summary>

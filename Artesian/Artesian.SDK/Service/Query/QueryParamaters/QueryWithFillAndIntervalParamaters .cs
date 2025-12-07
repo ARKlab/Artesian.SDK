@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using System.Collections.Generic;
@@ -46,10 +46,10 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Filler Kind
         /// </summary>
-        public FillerKindType FillerKindType { get; set; } = FillerKindType.Default;
+        public FillerKindType? FillerKindType { get; set; } = FillerKindType.Default;
         /// <summary>
         /// Filler config
         /// </summary>
-        public FillerConfig FillerConfig { get; set; } = new FillerConfig();
+        public FillerConfig? FillerConfig { get; set; } = new FillerConfig();
     }
 }

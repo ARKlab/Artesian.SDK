@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using NodaTime;
 using System.Collections.Generic;
 
@@ -19,7 +19,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Generation type mappings
         /// </summary>
         [Key(1)]
-        public List<GenerationTypeMapping> Mappings { get; set; }
+        public List<GenerationTypeMapping>? Mappings { get; set; }
 
         /// <summary>
         /// ETag
@@ -39,7 +39,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// GenerationType
         /// </summary>
         [Key(0)]
-        public GenerationType GenerationType { get; set; }
+        public GenerationType? GenerationType { get; set; }
 
         /// <summary>
         /// From date

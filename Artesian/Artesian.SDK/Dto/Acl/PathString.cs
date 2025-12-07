@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -11,7 +11,7 @@ namespace Artesian.SDK.Dto
     public class PathString : IEquatable<PathString>
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        private static readonly Regex _regexSplit = new Regex(@"(?<!\\)\/", RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+        private static readonly Regex? _regexSplit = new Regex(@"(?<!\\)\/", RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
         public const int MaxLenghtPaths = 10;
         public const int MaxTokenLen = 50;
 

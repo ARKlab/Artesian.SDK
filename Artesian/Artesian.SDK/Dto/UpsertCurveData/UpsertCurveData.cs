@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using NodaTime;
 using System;
 using System.Collections.Generic;
@@ -41,7 +41,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public MarketDataIdentifier ID { get; set; }
+        public MarketDataIdentifier? ID { get; set; }
 
         /// <summary>
         /// The Version to operate on
@@ -69,7 +69,7 @@ namespace Artesian.SDK.Dto
         /// - IDictionary value is The Market Data Identifier to upsert
         /// </summary>
         [MessagePack.Key(4)]
-        public IDictionary<LocalDateTime, IDictionary<string, MarketAssessmentValue>> MarketAssessment { get; set; }
+        public IDictionary<LocalDateTime, IDictionary<string, MarketAssessmentValue>>? MarketAssessment { get; set; }
 
         /// <summary>
         /// The timeserie data in OriginalTimezone or, when Hourly, must be UTC.
@@ -99,13 +99,13 @@ namespace Artesian.SDK.Dto
         /// The timeserie data in OriginalTimezone or, when Hourly, must be UTC.
         /// </summary>
         [MessagePack.Key(9)]
-        public IDictionary<LocalDateTime, AuctionBids> AuctionRows { get; set; }
+        public IDictionary<LocalDateTime, AuctionBids>? AuctionRows { get; set; }
 
         /// <summary>
         /// The BidAsk
         /// </summary>
         [MessagePack.Key(10)]
-        public IDictionary<LocalDateTime, IDictionary<string, BidAskValue>> BidAsk { get; set; }
+        public IDictionary<LocalDateTime, IDictionary<string, BidAskValue>>? BidAsk { get; set; }
 
         /// <summary>
         /// The Upsert Mode: Merge or Replace.

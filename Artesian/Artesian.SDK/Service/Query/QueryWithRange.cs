@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using NodaTime;
@@ -15,10 +15,10 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Store for QueryParams
         /// </summary>
-        protected TQueryParams QueryParamaters { get; } = new TQueryParams();
+        protected TQueryParams? QueryParamaters { get; } = new TQueryParams();
 
-        private static readonly LocalDatePattern _localDatePattern = LocalDatePattern.Iso;
-        private static readonly LocalDateTimePattern _localDateTimePattern = LocalDateTimePattern.ExtendedIso;
+        private static readonly LocalDatePattern? _localDatePattern = LocalDatePattern.Iso;
+        private static readonly LocalDateTimePattern? _localDateTimePattern = LocalDateTimePattern.ExtendedIso;
         
         /// <summary>
         /// Set the marketData id to be queried

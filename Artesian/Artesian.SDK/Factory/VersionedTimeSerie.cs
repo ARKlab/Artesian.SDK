@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Common;
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 
@@ -17,9 +17,9 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class VersionedTimeSerie : ITimeserieWritable
     {
-        private readonly IMarketDataService _marketDataService;
+        private readonly IMarketDataService? _marketDataService;
         private readonly MarketDataEntity.Output _entity = null;
-        private readonly MarketDataIdentifier _identifier = null;
+        private readonly MarketDataIdentifier? _identifier = null;
         private Dictionary<LocalDateTime, double?> _values = new Dictionary<LocalDateTime, double?>();
 
         /// <summary>

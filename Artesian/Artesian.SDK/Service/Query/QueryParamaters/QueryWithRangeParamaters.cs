@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using System.Collections.Generic;
@@ -45,7 +45,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Extraction range config
         /// </summary>
-        public ExtractionRangeSelectionConfig ExtractionRangeSelectionConfig { get; set; } = new ExtractionRangeSelectionConfig();
+        public ExtractionRangeSelectionConfig? ExtractionRangeSelectionConfig { get; set; } = new ExtractionRangeSelectionConfig();
         /// <summary>
         /// Extraction range type
         /// </summary>

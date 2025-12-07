@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Common;
@@ -22,11 +22,11 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// Filter by facet name, facet values
         /// </summary>
-        public IDictionary<string, string[]> Filters { get; set; }
+        public IDictionary<string, string[]>? Filters { get; set; }
         /// <summary>
         /// sort by field name
         /// </summary>
-        public IList<string> Sorts { get; set; }
+        public IList<string>? Sorts { get; set; }
         /// <summary>
         /// page size
         /// </summary>
@@ -41,7 +41,7 @@ namespace Artesian.SDK.Dto
 
     internal static class ArtesianSearchFilterExt
     {
-        private static Regex _validSorts = new Regex(
+        private static Regex? _validSorts = new Regex(
             "^(MarketDataId|ProviderName|MarketDataName|OriginalGranularity|Type|OriginalTimezone|Created|LastUpdated)( (asc|desc))?$"
             , RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1));
 

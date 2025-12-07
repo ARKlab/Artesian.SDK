@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Common;
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 
@@ -18,10 +18,10 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class MarketAssessment : IMarketAssessmentWritable
     {
-        private readonly IMarketDataService _marketDataService;
+        private readonly IMarketDataService? _marketDataService;
         private readonly MarketDataEntity.Output _entity;
-        private readonly MarketDataIdentifier _identifier;
-        private readonly List<AssessmentElement> _values = new();
+        private readonly MarketDataIdentifier? _identifier;
+        private readonly List<AssessmentElement>? _values = new();
 
         /// <summary>
         /// MarketAssessment Constructor
@@ -43,7 +43,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// MarketData AssessmentElement
         /// </summary>
-        public IReadOnlyCollection<AssessmentElement> Assessments { get; internal set; }
+        public IReadOnlyCollection<AssessmentElement>? Assessments { get; internal set; }
 
         /// <summary>
         /// MarketData ClearData
@@ -229,7 +229,7 @@ namespace Artesian.SDK.Factory
             /// <summary>
             /// AssessmentElement MarketAssessmentValue
             /// </summary>
-            public MarketAssessmentValue Value { get; set; }
+            public MarketAssessmentValue? Value { get; set; }
         }
     }
 }

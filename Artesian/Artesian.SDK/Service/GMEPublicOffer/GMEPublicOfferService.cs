@@ -1,4 +1,4 @@
-﻿using Flurl;
+using Flurl;
 
 namespace Artesian.SDK.Service.GMEPublicOffer
 {
@@ -8,9 +8,9 @@ namespace Artesian.SDK.Service.GMEPublicOffer
     /// </summary>
     public partial class GMEPublicOfferService : IGMEPublicOfferService
     {
-        private readonly IArtesianServiceConfig _cfg;
-        private readonly ArtesianPolicyConfig _policy;
-        private readonly Client _client;
+        private readonly IArtesianServiceConfig? _cfg;
+        private readonly ArtesianPolicyConfig? _policy;
+        private readonly Client? _client;
 
         /// <summary>
         /// GME Public offer service

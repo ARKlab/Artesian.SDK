@@ -16,7 +16,7 @@ namespace Artesian.SDK.Service
     /// </summary>
     internal sealed class JsonContentSerializer : IContentSerializer
     {
-        private readonly JsonSerializer _serializer;
+        private readonly JsonSerializer? _serializer;
 
         /// <inheritdoc/>
         public string MediaType => "application/json";

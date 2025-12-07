@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using System;
@@ -11,7 +11,7 @@ namespace Artesian.SDK.Service
     public class ArtesianSdkRemoteException : Exception
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        public ArtesianSdkProblemDetail ProblemDetail { get; }
+        public ArtesianSdkProblemDetail? ProblemDetail { get; }
 
         public ArtesianSdkRemoteException(string message)
             : base(message)

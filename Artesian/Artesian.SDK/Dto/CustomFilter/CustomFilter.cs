@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 
@@ -29,7 +29,7 @@ namespace Artesian.SDK.Dto
         /// The CustomFilter values
         /// </summary>
         [Key(3)]
-        public Dictionary<string, List<string>> Filters { get; set; }
+        public Dictionary<string, List<string>>? Filters { get; set; }
         /// <summary>
         /// The CustomFilter Etag
         /// </summary>

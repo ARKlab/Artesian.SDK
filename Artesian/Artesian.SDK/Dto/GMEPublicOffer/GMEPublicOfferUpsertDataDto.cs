@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 
@@ -14,7 +14,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// GMEPublicOffer
         /// </summary>
         [Key(0)]
-        public IList<GMEPublicOfferDto> GMEPublicOffer { get; set; }
+        public IList<GMEPublicOfferDto>? GMEPublicOffer { get; set; }
         /// <summary>
         /// Flag to choose between syncronoys and asyncronous command execution
         /// </summary>

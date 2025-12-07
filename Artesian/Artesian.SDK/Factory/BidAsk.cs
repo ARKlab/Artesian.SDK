@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Common;
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 
@@ -18,10 +18,10 @@ namespace Artesian.SDK.Factory
     /// </summary>
     internal sealed class BidAsk : IBidAskWritable
     {
-        private readonly IMarketDataService _marketDataService;
+        private readonly IMarketDataService? _marketDataService;
         private readonly MarketDataEntity.Output _entity;
-        private readonly MarketDataIdentifier _identifier;
-        private readonly List<BidAskElement> _values = new();
+        private readonly MarketDataIdentifier? _identifier;
+        private readonly List<BidAskElement>? _values = new();
 
         /// <summary>
         /// BidAsks Constructor
@@ -43,7 +43,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// BidAsk BidAskElement
         /// </summary>
-        public IReadOnlyCollection<BidAskElement> BidAsks { get; internal set; }
+        public IReadOnlyCollection<BidAskElement>? BidAsks { get; internal set; }
 
         /// <summary>
         /// MarketData ClearData
@@ -226,7 +226,7 @@ namespace Artesian.SDK.Factory
             /// <summary>
             /// BidAskElement BidAskValue
             /// </summary>
-            public BidAskValue Value { get; set; }
+            public BidAskValue? Value { get; set; }
         }
     }
 }

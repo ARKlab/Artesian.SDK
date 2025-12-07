@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 
 using NodaTime;
 
@@ -43,7 +43,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public MarketDataIdentifier ID { get; set; }
+        public MarketDataIdentifier? ID { get; set; }
 
         /// <summary>
         /// The Version to operate on
@@ -76,7 +76,7 @@ namespace Artesian.SDK.Dto
         /// The list of Product. Only *, is special character for 'delete all products in the range'
         /// </summary>
         [MessagePack.Key(5)]
-        public IList<string> Product { get; set; }
+        public IList<string>? Product { get; set; }
 
         /// <summary>
         /// Flag to choose between synchronous and asynchronous command execution

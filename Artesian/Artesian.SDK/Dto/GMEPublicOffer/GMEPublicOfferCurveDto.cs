@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using NodaTime;
 
 namespace Artesian.SDK.Dto.GMEPublicOffer
@@ -13,19 +13,19 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Status
         /// </summary>
         [Key(0)]
-        public Status Status { get; set; }
+        public Status? Status { get; set; }
 
         /// <summary>
         /// The BAType
         /// </summary>
         [Key(1)]
-        public BAType BAType { get; set; }
+        public BAType? BAType { get; set; }
 
         /// <summary>
         /// The Scope
         /// </summary>
         [Key(2)]
-        public Scope Scope { get; set; }
+        public Scope? Scope { get; set; }
 
         /// <summary>
         /// The Date
@@ -43,31 +43,31 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Market
         /// </summary>
         [Key(5)]
-        public Market Market { get; set; }
+        public Market? Market { get; set; }
 
         /// <summary>
         /// The Purpose
         /// </summary>
         [Key(6)]
-        public Purpose Purpose { get; set; }
+        public Purpose? Purpose { get; set; }
 
         /// <summary>
         /// The Zone
         /// </summary>
         [Key(7)]
-        public Zone Zone { get; set; }
+        public Zone? Zone { get; set; }
 
         /// <summary>
         /// The Unit Type
         /// </summary>
         [Key(8)]
-        public UnitType UnitType { get; set; }
+        public UnitType? UnitType { get; set; }
 
         /// <summary>
         /// The Generation Type
         /// </summary>
         [Key(9)]
-        public GenerationType GenerationType { get; set; }
+        public GenerationType? GenerationType { get; set; }
 
         /// <summary>
         /// The Unit

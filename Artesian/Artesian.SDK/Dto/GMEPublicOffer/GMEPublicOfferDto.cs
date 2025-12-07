@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 
 using System.Collections.Generic;
 
@@ -14,25 +14,25 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Purpose
         /// </summary>
         [Key(0)]
-        public Purpose Purpose { get; set; }
+        public Purpose? Purpose { get; set; }
 
         /// <summary>
         /// The Type
         /// </summary>
         [Key(1)]
-        public Type Type { get; set; }
+        public Type? Type { get; set; }
 
         /// <summary>
         /// The Status
         /// </summary>
         [Key(2)]
-        public Status Status { get; set; }
+        public Status? Status { get; set; }
 
         /// <summary>
         /// The Market
         /// </summary>
         [Key(3)]
-        public Market Market { get; set; }
+        public Market? Market { get; set; }
 
         /// <summary>
         /// The Unit Type
@@ -44,7 +44,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Zone
         /// </summary>
         [Key(5)]
-        public Zone Zone { get; set; }
+        public Zone? Zone { get; set; }
 
         /// <summary>
         /// The Operator
@@ -56,13 +56,13 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Scope
         /// </summary>
         [Key(7)]
-        public Scope Scope { get; set; }
+        public Scope? Scope { get; set; }
 
         /// <summary>
         /// The BAType
         /// </summary>
         [Key(8)]
-        public BAType BAType { get; set; }
+        public BAType? BAType { get; set; }
 
 
         //--------------------------
@@ -71,7 +71,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Data
         /// </summary>
         [Key(10)]
-        public IList<GMEPublicOfferDataDto> Data { get; set; }
+        public IList<GMEPublicOfferDataDto>? Data { get; set; }
 
         //---------------------------
 

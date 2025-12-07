@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Dto.UoM;
+using Artesian.SDK.Dto.UoM;
 
 using MessagePack;
 
@@ -17,6 +17,6 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public UnitOfMeasure Value { get; set; }
+        public UnitOfMeasure? Value { get; set; }
     }
 }

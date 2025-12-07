@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System.Collections.Generic;
 
 namespace Artesian.SDK.Dto
@@ -23,6 +23,6 @@ namespace Artesian.SDK.Dto
         /// The AclPathRule list
         /// </summary>
         [Key(2)]
-        public List<AclPathRule> Roles { get; set; } = new List<AclPathRule>();
+        public List<AclPathRule>? Roles { get; set; } = new List<AclPathRule>();
     }
 }

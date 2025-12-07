@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Dto.UoM;
@@ -110,7 +110,7 @@ namespace Artesian.SDK.Dto
             /// The custom Tags assigned to the data
             /// </summary>
             [MessagePack.Key(10)]
-            public IDictionary<string, List<string>> Tags { get; set; }
+            public IDictionary<string, List<string>>? Tags { get; set; }
             /// <summary>
             /// The Authorization Path
             /// </summary>
@@ -148,9 +148,9 @@ namespace Artesian.SDK.Dto
             /// The Unit of Measure
             /// </summary>
             [MessagePack.Key(19)]
-            public UnitOfMeasure UnitOfMeasure { get; set; } = new UnitOfMeasure();
+            public UnitOfMeasure? UnitOfMeasure { get; set; } = new UnitOfMeasure();
 
-            internal DerivedCfgBase _derivedCfg;
+            internal DerivedCfgBase? _derivedCfg;
 
             internal string _path;
 
@@ -202,7 +202,7 @@ namespace Artesian.SDK.Dto
             /// The TimeTransform
             /// </summary>
             [MessagePack.Key(11)]
-            public TimeTransform Transform { get; set; } //NULLABLE
+            public TimeTransform? Transform { get; set; } //NULLABLE
             /// <summary>
             /// The Last time the metadata has been updated
             /// </summary>
@@ -238,7 +238,7 @@ namespace Artesian.SDK.Dto
             /// <summary>
             /// The Curve Ranges
             /// </summary>
-            public IEnumerable<CurveRange> Curves { get; set; }
+            public IEnumerable<CurveRange>? Curves { get; set; }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 
 namespace Artesian.SDK.Dto
 {
@@ -12,7 +12,7 @@ namespace Artesian.SDK.Dto
         /// The Acl Principal
         /// </summary>
         [Key(0)]
-        public Principal Principal { get; set; }
+        public Principal? Principal { get; set; }
         /// <summary>
         /// The Acl Role
         /// </summary>

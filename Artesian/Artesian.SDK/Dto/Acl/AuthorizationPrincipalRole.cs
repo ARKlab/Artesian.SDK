@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System;
 
 namespace Artesian.SDK.Dto
@@ -24,7 +24,7 @@ namespace Artesian.SDK.Dto
         /// The Principal Type
         /// </summary>
         [Key(0)]
-        public PrincipalType PrincipalType { get; set; }
+        public PrincipalType? PrincipalType { get; set; }
         /// <summary>
         /// The Principal Identifier
         /// </summary>
@@ -82,7 +82,7 @@ namespace Artesian.SDK.Dto
         /// The Principal
         /// </summary>
         [Key(1)]
-        public Principal Principal { get; set; }
+        public Principal? Principal { get; set; }
         /// <summary>
         /// The information regarding Inheritance
         /// </summary>

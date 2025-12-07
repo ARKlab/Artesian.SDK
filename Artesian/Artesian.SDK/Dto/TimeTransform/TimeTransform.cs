@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Artesian.SDK.Dto
 {
@@ -21,7 +21,7 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// System TimeTransform GASDAY66
         /// </summary>
-        public static readonly TimeTransformSimpleShift GASDAY66 = new TimeTransformSimpleShift()
+        public static readonly TimeTransformSimpleShift? GASDAY66 = new TimeTransformSimpleShift()
         {
             ID = 1,
             Name = SystemTimeTransform.GASDAY66.ToString(),
@@ -35,7 +35,7 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// System TimeTransform THERMALYEAR
         /// </summary>
-        public static readonly TimeTransformSimpleShift THERMALYEAR = new TimeTransformSimpleShift()
+        public static readonly TimeTransformSimpleShift? THERMALYEAR = new TimeTransformSimpleShift()
         {
             ID = 2,
             Name = SystemTimeTransform.THERMALYEAR.ToString(),

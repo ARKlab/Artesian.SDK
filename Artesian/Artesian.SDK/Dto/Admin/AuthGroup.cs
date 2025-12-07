@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System.Collections.Generic;
 
 namespace Artesian.SDK.Dto
@@ -28,6 +28,6 @@ namespace Artesian.SDK.Dto
         /// The AuthGroup Users
         /// </summary>
         [Key("Users")]
-        public List<string> Users { get; set; }
+        public List<string>? Users { get; set; }
     }
 }

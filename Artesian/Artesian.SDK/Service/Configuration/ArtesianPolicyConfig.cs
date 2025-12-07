@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Common;
@@ -20,9 +20,9 @@ namespace Artesian.SDK.Service
     /// </summary>
     public class ArtesianPolicyConfig
     {
-        private AsyncCircuitBreakerPolicy _circuitBreakerPolicy;
-        private AsyncRetryPolicy _retryPolicy;
-        private AsyncBulkheadPolicy _bulkheadPolicy;
+        private AsyncCircuitBreakerPolicy? _circuitBreakerPolicy;
+        private AsyncRetryPolicy? _retryPolicy;
+        private AsyncBulkheadPolicy? _bulkheadPolicy;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public const int MaxParallelismDefault = 10;

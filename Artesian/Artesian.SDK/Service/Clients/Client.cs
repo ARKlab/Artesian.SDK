@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information.
 using Flurl;
@@ -32,19 +32,19 @@ namespace Artesian.SDK.Service
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "Accepted to 'leak' FlurlClient instance")]
     internal sealed class Client
     {
-        private readonly List<IContentSerializer> _serializers;
-        private readonly FlurlClient _client;
+        private readonly List<IContentSerializer>? _serializers;
+        private readonly FlurlClient? _client;
 
-        private readonly JsonContentSerializer _jsonSerializer;
-        private readonly MessagePackContentSerializer _msgPackSerializer;
-        private readonly LZ4MessagePackContentSerializer _lz4msgPackSerializer;
+        private readonly JsonContentSerializer? _jsonSerializer;
+        private readonly MessagePackContentSerializer? _msgPackSerializer;
+        private readonly LZ4MessagePackContentSerializer? _lz4msgPackSerializer;
 
         private readonly string _url;
-        private readonly AsyncPolicy _resilienceStrategy;
+        private readonly AsyncPolicy? _resilienceStrategy;
         private readonly string _apiKey;
-        private readonly IArtesianServiceConfig _config;
+        private readonly IArtesianServiceConfig? _config;
 
-        private readonly IConfidentialClientApplication _confidentialClientApplication;
+        private readonly IConfidentialClientApplication? _confidentialClientApplication;
 
         /// <summary>
         /// Client constructor Auth credentials / ApiKey can be passed through config

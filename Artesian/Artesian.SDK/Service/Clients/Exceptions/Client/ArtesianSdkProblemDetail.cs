@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using System.Collections.Generic;
@@ -55,7 +55,7 @@ namespace Artesian.SDK.Service
         ///     using the built-in JSON or XML formatters.
         /// </remarks>   
         [JsonExtensionData]
-        public IDictionary<string, JToken> Extensions { get; set; }
+        public IDictionary<string, JToken>? Extensions { get; set; }
     }
 
 }

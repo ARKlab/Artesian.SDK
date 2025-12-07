@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Dto;
+using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.UoM;
 
 using NodaTime;
@@ -45,7 +45,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Unit of Measure
         /// </summary>
-        public UnitOfMeasure UnitOfMeasure { get => _output.UnitOfMeasure; set => _output.UnitOfMeasure = value; }
+        public UnitOfMeasure? UnitOfMeasure { get => _output.UnitOfMeasure; set => _output.UnitOfMeasure = value; }
         /// <summary>
         /// The Type
         /// </summary>
@@ -65,7 +65,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The custom Tags assigned to the data
         /// </summary>
-        public IDictionary<string, List<string>> Tags { get => _output.Tags; set => _output.Tags = value; }
+        public IDictionary<string, List<string>>? Tags { get => _output.Tags; set => _output.Tags = value; }
         /// <summary>
         /// The Authorization Path
         /// </summary>
@@ -73,7 +73,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The TimeTransform
         /// </summary>
-        public TimeTransform Transform { get => _output.Transform; set { _output.Transform = value; _output.TransformID = _output.Transform?.ID; } }
+        public TimeTransform? Transform { get => _output.Transform; set { _output.Transform = value; _output.TransformID = _output.Transform?.ID; } }
         /// <summary>
         /// The Last time the metadata has been updated
         /// </summary>

@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System.Collections.Generic;
 
 namespace Artesian.SDK.Dto
@@ -23,7 +23,7 @@ namespace Artesian.SDK.Dto
             /// The Authorization Roles related
             /// </summary>
             [Key(1)]
-            public IEnumerable<AuthorizationPrincipalRole> Roles { get; set; }
+            public IEnumerable<AuthorizationPrincipalRole>? Roles { get; set; }
         }
 
         /// <summary>

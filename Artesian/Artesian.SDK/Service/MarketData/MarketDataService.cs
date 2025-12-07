@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 
@@ -9,9 +9,9 @@ namespace Artesian.SDK.Service
     /// </summary>
     public partial class MarketDataService : IMarketDataService
     {
-        private readonly IArtesianServiceConfig _cfg;
-        private readonly ArtesianPolicyConfig _policy;
-        private readonly Client _client;
+        private readonly IArtesianServiceConfig? _cfg;
+        private readonly ArtesianPolicyConfig? _policy;
+        private readonly Client? _client;
 
         /// <summary>
         /// Metadata service

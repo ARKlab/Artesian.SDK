@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Dto;
@@ -22,8 +22,8 @@ namespace Artesian.SDK.Service
     /// </summary>
     public sealed class VersionedQuery : QueryWithFillAndInterval<VersionedQueryParamaters>, IVersionedQuery<VersionedQuery>
     {
-        private readonly Client _client;
-        private readonly IPartitionStrategy _partition;
+        private readonly Client? _client;
+        private readonly IPartitionStrategy? _partition;
         private readonly string _routePrefix = "vts";
 
         internal VersionedQuery(Client client, IPartitionStrategy partiton)

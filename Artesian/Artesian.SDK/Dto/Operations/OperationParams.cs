@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
@@ -22,7 +22,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key("Params")]
-        public IOperationParamsPayload Params { get; set; }
+        public IOperationParamsPayload? Params { get; set; }
     }
 
     /// <summary>
