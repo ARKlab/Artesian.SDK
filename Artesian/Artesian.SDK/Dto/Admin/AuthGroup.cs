@@ -1,5 +1,6 @@
 using MessagePack;
 using System.Collections.Generic;
+using KeyAttribute = MessagePack.KeyAttribute;
 
 namespace Artesian.SDK.Dto
 {
@@ -9,6 +10,15 @@ namespace Artesian.SDK.Dto
     [MessagePackObject]
     public class AuthGroup
     {
+        /// <summary>
+        /// The AuthGroup constructor
+        /// </summary>
+        public AuthGroup()
+        {
+            Name = string.Empty;
+            Users = new List<string>();
+        }
+
         /// <summary>
         /// The AuthGroup Identifier
         /// </summary>
@@ -22,12 +32,13 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// The AuthGroup Name
         /// </summary>
+        [System.ComponentModel.DataAnnotations.Required]
         [Key("Name")]
-        public string? Name { get; set; }
+        public string Name { get; set; }
         /// <summary>
         /// The AuthGroup Users
         /// </summary>
         [Key("Users")]
-        public List<string>? Users { get; set; }
+        public List<string> Users { get; set; }
     }
 }

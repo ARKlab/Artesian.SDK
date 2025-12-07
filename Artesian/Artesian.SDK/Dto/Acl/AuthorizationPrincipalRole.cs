@@ -24,12 +24,12 @@ namespace Artesian.SDK.Dto
         /// The Principal Type
         /// </summary>
         [Key(0)]
-        public PrincipalType? PrincipalType { get; set; }
+        public PrincipalType PrincipalType { get; set; }
         /// <summary>
         /// The Principal Identifier
         /// </summary>
         [Key(1)]
-        public string? PrincipalId { get; set; }
+        public string PrincipalId { get; set; } = string.Empty;
 
         /// <summary>
         /// 
@@ -51,7 +51,7 @@ namespace Artesian.SDK.Dto
         /// <returns></returns>
         public override string ToString()
         {
-            return $"{AuthorizationPrincipalRole.EncodePrincipalEnum(PrincipalType ?? Dto.PrincipalType.User)}:{PrincipalId}";
+            return $"{AuthorizationPrincipalRole.EncodePrincipalEnum(PrincipalType)}:{PrincipalId}";
         }
 
         /// <summary>
@@ -77,12 +77,12 @@ namespace Artesian.SDK.Dto
         /// The Role
         /// </summary>
         [Key(0)]
-        public string? Role { get; set; }
+        public string Role { get; set; } = string.Empty;
         /// <summary>
         /// The Principal
         /// </summary>
         [Key(1)]
-        public Principal? Principal { get; set; }
+        public Principal Principal { get; set; } = new Principal();
         /// <summary>
         /// The information regarding Inheritance
         /// </summary>

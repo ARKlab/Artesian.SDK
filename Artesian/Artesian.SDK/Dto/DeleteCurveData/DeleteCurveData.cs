@@ -43,7 +43,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public MarketDataIdentifier? ID { get; set; }
+        public MarketDataIdentifier ID { get; set; } = default!;
 
         /// <summary>
         /// The Version to operate on
@@ -56,7 +56,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         [MessagePack.Key(2)]
-        public string? Timezone { get; set; }
+        public string Timezone { get; set; } = string.Empty;
 
         /// <summary>
         /// Start date of range to be deleted  

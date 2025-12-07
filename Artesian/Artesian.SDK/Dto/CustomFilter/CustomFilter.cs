@@ -1,6 +1,7 @@
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using KeyAttribute = MessagePack.KeyAttribute;
 
 namespace Artesian.SDK.Dto
 {
@@ -11,6 +12,15 @@ namespace Artesian.SDK.Dto
     public class CustomFilter
     {
         /// <summary>
+        /// The CustomFilter constructor
+        /// </summary>
+        public CustomFilter()
+        {
+            Name = string.Empty;
+            Filters = new Dictionary<string, List<string>>();
+        }
+
+        /// <summary>
         /// The CustomFilter Id
         /// </summary>
         [Key(0)]
@@ -18,8 +28,9 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// The CustomFilter Name
         /// </summary>
+        [System.ComponentModel.DataAnnotations.Required]
         [Key(1)]
-        public string? Name { get; set; }
+        public string Name { get; set; }
         /// <summary>
         /// The CustomFilter Search Text
         /// </summary>
@@ -29,7 +40,7 @@ namespace Artesian.SDK.Dto
         /// The CustomFilter values
         /// </summary>
         [Key(3)]
-        public Dictionary<string, List<string>>? Filters { get; set; }
+        public Dictionary<string, List<string>> Filters { get; set; }
         /// <summary>
         /// The CustomFilter Etag
         /// </summary>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -72,7 +73,7 @@ namespace Artesian.SDK.Dto
             return new PathString(tokens.Take(tokens.Length-1).ToArray(), tokens[tokens.Length-1]);
         }
 
-        public static bool TryParse(string path, out PathString? retVal)
+        public static bool TryParse(string path, [NotNullWhen(true)] out PathString? retVal)
         {
             try
             {
