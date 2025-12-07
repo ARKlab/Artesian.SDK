@@ -12,25 +12,26 @@ namespace Artesian.SDK.Dto
         /// The Authorization Path entity Input
         /// </summary>
         [MessagePackObject]
-        public class Input
+        public record Input
         {
             /// <summary>
             /// The Authorization Path
             /// </summary>
             [Key(0)]
-            public string Path { get; set; } = string.Empty;
+            public required string Path { get; init; }
+            
             /// <summary>
             /// The Authorization Roles related
             /// </summary>
             [Key(1)]
-            public IEnumerable<AuthorizationPrincipalRole> Roles { get; set; } = new List<AuthorizationPrincipalRole>();
+            public IEnumerable<AuthorizationPrincipalRole> Roles { get; init; } = new List<AuthorizationPrincipalRole>();
         }
 
         /// <summary>
         /// The Authorization Path entity Output
         /// </summary>
         [MessagePackObject]
-        public class Output : Input
+        public record Output : Input
         {
         }
     }

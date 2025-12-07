@@ -8,37 +8,31 @@ namespace Artesian.SDK.Dto
     /// The AuthGroup entity with Etag
     /// </summary>
     [MessagePackObject]
-    public class AuthGroup
+    public record AuthGroup
     {
-        /// <summary>
-        /// The AuthGroup constructor
-        /// </summary>
-        public AuthGroup()
-        {
-            Name = string.Empty;
-            Users = new List<string>();
-        }
-
         /// <summary>
         /// The AuthGroup Identifier
         /// </summary>
         [Key("ID")]
-        public int ID { get; set; }
+        public int ID { get; init; }
+        
         /// <summary>
         /// The AuthGroup ETag
         /// </summary>
         [Key("ETag")]
-        public string? ETag { get; set; }
+        public string? ETag { get; init; }
+        
         /// <summary>
         /// The AuthGroup Name
         /// </summary>
         [System.ComponentModel.DataAnnotations.Required]
         [Key("Name")]
-        public string Name { get; set; }
+        public required string Name { get; init; }
+        
         /// <summary>
         /// The AuthGroup Users
         /// </summary>
         [Key("Users")]
-        public List<string> Users { get; set; }
+        public List<string> Users { get; init; } = new List<string>();
     }
 }

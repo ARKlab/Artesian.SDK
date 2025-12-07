@@ -24,19 +24,20 @@ namespace Artesian.SDK.Dto
         /// The Principal Type
         /// </summary>
         [Key(0)]
-        public PrincipalType PrincipalType { get; set; }
+        public PrincipalType PrincipalType { get; init; }
+        
         /// <summary>
         /// The Principal Identifier
         /// </summary>
         [Key(1)]
-        public string PrincipalId { get; set; } = string.Empty;
+        public required string PrincipalId { get; init; }
 
         /// <summary>
-        /// 
+        /// Default constructor for serialization
         /// </summary>
         public Principal()
         {
-
+            PrincipalId = string.Empty;
         }
 
         private Principal(string s)
@@ -71,23 +72,25 @@ namespace Artesian.SDK.Dto
     /// The AuthorizationPrincipalRole Entity
     /// </summary>
     [MessagePackObject]
-    public class AuthorizationPrincipalRole
+    public record AuthorizationPrincipalRole
     {
         /// <summary>
         /// The Role
         /// </summary>
         [Key(0)]
-        public string Role { get; set; } = string.Empty;
+        public required string Role { get; init; }
+        
         /// <summary>
         /// The Principal
         /// </summary>
         [Key(1)]
-        public Principal Principal { get; set; } = new Principal();
+        public required Principal Principal { get; init; }
+        
         /// <summary>
         /// The information regarding Inheritance
         /// </summary>
         [Key(2)]
-        public string? InheritedFrom { get; set; }
+        public string? InheritedFrom { get; init; }
 
         /// <summary>
         /// Encode principal Enum
@@ -122,4 +125,3 @@ namespace Artesian.SDK.Dto
         }
     }
 }
-
