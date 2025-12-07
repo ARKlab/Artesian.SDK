@@ -14,25 +14,25 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Purpose
         /// </summary>
         [Key(0)]
-        public Purpose? Purpose { get; init; }
+        public Purpose Purpose { get; init; }
 
         /// <summary>
         /// The Type
         /// </summary>
         [Key(1)]
-        public Type? Type { get; init; }
+        public Type Type { get; init; }
 
         /// <summary>
         /// The Status
         /// </summary>
         [Key(2)]
-        public Status? Status { get; init; }
+        public Status Status { get; init; }
 
         /// <summary>
         /// The Market
         /// </summary>
         [Key(3)]
-        public Market? Market { get; init; }
+        public Market Market { get; init; }
 
         /// <summary>
         /// The Unit Type
@@ -44,7 +44,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Zone
         /// </summary>
         [Key(5)]
-        public Zone? Zone { get; init; }
+        public Zone Zone { get; init; }
 
         /// <summary>
         /// The Operator
@@ -56,13 +56,13 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// The Scope
         /// </summary>
         [Key(7)]
-        public Scope? Scope { get; init; }
+        public Scope Scope { get; init; }
 
         /// <summary>
         /// The BAType
         /// </summary>
         [Key(8)]
-        public BAType? BAType { get; init; }
+        public BAType BAType { get; init; }
 
 
         //--------------------------
