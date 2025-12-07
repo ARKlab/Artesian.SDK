@@ -13,10 +13,10 @@ namespace Artesian.SDK.Service
     public class QueryService : IQueryService
 #pragma warning restore CA1001 // Types that own disposable fields should be disposable
     {
-        private readonly IArtesianServiceConfig? _cfg;
-        private readonly ArtesianPolicyConfig? _policy;
-        private readonly Client? _client;
-        private readonly IPartitionStrategy? _partitionStrategy = new PartitionByIDStrategy();
+        private readonly IArtesianServiceConfig _cfg;
+        private readonly ArtesianPolicyConfig _policy;
+        private readonly Client _client;
+        private readonly IPartitionStrategy _partitionStrategy = new PartitionByIDStrategy();
 
         /// <summary>
         /// Query service for building a query
