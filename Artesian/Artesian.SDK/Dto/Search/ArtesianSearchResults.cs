@@ -12,16 +12,23 @@ namespace Artesian.SDK.Dto
     [MessagePackObject]
     public record ArtesianSearchResults
     {
+        [SerializationConstructor]
+        public ArtesianSearchResults()
+        {
+            Results = new();
+            Facets = new();
+        }
+
         /// <summary>
         /// Results
         /// </summary>
         [Key(0)]
-        public List<MarketDataEntity.Output> Results { get; init; } = new();
+        public List<MarketDataEntity.Output> Results { get; init; }
         /// <summary>
         /// Facets
         /// </summary>
         [Key(1)]
-        public List<ArtesianMetadataFacet> Facets { get; init; } = new();
+        public List<ArtesianMetadataFacet> Facets { get; init; }
         /// <summary>
         /// Results count
         /// </summary>

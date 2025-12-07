@@ -12,11 +12,18 @@ namespace Artesian.SDK.Dto
     [MessagePackObject]
     public record ArtesianMetadataFacet
     {
+        [SerializationConstructor]
+        public ArtesianMetadataFacet(string facetName)
+        {
+            FacetName = facetName;
+            Values = new();
+        }
+
         /// <summary>
         /// Facet Name
         /// </summary>
         [Key(0)]
-        public required string FacetName { get; init; }
+        public string FacetName { get; init; }
         /// <summary>
         /// Facet Type
         /// </summary>
@@ -26,7 +33,7 @@ namespace Artesian.SDK.Dto
         /// Facet Values
         /// </summary>
         [Key(2)]
-        public List<ArtesianMetadataFacetCount> Values { get; init; } = new();
+        public List<ArtesianMetadataFacetCount> Values { get; init; }
     }
 
     /// <summary>

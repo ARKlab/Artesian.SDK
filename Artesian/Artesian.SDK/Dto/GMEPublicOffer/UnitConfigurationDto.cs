@@ -10,16 +10,23 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
     [MessagePackObject]
     public record UnitConfigurationDto
     {
+        [SerializationConstructor]
+        public UnitConfigurationDto(string unit)
+        {
+            Unit = unit;
+            Mappings = new();
+        }
+
         /// <summary>
         /// Unit name
         /// </summary>
         [Key(0)]
-        public required string Unit { get; init; }
+        public string Unit { get; init; }
         /// <summary>
         /// Generation type mappings
         /// </summary>
         [Key(1)]
-        public List<GenerationTypeMapping> Mappings { get; init; } = new();
+        public List<GenerationTypeMapping> Mappings { get; init; }
 
         /// <summary>
         /// ETag

@@ -17,7 +17,7 @@ namespace Artesian.SDK.Service
             {
                 if (token.ToObject<TransformType>() == TransformType.SimpleShift)
                 {
-                    return new TimeTransformSimpleShift();
+                    return new TimeTransformSimpleShift { Name = string.Empty };
                 }
 
                 if (token.ToObject<TransformType>() == TransformType.Calendar)

@@ -27,6 +27,12 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Key(2)]
         public long Count { get; init; }
+        [SerializationConstructor]
+        public PagedResult()
+        {
+            Data = new List<T>();
+        }
+
         /// <summary>
         /// Indicated if the count is partial
         /// </summary>
@@ -36,6 +42,6 @@ namespace Artesian.SDK.Dto
         ///Data
         /// </summary>
         [Key(4)]
-        public IEnumerable<T> Data { get; init; } = new List<T>();
+        public IEnumerable<T> Data { get; init; }
     }
 }
