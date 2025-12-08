@@ -983,8 +983,6 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var filter = new CustomFilter() { Name = "TestFilter" };
-
                 var mdq = await mds.ReadFilter(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/filter/")
