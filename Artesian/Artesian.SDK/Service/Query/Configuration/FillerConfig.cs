@@ -1,8 +1,6 @@
 using Artesian.SDK.Dto;
 using NodaTime;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor - Period is a value type
-
 namespace Artesian.SDK.Service
 {
     /// <summary>
@@ -25,6 +23,6 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Filler Period
         /// </summary>
-        public Period FillerPeriod { get; set; }
+        public Period? FillerPeriod { get; set; }
     }
 }

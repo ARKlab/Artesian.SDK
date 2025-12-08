@@ -71,8 +71,8 @@ namespace Artesian.SDK.Service
             cfg.ObjectCreationHandling = ObjectCreationHandling.Replace;
 
             _jsonSerializer = new JsonContentSerializer(cfg);
-            _msgPackSerializer = new MessagePackContentSerializer(CustomCompositeResolver.Instance ?? throw new InvalidOperationException("CustomCompositeResolver.Instance is null"));
-            _lz4msgPackSerializer = new LZ4MessagePackContentSerializer(CustomCompositeResolver.Instance ?? throw new InvalidOperationException("CustomCompositeResolver.Instance is null"));
+            _msgPackSerializer = new MessagePackContentSerializer(CustomCompositeResolver.Instance);
+            _lz4msgPackSerializer = new LZ4MessagePackContentSerializer(CustomCompositeResolver.Instance);
 
             // Order is important for quality values in Accept header
             _serializers = new List<IContentSerializer>
@@ -145,11 +145,6 @@ namespace Artesian.SDK.Service
                         // Create a custom HttpContent that serializes directly without buffering
                         content = new SerializerStreamContent<TBody>(_lz4msgPackSerializer, body, ctk);
                         content.Headers.ContentType = new MediaTypeHeaderValue(_lz4msgPackSerializer.MediaType);
-                    }
-
-                    if (_resilienceStrategy == null)
-                    {
-                        throw new InvalidOperationException("Resilience strategy not initialized");
                     }
 
                     return (await _resilienceStrategy.ExecuteAsync(async () =>

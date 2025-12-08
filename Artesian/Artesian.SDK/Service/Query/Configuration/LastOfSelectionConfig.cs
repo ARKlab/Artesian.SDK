@@ -3,7 +3,6 @@
 // license information. 
 using NodaTime;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor - Period is a value type
 
 namespace Artesian.SDK.Service
 {
@@ -23,14 +22,14 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Period
         /// </summary>
-        public Period Period { get; set; }
+        public Period? Period { get; set; }
         /// <summary>
         /// Period start for period range
         /// </summary>
-        public Period PeriodFrom { get; set; }
+        public Period? PeriodFrom { get; set; }
         /// <summary>
         /// Period start for period range
         /// </summary>
-        public Period PeriodTo { get; set; }
+        public Period? PeriodTo { get; set; }
     }
 }

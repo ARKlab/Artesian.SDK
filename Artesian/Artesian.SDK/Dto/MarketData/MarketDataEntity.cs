@@ -1,6 +1,7 @@
 // Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto.UoM;
 
 using MessagePack;
@@ -9,6 +10,7 @@ using NodaTime;
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Artesian.SDK.Dto
 {
@@ -31,23 +33,26 @@ namespace Artesian.SDK.Dto
             /// <summary>
             /// The MarketData Constructor by MarketDataEntity.Output
             /// </summary>
-            public Input(MarketDataEntity.Output output)
+            [SetsRequiredMembers]
+            public Input(Output output)
             {
-                if (output != null)
-                {
-                    this.MarketDataId = output.MarketDataId;
-                    this.ETag = output.ETag;
-                    this.ProviderName = output.ProviderName;
-                    this.MarketDataName = output.MarketDataName;
-                    this.OriginalGranularity = output.OriginalGranularity;
-                    this.UnitOfMeasure = output.UnitOfMeasure;
-                    this.Type = output.Type;
-                    this.OriginalTimezone = output.OriginalTimezone;
-                    this.AggregationRule = output.AggregationRule;
-                    this.TransformID = output.TransformID;
-                    this.ProviderDescription = output.ProviderDescription;
-                    this.Tags = output.Tags;
-                }
+                Guard.IsNotNull(output, nameof(output));
+
+                this.MarketDataId = output.MarketDataId;
+                this.ETag = output.ETag;
+                this.ProviderName = output.ProviderName;
+                this.MarketDataName = output.MarketDataName;
+                this.OriginalGranularity = output.OriginalGranularity;
+                this.UnitOfMeasure = output.UnitOfMeasure;
+                this.Type = output.Type;
+                this.OriginalTimezone = output.OriginalTimezone;
+                this.AggregationRule = output.AggregationRule;
+                this.TransformID = output.TransformID;
+                this.ProviderDescription = output.ProviderDescription;
+                this.Tags = output.Tags;
+                this.Path = output.Path;
+                this.DerivedCfg = output.DerivedCfg;
+                this.UnitOfMeasure = output.UnitOfMeasure;
             }
 
             /// <summary>
@@ -66,13 +71,13 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [Required]
             [MessagePack.Key(2)]
-            public string? ProviderName { get; set; }
+            public required string ProviderName { get; set; }
             /// <summary>
             /// The Market Data Name
             /// </summary>
             [Required]
             [MessagePack.Key(3)]
-            public string? MarketDataName { get; set; }
+            public required string MarketDataName { get; set; }
             /// <summary>
             /// The Original Granularity
             /// </summary>
@@ -90,7 +95,7 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [Required]
             [MessagePack.Key(6)]
-            public string? OriginalTimezone { get; set; }
+            public required string OriginalTimezone { get; set; }
             /// <summary>
             /// The Aggregation Rule
             /// </summary>
