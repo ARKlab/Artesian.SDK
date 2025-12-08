@@ -34,9 +34,7 @@ namespace Artesian.SDK.Factory
             _entity = entity;
             _marketDataService = marketDataService;
 
-            _identifier = new MarketDataIdentifier(
-                entity.ProviderName ?? throw new InvalidOperationException("ProviderName is required"), 
-                entity.MarketDataName ?? throw new InvalidOperationException("MarketDataName is required"));
+            _identifier = new MarketDataIdentifier(entity.ProviderName, entity.MarketDataName);
 
             Values = new ReadOnlyDictionary<LocalDateTime, double?>(_values);
         }
@@ -183,7 +181,7 @@ namespace Artesian.SDK.Factory
                 {
                     ID = _identifier,
                     Version = SelectedVersion.Value,
-                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone ?? throw new InvalidOperationException("OriginalTimezone is required"),
+                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
                     DownloadedAt = downloadedAt,
                     Rows = _values,
                     DeferCommandExecution = deferCommandExecution,

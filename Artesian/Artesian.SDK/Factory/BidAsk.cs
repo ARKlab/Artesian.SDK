@@ -35,9 +35,7 @@ namespace Artesian.SDK.Factory
             _entity = entity;
             _marketDataService = marketDataService;
 
-            _identifier = new MarketDataIdentifier(
-                entity.ProviderName ?? throw new InvalidOperationException("ProviderName is required"), 
-                entity.MarketDataName ?? throw new InvalidOperationException("MarketDataName is required"));
+            _identifier = new MarketDataIdentifier(entity.ProviderName, entity.MarketDataName);
 
             BidAsks = new ReadOnlyCollection<BidAskElement>(_values);
         }

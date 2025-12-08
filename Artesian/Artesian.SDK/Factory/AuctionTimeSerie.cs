@@ -35,9 +35,7 @@ namespace Artesian.SDK.Factory
             _entity = entity;
             _marketDataService = marketDataService;
 
-            _identifier = new MarketDataIdentifier(
-                entity.ProviderName ?? throw new InvalidOperationException("ProviderName is required"), 
-                entity.MarketDataName ?? throw new InvalidOperationException("MarketDataName is required"));
+            _identifier = new MarketDataIdentifier(entity.ProviderName, entity.MarketDataName);
 
             Bids = new ReadOnlyDictionary<LocalDateTime, AuctionBids>(_bids);
         }
@@ -166,7 +164,7 @@ namespace Artesian.SDK.Factory
                 var data = new UpsertCurveData
                 {
                     ID = _identifier,
-                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone ?? throw new InvalidOperationException("OriginalTimezone is required"),
+                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
                     DownloadedAt = downloadedAt,
                     AuctionRows = _bids,
                     DeferCommandExecution = deferCommandExecution,
