@@ -92,12 +92,12 @@ namespace Artesian.SDK.Service
                 if (propertyName == "Key")
                 {
                     reader.Read();
-                    key = serializer.Deserialize(reader, keyType)!;
+                    key = serializer.Deserialize(reader, keyType);
                 }
                 else if (propertyName == "Value")
                 {
                     reader.Read();
-                    value = serializer.Deserialize(reader, valueType)!;
+                    value = serializer.Deserialize(reader, valueType);
                 }
             }
 #pragma warning restore MA0045 // Do not use blocking calls in a sync method (need to make calling method async)

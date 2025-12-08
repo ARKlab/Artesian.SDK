@@ -36,7 +36,7 @@ namespace Artesian.SDK.Service
 
             static FormatterCache()
             {
-                foreach (var item in _resolvers!)
+                foreach (var item in _resolvers)
                 {
                     var f = item.GetFormatter<T>();
                     if (f != null)
