@@ -45,7 +45,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Unit of Measure
         /// </summary>
-        public UnitOfMeasure? UnitOfMeasure { get => _output.UnitOfMeasure; set => _output.UnitOfMeasure = value; }
+        public UnitOfMeasure UnitOfMeasure { get => _output.UnitOfMeasure; set => _output.UnitOfMeasure = value; }
         /// <summary>
         /// The Type
         /// </summary>
@@ -69,7 +69,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Authorization Path
         /// </summary>
-        public string? Path { get; set; }
+        public string Path { get => _output.Path; set => _output.Path = value; }
         /// <summary>
         /// The TimeTransform
         /// </summary>

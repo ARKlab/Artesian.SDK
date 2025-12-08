@@ -9,6 +9,7 @@ using NodaTime.Text;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Artesian.SDK.Service.GMEPublicOffer
 {

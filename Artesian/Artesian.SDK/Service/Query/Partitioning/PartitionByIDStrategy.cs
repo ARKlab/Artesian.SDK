@@ -1,7 +1,6 @@
 ﻿// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information.
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,14 +27,14 @@ namespace Artesian.SDK.Service
             return queryParamaters.SelectMany(queryParamater =>
                         _partitionIds(queryParamater.Ids!)
                             .Select(g => new ActualQueryParamaters(g,
-                                queryParamater.ExtractionRangeSelectionConfig ?? throw new InvalidOperationException("ExtractionRangeSelectionConfig is required"),
+                                queryParamater.ExtractionRangeSelectionConfig,
                                 queryParamater.ExtractionRangeType,
                                 queryParamater.TimeZone,
                                 queryParamater.FilterId,
                                 queryParamater.Granularity,
                                 queryParamater.TransformId,
                                 queryParamater.FillerKindType,
-                                queryParamater.FillerConfig ?? throw new InvalidOperationException("FillerConfig is required")
+                                queryParamater.FillerConfig
                                 )));
         }
 
@@ -53,7 +52,7 @@ namespace Artesian.SDK.Service
             return queryParamaters.SelectMany(queryParamater =>
                          _partitionIds(queryParamater.Ids!)
                             .Select(g => new VersionedQueryParamaters(g,
-                                queryParamater.ExtractionRangeSelectionConfig ?? throw new InvalidOperationException("ExtractionRangeSelectionConfig is required"),
+                                queryParamater.ExtractionRangeSelectionConfig,
                                 queryParamater.ExtractionRangeType,
                                 queryParamater.TimeZone,
                                 queryParamater.FilterId,
@@ -63,7 +62,7 @@ namespace Artesian.SDK.Service
                                 queryParamater.VersionSelectionType,
                                 queryParamater.VersionLimit,
                                 queryParamater.FillerKindType,
-                                queryParamater.FillerConfig ?? throw new InvalidOperationException("FillerConfig is required"),
+                                queryParamater.FillerConfig,
                                 queryParamater.AnalysisDate,
                                 queryParamater.UnitOfMeasure,
                                 queryParamater.AggregationRule
@@ -84,13 +83,13 @@ namespace Artesian.SDK.Service
             return queryParamaters.SelectMany(queryParamater =>
                         _partitionIds(queryParamater.Ids!)
                             .Select(g => new MasQueryParamaters(g,
-                                queryParamater.ExtractionRangeSelectionConfig ?? throw new InvalidOperationException("ExtractionRangeSelectionConfig is required"),
+                                queryParamater.ExtractionRangeSelectionConfig,
                                 queryParamater.ExtractionRangeType,
-                                queryParamater.TimeZone ?? "UTC",
+                                queryParamater.TimeZone,
                                 queryParamater.FilterId,
-                                queryParamater.Products ?? Enumerable.Empty<string>(),
+                                queryParamater.Products,
                                 queryParamater.FillerKindType,
-                                queryParamater.FillerConfig ?? throw new InvalidOperationException("FillerConfig is required")
+                                queryParamater.FillerConfig
                                 )));
         }
 
@@ -108,9 +107,9 @@ namespace Artesian.SDK.Service
             return queryParamaters.SelectMany(queryParamater =>
                         _partitionIds(queryParamater.Ids!)
                             .Select(g => new AuctionQueryParamaters(g,
-                                queryParamater.ExtractionRangeSelectionConfig ?? throw new InvalidOperationException("ExtractionRangeSelectionConfig is required"),
+                                queryParamater.ExtractionRangeSelectionConfig,
                                 queryParamater.ExtractionRangeType,
-                                queryParamater.TimeZone ?? "UTC",
+                                queryParamater.TimeZone,
                                 queryParamater.FilterId
                                 )));
         }
@@ -129,13 +128,13 @@ namespace Artesian.SDK.Service
             return queryParamaters.SelectMany(queryParamater =>
                         _partitionIds(queryParamater.Ids!)
                             .Select(g => new BidAskQueryParamaters(g,
-                                queryParamater.ExtractionRangeSelectionConfig ?? throw new InvalidOperationException("ExtractionRangeSelectionConfig is required"),
+                                queryParamater.ExtractionRangeSelectionConfig,
                                 queryParamater.ExtractionRangeType,
-                                queryParamater.TimeZone ?? "UTC",
+                                queryParamater.TimeZone,
                                 queryParamater.FilterId,
-                                queryParamater.Products ?? Enumerable.Empty<string>(),
+                                queryParamater.Products,
                                 queryParamater.FillerKindType,
-                                queryParamater.FillerConfig ?? throw new InvalidOperationException("FillerConfig is required")
+                                queryParamater.FillerConfig
                                 )));
         }
 

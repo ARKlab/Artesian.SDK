@@ -122,12 +122,6 @@ var result = await qs.CreateActual()
 - Document parameters, return values, and exceptions
 - Ensure documentation is comprehensive and matches the OpenAPI specs
 
-### Dependency Injection & Service Creation
-
-- Services are created via constructors accepting configuration objects
-- Support custom partition strategies (default: `PartitionByIDStrategy`)
-- Allow policy configuration to be optional with sensible defaults
-
 ### Commit Message Conventions
 
 This project follows the [Conventional Commits](https://www.conventionalcommits.org/) specification for commit messages. This provides an easy set of rules for creating an explicit commit history and enables automated tooling.
@@ -279,6 +273,5 @@ The SDK uses semantic versioning (MAJOR.MINOR.PATCH):
     - Consider versioning impact (MAJOR vs MINOR vs PATCH)
     - Prefer extension methods for new overloads in MINOR versions
     - Avoid unnecessary API breakage
-    - Maintain 1:1 mapping with Artesian OpenAPI services
 11. Services should handle client connections, serialization, authentication, and error handling
 12. Use fluent objects to enhance developer experience for complex operations

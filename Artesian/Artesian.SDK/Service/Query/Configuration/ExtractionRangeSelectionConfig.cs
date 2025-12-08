@@ -3,8 +3,6 @@
 // license information. 
 using NodaTime;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor - Period is a value type
-
 namespace Artesian.SDK.Service
 {
     /// <summary>

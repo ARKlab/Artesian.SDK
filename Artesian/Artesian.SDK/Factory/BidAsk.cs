@@ -154,7 +154,7 @@ namespace Artesian.SDK.Factory
                 var data = new UpsertCurveData
                 {
                     ID = _identifier,
-                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone ?? throw new InvalidOperationException("OriginalTimezone is required"),
+                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
                     DownloadedAt = downloadedAt,
                     DeferCommandExecution = deferCommandExecution,
                     BidAsk = new Dictionary<LocalDateTime, IDictionary<string, BidAskValue>>(),
@@ -164,7 +164,7 @@ namespace Artesian.SDK.Factory
 
                 foreach (var reportTime in _values.GroupBy(g => g.ReportTime))
                 {
-                    var bidAsks = reportTime.ToDictionary<BidAskElement, string, BidAskValue>(key => key.Product, value => value.Value!, StringComparer.Ordinal);
+                    var bidAsks = reportTime.ToDictionary(key => key.Product, value => value.Value, StringComparer.Ordinal);
                     data.BidAsk.Add(reportTime.Key, bidAsks);
                 }
 

@@ -5,7 +5,6 @@
     /// </summary>
     public static class CommonUnitOfMeasure
     {
-#pragma warning disable CA1823 // Avoid unused private fields
         /// <summary>
         /// kilowatt
         /// </summary>
@@ -54,6 +53,5 @@
         /// year
         /// </summary>
         public const string yr = "yr";
-#pragma warning restore CA1823 // Avoid unused private fields
     }
 }

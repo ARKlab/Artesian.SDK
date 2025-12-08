@@ -125,7 +125,7 @@ namespace Artesian.SDK.Dto
                 get
                 {
                     if (string.IsNullOrWhiteSpace(_path))
-                        return $@"/marketdata/system/{(ProviderName ?? string.Empty).Replace("/", "\\/")}/{(MarketDataName ?? string.Empty).Replace("/", "\\/")}";//new PathString(new[] { "marketdata", "system", ProviderName, MarketDataName });
+                        return $@"/marketdata/system/{ProviderName.Replace("/", "\\/")}/{MarketDataName.Replace("/", "\\/")}";//new PathString(new[] { "marketdata", "system", ProviderName, MarketDataName });
                     return _path!;
                 }
                 set { _path = value; }
@@ -159,7 +159,7 @@ namespace Artesian.SDK.Dto
             /// The Unit of Measure
             /// </summary>
             [MessagePack.Key(19)]
-            public UnitOfMeasure? UnitOfMeasure { get; set; } = new UnitOfMeasure();
+            public UnitOfMeasure UnitOfMeasure { get; set; } = new UnitOfMeasure();
 
             internal DerivedCfgBase? _derivedCfg;
 
