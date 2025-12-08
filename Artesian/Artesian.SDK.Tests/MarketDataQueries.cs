@@ -1001,7 +1001,6 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var filter = new CustomFilter() { Name = "TestFilter" };
 
                 var mdq = await mds.ReadFilters(1, 1);
 
