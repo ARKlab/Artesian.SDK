@@ -43,7 +43,7 @@ namespace Artesian.SDK.Dto
             DefinedBy = TransformDefinitionType.System,
             Period = Granularity.Year,
             PositiveShift = "",
-            NegativeShift = "",
+            NegativeShift = "P3M",
         };
     }
 }
