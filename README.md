@@ -316,7 +316,7 @@ Period Range
 Artesian supports querying GME Public Offers which come in a custom and dedicated format.
 
 Performance note:
-GME Public Offer data is partitioned by date, offerType, status, and market. Requesting very narrow subsets (for example a single status or offerType in several separate requests) does not improve performance and can cause the same dataset to be fetched multiple times.
+GME Public Offer data is partitioned by date, offerType, status, and market. Requesting very narrow subsets (for example a single status or offerType in several separate requests) does not improve performance and can cause the same data to be fetched multiple times.
 For this reason:
 	•	Use a large page size so that all data for a given (date, market, filters) is typically returned in a single page.
 	•	Loop over markets explicitly to cover all required markets without redundant fetches.
