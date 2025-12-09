@@ -6,12 +6,8 @@ using Flurl.Http;
 
 using Microsoft.Identity.Client;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
-
 using NodaTime;
-using NodaTime.Serialization.JsonNet;
+using NodaTime.Serialization.SystemTextJson;
 
 using Polly;
 
@@ -24,6 +20,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,7 +33,7 @@ namespace Artesian.SDK.Service
         private readonly List<IContentSerializer> _serializers;
         private readonly FlurlClient _client;
 
-        private readonly JsonContentSerializer _jsonSerializer;
+        private readonly SystemTextJsonContentSerializer _jsonSerializer;
         private readonly MessagePackContentSerializer _msgPackSerializer;
         private readonly LZ4MessagePackContentSerializer _lz4msgPackSerializer;
 
@@ -61,16 +59,7 @@ namespace Artesian.SDK.Service
             _apiKey = config.ApiKey;
             _config = config;
 
-            var cfg = new JsonSerializerSettings();
-            cfg = cfg.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-            cfg = cfg.ConfigureForDictionary();
-            cfg.Formatting = Formatting.Indented;
-            cfg.ContractResolver = new DefaultContractResolver();
-            cfg.Converters.Add(new StringEnumConverter());
-            cfg.TypeNameHandling = TypeNameHandling.None;
-            cfg.ObjectCreationHandling = ObjectCreationHandling.Replace;
-
-            _jsonSerializer = new JsonContentSerializer(cfg);
+            _jsonSerializer = new SystemTextJsonContentSerializer(CreateDefaultJsonSerializerOptions());
             _msgPackSerializer = new MessagePackContentSerializer(CustomCompositeResolver.Instance);
             _lz4msgPackSerializer = new LZ4MessagePackContentSerializer(CustomCompositeResolver.Instance);
 
@@ -355,6 +344,33 @@ namespace Artesian.SDK.Service
 
         public async Task Exec<TBody>(HttpMethod method, string resource, TBody body, CancellationToken ctk = default)
             => await Exec<object, TBody>(method, resource, body, ctk).ConfigureAwait(false);
+
+        /// <summary>
+        /// Creates the default JsonSerializerOptions used for System.Text.Json serialization
+        /// </summary>
+        /// <returns>Configured JsonSerializerOptions instance</returns>
+        internal static JsonSerializerOptions CreateDefaultJsonSerializerOptions()
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null, // Use PascalCase (no transformation)
+                DictionaryKeyPolicy = null, // Preserve dictionary key casing
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Skip null properties
+                WriteIndented = false,
+                PropertyNameCaseInsensitive = true,
+                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+            };
+
+            // Add NodaTime converters with Tzdb
+            options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+
+            // Add custom converters
+            options.Converters.Add(new DictionaryJsonConverterSTJFactory());
+            // TimeTransformConverterSTJ not needed - TimeTransform is already decorated with [JsonConverter] attribute
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            return options;
+        }
     }
     /// <summary>
     /// Flurl Extension

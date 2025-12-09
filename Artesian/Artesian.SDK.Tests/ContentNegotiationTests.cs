@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using Artesian.SDK.Common;
@@ -29,6 +30,13 @@ namespace Artesian.SDK.Tests
     public class ContentNegotiationTests
     {
         private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
+
+        // Helper method to serialize using System.Text.Json with configured options
+        private static string SerializeToJson<T>(T value)
+        {
+            var options = Client.CreateDefaultJsonSerializerOptions();
+            return JsonSerializer.Serialize(value, options);
+        }
 
         [Test]
         public async Task Should_Accept_All_Supported_MediaTypes_In_Request()
@@ -65,7 +73,7 @@ namespace Artesian.SDK.Tests
                     Value = 42.5
                 };
 
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(new[] { testData });
+                var json = SerializeToJson(new[] { testData });
 
                 httpTest.RespondWith(json, 200, headers: new { Content_Type = "application/json" });
 
@@ -96,7 +104,7 @@ namespace Artesian.SDK.Tests
                     Value = 42.5
                 };
 
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(new[] { testData });
+                var json = SerializeToJson(new[] { testData });
 
                 httpTest.RespondWith(json, 200, headers: new { Content_Type = "application/json; charset=utf-8" });
 
@@ -128,7 +136,7 @@ namespace Artesian.SDK.Tests
                     detail = "Invalid request parameters"
                 };
 
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(problemDetail);
+                var json = SerializeToJson(problemDetail);
 
                 httpTest.RespondWith(json, 400, headers: new { Content_Type = "application/problem+json" });
 
@@ -166,7 +174,7 @@ namespace Artesian.SDK.Tests
                     detail = "Resource conflict"
                 };
 
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(problemDetail);
+                var json = SerializeToJson(problemDetail);
 
                 httpTest.RespondWith(json, 409, headers: new { Content_Type = "application/problem+json" });
 
@@ -224,7 +232,7 @@ namespace Artesian.SDK.Tests
             {
                 // Regular JSON (not problem+json) for error response
                 var errorResponse = new { error = "Something went wrong" };
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(errorResponse);
+                var json = SerializeToJson(errorResponse);
 
                 httpTest.RespondWith(json, 400, headers: new { Content_Type = "application/json" });
 
@@ -333,7 +341,7 @@ namespace Artesian.SDK.Tests
                 // Convert bytes to Base64 string for Flurl.Http.Testing, then decode in test
                 // Note: Flurl.Http.Testing has limitations with binary content
                 // For now, we'll use a JSON response to test the content negotiation logic
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(new[] { testData });
+                var json = SerializeToJson(new[] { testData });
                 httpTest.RespondWith(status: 200, body: json, headers: new { Content_Type = "application/json" });
 
                 var qs = new QueryService(_cfg);
@@ -385,7 +393,7 @@ namespace Artesian.SDK.Tests
                 // Convert bytes to Base64 string for Flurl.Http.Testing, then decode in test
                 // Note: Flurl.Http.Testing has limitations with binary content
                 // For now, we'll use a JSON response to test the content negotiation logic
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(testData);
+                var json = SerializeToJson(testData);
                 httpTest.RespondWith(status: 200, body: json, headers: new { Content_Type = "application/json" });
 
                 var qs = new QueryService(_cfg);

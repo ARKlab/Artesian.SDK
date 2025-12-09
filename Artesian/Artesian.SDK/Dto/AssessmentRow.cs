@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using MessagePack;
-using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Artesian.SDK.Dto
 {
@@ -16,35 +16,35 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// Provider Name
         /// </summary>
-        [JsonProperty(PropertyName = "P")]
+        [JsonPropertyName("P")]
         [Key(0)]
         public string? ProviderName { get; init; }
 
         /// <summary>
         /// Curve Name
         /// </summary>
-        [JsonProperty(PropertyName = "N")]
+        [JsonPropertyName("N")]
         [Key(1)]
         public string? CurveName { get; init; }
 
         /// <summary>
         /// Market Data ID
         /// </summary>
-        [JsonProperty(PropertyName = "ID")]
+        [JsonPropertyName("ID")]
         [Key(2)]
         public required int TSID { get; init; }
 
         /// <summary>
         /// Product Name
         /// </summary>
-        [JsonProperty(PropertyName = "PR")]
+        [JsonPropertyName("PR")]
         [Key(3)]
         public required string Product { get; init; }
 
         /// <summary>
         /// Timestamp
         /// </summary>
-        [JsonProperty(PropertyName = "T")]
+        [JsonPropertyName("T")]
         [Key(4)]
         public required DateTimeOffset Time { get; init; }
 
@@ -52,56 +52,56 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// Settlement
         /// </summary>
-        [JsonProperty(PropertyName = "S")]
+        [JsonPropertyName("S")]
         [Key(5)]
         public double? Settlement { get; init; }
 
         /// <summary>
         /// Open
         /// </summary>
-        [JsonProperty(PropertyName = "O")]
+        [JsonPropertyName("O")]
         [Key(6)]
         public double? Open { get; init; }
 
         /// <summary>
         /// Close
         /// </summary>
-        [JsonProperty(PropertyName = "C")]
+        [JsonPropertyName("C")]
         [Key(7)]
         public double? Close { get; init; }
 
         /// <summary>
         /// High
         /// </summary>
-        [JsonProperty(PropertyName = "H")]
+        [JsonPropertyName("H")]
         [Key(8)]
         public double? High { get; init; }
 
         /// <summary>
         /// Low
         /// </summary>
-        [JsonProperty(PropertyName = "L")]
+        [JsonPropertyName("L")]
         [Key(9)]
         public double? Low { get; init; }
 
         /// <summary>
         /// Volume Paid
         /// </summary>
-        [JsonProperty(PropertyName = "VP")]
+        [JsonPropertyName("VP")]
         [Key(10)]
         public double? VolumePaid { get; init; }
 
         /// <summary>
         /// Volume Given
         /// </summary>
-        [JsonProperty(PropertyName = "VG")]
+        [JsonPropertyName("VG")]
         [Key(11)]
         public double? VolumeGiven { get; init; }
 
         /// <summary>
         /// Volume Total
         /// </summary>
-        [JsonProperty(PropertyName = "VT")]
+        [JsonPropertyName("VT")]
         [Key(12)]
         public double? VolumeTotal { get; init; }
 

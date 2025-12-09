@@ -3,8 +3,8 @@
 // license information. 
 using Artesian.SDK.Service;
 using MessagePack;
-using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Artesian.SDK.Dto
 {
@@ -13,7 +13,7 @@ namespace Artesian.SDK.Dto
     /// </summary>
     [MessagePackObject]
     [Union(0, typeof(TimeTransformSimpleShift))]
-    [JsonConverter(typeof(TimeTransformConverter))]
+    [JsonConverter(typeof(TimeTransformConverterSTJ))]
     public abstract record TimeTransform
     {
         /// <summary>

@@ -3,8 +3,8 @@
 // license information. 
 using Artesian.SDK.Service;
 using MessagePack;
-using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Artesian.SDK.Dto
 {
@@ -17,63 +17,63 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// Provider Name
         /// </summary>
-        [JsonProperty(PropertyName = "P")]
+        [JsonPropertyName("P")]
         [Key(0)]
         public string? ProviderName { get; init; }
 
         /// <summary>
         /// Curve Name
         /// </summary>
-        [JsonProperty(PropertyName = "N")]
+        [JsonPropertyName("N")]
         [Key(1)]
         public string? CurveName { get; init; }
 
         /// <summary>
         /// Market Data ID
         /// </summary>
-        [JsonProperty(PropertyName = "ID")]
+        [JsonPropertyName("ID")]
         [Key(2)]
         public int TSID { get; init; }
 
         /// <summary>
         /// Bid Timestamp
         /// </summary>
-        [JsonProperty(PropertyName = "T")]
+        [JsonPropertyName("T")]
         [Key(3)]
         public DateTimeOffset BidTimestamp { get; init; }
 
         /// <summary>
         /// Side
         /// </summary>
-        [JsonProperty(PropertyName = "S")]
+        [JsonPropertyName("S")]
         [Key(4)]
         public AuctionSide Side { get; init; }
 
         /// <summary>
         /// The Offer Price
         /// </summary>
-        [JsonProperty(PropertyName = "D")]
+        [JsonPropertyName("D")]
         [Key(5)]
         public double Price { get; init; }
 
         /// <summary>
         /// The Offer Quantity
         /// </summary>
-        [JsonProperty(PropertyName = "Q")]
+        [JsonPropertyName("Q")]
         [Key(6)]
         public double Quantity { get; init; }
 
         /// <summary>
         /// The Accepted Bid Price
         /// </summary>
-        [JsonProperty(PropertyName = "AD")]
+        [JsonPropertyName("AD")]
         [Key(7)]
         public double? AcceptedPrice { get; init; }
 
         /// <summary>
         /// Accepted Quantity, Sum of the accepted quantities per offered price level
         /// </summary>
-        [JsonProperty(PropertyName = "AQ")]
+        [JsonPropertyName("AQ")]
         [Key(8)]
         public double? AcceptedQuantity { get; init; }
 
@@ -82,7 +82,7 @@ namespace Artesian.SDK.Dto
         /// Single - bid/offer refers to a single BidTimestamp
         /// Block - bid/offer is part of a block, referencing multiple contiguous BidTimestamp
         /// </summary>
-        [JsonProperty(PropertyName = "BT")]
+        [JsonPropertyName("BT")]
         [Key(9)]
         public BlockType? BlockType { get; init; }
     }

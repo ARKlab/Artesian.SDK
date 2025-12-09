@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using MessagePack;
-using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Artesian.SDK.Dto
 {
@@ -21,56 +21,56 @@ namespace Artesian.SDK.Dto
             /// <summary>
             /// Provider Name
             /// </summary>
-            [JsonProperty(PropertyName = "P")]
+            [JsonPropertyName("P")]
             [Key(0)]
             public string? ProviderName { get; init; }
 
             /// <summary>
             /// Curve Name
             /// </summary>
-            [JsonProperty(PropertyName = "C")]
+            [JsonPropertyName("C")]
             [Key(1)]
             public string? CurveName { get; init; }
 
             /// <summary>
             /// Time serie Identifier
             /// </summary>
-            [JsonProperty(PropertyName = "ID")]
+            [JsonPropertyName("ID")]
             [Key(2)]
             public int TSID { get; init; }
 
             /// <summary>
             /// Version
             /// </summary>
-            [JsonProperty(PropertyName = "V")]
+            [JsonPropertyName("V")]
             [Key(3)]
             public DateTime? Version { get; init; }
 
             /// <summary>
             /// Time
             /// </summary>
-            [JsonProperty(PropertyName = "T")]
+            [JsonPropertyName("T")]
             [Key(4)]
             public DateTimeOffset Time { get; init; }
 
             /// <summary>
             /// Time serie Version
             /// </summary>
-            [JsonProperty(PropertyName = "D")]
+            [JsonPropertyName("D")]
             [Key(5)]
             public double? Value { get; init; }
          
             /// <summary>
             /// Start of first competence
             /// </summary>
-            [JsonProperty(PropertyName = "S")]
+            [JsonPropertyName("S")]
             [Key(6)]
             public DateTimeOffset CompetenceStart { get; init; }
 
             /// <summary>
             /// End of last competence
             /// </summary>
-            [JsonProperty(PropertyName = "E")]
+            [JsonPropertyName("E")]
             [Key(7)]
             public DateTimeOffset CompetenceEnd { get; init; }
         }
@@ -84,48 +84,48 @@ namespace Artesian.SDK.Dto
             /// <summary>
             /// The Provider display name
             /// </summary>
-            [JsonProperty(PropertyName = "P")]
+            [JsonPropertyName("P")]
             [Key(0)]
             public string? ProviderName { get; init; }
 
             /// <summary>
             /// The Curve display name
             /// </summary>
-            [JsonProperty(PropertyName = "C")]
+            [JsonPropertyName("C")]
             [Key(1)]
             public string? CurveName { get; init; }
 
             /// <summary>
             /// The Market Data ID
             /// </summary>
-            [JsonProperty(PropertyName = "ID")]
+            [JsonPropertyName("ID")]
             [Key(2)]
             public int TSID { get; init; }
 
             /// <summary>
             /// The timestamp
             /// </summary>
-            [JsonProperty(PropertyName = "T")]
+            [JsonPropertyName("T")]
             [Key(3)]
             public DateTimeOffset Time { get; init; }
 
             /// <summary>
             /// The Value
             /// </summary>
-            [JsonProperty(PropertyName = "D")]
+            [JsonPropertyName("D")]
             [Key(4)]
             public double? Value { get; init; }
             /// <summary>
             /// Start of first competence
             /// </summary>
-            [JsonProperty(PropertyName = "S")]
+            [JsonPropertyName("S")]
             [Key(5)]
             public DateTimeOffset CompetenceStart { get; init; }
 
             /// <summary>
             /// End of last competence
             /// </summary>
-            [JsonProperty(PropertyName = "E")]
+            [JsonPropertyName("E")]
             [Key(6)]
             public DateTimeOffset CompetenceEnd { get; init; }
         }
