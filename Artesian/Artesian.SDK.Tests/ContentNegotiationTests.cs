@@ -18,7 +18,6 @@ using Flurl.Http.Testing;
 using MessagePack;
 
 using NodaTime;
-using NodaTime.Serialization.SystemTextJson;
 
 using NUnit.Framework;
 
@@ -32,11 +31,10 @@ namespace Artesian.SDK.Tests
     {
         private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
 
-        // Helper method to serialize using System.Text.Json with NodaTime support
+        // Helper method to serialize using System.Text.Json with configured options
         private static string SerializeToJson<T>(T value)
         {
-            var options = new JsonSerializerOptions();
-            options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+            var options = Client.CreateDefaultJsonSerializerOptions();
             return JsonSerializer.Serialize(value, options);
         }
 

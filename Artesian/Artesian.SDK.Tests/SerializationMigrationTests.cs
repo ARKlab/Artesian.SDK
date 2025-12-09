@@ -4,6 +4,7 @@
 #pragma warning disable MA0002 // Dictionary ContainsKey is fine without comparer in tests
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Artesian.SDK.Common;
@@ -574,6 +575,251 @@ namespace Artesian.SDK.Tests
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized!.Count, Is.EqualTo(2));
             Assert.That(deserialized[new LocalDateTime(2024, 1, 1, 0, 0)], Is.EqualTo(100.5));
+        }
+
+        #endregion
+
+        #region Row Classes Serialization Tests
+
+        [Test]
+        public void AuctionRow_STJ_Serializes_WithShortPropertyNames()
+        {
+            // Arrange - Expected JSON with short property names
+            const string expectedJson = @"{""P"":""TestProvider"",""N"":""TestCurve"",""ID"":100000001,""T"":""2024-01-01T12:00:00+00:00"",""S"":""Bid"",""D"":50.0,""Q"":100.0,""AD"":50.0,""AQ"":100.0,""BT"":""Single""}";
+            
+            var row = new AuctionRow
+            {
+                ProviderName = "TestProvider",
+                CurveName = "TestCurve",
+                TSID = 100000001,
+                BidTimestamp = DateTimeOffset.Parse("2024-01-01T12:00:00Z", CultureInfo.InvariantCulture),
+                Side = AuctionSide.Bid,
+                Price = 50.0,
+                Quantity = 100.0,
+                AcceptedPrice = 50.0,
+                AcceptedQuantity = 100.0,
+                BlockType = BlockType.Single
+            };
+
+            // Act - Serialize with STJ
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(row, _stjOptions);
+
+            // Assert - Should use short property names
+            Assert.That(stjJson, Does.Contain("\"P\""));
+            Assert.That(stjJson, Does.Contain("\"N\""));
+            Assert.That(stjJson, Does.Contain("\"ID\""));
+            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize with short property names");
+
+            // Verify STJ deserialization
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<AuctionRow>(stjJson, _stjOptions);
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized!.ProviderName, Is.EqualTo("TestProvider"));
+            Assert.That(deserialized.TSID, Is.EqualTo(100000001));
+        }
+
+        [Test]
+        public void AssessmentRow_STJ_Serializes_WithShortPropertyNames()
+        {
+            // Arrange - Expected JSON with short property names
+            const string expectedJson = @"{""P"":""TestProvider"",""N"":""TestCurve"",""ID"":100000001,""PR"":""Power"",""T"":""2024-01-01T12:00:00+00:00"",""S"":100.0,""O"":99.0,""C"":101.0,""H"":102.0,""L"":98.0,""VP"":1000.0,""VG"":1100.0,""VT"":2100.0}";
+            
+            var row = new AssessmentRow
+            {
+                ProviderName = "TestProvider",
+                CurveName = "TestCurve",
+                TSID = 100000001,
+                Product = "Power",
+                Time = DateTimeOffset.Parse("2024-01-01T12:00:00Z", CultureInfo.InvariantCulture),
+                Settlement = 100.0,
+                Open = 99.0,
+                Close = 101.0,
+                High = 102.0,
+                Low = 98.0,
+                VolumePaid = 1000.0,
+                VolumeGiven = 1100.0,
+                VolumeTotal = 2100.0
+            };
+
+            // Act - Serialize with STJ
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(row, _stjOptions);
+
+            // Assert - Should use short property names
+            Assert.That(stjJson, Does.Contain("\"PR\""));
+            Assert.That(stjJson, Does.Contain("\"S\""));
+            Assert.That(stjJson, Does.Contain("\"VP\""));
+            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize with short property names");
+
+            // Verify STJ deserialization
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<AssessmentRow>(stjJson, _stjOptions);
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized!.Product, Is.EqualTo("Power"));
+            Assert.That(deserialized.Settlement, Is.EqualTo(100.0));
+        }
+
+        [Test]
+        public void TimeSerieRowActual_STJ_Serializes_WithShortPropertyNames()
+        {
+            // Arrange - Expected JSON with short property names
+            const string expectedJson = @"{""P"":""TestProvider"",""C"":""TestCurve"",""ID"":100000001,""T"":""2024-01-01T12:00:00+00:00"",""D"":100.5,""S"":""2024-01-01T00:00:00+00:00"",""E"":""2024-01-02T00:00:00+00:00""}";
+            
+            var row = new TimeSerieRow.Actual
+            {
+                ProviderName = "TestProvider",
+                CurveName = "TestCurve",
+                TSID = 100000001,
+                Time = DateTimeOffset.Parse("2024-01-01T12:00:00Z", CultureInfo.InvariantCulture),
+                Value = 100.5,
+                CompetenceStart = DateTimeOffset.Parse("2024-01-01T00:00:00Z", CultureInfo.InvariantCulture),
+                CompetenceEnd = DateTimeOffset.Parse("2024-01-02T00:00:00Z", CultureInfo.InvariantCulture)
+            };
+
+            // Act - Serialize with STJ
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(row, _stjOptions);
+
+            // Assert - Should use short property names
+            Assert.That(stjJson, Does.Contain("\"P\""));
+            Assert.That(stjJson, Does.Contain("\"C\""));
+            Assert.That(stjJson, Does.Contain("\"D\""));
+            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize with short property names");
+
+            // Verify STJ deserialization
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<TimeSerieRow.Actual>(stjJson, _stjOptions);
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized!.CurveName, Is.EqualTo("TestCurve"));
+            Assert.That(deserialized.Value, Is.EqualTo(100.5));
+        }
+
+        [Test]
+        public void TimeSerieRowVersioned_STJ_Serializes_WithShortPropertyNames()
+        {
+            // Arrange - Expected JSON with short property names (DateTime.Parse with Z creates UTC which includes offset)
+            const string expectedJson = @"{""P"":""TestProvider"",""C"":""TestCurve"",""ID"":100000001,""V"":""2024-01-01T10:00:00+00:00"",""T"":""2024-01-01T12:00:00+00:00"",""D"":100.5,""S"":""2024-01-01T00:00:00+00:00"",""E"":""2024-01-02T00:00:00+00:00""}";
+            
+            var row = new TimeSerieRow.Versioned
+            {
+                ProviderName = "TestProvider",
+                CurveName = "TestCurve",
+                TSID = 100000001,
+                Version = DateTime.Parse("2024-01-01T10:00:00Z", CultureInfo.InvariantCulture),
+                Time = DateTimeOffset.Parse("2024-01-01T12:00:00Z", CultureInfo.InvariantCulture),
+                Value = 100.5,
+                CompetenceStart = DateTimeOffset.Parse("2024-01-01T00:00:00Z", CultureInfo.InvariantCulture),
+                CompetenceEnd = DateTimeOffset.Parse("2024-01-02T00:00:00Z", CultureInfo.InvariantCulture)
+            };
+
+            // Act - Serialize with STJ
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(row, _stjOptions);
+
+            // Assert - Should use short property names
+            Assert.That(stjJson, Does.Contain("\"V\""));
+            Assert.That(stjJson, Does.Contain("\"T\""));
+            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize with short property names");
+
+            // Verify STJ deserialization
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<TimeSerieRow.Versioned>(stjJson, _stjOptions);
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized!.Version, Is.EqualTo(DateTime.Parse("2024-01-01T10:00:00Z", CultureInfo.InvariantCulture)));
+            Assert.That(deserialized.Value, Is.EqualTo(100.5));
+        }
+
+        [Test]
+        public void BidAskRow_STJ_Serializes_WithShortPropertyNames()
+        {
+            // Arrange - Expected JSON with short property names
+            const string expectedJson = @"{""P"":""TestProvider"",""N"":""TestCurve"",""ID"":100000001,""PR"":""Power"",""T"":""2024-01-01T12:00:00+00:00"",""BBP"":99.0,""BAP"":101.0,""BBQ"":100.0,""BAQ"":150.0,""LP"":100.0,""LQ"":50.0}";
+            
+            var row = new BidAskRow
+            {
+                ProviderName = "TestProvider",
+                CurveName = "TestCurve",
+                TSID = 100000001,
+                Product = "Power",
+                Time = DateTimeOffset.Parse("2024-01-01T12:00:00Z", CultureInfo.InvariantCulture),
+                BestBidPrice = 99.0,
+                BestAskPrice = 101.0,
+                BestBidQuantity = 100.0,
+                BestAskQuantity = 150.0,
+                LastPrice = 100.0,
+                LastQuantity = 50.0
+            };
+
+            // Act - Serialize with STJ
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(row, _stjOptions);
+
+            // Assert - Should use short property names
+            Assert.That(stjJson, Does.Contain("\"BBP\""));
+            Assert.That(stjJson, Does.Contain("\"BAP\""));
+            Assert.That(stjJson, Does.Contain("\"LP\""));
+            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize with short property names");
+
+            // Verify STJ deserialization
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<BidAskRow>(stjJson, _stjOptions);
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized!.Product, Is.EqualTo("Power"));
+            Assert.That(deserialized.BestBidPrice, Is.EqualTo(99.0));
+        }
+
+        #endregion
+
+        #region ProblemDetails Serialization Tests
+
+        [Test]
+        public void ArtesianSdkProblemDetail_STJ_Serializes_WithExtensionData()
+        {
+            // Arrange - Expected JSON with extension data
+            const string expectedJson = @"{""type"":""https://example.com/probs/out-of-credit"",""title"":""You do not have enough credit."",""status"":403,""detail"":""Your current balance is 30, but that costs 50."",""instance"":""/account/12345/msgs/abc"",""balance"":30,""accounts"":[""/account/12345"",""/account/67890""]}";
+            
+            var problemDetail = new ArtesianSdkProblemDetail
+            {
+                Type = "https://example.com/probs/out-of-credit",
+                Title = "You do not have enough credit.",
+                Status = 403,
+                Detail = "Your current balance is 30, but that costs 50.",
+                Instance = "/account/12345/msgs/abc",
+                Extensions = new Dictionary<string, JsonElement>
+                {
+                    { "balance", JsonDocument.Parse("30").RootElement },
+                    { "accounts", JsonDocument.Parse(@"[""/account/12345"",""/account/67890""]").RootElement }
+                }
+            };
+
+            // Act - Serialize with STJ
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(problemDetail, _stjOptions);
+
+            // Assert - Should include extension data
+            Assert.That(stjJson, Does.Contain("\"balance\""));
+            Assert.That(stjJson, Does.Contain("\"accounts\""));
+            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize ProblemDetails with extension data");
+
+            // Verify STJ deserialization including extension data
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<ArtesianSdkProblemDetail>(stjJson, _stjOptions);
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized!.Type, Is.EqualTo("https://example.com/probs/out-of-credit"));
+            Assert.That(deserialized.Status, Is.EqualTo(403));
+            Assert.That(deserialized.Extensions, Is.Not.Null);
+            Assert.That(deserialized.Extensions!.Count, Is.EqualTo(2));
+            Assert.That(deserialized.Extensions.ContainsKey("balance"), Is.True);
+            Assert.That(deserialized.Extensions["balance"].GetInt32(), Is.EqualTo(30));
+        }
+
+        [Test]
+        public void ArtesianSdkProblemDetail_STJ_Deserializes_NewtonsoftJson()
+        {
+            // Arrange - JSON literal that would have been produced by Newtonsoft
+            const string newtonsoftJson = @"{""type"":""https://tools.ietf.org/html/rfc7231#section-6.5.1"",""title"":""Bad Request"",""status"":400,""detail"":""Invalid market data ID"",""traceId"":""00-abc123-def456-01""}";
+
+            // Act - Deserialize with STJ
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<ArtesianSdkProblemDetail>(newtonsoftJson, _stjOptions);
+
+            // Assert - STJ successfully deserialized Newtonsoft JSON including extension data
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized!.Type, Is.EqualTo("https://tools.ietf.org/html/rfc7231#section-6.5.1"));
+            Assert.That(deserialized.Title, Is.EqualTo("Bad Request"));
+            Assert.That(deserialized.Status, Is.EqualTo(400));
+            Assert.That(deserialized.Detail, Is.EqualTo("Invalid market data ID"));
+            Assert.That(deserialized.Extensions, Is.Not.Null);
+            Assert.That(deserialized.Extensions!.ContainsKey("traceId"), Is.True);
+            Assert.That(deserialized.Extensions["traceId"].GetString(), Is.EqualTo("00-abc123-def456-01"));
         }
 
         #endregion

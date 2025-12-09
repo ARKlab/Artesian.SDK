@@ -13,7 +13,6 @@ namespace Artesian.SDK.Dto
     /// </summary>
     [MessagePackObject]
     [Union(0, typeof(TimeTransformSimpleShift))]
-    [Newtonsoft.Json.JsonConverter(typeof(TimeTransformConverter))]
     [JsonConverter(typeof(TimeTransformConverterSTJ))]
     public abstract record TimeTransform
     {

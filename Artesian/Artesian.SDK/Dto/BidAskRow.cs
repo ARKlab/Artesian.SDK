@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information.
 using MessagePack;
-using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Artesian.SDK.Dto
 {
@@ -16,35 +16,35 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// Provider Name
         /// </summary>
-        [JsonProperty(PropertyName = "P")]
+        [JsonPropertyName("P")]
         [Key(0)]
         public string? ProviderName { get; init; }
 
         /// <summary>
         /// Curve Name
         /// </summary>
-        [JsonProperty(PropertyName = "N")]
+        [JsonPropertyName("N")]
         [Key(1)]
         public string? CurveName { get; init; }
 
         /// <summary>
         /// Market Data ID
         /// </summary>
-        [JsonProperty(PropertyName = "ID")]
+        [JsonPropertyName("ID")]
         [Key(2)]
         public int TSID { get; init; }
 
         /// <summary>
         /// Product Name
         /// </summary>
-        [JsonProperty(PropertyName = "PR")]
+        [JsonPropertyName("PR")]
         [Key(3)]
         public string? Product { get; init; }
 
         /// <summary>
         /// Timestamp
         /// </summary>
-        [JsonProperty(PropertyName = "T")]
+        [JsonPropertyName("T")]
         [Key(4)]
         public DateTimeOffset Time { get; init; }
 
@@ -53,42 +53,42 @@ namespace Artesian.SDK.Dto
         /// <summary>
         /// Best Bid Price
         /// </summary>
-        [JsonProperty(PropertyName = "BBP")]
+        [JsonPropertyName("BBP")]
         [Key(5)]
         public double? BestBidPrice { get; init; }
 
         /// <summary>
         /// Best Ask Price
         /// </summary>
-        [JsonProperty(PropertyName = "BAP")]
+        [JsonPropertyName("BAP")]
         [Key(6)]
         public double? BestAskPrice { get; init; }
 
         /// <summary>
         /// Best Bid Quantity
         /// </summary>
-        [JsonProperty(PropertyName = "BBQ")]
+        [JsonPropertyName("BBQ")]
         [Key(7)]
         public double? BestBidQuantity { get; init; }
 
         /// <summary>
         /// Best Ask Quantity
         /// </summary>
-        [JsonProperty(PropertyName = "BAQ")]
+        [JsonPropertyName("BAQ")]
         [Key(8)]
         public double? BestAskQuantity { get; init; }
 
         /// <summary>
         /// Last Price
         /// </summary>
-        [JsonProperty(PropertyName = "LP")]
+        [JsonPropertyName("LP")]
         [Key(9)]
         public double? LastPrice { get; init; }
 
         /// <summary>
         /// Last Quantity
         /// </summary>
-        [JsonProperty(PropertyName = "LQ")]
+        [JsonPropertyName("LQ")]
         [Key(10)]
         public double? LastQuantity { get; init; }
 

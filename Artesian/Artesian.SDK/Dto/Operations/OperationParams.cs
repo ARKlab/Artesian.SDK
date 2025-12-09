@@ -1,5 +1,4 @@
 using MessagePack;
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace Artesian.SDK.Dto
