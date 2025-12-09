@@ -107,7 +107,17 @@ namespace Artesian.SDK.Service
                 return false;
 
             var genericTypeDef = typeToConvert.GetGenericTypeDefinition();
-            return genericTypeDef == typeof(Dictionary<,>) || genericTypeDef == typeof(IDictionary<,>);
+            if (genericTypeDef != typeof(Dictionary<,>) && genericTypeDef != typeof(IDictionary<,>))
+                return false;
+
+            // Exclude Dictionary<string, JsonElement> because it's used for JsonExtensionData
+            // JsonExtensionData needs the built-in STJ behavior to serialize as top-level properties
+            var keyType = typeToConvert.GetGenericArguments()[0];
+            var valueType = typeToConvert.GetGenericArguments()[1];
+            if (keyType == typeof(string) && valueType == typeof(JsonElement))
+                return false;
+
+            return true;
         }
 
         public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
