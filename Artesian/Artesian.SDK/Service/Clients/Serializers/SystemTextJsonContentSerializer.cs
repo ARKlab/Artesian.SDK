@@ -32,6 +32,11 @@ namespace Artesian.SDK.Service
             _options = options;
         }
 
+        /// <summary>
+        /// Gets the JsonSerializerOptions for testing purposes
+        /// </summary>
+        internal JsonSerializerOptions Options => _options;
+
         /// <inheritdoc/>
         public bool CanSerialize<T>() => true;
 

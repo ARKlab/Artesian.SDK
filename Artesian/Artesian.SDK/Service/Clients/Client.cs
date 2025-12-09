@@ -59,26 +59,7 @@ namespace Artesian.SDK.Service
             _apiKey = config.ApiKey;
             _config = config;
 
-            // Configure System.Text.Json options
-            var jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = null, // Use PascalCase (no transformation)
-                DictionaryKeyPolicy = null, // Preserve dictionary key casing
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Skip null properties
-                WriteIndented = false,
-                PropertyNameCaseInsensitive = true,
-                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
-            };
-
-            // Add NodaTime converters with Tzdb
-            jsonOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-
-            // Add custom converters
-            jsonOptions.Converters.Add(new DictionaryJsonConverterSTJFactory());
-            // TimeTransformConverterSTJ not needed - TimeTransform is already decorated with [JsonConverter] attribute
-            jsonOptions.Converters.Add(new JsonStringEnumConverter());
-
-            _jsonSerializer = new SystemTextJsonContentSerializer(jsonOptions);
+            _jsonSerializer = new SystemTextJsonContentSerializer(CreateDefaultJsonSerializerOptions());
             _msgPackSerializer = new MessagePackContentSerializer(CustomCompositeResolver.Instance);
             _lz4msgPackSerializer = new LZ4MessagePackContentSerializer(CustomCompositeResolver.Instance);
 
@@ -363,6 +344,33 @@ namespace Artesian.SDK.Service
 
         public async Task Exec<TBody>(HttpMethod method, string resource, TBody body, CancellationToken ctk = default)
             => await Exec<object, TBody>(method, resource, body, ctk).ConfigureAwait(false);
+
+        /// <summary>
+        /// Creates the default JsonSerializerOptions used for System.Text.Json serialization
+        /// </summary>
+        /// <returns>Configured JsonSerializerOptions instance</returns>
+        internal static JsonSerializerOptions CreateDefaultJsonSerializerOptions()
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null, // Use PascalCase (no transformation)
+                DictionaryKeyPolicy = null, // Preserve dictionary key casing
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Skip null properties
+                WriteIndented = false,
+                PropertyNameCaseInsensitive = true,
+                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+            };
+
+            // Add NodaTime converters with Tzdb
+            options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+
+            // Add custom converters
+            options.Converters.Add(new DictionaryJsonConverterSTJFactory());
+            // TimeTransformConverterSTJ not needed - TimeTransform is already decorated with [JsonConverter] attribute
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            return options;
+        }
     }
     /// <summary>
     /// Flurl Extension
