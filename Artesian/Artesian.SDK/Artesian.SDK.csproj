@@ -24,9 +24,9 @@
   </ItemGroup>
 
 	<ItemGroup Label="Vulnerabilities Overrides">
-		<PackageReference Include="System.Text.Json" Version="6.0.11" Condition=" $(TargetFramework) == 'netstandard2.1' " />
-		<PackageReference Include="System.Text.Json" Version="6.0.11" Condition=" $(TargetFramework) == 'netstandard2.0' " />
-		<PackageReference Include="System.Text.Json" Version="6.0.11" Condition=" $(TargetFramework) == 'net462' " />
+		<PackageReference Include="System.Text.Json" Version="8.0.6" Condition=" $(TargetFramework) == 'netstandard2.1' " />
+		<PackageReference Include="System.Text.Json" Version="8.0.6" Condition=" $(TargetFramework) == 'netstandard2.0' " />
+		<PackageReference Include="System.Text.Json" Version="8.0.6" Condition=" $(TargetFramework) == 'net462' " />
 	</ItemGroup>
 
 </Project>
