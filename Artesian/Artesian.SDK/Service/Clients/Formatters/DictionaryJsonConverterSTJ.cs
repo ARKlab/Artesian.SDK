@@ -45,8 +45,12 @@ namespace Artesian.SDK.Service
                     {
                         if (!hasKey)
                             throw new JsonException("Dictionary entry missing 'Key' property");
+                        
+                        // Key should not be null after deserialization, but check to be safe
+                        if (key == null)
+                            throw new JsonException("Dictionary key cannot be null");
 
-                        dictionary.Add(key!, value!);
+                        dictionary.Add(key, value!);
                         break;
                     }
 
@@ -111,8 +115,8 @@ namespace Artesian.SDK.Service
             var keyType = typeToConvert.GetGenericArguments()[0];
             var valueType = typeToConvert.GetGenericArguments()[1];
 
-            // Only use custom converter for complex keys (non-string keys or when needed for compatibility)
-            // For now, use it for all dictionaries to maintain compatibility with Newtonsoft.Json format
+            // Use custom converter for all dictionaries to maintain compatibility with existing JSON format
+            // This ensures Key/Value array format is used consistently, which is required for complex keys like NodaTime types
             var converterType = typeof(DictionaryJsonConverterSTJ<,>).MakeGenericType(keyType, valueType);
             return (JsonConverter?)Activator.CreateInstance(converterType);
         }

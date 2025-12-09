@@ -24,8 +24,8 @@ namespace Artesian.SDK.Service
             return discriminatorValue switch
             {
                 TransformType.SimpleShift => typeof(TimeTransformSimpleShift),
-                TransformType.Calendar => throw new NotSupportedException($"Not yet implemented transform {TransformType.Calendar}"),
-                TransformType.Composition => throw new NotSupportedException($"Not yet implemented transform {TransformType.Composition}"),
+                TransformType.Calendar => throw new NotSupportedException($"Not yet implemented transform Calendar"),
+                TransformType.Composition => throw new NotSupportedException($"Not yet implemented transform Composition"),
                 _ => throw new InvalidOperationException($"Can't deserialize TimeTransform. TransformType '{discriminatorValue}' is not valid.")
             };
         }
