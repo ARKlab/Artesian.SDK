@@ -6,12 +6,8 @@ using Flurl.Http;
 
 using Microsoft.Identity.Client;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
-
 using NodaTime;
-using NodaTime.Serialization.JsonNet;
+using NodaTime.Serialization.SystemTextJson;
 
 using Polly;
 
@@ -24,6 +20,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,7 +33,7 @@ namespace Artesian.SDK.Service
         private readonly List<IContentSerializer> _serializers;
         private readonly FlurlClient _client;
 
-        private readonly JsonContentSerializer _jsonSerializer;
+        private readonly SystemTextJsonContentSerializer _jsonSerializer;
         private readonly MessagePackContentSerializer _msgPackSerializer;
         private readonly LZ4MessagePackContentSerializer _lz4msgPackSerializer;
 
@@ -61,16 +59,26 @@ namespace Artesian.SDK.Service
             _apiKey = config.ApiKey;
             _config = config;
 
-            var cfg = new JsonSerializerSettings();
-            cfg = cfg.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-            cfg = cfg.ConfigureForDictionary();
-            cfg.Formatting = Formatting.Indented;
-            cfg.ContractResolver = new DefaultContractResolver();
-            cfg.Converters.Add(new StringEnumConverter());
-            cfg.TypeNameHandling = TypeNameHandling.None;
-            cfg.ObjectCreationHandling = ObjectCreationHandling.Replace;
+            // Configure System.Text.Json options
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null, // Use PascalCase (no transformation)
+                DictionaryKeyPolicy = null, // Preserve dictionary key casing
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Skip null properties
+                WriteIndented = false,
+                PropertyNameCaseInsensitive = true,
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
+            };
 
-            _jsonSerializer = new JsonContentSerializer(cfg);
+            // Add NodaTime converters with Tzdb
+            jsonOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+
+            // Add custom converters
+            jsonOptions.Converters.Add(new DictionaryJsonConverterSTJFactory());
+            jsonOptions.Converters.Add(new TimeTransformConverterSTJ());
+            jsonOptions.Converters.Add(new JsonStringEnumConverter());
+
+            _jsonSerializer = new SystemTextJsonContentSerializer(jsonOptions);
             _msgPackSerializer = new MessagePackContentSerializer(CustomCompositeResolver.Instance);
             _lz4msgPackSerializer = new LZ4MessagePackContentSerializer(CustomCompositeResolver.Instance);
 
