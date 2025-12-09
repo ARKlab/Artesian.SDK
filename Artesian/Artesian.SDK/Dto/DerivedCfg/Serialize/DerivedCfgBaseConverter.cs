@@ -50,7 +50,7 @@ namespace Artesian.SDK.Dto.Serialize
                 DerivedAlgorithm.MUV => typeof(DerivedCfgMuv),
                 DerivedAlgorithm.Coalesce => typeof(DerivedCfgCoalesce),
                 DerivedAlgorithm.Sum => typeof(DerivedCfgSum),
-                _ => null,
+                _ => typeof(DerivedCfgBase)
             };
         }
     }
@@ -69,14 +69,14 @@ namespace Artesian.SDK.Dto.Serialize
             get { return false; }
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             throw new NotSupportedException();
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object? ReadJson(JsonReader reader,
                                         Type objectType,
-                                         object existingValue,
+                                         object? existingValue,
                                          JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null) return null;
@@ -88,7 +88,7 @@ namespace Artesian.SDK.Dto.Serialize
             T target = Create(objectType, jObject);
 
             // Populate the object properties
-            serializer.Populate(jObject.CreateReader(), target);
+            serializer.Populate(jObject.CreateReader(), target!);
 
             return target;
         }

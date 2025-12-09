@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 
 namespace Artesian.SDK.Dto
 {
@@ -6,17 +6,18 @@ namespace Artesian.SDK.Dto
     /// The AclPathRule entity
     /// </summary>
     [MessagePackObject]
-    public class AclPathRule
+    public record AclPathRule
     {
         /// <summary>
         /// The Acl Principal
         /// </summary>
         [Key(0)]
-        public Principal Principal { get; set; }
+        public required Principal Principal { get; init; }
+        
         /// <summary>
         /// The Acl Role
         /// </summary>
         [Key(1)]
-        public string Role { get; set; }
+        public required string Role { get; init; }
     }
 }

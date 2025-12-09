@@ -17,7 +17,7 @@ namespace Artesian.SDK.Service
             {
                 if (token.ToObject<TransformType>() == TransformType.SimpleShift)
                 {
-                    return new TimeTransformSimpleShift();
+                    return new TimeTransformSimpleShift { Name = string.Empty };
                 }
 
                 if (token.ToObject<TransformType>() == TransformType.Calendar)
@@ -59,14 +59,14 @@ namespace Artesian.SDK.Service
             get { return false; }
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             throw new NotSupportedException();
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object? ReadJson(JsonReader reader,
                                         Type objectType,
-                                         object existingValue,
+                                         object? existingValue,
                                          JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null) return null;
@@ -76,6 +76,9 @@ namespace Artesian.SDK.Service
 
             // Create target object based on JObject
             T target = Create(objectType, jObject);
+
+            if (target == null)
+                throw new JsonSerializationException("Failed to create target object");
 
             // Populate the object properties
             serializer.Populate(jObject.CreateReader(), target);

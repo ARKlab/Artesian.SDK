@@ -1,6 +1,7 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto.UoM;
 
 using MessagePack;
@@ -9,6 +10,7 @@ using NodaTime;
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Artesian.SDK.Dto
 {
@@ -31,23 +33,26 @@ namespace Artesian.SDK.Dto
             /// <summary>
             /// The MarketData Constructor by MarketDataEntity.Output
             /// </summary>
-            public Input(MarketDataEntity.Output output)
+            [SetsRequiredMembers]
+            public Input(Output output)
             {
-                if (output != null)
-                {
-                    this.MarketDataId = output.MarketDataId;
-                    this.ETag = output.ETag;
-                    this.ProviderName = output.ProviderName;
-                    this.MarketDataName = output.MarketDataName;
-                    this.OriginalGranularity = output.OriginalGranularity;
-                    this.UnitOfMeasure = output.UnitOfMeasure;
-                    this.Type = output.Type;
-                    this.OriginalTimezone = output.OriginalTimezone;
-                    this.AggregationRule = output.AggregationRule;
-                    this.TransformID = output.TransformID;
-                    this.ProviderDescription = output.ProviderDescription;
-                    this.Tags = output.Tags;
-                }
+                Guard.IsNotNull(output, nameof(output));
+
+                this.MarketDataId = output.MarketDataId;
+                this.ETag = output.ETag;
+                this.ProviderName = output.ProviderName;
+                this.MarketDataName = output.MarketDataName;
+                this.OriginalGranularity = output.OriginalGranularity;
+                this.UnitOfMeasure = output.UnitOfMeasure;
+                this.Type = output.Type;
+                this.OriginalTimezone = output.OriginalTimezone;
+                this.AggregationRule = output.AggregationRule;
+                this.TransformID = output.TransformID;
+                this.ProviderDescription = output.ProviderDescription;
+                this.Tags = output.Tags;
+                this.Path = output.Path;
+                this.DerivedCfg = output.DerivedCfg;
+                this.UnitOfMeasure = output.UnitOfMeasure;
             }
 
             /// <summary>
@@ -60,19 +65,19 @@ namespace Artesian.SDK.Dto
             /// The Market Data Etag
             /// </summary>
             [MessagePack.Key(1)]
-            public string ETag { get; set; }
+            public string? ETag { get; set; }
             /// <summary>
             /// The Market Data Provider Name
             /// </summary>
             [Required]
             [MessagePack.Key(2)]
-            public string ProviderName { get; set; }
+            public required string ProviderName { get; set; }
             /// <summary>
             /// The Market Data Name
             /// </summary>
             [Required]
             [MessagePack.Key(3)]
-            public string MarketDataName { get; set; }
+            public required string MarketDataName { get; set; }
             /// <summary>
             /// The Original Granularity
             /// </summary>
@@ -90,7 +95,7 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [Required]
             [MessagePack.Key(6)]
-            public string OriginalTimezone { get; set; }
+            public required string OriginalTimezone { get; set; }
             /// <summary>
             /// The Aggregation Rule
             /// </summary>
@@ -105,12 +110,12 @@ namespace Artesian.SDK.Dto
             /// The Provider description
             /// </summary>
             [MessagePack.Key(9)]
-            public string ProviderDescription { get; set; }
+            public string? ProviderDescription { get; set; }
             /// <summary>
             /// The custom Tags assigned to the data
             /// </summary>
             [MessagePack.Key(10)]
-            public IDictionary<string, List<string>> Tags { get; set; }
+            public IDictionary<string, List<string>>? Tags { get; set; }
             /// <summary>
             /// The Authorization Path
             /// </summary>
@@ -121,9 +126,9 @@ namespace Artesian.SDK.Dto
                 {
                     if (string.IsNullOrWhiteSpace(_path))
                         return $@"/marketdata/system/{ProviderName.Replace("/", "\\/")}/{MarketDataName.Replace("/", "\\/")}";//new PathString(new[] { "marketdata", "system", ProviderName, MarketDataName });
-                    return this._path;
+                    return _path!;
                 }
-                set { this._path = value; }
+                set { _path = value; }
             }
             /// <summary>
             /// The Derived Configuration
@@ -134,14 +139,20 @@ namespace Artesian.SDK.Dto
                 get
                 {
                     if (_derivedCfg == null)
+                    {
                         if (this.Type == MarketDataType.VersionedTimeSerie)
+                        {
                             return new DerivedCfgMuv()
                             {
                                 Version = 1
                             };
-                    return this._derivedCfg;
+                        }
+                        // Return a default configuration if not VersionedTimeSerie
+                        return new DerivedCfgMuv() { Version = 1 };
+                    }
+                    return _derivedCfg;
                 }
-                set { this._derivedCfg = value; }
+                set { _derivedCfg = value; }
 
             }
             /// <summary>
@@ -150,9 +161,9 @@ namespace Artesian.SDK.Dto
             [MessagePack.Key(19)]
             public UnitOfMeasure UnitOfMeasure { get; set; } = new UnitOfMeasure();
 
-            internal DerivedCfgBase _derivedCfg;
+            internal DerivedCfgBase? _derivedCfg;
 
-            internal string _path;
+            internal string? _path;
 
         }
 
@@ -202,7 +213,7 @@ namespace Artesian.SDK.Dto
             /// The TimeTransform
             /// </summary>
             [MessagePack.Key(11)]
-            public TimeTransform Transform { get; set; } //NULLABLE
+            public TimeTransform? Transform { get; set; } //NULLABLE
             /// <summary>
             /// The Last time the metadata has been updated
             /// </summary>
@@ -238,7 +249,7 @@ namespace Artesian.SDK.Dto
             /// <summary>
             /// The Curve Ranges
             /// </summary>
-            public IEnumerable<CurveRange> Curves { get; set; }
+            public IEnumerable<CurveRange>? Curves { get; set; }
         }
     }
 }

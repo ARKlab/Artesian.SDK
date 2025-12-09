@@ -1,10 +1,11 @@
-﻿using Artesian.SDK.Common;
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.MarketData;
 using Artesian.SDK.Service;
 
 using NodaTime;
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace Artesian.SDK.Factory
     public sealed class MarketData : IMarketData
     {
         internal IMarketDataService _marketDataService;
-        internal MarketDataEntity.Output _entity = null;
+        internal MarketDataEntity.Output? _entity = null;
 
         /// <summary>
         /// MarketData Id
@@ -31,12 +32,12 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// MarketData Entity
         /// </summary>
-        public MarketDataMetadata Metadata { get; private set; }
+        public MarketDataMetadata? Metadata { get; private set; }
 
         /// <summary>
         /// DerivedCfg
         /// </summary>
-        public DerivedCfg DerivedCfg { get; private set; }
+        public DerivedCfg? DerivedCfg { get; private set; }
 
         /// <summary>
         /// MarketData Constructor by Id
@@ -255,9 +256,9 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task UpdateDerivedConfiguration(DerivedCfgMuv derivedCfg, bool force, CancellationToken ctk = default)
         {
-            _entity.ValidateUpdateDerivedCfg(derivedCfg);
+            _entity!.ValidateUpdateDerivedCfg(derivedCfg);
 
-            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
+            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity!.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
 
             DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
 
@@ -284,11 +285,11 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task UpdateDerivedConfiguration(DerivedCfgCoalesce derivedCfg, bool force, CancellationToken ctk = default)
         {
-            _entity.ValidateUpdateDerivedCfg(derivedCfg);
+            _entity!.ValidateUpdateDerivedCfg(derivedCfg);
 
-            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
+            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity!.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
 
-            DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
+            DerivedCfg = new DerivedCfg(_entity!.DerivedCfg);
 
             Metadata = new MarketDataMetadata(_entity);
         }
@@ -313,11 +314,11 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task UpdateDerivedConfiguration(DerivedCfgSum derivedCfg, bool force, CancellationToken ctk = default)
         {
-            _entity.ValidateUpdateDerivedCfg(derivedCfg);
+            _entity!.ValidateUpdateDerivedCfg(derivedCfg);
 
-            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
+            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity!.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
 
-            DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
+            DerivedCfg = new DerivedCfg(_entity!.DerivedCfg);
 
             Metadata = new MarketDataMetadata(_entity);
         }

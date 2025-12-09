@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Dto;
+using Artesian.SDK.Dto;
 
 using NodaTime;
 
@@ -26,12 +26,12 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// MarketData ReadOnly Entity
         /// </summary>
-        MarketDataMetadata Metadata { get; }
+        MarketDataMetadata? Metadata { get; }
 
         /// <summary>
         /// DerivedCfg
         /// </summary>
-        DerivedCfg DerivedCfg { get; }
+        DerivedCfg? DerivedCfg { get; }
 
         /// <summary>
         /// MarketData Load Metadata
@@ -246,7 +246,7 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string> product = null, string timezone = "CET", bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
+        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string>? product = null, string timezone = "CET", bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
     }
 
     /// <summary>
@@ -326,7 +326,7 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string> product = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
+        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string>? product = null, string? timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
     }
     /// <summary>
     /// Interface for Auction Bid Write
@@ -404,7 +404,7 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);    
+        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string? timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);    
     }
 
     /// <summary>
@@ -489,6 +489,6 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
+        Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string? timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default);
     }
 }

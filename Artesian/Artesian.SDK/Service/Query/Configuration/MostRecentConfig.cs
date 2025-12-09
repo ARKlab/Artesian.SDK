@@ -1,5 +1,6 @@
 ﻿using NodaTime;
 
+
 namespace Artesian.SDK.Service
 {
     /// <summary>
@@ -18,14 +19,14 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Period
         /// </summary>
-        public Period Period { get; set; }
+        public Period? Period { get; set; }
         /// <summary>
         /// Period start for period range
         /// </summary>
-        public Period PeriodFrom { get; set; }
+        public Period? PeriodFrom { get; set; }
         /// <summary>
         /// Period start for period range
         /// </summary>
-        public Period PeriodTo { get; set; }
+        public Period? PeriodTo { get; set; }
     }
 }

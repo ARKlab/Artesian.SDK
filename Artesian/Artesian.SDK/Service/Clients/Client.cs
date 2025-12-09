@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information.
 using Flurl;
@@ -41,10 +41,10 @@ namespace Artesian.SDK.Service
 
         private readonly string _url;
         private readonly AsyncPolicy _resilienceStrategy;
-        private readonly string _apiKey;
+        private readonly string? _apiKey;
         private readonly IArtesianServiceConfig _config;
 
-        private readonly IConfidentialClientApplication _confidentialClientApplication;
+        private readonly IConfidentialClientApplication? _confidentialClientApplication;
 
         /// <summary>
         /// Client constructor Auth credentials / ApiKey can be passed through config
@@ -54,6 +54,9 @@ namespace Artesian.SDK.Service
         /// /// <param name="policy">String</param>
         public Client(IArtesianServiceConfig config, string Url, ArtesianPolicyConfig policy)
         {
+            if (config.BaseAddress == null)
+                throw new ArgumentException("BaseAddress cannot be null", nameof(config));
+            
             _url = config.BaseAddress.ToString().AppendPathSegment(Url);
             _apiKey = config.ApiKey;
             _config = config;
@@ -83,6 +86,15 @@ namespace Artesian.SDK.Service
 
             if (config.ApiKey == null)
             {
+                if (config.Domain == null)
+                    throw new ArgumentException("Domain cannot be null when ApiKey is not provided", nameof(config));
+                if (config.ClientId == null)
+                    throw new ArgumentException("ClientId cannot be null when ApiKey is not provided", nameof(config));
+                if (config.ClientSecret == null)
+                    throw new ArgumentException("ClientSecret cannot be null when ApiKey is not provided", nameof(config));
+                if (config.Audience == null)
+                    throw new ArgumentException("Audience cannot be null when ApiKey is not provided", nameof(config));
+                
                 var domain = new Uri(config.Domain);
 
                 var tenantId = domain.Segments
@@ -101,7 +113,7 @@ namespace Artesian.SDK.Service
         }
 
        
-        public async Task<TResult> Exec<TResult, TBody>(HttpMethod method, string resource, TBody body = default, CancellationToken ctk = default)
+        public async Task<TResult> Exec<TResult, TBody>(HttpMethod method, string resource, TBody? body = default, CancellationToken ctk = default)
         {
             try
             {
@@ -113,13 +125,18 @@ namespace Artesian.SDK.Service
                     req = req.WithHeader("X-Api-Key", _apiKey);
                 else
                 {
+                    if (_confidentialClientApplication == null)
+                        throw new InvalidOperationException("ConfidentialClientApplication not initialized");
+                    if (_config.Audience == null)
+                        throw new InvalidOperationException("Audience not configured");
+                    
                     var c = _confidentialClientApplication
                         .AcquireTokenForClient(new[] { _config.Audience });
                     var res = await c.ExecuteAsync(ctk).ConfigureAwait(false);
                     req = req.WithOAuthBearerToken(res.AccessToken);
                 }
 
-                HttpContent content = null;
+                HttpContent? content = null;
 
                 try
                 {
@@ -130,16 +147,16 @@ namespace Artesian.SDK.Service
                         content.Headers.ContentType = new MediaTypeHeaderValue(_lz4msgPackSerializer.MediaType);
                     }
 
-                    return await _resilienceStrategy.ExecuteAsync(async () =>
+                    return (await _resilienceStrategy.ExecuteAsync(async () =>
                     {
                         using (var res = await req.SendAsync(method, content: content, completionOption: HttpCompletionOption.ResponseHeadersRead, cancellationToken: ctk).ConfigureAwait(false))
                         {
                             if (res.ResponseMessage.StatusCode == HttpStatusCode.NoContent || res.ResponseMessage.StatusCode == HttpStatusCode.NotFound)
-                                return default;
+                                return default!;
 
                             if (!res.ResponseMessage.IsSuccessStatusCode)
                             {
-                                ArtesianSdkProblemDetail problemDetail = null;
+                                ArtesianSdkProblemDetail? problemDetail = null;
                                 string responseText = string.Empty;
 
                                 var contentType = res.ResponseMessage.Content.Headers.ContentType?.MediaType;
@@ -192,11 +209,11 @@ namespace Artesian.SDK.Service
                                 {
                                     // Build message from ProblemDetail fields
                                     var parts = new List<string>();
-                                    if (!string.IsNullOrEmpty(problemDetail.Title))
+                                    if (problemDetail.Title != null && !string.IsNullOrEmpty(problemDetail.Title))
                                         parts.Add(problemDetail.Title);
-                                    if (!string.IsNullOrEmpty(problemDetail.Detail))
+                                    if (problemDetail.Detail != null && !string.IsNullOrEmpty(problemDetail.Detail))
                                         parts.Add(problemDetail.Detail);
-                                    if (parts.Count == 0 && !string.IsNullOrEmpty(problemDetail.Type))
+                                    if (parts.Count == 0 && problemDetail.Type != null && !string.IsNullOrEmpty(problemDetail.Type))
                                         parts.Add(problemDetail.Type);
                                     
                                     detailMessage = parts.Count > 0 ? string.Join(": ", parts) : responseText;
@@ -227,7 +244,7 @@ namespace Artesian.SDK.Service
                             // For successful responses, handle deserialization
                             var contentLength = res.ResponseMessage.Content.Headers.ContentLength;
                             if (contentLength.HasValue && contentLength.Value == 0)
-                                return default;
+                                return default!;
 
                             var responseStream = await res.ResponseMessage.Content.ReadAsStreamAsync(
 #if NET6_0_OR_GREATER
@@ -265,7 +282,7 @@ namespace Artesian.SDK.Service
 
                             return await responseSerializer.DeserializeAsync<TResult>(responseStream, ctk).ConfigureAwait(false);
                         }
-                    }).ConfigureAwait(false);
+                    }).ConfigureAwait(false))!;
                 }
                 finally
                 {
@@ -286,13 +303,13 @@ namespace Artesian.SDK.Service
             }
         }
 
-        private string _getBaseMediaType(string mediaType)
+        private string? _getBaseMediaType(string? mediaType)
         {
             if (string.IsNullOrEmpty(mediaType))
                 return null;
 
             // Remove parameters (e.g., "application/json; charset=utf-8" -> "application/json")
-            var semicolonIndex = mediaType.IndexOf(';');
+            var semicolonIndex = mediaType!.IndexOf(';');
 #if NET6_0_OR_GREATER
             var baseType = semicolonIndex >= 0 ? mediaType[..semicolonIndex].Trim() : mediaType.Trim();
 #else
@@ -322,7 +339,7 @@ namespace Artesian.SDK.Service
             return baseType;
         }
 
-        private IContentSerializer _getSerializer(string baseMediaType)
+        private IContentSerializer? _getSerializer(string? baseMediaType)
         {
             if (string.IsNullOrEmpty(baseMediaType))
                 return null;
@@ -331,10 +348,10 @@ namespace Artesian.SDK.Service
         }
 
         public async Task Exec(HttpMethod method, string resource, CancellationToken ctk = default)
-            => await Exec<object, object>(method, resource, null, ctk).ConfigureAwait(false);
+            => await Exec<object?, object?>(method, resource, default, ctk).ConfigureAwait(false);
 
         public Task<TResult> Exec<TResult>(HttpMethod method, string resource, CancellationToken ctk = default)
-            => Exec<TResult, object>(method, resource, null, ctk);
+            => Exec<TResult, object?>(method, resource, default, ctk);
 
         public async Task Exec<TBody>(HttpMethod method, string resource, TBody body, CancellationToken ctk = default)
             => await Exec<object, TBody>(method, resource, body, ctk).ConfigureAwait(false);

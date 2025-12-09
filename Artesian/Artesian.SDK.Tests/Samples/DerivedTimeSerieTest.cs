@@ -64,7 +64,7 @@ namespace Artesian.SDK.Tests.Samples
 
                 await mktData.Load();
 
-                curveIds.Add(mktData.MarketDataId.Value);
+                curveIds.Add(mktData.MarketDataId!.Value);
 
                 var writeMarketData = mktData.EditVersioned(curve.Version);
 
@@ -119,7 +119,7 @@ namespace Artesian.SDK.Tests.Samples
             await Task.Delay(2000);
 
             var ts = await qs.CreateActual()
-                       .ForMarketData(new[] { marketData.MarketDataId.Value })
+                       .ForMarketData(new[] { marketData.MarketDataId!.Value })
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
                        .ExecuteAsync();
@@ -134,7 +134,7 @@ namespace Artesian.SDK.Tests.Samples
             }
 
             // Update DerivedCfg
-            if (marketData.DerivedCfg.Coalesce != null)
+            if (marketData.DerivedCfg!.Coalesce != null)
             {
                 curveIds.Reverse();
                 var derivedCfgUpdate = new DerivedCfgCoalesce()
@@ -149,7 +149,7 @@ namespace Artesian.SDK.Tests.Samples
                     await Task.Delay(2000);
 
                     ts = await qs.CreateActual()
-                               .ForMarketData(new[] { marketData.MarketDataId.Value })
+                               .ForMarketData(new[] { marketData.MarketDataId!.Value })
                                .InGranularity(Granularity.Day)
                                .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
                                .ExecuteAsync();
@@ -176,7 +176,7 @@ namespace Artesian.SDK.Tests.Samples
             {
                 await marketDataService.DeleteMarketDataAsync(curve);
             }
-            await marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value);
+            await marketDataService.DeleteMarketDataAsync(marketData.MarketDataId!.Value);
         }
 
 
@@ -226,7 +226,7 @@ namespace Artesian.SDK.Tests.Samples
 
                 await mktData.Load();
 
-                curveIds.Add(mktData.MarketDataId.Value);
+                curveIds.Add(mktData.MarketDataId!.Value);
 
                 var writeMarketData = mktData.EditVersioned(curve.Version);
 
@@ -281,7 +281,7 @@ namespace Artesian.SDK.Tests.Samples
             await Task.Delay(2000);
 
             var ts = await qs.CreateActual()
-                       .ForMarketData(new[] { marketData.MarketDataId.Value })
+                       .ForMarketData(new[] { marketData.MarketDataId!.Value })
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 01), new LocalDate(2018, 10, 10))
                        .ExecuteAsync();
@@ -303,7 +303,7 @@ namespace Artesian.SDK.Tests.Samples
             {
                 await marketDataService.DeleteMarketDataAsync(curve);
             }
-            await marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value);
+            await marketDataService.DeleteMarketDataAsync(marketData.MarketDataId!.Value);
         }
     }
 }

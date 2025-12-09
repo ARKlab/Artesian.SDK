@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Dto;
+using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.GMEPublicOffer;
 
 using Flurl;
@@ -9,6 +9,7 @@ using NodaTime.Text;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Artesian.SDK.Service.GMEPublicOffer
 {
@@ -203,7 +204,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         {
             ValidateQuery();
 
-            var url = $"/extract/{_localDatePattern.Format(_queryParamaters.Date.Value)}/{_queryParamaters.Purpose}/{_queryParamaters.Status}"
+            var url = $"/extract/{_localDatePattern.Format(_queryParamaters.Date!.Value)}/{_queryParamaters.Purpose}/{_queryParamaters.Status}"
                         .SetQueryParam("operators", _queryParamaters.Operator)
                         .SetQueryParam("unit", _queryParamaters.Unit)
                         .SetQueryParam("market", _queryParamaters.Market)

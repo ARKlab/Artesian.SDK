@@ -1,4 +1,4 @@
-﻿using Flurl;
+using Flurl;
 
 namespace Artesian.SDK.Service.GMEPublicOffer
 {

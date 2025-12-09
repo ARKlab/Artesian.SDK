@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using System;
@@ -24,7 +24,7 @@ namespace Artesian.SDK.Service
         internal const string _metadataVersion = "v2.1";
         internal const int _serviceRequestTimeOutMinutes = 10;
 
-        private static FrameworkName _frameworkName { get => new FrameworkName(Assembly.GetExecutingAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName); }
+        private static FrameworkName? _frameworkName { get => new FrameworkName(Assembly.GetExecutingAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName ?? ".NETStandard,Version=unknown"); }
 
 
 

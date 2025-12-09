@@ -9,7 +9,7 @@ namespace Artesian.SDK.Dto
     /// Bid Ask Value class
     /// </summary>
     [MessagePackObject]
-    public class BidAskValue
+    public record BidAskValue
     {
         /// <summary>
         /// Bid Ask Value Construtor by parameters
@@ -33,31 +33,31 @@ namespace Artesian.SDK.Dto
         /// The Bid Ask Best Bid Price
         /// </summary>
         [Key(0)]
-        public double? BestBidPrice { get; set; }
+        public double? BestBidPrice { get; init; }
         /// <summary>
         /// The Bid Ask Best Ask Price
         /// </summary>
         [Key(1)]
-        public double? BestAskPrice { get; set; }
+        public double? BestAskPrice { get; init; }
         /// <summary>
         /// The Bid Ask Best Bid Quantity
         /// </summary>
         [Key(2)]
-        public double? BestBidQuantity { get; set; }
+        public double? BestBidQuantity { get; init; }
         /// <summary>
         /// The Bid Ask Best Ask Quantity
         /// </summary>
         [Key(3)]
-        public double? BestAskQuantity { get; set; }
+        public double? BestAskQuantity { get; init; }
         /// <summary>
         /// The Bid Ask Last Price
         /// </summary>
         [Key(4)]
-        public double? LastPrice { get; set; }
+        public double? LastPrice { get; init; }
         /// <summary>
         /// The Bid Ask Last Quantity
         /// </summary>
         [Key(5)]
-        public double? LastQuantity { get; set; }
+        public double? LastQuantity { get; init; }
     }
 }

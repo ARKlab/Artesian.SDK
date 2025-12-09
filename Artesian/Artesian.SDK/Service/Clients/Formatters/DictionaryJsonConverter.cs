@@ -11,9 +11,9 @@ namespace Artesian.SDK.Service
 {
     internal sealed class DictionaryJsonConverter : JsonConverter
     {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            var dictionary = (IDictionary)value;
+            var dictionary = (IDictionary)value!;
 
             writer.WriteStartArray();
 
@@ -35,7 +35,7 @@ namespace Artesian.SDK.Service
             writer.WriteEndArray();
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (!CanConvert(objectType))
                 throw new NotSupportedException(string.Format("This converter is not for {0}.", objectType));
@@ -43,10 +43,13 @@ namespace Artesian.SDK.Service
             var keyType = objectType.GetGenericArguments()[0];
             var valueType = objectType.GetGenericArguments()[1];
             var dictionaryType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
-            var result = (IDictionary)Activator.CreateInstance(dictionaryType);
+            var result = (IDictionary?)Activator.CreateInstance(dictionaryType);
 
             if (reader.TokenType == JsonToken.Null)
                 return null;
+
+            if (result == null)
+                throw new JsonSerializationException("Failed to create dictionary instance");
 
             while (reader.Read())
             {
@@ -71,8 +74,8 @@ namespace Artesian.SDK.Service
 
         private void _addObjectToDictionary(JsonReader reader, IDictionary result, JsonSerializer serializer, Type keyType, Type valueType)
         {
-            object key = null;
-            object value = null;
+            object? key = null;
+            object? value = null;
 
 #pragma warning disable MA0045 // Do not use blocking calls in a sync method (need to make calling method async)
             while (reader.Read())
@@ -83,7 +86,9 @@ namespace Artesian.SDK.Service
                     return;
                 }
 
-                var propertyName = reader.Value.ToString();
+                var propertyName = reader.Value?.ToString();
+                if (propertyName == null) 
+                    throw new JsonSerializationException("Dictionary key property name is null");
                 if (propertyName == "Key")
                 {
                     reader.Read();

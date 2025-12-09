@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Dto;
+using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.GMEPublicOffer;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +25,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <param name="sort">Sort by</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>Paged result of OperatorDto</returns>
-        Task<PagedResult<OperatorDto>> ReadOperatorsAsync(int page, int pageSize, string operatorFilter = null, string[] sort = null, CancellationToken ctk = default);
+        Task<PagedResult<OperatorDto>> ReadOperatorsAsync(int page, int pageSize, string? operatorFilter = null, string[]? sort = null, CancellationToken ctk = default);
 
         /// <summary>
         /// Get paged UnitDto 
@@ -36,7 +36,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <param name="sort">Sort by</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>Paged result of UnitDto</returns>
-        Task<PagedResult<UnitDto>> ReadUnitsAsync(int page, int pageSize, string unitFilter = null, string[] sort = null, CancellationToken ctk = default);
+        Task<PagedResult<UnitDto>> ReadUnitsAsync(int page, int pageSize, string? unitFilter = null, string[]? sort = null, CancellationToken ctk = default);
 
 
 
@@ -57,7 +57,7 @@ namespace Artesian.SDK.Service.GMEPublicOffer
         /// <param name="sort">Sort by</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>UnitConfiguration result</returns>
-        Task<PagedResult<UnitConfigurationDto>> ReadUnitConfigurationMappingsAsync(int page, int pageSize, string unitFilter = null, string[] sort = null, CancellationToken ctk = default);
+        Task<PagedResult<UnitConfigurationDto>> ReadUnitConfigurationMappingsAsync(int page, int pageSize, string? unitFilter = null, string[]? sort = null, CancellationToken ctk = default);
 
         /// <summary>
         /// Upsert unit configuration mapping by id

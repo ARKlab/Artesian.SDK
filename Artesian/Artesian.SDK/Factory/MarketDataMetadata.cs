@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Dto;
+using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.UoM;
 
 using NodaTime;
@@ -29,7 +29,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Market Data Etag
         /// </summary>
-        public string ETag => _output.ETag;
+        public string? ETag => _output.ETag;
         /// <summary>
         /// The Market Data Provider Name
         /// </summary>
@@ -61,19 +61,19 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Provider description
         /// </summary>
-        public string ProviderDescription { get => _output.ProviderDescription; set => _output.ProviderDescription = value; }
+        public string? ProviderDescription { get => _output.ProviderDescription; set => _output.ProviderDescription = value; }
         /// <summary>
         /// The custom Tags assigned to the data
         /// </summary>
-        public IDictionary<string, List<string>> Tags { get => _output.Tags; set => _output.Tags = value; }
+        public IDictionary<string, List<string>>? Tags { get => _output.Tags; set => _output.Tags = value; }
         /// <summary>
         /// The Authorization Path
         /// </summary>
-        public string Path { get; set; }
+        public string Path { get => _output.Path; set => _output.Path = value; }
         /// <summary>
         /// The TimeTransform
         /// </summary>
-        public TimeTransform Transform { get => _output.Transform; set { _output.Transform = value; _output.TransformID = _output.Transform?.ID; } }
+        public TimeTransform? Transform { get => _output.Transform; set { _output.Transform = value; _output.TransformID = _output.Transform?.ID; } }
         /// <summary>
         /// The Last time the metadata has been updated
         /// </summary>

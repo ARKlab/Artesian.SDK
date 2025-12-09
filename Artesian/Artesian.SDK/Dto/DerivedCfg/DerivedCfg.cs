@@ -11,12 +11,12 @@
         /// <param name="derivedCfg"></param>
         internal DerivedCfg(DerivedCfgBase derivedCfg)
         {
-            if (derivedCfg is DerivedCfgCoalesce)
-                Coalesce = new DerivedCfgCoalesceReadOnly(derivedCfg as DerivedCfgCoalesce);
-            else if (derivedCfg is DerivedCfgSum)
-                Sum = new DerivedCfgSumReadOnly(derivedCfg as DerivedCfgSum);
-            else if (derivedCfg is DerivedCfgMuv)
-                Muv = new DerivedCfgMuvReadOnly(derivedCfg as DerivedCfgMuv);
+            if (derivedCfg is DerivedCfgCoalesce coalesce)
+                Coalesce = new DerivedCfgCoalesceReadOnly(coalesce);
+            else if (derivedCfg is DerivedCfgSum sum)
+                Sum = new DerivedCfgSumReadOnly(sum);
+            else if (derivedCfg is DerivedCfgMuv muv)
+                Muv = new DerivedCfgMuvReadOnly(muv);
         }
 
         /// <summary>

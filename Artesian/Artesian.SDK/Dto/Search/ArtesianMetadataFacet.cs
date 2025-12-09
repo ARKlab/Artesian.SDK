@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using MessagePack;
@@ -10,41 +10,52 @@ namespace Artesian.SDK.Dto
     /// Facet Entity
     /// </summary>
     [MessagePackObject]
-    public class ArtesianMetadataFacet
+    public record ArtesianMetadataFacet
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArtesianMetadataFacet"/> class.
+        /// </summary>
+        /// <param name="facetName">Facet name</param>
+        [SerializationConstructor]
+        public ArtesianMetadataFacet(string facetName)
+        {
+            FacetName = facetName;
+            Values = new();
+        }
+
         /// <summary>
         /// Facet Name
         /// </summary>
         [Key(0)]
-        public string FacetName { get; set; }
+        public string FacetName { get; init; }
         /// <summary>
         /// Facet Type
         /// </summary>
         [Key(1)]
-        public ArtesianMetadataFacetType FacetType { get; set; }
+        public ArtesianMetadataFacetType FacetType { get; init; }
         /// <summary>
         /// Facet Values
         /// </summary>
         [Key(2)]
-        public List<ArtesianMetadataFacetCount> Values { get; set; }
+        public List<ArtesianMetadataFacetCount> Values { get; init; }
     }
 
     /// <summary>
     /// Metadata Facet Entity
     /// </summary>
     [MessagePackObject]
-    public class ArtesianMetadataFacetCount
+    public record ArtesianMetadataFacetCount
     {
         /// <summary>
         /// Metadata Facet Entity Value
         /// </summary>
         [Key(0)]
-        public string Value { get; set; }
+        public required string Value { get; init; }
         /// <summary>
         /// Metadata Facet Entity Count
         /// </summary>
         [Key(1)]
-        public long? Count { get; set; }
+        public long? Count { get; init; }
     }
 
     /// <summary>
