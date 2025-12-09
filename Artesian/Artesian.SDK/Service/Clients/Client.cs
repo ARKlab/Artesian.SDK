@@ -67,7 +67,7 @@ namespace Artesian.SDK.Service
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Skip null properties
                 WriteIndented = false,
                 PropertyNameCaseInsensitive = true,
-                NumberHandling = JsonNumberHandling.AllowReadingFromString
+                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
             };
 
             // Add NodaTime converters with Tzdb
@@ -75,7 +75,7 @@ namespace Artesian.SDK.Service
 
             // Add custom converters
             jsonOptions.Converters.Add(new DictionaryJsonConverterSTJFactory());
-            jsonOptions.Converters.Add(new TimeTransformConverterSTJ());
+            // TimeTransformConverterSTJ not needed - TimeTransform is already decorated with [JsonConverter] attribute
             jsonOptions.Converters.Add(new JsonStringEnumConverter());
 
             _jsonSerializer = new SystemTextJsonContentSerializer(jsonOptions);

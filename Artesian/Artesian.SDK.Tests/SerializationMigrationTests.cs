@@ -4,13 +4,16 @@
 #pragma warning disable MA0002 // Dictionary ContainsKey is fine without comparer in tests
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.UoM;
 using Artesian.SDK.Service;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
+using NodaTime.Serialization.SystemTextJson;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -18,34 +21,96 @@ namespace Artesian.SDK.Tests
 {
     /// <summary>
     /// Serialization tests to ensure compatibility during migration from Newtonsoft.Json to System.Text.Json
-    /// These tests capture the expected JSON format using the current Newtonsoft.Json serializer,
-    /// then validate that the new System.Text.Json serializer produces equivalent results
+    /// These tests validate that System.Text.Json can:
+    /// 1. Deserialize JSON created by Newtonsoft.Json (backward compatibility)
+    /// 2. Serialize objects to JSON that is equivalent to Newtonsoft.Json output (forward compatibility)
     /// </summary>
     [TestFixture]
     public class SerializationMigrationTests
     {
         private JsonSerializerSettings _newtonsoftSettings = null!;
+        private JsonSerializerOptions _stjOptions = null!;
 
         [SetUp]
         public void Setup()
         {
-            // Configure Newtonsoft.Json settings matching the current Client.cs setup
+            // Configure Newtonsoft.Json settings matching the original Client.cs setup
             _newtonsoftSettings = new JsonSerializerSettings();
             _newtonsoftSettings = _newtonsoftSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-            // Manually add dictionary converter since ConfigureForDictionary is internal
             _newtonsoftSettings.Converters.Add(new Service.DictionaryJsonConverter());
-            _newtonsoftSettings.Formatting = Formatting.None; // Use compact format for easier comparison
+            _newtonsoftSettings.Formatting = Formatting.None;
             _newtonsoftSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
             _newtonsoftSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
             _newtonsoftSettings.TypeNameHandling = TypeNameHandling.None;
             _newtonsoftSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
             _newtonsoftSettings.NullValueHandling = NullValueHandling.Ignore;
+
+            // Configure System.Text.Json options matching the new Client.cs setup
+            _stjOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null, // Use PascalCase (no transformation)
+                DictionaryKeyPolicy = null, // Preserve dictionary key casing
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Skip null properties
+                WriteIndented = false,
+                PropertyNameCaseInsensitive = true,
+                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+            };
+            _stjOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+            _stjOptions.Converters.Add(new DictionaryJsonConverterSTJFactory());
+            // TimeTransformConverterSTJ not needed - class is already decorated with attribute
+            _stjOptions.Converters.Add(new JsonStringEnumConverter());
+        }
+
+        /// <summary>
+        /// Helper to compare two JSON strings using JsonNode.DeepEquals
+        /// </summary>
+        private void AssertJsonEquals(string expected, string actual, string message = "JSON should be equivalent")
+        {
+            var expectedNode = JsonNode.Parse(expected, new JsonNodeOptions { PropertyNameCaseInsensitive = false });
+            var actualNode = JsonNode.Parse(actual, new JsonNodeOptions { PropertyNameCaseInsensitive = false });
+            
+            Assert.That(JsonNode.DeepEquals(expectedNode, actualNode), Is.True, 
+                $"{message}\nExpected: {expected}\nActual: {actual}");
         }
 
         #region MarketData Entity Tags Dictionary Tests
 
         [Test]
-        public void MarketDataEntity_WithTags_Serializes_Correctly()
+        public void MarketDataEntity_WithTags_STJ_CanDeserialize_NewtonsoftJson()
+        {
+            // Arrange - Create object and serialize with Newtonsoft
+            var entity = new MarketDataEntity.Input()
+            {
+                MarketDataId = 100000001,
+                ProviderName = "TestProvider",
+                MarketDataName = "TestCurve",
+                OriginalGranularity = Granularity.Day,
+                OriginalTimezone = "CET",
+                Type = MarketDataType.ActualTimeSerie,
+                Tags = new Dictionary<string, List<string>>
+                {
+                    { "Region", new List<string> { "Europe", "EMEA" } },
+                    { "Product", new List<string> { "Power", "Electricity" } },
+                    { "Market", new List<string> { "DayAhead" } }
+                }
+            };
+            var newtonsoftJson = JsonConvert.SerializeObject(entity, _newtonsoftSettings);
+
+            // Act - Deserialize with STJ
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<MarketDataEntity.Input>(newtonsoftJson, _stjOptions);
+
+            // Assert - STJ successfully deserialized Newtonsoft JSON
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized!.MarketDataId, Is.EqualTo(100000001));
+            Assert.That(deserialized.ProviderName, Is.EqualTo("TestProvider"));
+            Assert.That(deserialized.Tags, Is.Not.Null);
+            Assert.That(deserialized.Tags!.Count, Is.EqualTo(3));
+            Assert.That(deserialized.Tags["Region"], Does.Contain("Europe"));
+            Assert.That(deserialized.Tags["Product"], Does.Contain("Power"));
+        }
+
+        [Test]
+        public void MarketDataEntity_WithTags_STJ_Serializes_CompatibleJson()
         {
             // Arrange
             var entity = new MarketDataEntity.Input()
@@ -64,25 +129,16 @@ namespace Artesian.SDK.Tests
                 }
             };
 
-            // Act - Serialize with Newtonsoft
+            // Act - Serialize with both
             var newtonsoftJson = JsonConvert.SerializeObject(entity, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(entity, _stjOptions);
 
-            // Assert - Verify JSON contains Tags as expected
-            Assert.That(newtonsoftJson, Does.Contain("Tags"));
-            Assert.That(newtonsoftJson, Does.Contain("Region"));
-            Assert.That(newtonsoftJson, Does.Contain("Europe"));
-
-            // Deserialize to verify round-trip
-            var deserialized = JsonConvert.DeserializeObject<MarketDataEntity.Input>(newtonsoftJson, _newtonsoftSettings);
-            Assert.That(deserialized, Is.Not.Null);
-            Assert.That(deserialized!.Tags, Is.Not.Null);
-            Assert.That(deserialized.Tags!.Count, Is.EqualTo(3));
-            Assert.That(deserialized.Tags["Region"], Does.Contain("Europe"));
-            Assert.That(deserialized.Tags["Product"], Does.Contain("Power"));
+            // Assert - Both produce equivalent JSON
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should produce JSON equivalent to Newtonsoft");
         }
 
         [Test]
-        public void MarketDataEntity_WithNullTags_SkipsInSerialization()
+        public void MarketDataEntity_WithNullTags_STJ_SkipsInSerialization()
         {
             // Arrange
             var entity = new MarketDataEntity.Input()
@@ -96,15 +152,18 @@ namespace Artesian.SDK.Tests
                 Tags = null
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(entity, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(entity, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(entity, _stjOptions);
 
-            // Assert - Null Tags should not be present in JSON
-            Assert.That(json, Does.Not.Contain("Tags"));
+            // Assert - Null Tags should not be present in JSON for both serializers
+            Assert.That(newtonsoftJson, Does.Not.Contain("Tags"));
+            Assert.That(stjJson, Does.Not.Contain("Tags"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should handle null properties same as Newtonsoft");
         }
 
         [Test]
-        public void MarketDataEntity_Tags_DictionaryKeyCasing_Preserved()
+        public void MarketDataEntity_Tags_STJ_PreservesDictionaryKeyCasing()
         {
             // Arrange - Use mixed case keys to ensure casing is preserved
             var entity = new MarketDataEntity.Input()
@@ -123,16 +182,18 @@ namespace Artesian.SDK.Tests
                 }
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(entity, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(entity, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(entity, _stjOptions);
 
-            // Assert - Dictionary keys should preserve original casing
-            Assert.That(json, Does.Contain("RegionCode"));
-            Assert.That(json, Does.Contain("PRODUCT_TYPE"));
-            Assert.That(json, Does.Contain("marketSegment"));
+            // Assert - Dictionary keys should preserve original casing in both
+            Assert.That(stjJson, Does.Contain("RegionCode"));
+            Assert.That(stjJson, Does.Contain("PRODUCT_TYPE"));
+            Assert.That(stjJson, Does.Contain("marketSegment"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should preserve dictionary key casing like Newtonsoft");
 
-            // Verify deserialization
-            var deserialized = JsonConvert.DeserializeObject<MarketDataEntity.Input>(json, _newtonsoftSettings);
+            // Verify STJ deserialization preserves keys
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<MarketDataEntity.Input>(stjJson, _stjOptions);
             Assert.That(deserialized!.Tags!.ContainsKey("RegionCode"), Is.True);
             Assert.That(deserialized.Tags.ContainsKey("PRODUCT_TYPE"), Is.True);
             Assert.That(deserialized.Tags.ContainsKey("marketSegment"), Is.True);
@@ -143,9 +204,9 @@ namespace Artesian.SDK.Tests
         #region TimeTransform Polymorphic Tests
 
         [Test]
-        public void TimeTransform_SimpleShift_Serializes_WithType()
+        public void TimeTransform_SimpleShift_STJ_CanDeserialize_NewtonsoftJson()
         {
-            // Arrange
+            // Arrange - Create and serialize with Newtonsoft
             var transform = new TimeTransformSimpleShift
             {
                 ID = 1,
@@ -154,26 +215,47 @@ namespace Artesian.SDK.Tests
                 DefinedBy = TransformDefinitionType.User,
                 Period = Granularity.Day
             };
+            var newtonsoftJson = JsonConvert.SerializeObject(transform, _newtonsoftSettings);
 
-            // Act
-            var json = JsonConvert.SerializeObject(transform, _newtonsoftSettings);
+            // Act - Deserialize with STJ
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<TimeTransform>(newtonsoftJson, _stjOptions);
 
-            // Assert
-            Assert.That(json, Does.Contain("Type"));
-            Assert.That(json, Does.Contain("SimpleShift"));
-            Assert.That(json, Does.Contain("Period"));
-
-            // Verify deserialization
-            var deserialized = JsonConvert.DeserializeObject<TimeTransform>(json, _newtonsoftSettings);
+            // Assert - STJ correctly deserialized polymorphic type
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized, Is.InstanceOf<TimeTransformSimpleShift>());
-            Assert.That(((TimeTransformSimpleShift)deserialized!).Period, Is.EqualTo(Granularity.Day));
+            var shift = (TimeTransformSimpleShift)deserialized!;
+            Assert.That(shift.Type, Is.EqualTo(TransformType.SimpleShift));
+            Assert.That(shift.Period, Is.EqualTo(Granularity.Day));
+            Assert.That(shift.Name, Is.EqualTo("SimpleShift1"));
         }
 
         [Test]
-        public void TimeTransform_BaseClass_Deserializes_ToCorrectType()
+        public void TimeTransform_SimpleShift_STJ_Serializes_CompatibleJson()
         {
-            // Arrange - Create JSON representing a TimeTransformSimpleShift
+            // Arrange
+            var transform = new TimeTransformSimpleShift
+            {
+                ID = 1,
+                Name = "SimpleShift1",
+                ETag = Guid.Parse("12345678-1234-1234-1234-123456789012"),
+                DefinedBy = TransformDefinitionType.User,
+                Period = Granularity.Day
+            };
+
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(transform, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(transform, _stjOptions);
+
+            // Assert - Both produce equivalent JSON including Type discriminator
+            Assert.That(stjJson, Does.Contain("\"Type\""));
+            Assert.That(stjJson, Does.Contain("SimpleShift"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should serialize polymorphic types like Newtonsoft");
+        }
+
+        [Test]
+        public void TimeTransform_BaseClass_STJ_Deserializes_ToCorrectType()
+        {
+            // Arrange - Serialize with Newtonsoft
             var transform = new TimeTransformSimpleShift
             {
                 ID = 2,
@@ -182,12 +264,12 @@ namespace Artesian.SDK.Tests
                 DefinedBy = TransformDefinitionType.System,
                 Period = Granularity.Hour
             };
-            var json = JsonConvert.SerializeObject(transform, _newtonsoftSettings);
+            var newtonsoftJson = JsonConvert.SerializeObject(transform, _newtonsoftSettings);
 
-            // Act - Deserialize as base type
-            var deserialized = JsonConvert.DeserializeObject<TimeTransform>(json, _newtonsoftSettings);
+            // Act - Deserialize as base type with STJ
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<TimeTransform>(newtonsoftJson, _stjOptions);
 
-            // Assert
+            // Assert - STJ polymorphic deserialization works
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized, Is.InstanceOf<TimeTransformSimpleShift>());
             var shift = (TimeTransformSimpleShift)deserialized!;
@@ -200,7 +282,27 @@ namespace Artesian.SDK.Tests
         #region DerivedCfg Polymorphic Tests
 
         [Test]
-        public void DerivedCfg_MUV_Serializes_WithAlgorithm()
+        public void DerivedCfg_MUV_STJ_CanDeserialize_NewtonsoftJson()
+        {
+            // Arrange - Serialize with Newtonsoft
+            var cfg = new DerivedCfgMuv
+            {
+                Version = 1
+            };
+            var newtonsoftJson = JsonConvert.SerializeObject(cfg, _newtonsoftSettings);
+
+            // Act - Deserialize with STJ
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<DerivedCfgBase>(newtonsoftJson, _stjOptions);
+
+            // Assert
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized, Is.InstanceOf<DerivedCfgMuv>());
+            Assert.That(((DerivedCfgMuv)deserialized!).Version, Is.EqualTo(1));
+            Assert.That(deserialized.DerivedAlgorithm, Is.EqualTo(Dto.Enums.DerivedAlgorithm.MUV));
+        }
+
+        [Test]
+        public void DerivedCfg_MUV_STJ_Serializes_CompatibleJson()
         {
             // Arrange
             var cfg = new DerivedCfgMuv
@@ -208,23 +310,18 @@ namespace Artesian.SDK.Tests
                 Version = 1
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(cfg, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(cfg, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(cfg, _stjOptions);
 
             // Assert
-            Assert.That(json, Does.Contain("DerivedAlgorithm"));
-            Assert.That(json, Does.Contain("MUV"));
-            Assert.That(json, Does.Contain("Version"));
-
-            // Verify deserialization
-            var deserialized = JsonConvert.DeserializeObject<DerivedCfgBase>(json, _newtonsoftSettings);
-            Assert.That(deserialized, Is.Not.Null);
-            Assert.That(deserialized, Is.InstanceOf<DerivedCfgMuv>());
-            Assert.That(((DerivedCfgMuv)deserialized!).Version, Is.EqualTo(1));
+            Assert.That(stjJson, Does.Contain("DerivedAlgorithm"));
+            Assert.That(stjJson, Does.Contain("MUV"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should serialize DerivedCfg like Newtonsoft");
         }
 
         [Test]
-        public void DerivedCfg_Sum_Serializes_Correctly()
+        public void DerivedCfg_Sum_STJ_Serializes_Correctly()
         {
             // Arrange
             var cfg = new DerivedCfgSum
@@ -232,16 +329,17 @@ namespace Artesian.SDK.Tests
                 OrderedReferencedMarketDataIds = new int[] { 100000001, 100000002 }
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(cfg, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(cfg, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(cfg, _stjOptions);
 
             // Assert
-            Assert.That(json, Does.Contain("DerivedAlgorithm"));
-            Assert.That(json, Does.Contain("Sum"));
-            Assert.That(json, Does.Contain("OrderedReferencedMarketDataIds"));
+            Assert.That(stjJson, Does.Contain("DerivedAlgorithm"));
+            Assert.That(stjJson, Does.Contain("Sum"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should serialize DerivedCfgSum like Newtonsoft");
 
-            // Verify deserialization
-            var deserialized = JsonConvert.DeserializeObject<DerivedCfgBase>(json, _newtonsoftSettings);
+            // Verify STJ deserialization
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<DerivedCfgBase>(stjJson, _stjOptions);
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized, Is.InstanceOf<DerivedCfgSum>());
             var sum = (DerivedCfgSum)deserialized!;
@@ -249,7 +347,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void DerivedCfg_Coalesce_Serializes_Correctly()
+        public void DerivedCfg_Coalesce_STJ_Serializes_Correctly()
         {
             // Arrange
             var cfg = new DerivedCfgCoalesce
@@ -257,15 +355,17 @@ namespace Artesian.SDK.Tests
                 OrderedReferencedMarketDataIds = new int[] { 100000001, 100000002 }
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(cfg, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(cfg, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(cfg, _stjOptions);
 
             // Assert
-            Assert.That(json, Does.Contain("DerivedAlgorithm"));
-            Assert.That(json, Does.Contain("Coalesce"));
+            Assert.That(stjJson, Does.Contain("DerivedAlgorithm"));
+            Assert.That(stjJson, Does.Contain("Coalesce"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should serialize DerivedCfgCoalesce like Newtonsoft");
 
-            // Verify deserialization
-            var deserialized = JsonConvert.DeserializeObject<DerivedCfgBase>(json, _newtonsoftSettings);
+            // Verify STJ deserialization
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<DerivedCfgBase>(stjJson, _stjOptions);
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized, Is.InstanceOf<DerivedCfgCoalesce>());
         }
@@ -275,7 +375,36 @@ namespace Artesian.SDK.Tests
         #region UpsertData Dictionary Properties Tests
 
         [Test]
-        public void UpsertCurveData_Rows_Serializes_Correctly()
+        public void UpsertCurveData_Rows_STJ_CanDeserialize_NewtonsoftJson()
+        {
+            // Arrange - Serialize with Newtonsoft
+            var upsertData = new UpsertCurveData
+            {
+                ID = new MarketDataIdentifier("Provider", "Curve"),
+                Timezone = "CET",
+                DownloadedAt = Instant.FromUtc(2024, 1, 1, 12, 0),
+                Rows = new Dictionary<LocalDateTime, double?>
+                {
+                    { new LocalDateTime(2024, 1, 1, 0, 0), 100.5 },
+                    { new LocalDateTime(2024, 1, 2, 0, 0), 101.2 },
+                    { new LocalDateTime(2024, 1, 3, 0, 0), null }
+                }
+            };
+            var newtonsoftJson = JsonConvert.SerializeObject(upsertData, _newtonsoftSettings);
+
+            // Act - Deserialize with STJ
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<UpsertCurveData>(newtonsoftJson, _stjOptions);
+
+            // Assert - STJ can deserialize dictionary with LocalDateTime keys
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized!.Rows, Is.Not.Null);
+            Assert.That(deserialized.Rows!.Count, Is.EqualTo(3));
+            Assert.That(deserialized.Rows[new LocalDateTime(2024, 1, 1, 0, 0)], Is.EqualTo(100.5));
+            Assert.That(deserialized.Rows[new LocalDateTime(2024, 1, 3, 0, 0)], Is.Null);
+        }
+
+        [Test]
+        public void UpsertCurveData_Rows_STJ_Serializes_CompatibleJson()
         {
             // Arrange
             var upsertData = new UpsertCurveData
@@ -286,29 +415,20 @@ namespace Artesian.SDK.Tests
                 Rows = new Dictionary<LocalDateTime, double?>
                 {
                     { new LocalDateTime(2024, 1, 1, 0, 0), 100.5 },
-                    { new LocalDateTime(2024, 1, 2, 0, 0), 101.2 },
-                    { new LocalDateTime(2024, 1, 3, 0, 0), null } // Test null value
+                    { new LocalDateTime(2024, 1, 2, 0, 0), 101.2 }
                 }
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(upsertData, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(upsertData, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(upsertData, _stjOptions);
 
-            // Assert
-            Assert.That(json, Does.Contain("Rows"));
-            Assert.That(json, Does.Contain("2024-01-01"));
-
-            // Verify deserialization
-            var deserialized = JsonConvert.DeserializeObject<UpsertCurveData>(json, _newtonsoftSettings);
-            Assert.That(deserialized, Is.Not.Null);
-            Assert.That(deserialized!.Rows, Is.Not.Null);
-            Assert.That(deserialized.Rows!.Count, Is.EqualTo(3));
-            Assert.That(deserialized.Rows[new LocalDateTime(2024, 1, 1, 0, 0)], Is.EqualTo(100.5));
-            Assert.That(deserialized.Rows[new LocalDateTime(2024, 1, 3, 0, 0)], Is.Null);
+            // Assert - Dictionary with complex keys serialized the same way
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should serialize Rows dictionary like Newtonsoft");
         }
 
         [Test]
-        public void UpsertCurveData_MarketAssessment_Serializes_Correctly()
+        public void UpsertCurveData_MarketAssessment_STJ_Serializes_Correctly()
         {
             // Arrange
             var upsertData = new UpsertCurveData
@@ -329,23 +449,22 @@ namespace Artesian.SDK.Tests
                 }
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(upsertData, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(upsertData, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(upsertData, _stjOptions);
 
             // Assert
-            Assert.That(json, Does.Contain("MarketAssessment"));
-            Assert.That(json, Does.Contain("Product1"));
-            Assert.That(json, Does.Contain("Settlement"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should serialize MarketAssessment like Newtonsoft");
 
-            // Verify deserialization
-            var deserialized = JsonConvert.DeserializeObject<UpsertCurveData>(json, _newtonsoftSettings);
+            // Verify STJ deserialization
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<UpsertCurveData>(stjJson, _stjOptions);
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized!.MarketAssessment, Is.Not.Null);
             Assert.That(deserialized.MarketAssessment!.Count, Is.EqualTo(1));
         }
 
         [Test]
-        public void UpsertCurveData_AuctionRows_Serializes_Correctly()
+        public void UpsertCurveData_AuctionRows_STJ_Serializes_Correctly()
         {
             // Arrange
             var upsertData = new UpsertCurveData
@@ -374,22 +493,22 @@ namespace Artesian.SDK.Tests
                 }
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(upsertData, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(upsertData, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(upsertData, _stjOptions);
 
             // Assert
-            Assert.That(json, Does.Contain("AuctionRows"));
-            Assert.That(json, Does.Contain("Bid"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should serialize AuctionRows like Newtonsoft");
 
-            // Verify deserialization
-            var deserialized = JsonConvert.DeserializeObject<UpsertCurveData>(json, _newtonsoftSettings);
+            // Verify STJ deserialization
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<UpsertCurveData>(stjJson, _stjOptions);
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized!.AuctionRows, Is.Not.Null);
             Assert.That(deserialized.AuctionRows!.Count, Is.EqualTo(1));
         }
 
         [Test]
-        public void UpsertCurveData_BidAsk_Serializes_Correctly()
+        public void UpsertCurveData_BidAsk_STJ_Serializes_Correctly()
         {
             // Arrange
             var upsertData = new UpsertCurveData
@@ -410,15 +529,15 @@ namespace Artesian.SDK.Tests
                 }
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(upsertData, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(upsertData, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(upsertData, _stjOptions);
 
             // Assert
-            Assert.That(json, Does.Contain("BidAsk"));
-            Assert.That(json, Does.Contain("BestBidPrice"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should serialize BidAsk like Newtonsoft");
 
-            // Verify deserialization
-            var deserialized = JsonConvert.DeserializeObject<UpsertCurveData>(json, _newtonsoftSettings);
+            // Verify STJ deserialization
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<UpsertCurveData>(stjJson, _stjOptions);
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized!.BidAsk, Is.Not.Null);
             Assert.That(deserialized.BidAsk!.Count, Is.EqualTo(1));
@@ -429,7 +548,7 @@ namespace Artesian.SDK.Tests
         #region Null Handling Tests
 
         [Test]
-        public void Serialization_SkipsNullProperties()
+        public void STJ_Serialization_SkipsNullProperties()
         {
             // Arrange
             var entity = new MarketDataEntity.Input()
@@ -445,17 +564,19 @@ namespace Artesian.SDK.Tests
                 TransformID = null
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(entity, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(entity, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(entity, _stjOptions);
 
-            // Assert - Null properties should not be present
-            Assert.That(json, Does.Not.Contain("Tags"));
-            Assert.That(json, Does.Not.Contain("ProviderDescription"));
-            Assert.That(json, Does.Not.Contain("TransformID"));
+            // Assert - Null properties should not be present in both
+            Assert.That(stjJson, Does.Not.Contain("Tags"));
+            Assert.That(stjJson, Does.Not.Contain("ProviderDescription"));
+            Assert.That(stjJson, Does.Not.Contain("TransformID"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should skip null properties like Newtonsoft");
         }
 
         [Test]
-        public void UpsertCurveData_NullDictionaries_SkippedInSerialization()
+        public void UpsertCurveData_STJ_NullDictionaries_SkippedInSerialization()
         {
             // Arrange
             var upsertData = new UpsertCurveData
@@ -472,14 +593,16 @@ namespace Artesian.SDK.Tests
                 BidAsk = null
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(upsertData, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(upsertData, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(upsertData, _stjOptions);
 
-            // Assert
-            Assert.That(json, Does.Contain("Rows"));
-            Assert.That(json, Does.Not.Contain("MarketAssessment"));
-            Assert.That(json, Does.Not.Contain("AuctionRows"));
-            Assert.That(json, Does.Not.Contain("BidAsk"));
+            // Assert - Null dictionaries should be skipped in both
+            Assert.That(stjJson, Does.Contain("Rows"));
+            Assert.That(stjJson, Does.Not.Contain("MarketAssessment"));
+            Assert.That(stjJson, Does.Not.Contain("AuctionRows"));
+            Assert.That(stjJson, Does.Not.Contain("BidAsk"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should skip null dictionaries like Newtonsoft");
         }
 
         #endregion
@@ -487,7 +610,7 @@ namespace Artesian.SDK.Tests
         #region Dictionary Key Format Tests
 
         [Test]
-        public void Dictionary_WithComplexKey_SerializesCorrectly()
+        public void Dictionary_WithComplexKey_STJ_SerializesCompatibly()
         {
             // Arrange - LocalDateTime as dictionary key
             var rows = new Dictionary<LocalDateTime, double?>
@@ -496,15 +619,17 @@ namespace Artesian.SDK.Tests
                 { new LocalDateTime(2024, 1, 2, 12, 30), 101.2 }
             };
 
-            // Act
-            var json = JsonConvert.SerializeObject(rows, _newtonsoftSettings);
+            // Act - Serialize with both
+            var newtonsoftJson = JsonConvert.SerializeObject(rows, _newtonsoftSettings);
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(rows, _stjOptions);
 
-            // Assert - Should use the DictionaryJsonConverter format
-            Assert.That(json, Does.Contain("Key"));
-            Assert.That(json, Does.Contain("Value"));
+            // Assert - Should use Key/Value format in both
+            Assert.That(stjJson, Does.Contain("Key"));
+            Assert.That(stjJson, Does.Contain("Value"));
+            AssertJsonEquals(newtonsoftJson, stjJson, "STJ should use same Key/Value format as Newtonsoft");
 
-            // Verify deserialization
-            var deserialized = JsonConvert.DeserializeObject<Dictionary<LocalDateTime, double?>>(json, _newtonsoftSettings);
+            // Verify STJ deserialization
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<Dictionary<LocalDateTime, double?>>(stjJson, _stjOptions);
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized!.Count, Is.EqualTo(2));
             Assert.That(deserialized[new LocalDateTime(2024, 1, 1, 0, 0)], Is.EqualTo(100.5));
