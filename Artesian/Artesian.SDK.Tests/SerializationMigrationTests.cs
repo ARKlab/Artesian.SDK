@@ -6,15 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.UoM;
 using Artesian.SDK.Service;
 using NodaTime;
-using NodaTime.Serialization.JsonNet;
-using NodaTime.Serialization.SystemTextJson;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace Artesian.SDK.Tests
@@ -24,41 +20,20 @@ namespace Artesian.SDK.Tests
     /// These tests validate that System.Text.Json can:
     /// 1. Deserialize JSON created by Newtonsoft.Json (backward compatibility)
     /// 2. Serialize objects to JSON that is equivalent to Newtonsoft.Json output (forward compatibility)
+    /// 
+    /// JSON literal strings in these tests were generated once using Newtonsoft.Json with the original
+    /// master settings and are used as the expected baseline for compatibility testing.
     /// </summary>
     [TestFixture]
     public class SerializationMigrationTests
     {
-        private JsonSerializerSettings _newtonsoftSettings = null!;
         private JsonSerializerOptions _stjOptions = null!;
 
         [SetUp]
         public void Setup()
         {
-            // Configure Newtonsoft.Json settings matching the original Client.cs setup
-            _newtonsoftSettings = new JsonSerializerSettings();
-            _newtonsoftSettings = _newtonsoftSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-            _newtonsoftSettings.Converters.Add(new Service.DictionaryJsonConverter());
-            _newtonsoftSettings.Formatting = Formatting.None;
-            _newtonsoftSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-            _newtonsoftSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-            _newtonsoftSettings.TypeNameHandling = TypeNameHandling.None;
-            _newtonsoftSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
-            _newtonsoftSettings.NullValueHandling = NullValueHandling.Ignore;
-
-            // Configure System.Text.Json options matching the new Client.cs setup
-            _stjOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = null, // Use PascalCase (no transformation)
-                DictionaryKeyPolicy = null, // Preserve dictionary key casing
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Skip null properties
-                WriteIndented = false,
-                PropertyNameCaseInsensitive = true,
-                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
-            };
-            _stjOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-            _stjOptions.Converters.Add(new DictionaryJsonConverterSTJFactory());
-            // TimeTransformConverterSTJ not needed - class is already decorated with attribute
-            _stjOptions.Converters.Add(new JsonStringEnumConverter());
+            // Use the same STJ options as the Client
+            _stjOptions = Client.CreateDefaultJsonSerializerOptions();
         }
 
         /// <summary>
