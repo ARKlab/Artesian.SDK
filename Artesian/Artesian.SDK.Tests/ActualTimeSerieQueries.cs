@@ -276,11 +276,19 @@ namespace Artesian.SDK.Tests
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .ExecuteAsync();
 
-                var headerXAgent = httpTest.CallLog.FirstOrDefault().Request.Headers.FirstOrDefault(w => string.Equals(w.Name, "X-Artesian-Agent"));
+                var headerXAgent = httpTest.CallLog.First().Request.Headers.FirstOrDefault(w => string.Equals(w.Name, "X-Artesian-Agent"));
 
                 //ArtesianSDK-C#: 2.2.1.0,Win32NT: 10.0.19041.0,.NETFramework: 4.6.1
+                //ArtesianSDK-C#:1.0.0.0,Unix:6.11.0.1018,.NETCoreApp:8.0
 
-                Assert.That(headerXAgent.Value, Does.Contain("ArtesianSDK-C#:").And.Contain("Win32NT:") & ( Does.Contain(".NETCoreApp:").Or.Contain(".NETFramework") ) );
+                // Determine expected OS string based on runtime OS
+#pragma warning disable MA0144 // Use System.OperatingSystem to check the current OS
+                var expectedOsString = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows) 
+                    ? "Win32NT:" 
+                    : "Unix:";
+#pragma warning restore MA0144 // Use System.OperatingSystem to check the current OS
+
+                Assert.That(headerXAgent.Value, Does.Contain("ArtesianSDK-C#:").And.Contain(expectedOsString) & ( Does.Contain(".NETCoreApp:").Or.Contain(".NETFramework") ) );
             }
         }
 

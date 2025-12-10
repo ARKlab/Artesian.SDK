@@ -62,7 +62,7 @@ namespace Artesian.SDK.Tests.Samples
             await mktData.Load();
 
             //SET CURVEID
-            curveId = mktData.MarketDataId.Value;
+            curveId = mktData.MarketDataId!.Value;
 
             var writableMas = mktData.EditMarketAssessment();
 
@@ -152,7 +152,7 @@ namespace Artesian.SDK.Tests.Samples
             await mktData.Load();
 
             //SET CURVEID
-            curveId = mktData.MarketDataId.Value;
+            curveId = mktData.MarketDataId!.Value;
 
             var writableMas = mktData.EditMarketAssessment();
 

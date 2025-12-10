@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace Artesian.SDK.Service
         /// <param name="filterId"></param>
         protected QueryParamaters(
             IEnumerable<int> ids,
-            string timezone, 
+            string? timezone, 
             int? filterId
             )
         {
@@ -37,11 +37,11 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// IDs
         /// </summary>
-        public IEnumerable<int> Ids { get; set; }
+        public IEnumerable<int>? Ids { get; set; }
         /// <summary>
         /// Timezone
         /// </summary>
-        public string TimeZone { get; set; }
+        public string? TimeZone { get; set; }
         /// <summary>
         /// FilterId
         /// </summary>

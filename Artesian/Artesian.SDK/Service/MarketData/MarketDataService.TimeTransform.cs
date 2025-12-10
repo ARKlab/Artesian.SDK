@@ -56,7 +56,7 @@ namespace Artesian.SDK.Service
         /// <returns>Time Transform Entity</returns>
         public Task<TimeTransform> RegisterTimeTransformBaseAsync(TimeTransform timeTransform, CancellationToken ctk = default)
         {
-            (timeTransform as TimeTransformSimpleShift).Validate();
+            (timeTransform as TimeTransformSimpleShift)?.Validate();
 
             var url = "/timeTransform/entity";
 
@@ -70,7 +70,7 @@ namespace Artesian.SDK.Service
         /// <returns>Time Transform Entity</returns>
         public Task<TimeTransform> UpdateTimeTransformBaseAsync(TimeTransform timeTransform, CancellationToken ctk = default)
         {
-            (timeTransform as TimeTransformSimpleShift).Validate();
+            (timeTransform as TimeTransformSimpleShift)?.Validate();
 
             var url = "/timeTransform/entity".AppendPathSegment(timeTransform.ID);
 

@@ -3,8 +3,6 @@ using Artesian.SDK.Dto.Serialize;
 
 using MessagePack;
 
-using Newtonsoft.Json;
-
 namespace Artesian.SDK.Dto
 {
     /// <summary>
@@ -14,7 +12,6 @@ namespace Artesian.SDK.Dto
     [Union(0, typeof(DerivedCfgMuv))]
     [Union(1, typeof(DerivedCfgCoalesce))]
     [Union(2, typeof(DerivedCfgSum))]
-    [JsonConverter(typeof(DerivedCfgBaseConverter))]
     [System.Text.Json.Serialization.JsonConverter(typeof(DerivedCfgBaseConverterSTJ))]
     public abstract record DerivedCfgBase
     {

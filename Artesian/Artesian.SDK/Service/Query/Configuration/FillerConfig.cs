@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Dto;
+using Artesian.SDK.Dto;
 using NodaTime;
 
 namespace Artesian.SDK.Service
@@ -23,6 +23,6 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Filler Period
         /// </summary>
-        public Period FillerPeriod { get; set; }
+        public Period? FillerPeriod { get; set; }
     }
 }

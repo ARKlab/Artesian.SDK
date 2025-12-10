@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using System;
 
 namespace Artesian.SDK.Dto
 {
@@ -9,9 +10,17 @@ namespace Artesian.SDK.Dto
     public abstract record DerivedCfgWithReferencedIds : DerivedCfgBase
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="DerivedCfgWithReferencedIds"/> class.
+        /// </summary>
+        protected DerivedCfgWithReferencedIds()
+        {
+            OrderedReferencedMarketDataIds = Array.Empty<int>();
+        }
+
+        /// <summary>
         /// The referenced market data IDs: order MAY be relevant depending on the selected algorithm.
         /// </summary>
         [Key("OrderedReferencedMarketDataIds")]
-        public int[] OrderedReferencedMarketDataIds { get; set; }
+        public int[] OrderedReferencedMarketDataIds { get; init; }
     }
 }

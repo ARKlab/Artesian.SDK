@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 
 namespace Artesian.SDK.Dto.GMEPublicOffer
 {
@@ -6,18 +6,18 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
     /// OperatorDto class
     /// </summary>
     [MessagePackObject]
-    public class OperatorDto
+    public record OperatorDto
     {
         /// <summary>
         /// Operator Id
         /// </summary>
         [Key(0)]
-        public int Id { get; set; }
+        public int Id { get; init; }
 
         /// <summary>
         /// Operator
         /// </summary>
         [Key(1)]
-        public string Operator { get; set; }
+        public required string Operator { get; init; }
     }
 }

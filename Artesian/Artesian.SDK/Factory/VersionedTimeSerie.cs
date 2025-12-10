@@ -1,9 +1,10 @@
-﻿using Artesian.SDK.Common;
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 
 using NodaTime;
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -18,8 +19,8 @@ namespace Artesian.SDK.Factory
     internal sealed class VersionedTimeSerie : ITimeserieWritable
     {
         private readonly IMarketDataService _marketDataService;
-        private readonly MarketDataEntity.Output _entity = null;
-        private readonly MarketDataIdentifier _identifier = null;
+        private readonly MarketDataEntity.Output _entity;
+        private readonly MarketDataIdentifier _identifier;
         private Dictionary<LocalDateTime, double?> _values = new Dictionary<LocalDateTime, double?>();
 
         /// <summary>
@@ -27,10 +28,13 @@ namespace Artesian.SDK.Factory
         /// </summary>
         internal VersionedTimeSerie(MarketData marketData)
         {
-            _entity = marketData._entity;
-            _marketDataService = marketData._marketDataService;
+            var entity = Guard.IsNotNull(marketData._entity);
+            var marketDataService = Guard.IsNotNull(marketData._marketDataService);
 
-            _identifier = new MarketDataIdentifier(_entity.ProviderName, _entity.MarketDataName);
+            _entity = entity;
+            _marketDataService = marketDataService;
+
+            _identifier = new MarketDataIdentifier(entity.ProviderName, entity.MarketDataName);
 
             Values = new ReadOnlyDictionary<LocalDateTime, double?>(_values);
         }
@@ -173,8 +177,10 @@ namespace Artesian.SDK.Factory
 
             if (Values.Any())
             {
-                var data = new UpsertCurveData(_identifier, SelectedVersion.Value)
+                var data = new UpsertCurveData
                 {
+                    ID = _identifier,
+                    Version = SelectedVersion.Value,
                     Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
                     DownloadedAt = downloadedAt,
                     Rows = _values,
@@ -201,12 +207,13 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string? timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
             Guard.IsNotNull(_entity);
 
-            var data = new DeleteCurveData(_identifier)
+            var data = new DeleteCurveData
             {
+                ID = _identifier,
                 Timezone = timezone,
                 // LocalDate.MinIsoValue has year -9998 and yearOfEra 9999. Using it without any string formatting, we got date 01-01-9999.
                 // So we use default(LocalDateTime) 01/01/0001

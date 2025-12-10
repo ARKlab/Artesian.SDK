@@ -8,7 +8,7 @@ namespace Artesian.SDK.Dto
     /// The Auction Data for a single Multiple timestamps
     /// </summary>
     [MessagePackObject]
-    public class AuctionBidValue
+    public record AuctionBidValue
     {
         /// <summary>
         /// The Auction Data for a single Multiple timestamps
@@ -45,13 +45,13 @@ namespace Artesian.SDK.Dto
         /// The Accepted Bid Price
         /// </summary>
         [Key(2)]
-        public double? AcceptedPrice { get; set; }
+        public double? AcceptedPrice { get; init; }
 
         /// <summary>
         /// Accepted Quantity, Sum of the accepted quantities per offered price level
         /// </summary>
         [Key(3)]
-        public double? AcceptedQuantity { get; set; }
+        public double? AcceptedQuantity { get; init; }
 
         /// <summary>
         /// Block Type the bid's block type:
@@ -59,6 +59,6 @@ namespace Artesian.SDK.Dto
         /// Block - bid/offer is part of a block, referencing multiple contiguous BidTimestamp
         /// </summary>
         [Key(4)]
-        public BlockType? BlockType { get; set; }
+        public BlockType? BlockType { get; init; }
     }
 }

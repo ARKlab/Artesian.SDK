@@ -7,6 +7,7 @@
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
 	<NoWarn>CS1591</NoWarn>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -20,12 +21,18 @@
 	
   <ItemGroup>
 	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-	  <!-- important or you will get v2 from dotnet 10 -->
-	  <PackageVersion Include="Microsoft.Testing.Platform" Version="1.9.1" />
-	  <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="1.9.1" />
-	  <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.0.4" />
+	  <PackageVersion Include="Microsoft.Testing.Platform" Version="2.0.2" />
+	  <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="2.0.2" />
+	  <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.1.0" />
 	<PackageReference Include="NUnit" Version="4.4.0" />
-	<PackageReference Include="NUnit3TestAdapter" Version="5.2.0" />	  
+	<PackageReference Include="NUnit3TestAdapter" Version="6.0.0" />	  
+  </ItemGroup>
+  
+  <!-- Pin MTP v2 packages for net462 to override transitive dependencies -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+	  <PackageReference Include="Microsoft.Testing.Platform.MSBuild" Version="2.0.2" />
+	  <PackageReference Include="Microsoft.Testing.Extensions.VSTestBridge" Version="2.0.2" />
+	  <PackageReference Include="Microsoft.Testing.Extensions.Telemetry" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>

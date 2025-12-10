@@ -42,7 +42,7 @@ namespace Artesian.SDK.Tests.Samples
                     marketDataEntity.MarketDataName)
                 );
 
-            //marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value);
+            //marketDataService.DeleteMarketDataAsync(marketData.MarketDataId!.Value);
 
             var isRegistered = await marketData.IsRegistered();
 
@@ -61,7 +61,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
             var act = await qs.CreateActual()
-                       .ForMarketData(new[] { marketData.MarketDataId.Value })
+                       .ForMarketData(new[] { marketData.MarketDataId!.Value })
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .ExecuteAsync();
@@ -72,7 +72,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Delete(new LocalDateTime(2018, 10, 05, 0, 0), new LocalDateTime(2018, 10, 07, 0, 0));
 
             act = await qs.CreateActual()
-                       .ForMarketData(new[] { marketData.MarketDataId.Value })
+                       .ForMarketData(new[] { marketData.MarketDataId!.Value })
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .ExecuteAsync();
@@ -84,7 +84,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Delete();
 
             act = await qs.CreateActual()
-                       .ForMarketData(new[] { marketData.MarketDataId.Value })
+                       .ForMarketData(new[] { marketData.MarketDataId!.Value })
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .ExecuteAsync();
@@ -134,7 +134,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
             var ts = await qs.CreateVersioned()
-                       .ForMarketData(new[] { marketData.MarketDataId.Value })
+                       .ForMarketData(new[] { marketData.MarketDataId!.Value })
                        .InGranularity(Granularity.Day)
                        .ForLastOfDays(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
@@ -146,7 +146,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Delete(new LocalDateTime(2018, 10, 05, 0, 0), new LocalDateTime(2018, 10, 07, 0, 0));
 
             ts = await qs.CreateVersioned()
-                       .ForMarketData(new[] { marketData.MarketDataId.Value })
+                       .ForMarketData(new[] { marketData.MarketDataId!.Value })
                        .InGranularity(Granularity.Day)
                        .ForLastOfDays(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
@@ -159,7 +159,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Delete();
 
             ts = await qs.CreateVersioned()
-                       .ForMarketData(new[] { marketData.MarketDataId.Value })
+                       .ForMarketData(new[] { marketData.MarketDataId!.Value })
                        .InGranularity(Granularity.Day)
                        .ForLastOfDays(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
                        .InAbsoluteDateRange(new LocalDate(2018, 10, 03), new LocalDate(2018, 10, 07))
@@ -223,7 +223,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
             var ts = await qs.CreateAuction()
-                        .ForMarketData(new int[] { marketData.MarketDataId.Value })
+                        .ForMarketData(new int[] { marketData.MarketDataId!.Value })
                         .InAbsoluteDateRange(new LocalDate(2018, 09, 24), new LocalDate(2018, 09, 27))
                         .ExecuteAsync();
 
@@ -233,7 +233,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Delete(new LocalDateTime(2018, 09, 26, 0, 0), new LocalDateTime(2018, 09, 27, 0, 0));
 
             ts = await qs.CreateAuction()
-                        .ForMarketData(new int[] { marketData.MarketDataId.Value })
+                        .ForMarketData(new int[] { marketData.MarketDataId!.Value })
                         .InAbsoluteDateRange(new LocalDate(2018, 09, 24), new LocalDate(2018, 09, 27))
                         .ExecuteAsync();
 
@@ -244,7 +244,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Delete();
 
             ts = await qs.CreateAuction()
-                        .ForMarketData(new int[] { marketData.MarketDataId.Value })
+                        .ForMarketData(new int[] { marketData.MarketDataId!.Value })
                         .InAbsoluteDateRange(new LocalDate(2018, 09, 24), new LocalDate(2018, 09, 27))
                         .ExecuteAsync();
 
@@ -329,7 +329,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
             var ts = await qs.CreateMarketAssessment()
-                        .ForMarketData(new int[] { marketData.MarketDataId.Value })
+                        .ForMarketData(new int[] { marketData.MarketDataId!.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync();
@@ -340,7 +340,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Delete(new LocalDateTime(2014, 01, 03, 0, 0), new LocalDateTime(2014, 01, 04, 0, 0), new List<string>() { "Jan-15" });
 
             ts = await qs.CreateMarketAssessment()
-                        .ForMarketData(new int[] { marketData.MarketDataId.Value })
+                        .ForMarketData(new int[] { marketData.MarketDataId!.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync();
@@ -352,7 +352,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Delete(product: new List<string>() { "Jan-15" }, deferCommandExecution: false, deferDataGeneration: false);
 
             ts = await qs.CreateMarketAssessment()
-                        .ForMarketData(new int[] { marketData.MarketDataId.Value })
+                        .ForMarketData(new int[] { marketData.MarketDataId!.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync();
@@ -430,7 +430,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
             var ts = await qs.CreateBidAsk()
-                        .ForMarketData(new int[] { marketData.MarketDataId.Value })
+                        .ForMarketData(new int[] { marketData.MarketDataId!.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync();
@@ -441,7 +441,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Delete(new LocalDateTime(2014, 01, 03, 0, 0), new LocalDateTime(2014, 01, 04, 0, 0), new List<string>() { "Jan-15" });
 
             ts = await qs.CreateBidAsk()
-                        .ForMarketData(new int[] { marketData.MarketDataId.Value })
+                        .ForMarketData(new int[] { marketData.MarketDataId!.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync();
@@ -453,7 +453,7 @@ namespace Artesian.SDK.Tests.Samples
             await writeMarketData.Delete(product: new List<string>() { "Jan-15" });
 
             ts = await qs.CreateBidAsk()
-                        .ForMarketData(new int[] { marketData.MarketDataId.Value })
+                        .ForMarketData(new int[] { marketData.MarketDataId!.Value })
                         .ForProducts(new string[] { "Jan-15" })
                         .InAbsoluteDateRange(new LocalDate(2014, 01, 01), new LocalDate(2014, 01, 04))
                         .ExecuteAsync();

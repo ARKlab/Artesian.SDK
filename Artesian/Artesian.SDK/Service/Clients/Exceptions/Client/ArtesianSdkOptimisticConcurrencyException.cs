@@ -26,7 +26,7 @@ namespace Artesian.SDK.Service
         {
         }
 
-        public ArtesianSdkOptimisticConcurrencyException(string message, ArtesianSdkProblemDetail problemDetail)
+        public ArtesianSdkOptimisticConcurrencyException(string message, ArtesianSdkProblemDetail? problemDetail)
           : base(message, problemDetail)
         {
         }  

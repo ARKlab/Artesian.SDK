@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 
 using System.Collections.Generic;
 
@@ -8,61 +8,61 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
     /// GMEPublicOfferDto class
     /// </summary>
     [MessagePackObject]
-    public class GMEPublicOfferDto
+    public record GMEPublicOfferDto
     {
         /// <summary>
         /// The Purpose
         /// </summary>
         [Key(0)]
-        public Purpose Purpose { get; set; }
+        public Purpose Purpose { get; init; }
 
         /// <summary>
         /// The Type
         /// </summary>
         [Key(1)]
-        public Type Type { get; set; }
+        public Type Type { get; init; }
 
         /// <summary>
         /// The Status
         /// </summary>
         [Key(2)]
-        public Status Status { get; set; }
+        public Status Status { get; init; }
 
         /// <summary>
         /// The Market
         /// </summary>
         [Key(3)]
-        public Market Market { get; set; }
+        public Market Market { get; init; }
 
         /// <summary>
         /// The Unit Type
         /// </summary>
         [Key(4)]
-        public string UnitReference { get; set; }
+        public string? UnitReference { get; init; }
 
         /// <summary>
         /// The Zone
         /// </summary>
         [Key(5)]
-        public Zone Zone { get; set; }
+        public Zone Zone { get; init; }
 
         /// <summary>
         /// The Operator
         /// </summary>
         [Key(6)]
-        public string Operator { get; set; }
+        public string? Operator { get; init; }
 
         /// <summary>
         /// The Scope
         /// </summary>
         [Key(7)]
-        public Scope Scope { get; set; }
+        public Scope Scope { get; init; }
 
         /// <summary>
         /// The BAType
         /// </summary>
         [Key(8)]
-        public BAType BAType { get; set; }
+        public BAType BAType { get; init; }
 
 
         //--------------------------
@@ -71,7 +71,7 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// Data
         /// </summary>
         [Key(10)]
-        public IList<GMEPublicOfferDataDto> Data { get; set; }
+        public IList<GMEPublicOfferDataDto>? Data { get; init; }
 
         //---------------------------
 
@@ -81,49 +81,49 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
         /// MARKET_PARTECIPANT_XREF_NO
         /// </summary>
         [Key(11)]
-        public string MARKET_PARTECIPANT_XREF_NO { get; set; }
+        public string? MARKET_PARTECIPANT_XREF_NO { get; init; }
 
         /// <summary>
         /// BALANCED_REFERENCE_NO
         /// </summary>
         [Key(12)]
-        public string BALANCED_REFERENCE_NO { get; set; }
+        public string? BALANCED_REFERENCE_NO { get; init; }
 
         /// <summary>
         /// CODICE_OFFERTA
         /// </summary>
         [Key(13)]
-        public int? CODICE_OFFERTA { get; set; }
+        public int? CODICE_OFFERTA { get; init; }
 
         /// <summary>
         /// STORAGE_SOURCE
         /// </summary>
         [Key(14)]
-        public string STORAGE_SOURCE { get; set; }
+        public string? STORAGE_SOURCE { get; init; }
 
         /// <summary>
         /// Filename
         /// </summary>
         [Key(15)]
-        public string Filename { get; set; }
+        public string? Filename { get; init; }
 
         /// <summary>
         /// Granularity
         /// </summary>
         [Key(16)]
-        public string Granularity { get; set; }
+        public string? Granularity { get; init; }
 
         /// <summary>
         /// Offer Type
         /// </summary>
         [Key(17)]
-        public string OfferType { get; set; }
+        public string? OfferType { get; init; }
 
         /// <summary>
         /// Block ID
         /// </summary>
         [Key(18)]
-        public string BlockId { get; set; }
+        public string? BlockId { get; init; }
 
         /*
      [GME_PurposeEnum] [PurposeName]      |   [PURPOSE_CD] [nvarchar](10) NOT NULL

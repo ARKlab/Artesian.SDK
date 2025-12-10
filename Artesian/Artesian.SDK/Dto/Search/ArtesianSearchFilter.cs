@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Common;
@@ -12,21 +12,21 @@ namespace Artesian.SDK.Dto
     /// <summary>
     /// The dto for a new search facet based
     /// </summary>
-    public class ArtesianSearchFilter
+    public partial record ArtesianSearchFilter
     {
         /// <summary>
         /// Free search text
         /// </summary>
         [Required]
-        public string SearchText { get; set; }
+        public string? SearchText { get; set; }
         /// <summary>
         /// Filter by facet name, facet values
         /// </summary>
-        public IDictionary<string, string[]> Filters { get; set; }
+        public IDictionary<string, string[]>? Filters { get; set; }
         /// <summary>
         /// sort by field name
         /// </summary>
-        public IList<string> Sorts { get; set; }
+        public IList<string>? Sorts { get; set; }
         /// <summary>
         /// page size
         /// </summary>
@@ -37,14 +37,22 @@ namespace Artesian.SDK.Dto
         /// </summary>
         [Required]
         public int Page { get; set; }
+
+#if NET7_0_OR_GREATER
+        [GeneratedRegex(
+            "^(MarketDataId|ProviderName|MarketDataName|OriginalGranularity|Type|OriginalTimezone|Created|LastUpdated)( (asc|desc))?$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture, 1000)]
+        internal static partial Regex ValidSortsRegex();
+#else
+        internal static Regex ValidSortsRegex() => _validSorts;
+        private static readonly Regex _validSorts = new Regex(
+            "^(MarketDataId|ProviderName|MarketDataName|OriginalGranularity|Type|OriginalTimezone|Created|LastUpdated)( (asc|desc))?$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1));
+#endif
     }
 
     internal static class ArtesianSearchFilterExt
     {
-        private static Regex _validSorts = new Regex(
-            "^(MarketDataId|ProviderName|MarketDataName|OriginalGranularity|Type|OriginalTimezone|Created|LastUpdated)( (asc|desc))?$"
-            , RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1));
-
         public static void Validate(this ArtesianSearchFilter artesianSearchFilter)
         {
 
@@ -52,7 +60,7 @@ namespace Artesian.SDK.Dto
             {
                 foreach (string element in artesianSearchFilter.Sorts)
                 {
-                    if (!_validSorts.IsMatch(element))
+                    if (!ArtesianSearchFilter.ValidSortsRegex().IsMatch(element))
                         throw new ArgumentException($"Invalid search param {element}", nameof(artesianSearchFilter));
                 }
             }

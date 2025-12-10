@@ -1,6 +1,7 @@
-﻿using MessagePack;
+using MessagePack;
 using System;
 using System.Collections.Generic;
+using KeyAttribute = MessagePack.KeyAttribute;
 
 namespace Artesian.SDK.Dto
 {
@@ -8,33 +9,47 @@ namespace Artesian.SDK.Dto
     /// The CustomFilter Entity with Etag
     /// </summary>
     [MessagePackObject]
-    public class CustomFilter
+    public record CustomFilter
     {
         /// <summary>
         /// The CustomFilter Id
         /// </summary>
         [Key(0)]
-        public int Id { get; set; }
+        public int Id { get; init; }
+        
         /// <summary>
         /// The CustomFilter Name
         /// </summary>
+        [System.ComponentModel.DataAnnotations.Required]
         [Key(1)]
-        public string Name { get; set; }
+        public required string Name { get; init; }
+        
         /// <summary>
         /// The CustomFilter Search Text
         /// </summary>
         [Key(2)]
-        public string SearchText { get; set; }
+        public string? SearchText { get; init; }
+        
         /// <summary>
         /// The CustomFilter values
         /// </summary>
         [Key(3)]
-        public Dictionary<string, List<string>> Filters { get; set; }
+        public Dictionary<string, List<string>> Filters { get; init; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        [SerializationConstructor]
+        public CustomFilter()
+        {
+            Filters = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        }
+        
         /// <summary>
         /// The CustomFilter Etag
         /// </summary>
         [Key(4)]
-        public string ETag { get; set; }
+        public string? ETag { get; init; }
     }
 
     internal static class CustomFilterExt

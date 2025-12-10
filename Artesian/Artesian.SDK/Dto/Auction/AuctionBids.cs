@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using NodaTime;
 using System.ComponentModel.DataAnnotations;
 using KeyAttribute = MessagePack.KeyAttribute;
@@ -6,40 +6,30 @@ using KeyAttribute = MessagePack.KeyAttribute;
 namespace Artesian.SDK.Dto
 {
     /// <summary>
-    /// The Auction Bid constructor
+    /// The Auction Bid entity
     /// </summary>
     [MessagePackObject]
-    public class AuctionBids
+    public record AuctionBids
     {
-        /// <summary>
-        /// The Auction Bid constructor
-        /// </summary>
-        public AuctionBids(LocalDateTime bidTimestamp, AuctionBidValue[] bid, AuctionBidValue[] offer)
-        {
-            this.BidTimestamp = bidTimestamp;
-            this.Bid = bid;
-            this.Offer = offer;
-        }
-
         /// <summary>
         /// The Bid Timestamp
         /// </summary>
         [Required]
         [Key(0)]
-        public LocalDateTime BidTimestamp { get; set; }
+        public required LocalDateTime BidTimestamp { get; init; }
 
         /// <summary>
         /// The BID
         /// </summary>
         [Required]
         [Key(1)]
-        public AuctionBidValue[] Bid { get; set; }
+        public required AuctionBidValue[] Bid { get; init; }
 
         /// <summary>
         /// The OFFER
         /// </summary>
         [Required]
         [Key(2)]
-        public AuctionBidValue[] Offer { get; set; }
+        public required AuctionBidValue[] Offer { get; init; }
     }
 }

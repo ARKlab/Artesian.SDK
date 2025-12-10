@@ -25,7 +25,7 @@ namespace Artesian.SDK.Service
             : base(string.Format(format, args))
         {
         }
-        public ArtesianSdkValidationException(string message, ArtesianSdkProblemDetail problemDetail)
+        public ArtesianSdkValidationException(string message, ArtesianSdkProblemDetail? problemDetail)
            : base(message,problemDetail)
         {
         }
