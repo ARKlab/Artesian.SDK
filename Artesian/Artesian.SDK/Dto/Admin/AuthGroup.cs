@@ -1,5 +1,6 @@
-﻿using MessagePack;
+using MessagePack;
 using System.Collections.Generic;
+using KeyAttribute = MessagePack.KeyAttribute;
 
 namespace Artesian.SDK.Dto
 {
@@ -7,27 +8,40 @@ namespace Artesian.SDK.Dto
     /// The AuthGroup entity with Etag
     /// </summary>
     [MessagePackObject]
-    public class AuthGroup
+    public record AuthGroup
     {
         /// <summary>
         /// The AuthGroup Identifier
         /// </summary>
         [Key("ID")]
-        public int ID { get; set; }
+        public int ID { get; init; }
+        
         /// <summary>
         /// The AuthGroup ETag
         /// </summary>
         [Key("ETag")]
-        public string ETag { get; set; }
+        public string? ETag { get; init; }
+        
         /// <summary>
         /// The AuthGroup Name
         /// </summary>
+        [System.ComponentModel.DataAnnotations.Required]
         [Key("Name")]
-        public string Name { get; set; }
+        public required string Name { get; init; }
+        
         /// <summary>
         /// The AuthGroup Users
         /// </summary>
         [Key("Users")]
-        public List<string> Users { get; set; }
+        public List<string> Users { get; init; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        [SerializationConstructor]
+        public AuthGroup()
+        {
+            Users = new List<string>();
+        }
     }
 }

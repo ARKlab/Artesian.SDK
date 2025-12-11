@@ -60,7 +60,7 @@ namespace Artesian.SDK.Tests.Samples
             await mktData.Load();
 
             //SET CURVEID
-            curveId = mktData.MarketDataId.Value;
+            curveId = mktData.MarketDataId!.Value;
 
 
             var bids = new AuctionBidValue[]
@@ -102,7 +102,7 @@ namespace Artesian.SDK.Tests.Samples
                         .InAbsoluteDateRange(start, end)
                         .ExecuteAsync();
             
-            var firstAuctionReult = auctionResults.FirstOrDefault();
+            var firstAuctionReult = auctionResults.FirstOrDefault()!;
 
             ClassicAssert.AreEqual(1, firstAuctionReult.Quantity);
             ClassicAssert.AreEqual(10, firstAuctionReult.AcceptedQuantity);

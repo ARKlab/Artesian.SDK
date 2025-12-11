@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-#nullable enable
-
 namespace Artesian.SDK.Common
 {
     internal static class Guard

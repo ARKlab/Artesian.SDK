@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 
@@ -43,7 +43,7 @@ namespace Artesian.SDK.Service
         /// <param name="versionTo">LocalDateTime</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>Paged result of CurveRange entity</returns>
-        Task<PagedResult<CurveRange>> ReadCurveRangeAsync(int id, int page, int pageSize, string product = null, LocalDateTime? versionFrom = null, LocalDateTime? versionTo = null, CancellationToken ctk = default);
+        Task<PagedResult<CurveRange>> ReadCurveRangeAsync(int id, int page, int pageSize, string? product = null, LocalDateTime? versionFrom = null, LocalDateTime? versionTo = null, CancellationToken ctk = default);
         /// <summary>
         /// Register the given MarketData entity
         /// </summary>

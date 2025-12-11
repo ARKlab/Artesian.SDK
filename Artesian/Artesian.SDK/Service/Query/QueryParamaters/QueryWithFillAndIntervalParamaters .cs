@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using System.Collections.Generic;
@@ -33,7 +33,7 @@ namespace Artesian.SDK.Service
             extractionRangeSelectionConfig, 
             ExtractionRangeType? 
             extractionRangeType, 
-            string timezone, 
+            string? timezone, 
             int? filterId,
             FillerKindType fillerKind,
             FillerConfig fillerConfig
@@ -46,7 +46,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Filler Kind
         /// </summary>
-        public FillerKindType FillerKindType { get; set; } = FillerKindType.Default;
+        public FillerKindType FillerKindType { get; set; } = Service.FillerKindType.Default;
         /// <summary>
         /// Filler config
         /// </summary>

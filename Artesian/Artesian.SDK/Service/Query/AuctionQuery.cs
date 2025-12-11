@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information.
 using Artesian.SDK.Dto;
@@ -125,7 +125,7 @@ namespace Artesian.SDK.Service
             var taskList = urls.Select(url => _client.Exec<IEnumerable<AuctionRow>>(HttpMethod.Get, url, ctk: ctk));
 
             var res = await Task.WhenAll(taskList).ConfigureAwait(false);
-            return res.SelectMany(x => x);
+            return res.Where(x => x != null).SelectMany(x => x);
         }
 
         #endregion facade methods

@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System.ComponentModel.DataAnnotations;
 
 namespace Artesian.SDK.Dto
@@ -7,13 +7,13 @@ namespace Artesian.SDK.Dto
     /// The OriginalTimeZone Update
     /// </summary>
     [MessagePackObject]
-    public class OperationUpdateOriginalTimeZone : IOperationParamsPayload
+    public record OperationUpdateOriginalTimeZone : IOperationParamsPayload
     {
         /// <summary>
         /// The OriginalTimeZone Update value
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public string Value { get; set; }
+        public required string Value { get; init; }
     }
 }

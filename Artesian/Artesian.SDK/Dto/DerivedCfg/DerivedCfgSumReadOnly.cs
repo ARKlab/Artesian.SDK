@@ -1,6 +1,7 @@
 ﻿using Artesian.SDK.Dto.Enums;
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Artesian.SDK.Dto
 {
@@ -18,7 +19,7 @@ namespace Artesian.SDK.Dto
             // Copy properties from the original cfg to the read-only version
             this.Version = cfg.Version;
             this.DerivedAlgorithm = cfg.DerivedAlgorithm;
-            this.OrderedReferencedMarketDataIds = new List<int>(cfg.OrderedReferencedMarketDataIds).AsReadOnly();
+            this.OrderedReferencedMarketDataIds = new List<int>(cfg.OrderedReferencedMarketDataIds ?? Enumerable.Empty<int>()).AsReadOnly();
             // Copy other properties as needed
         }
 

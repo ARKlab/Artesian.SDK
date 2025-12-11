@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -72,7 +73,7 @@ namespace Artesian.SDK.Dto
             return new PathString(tokens.Take(tokens.Length-1).ToArray(), tokens[tokens.Length-1]);
         }
 
-        public static bool TryParse(string path, out PathString retVal)
+        public static bool TryParse(string path, [NotNullWhen(true)] out PathString? retVal)
         {
             try
             {
@@ -131,22 +132,27 @@ namespace Artesian.SDK.Dto
 
         public static implicit operator PathString(string url) { return PathString.Parse(url); }
 
-        public static bool operator ==(PathString obj1, PathString obj2)
+        public static bool operator ==(PathString? obj1, PathString? obj2)
         {
+            if (obj1 is null && obj2 is null) return true;
+            if (obj1 is null || obj2 is null) return false;
             return obj1.Equals(obj2);
         }
 
-        public static bool operator !=(PathString obj1, PathString obj2)
+        public static bool operator !=(PathString? obj1, PathString? obj2)
         {
+            if (obj1 is null && obj2 is null) return false;
+            if (obj1 is null || obj2 is null) return true;
             return !obj1.Equals(obj2);
         }
 
-        public bool Equals(PathString other)
+        public bool Equals(PathString? other)
         {
+            if (other == null) return false;
             return Enumerable.SequenceEqual(_tokens, other._tokens, StringComparer.Ordinal);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is PathString p && this.Equals(p);
         }

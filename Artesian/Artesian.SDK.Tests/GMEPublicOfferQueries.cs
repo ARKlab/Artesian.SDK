@@ -270,9 +270,7 @@ namespace Artesian.SDK.Tests
             {
                 var qs = new GMEPublicOfferService(_cfg);
 
-                var unitCfg = new UnitConfigurationDto() {
-                
-                    Unit = "unitName",
+                var unitCfg = new UnitConfigurationDto("unitName") {
                     Mappings = new List<GenerationTypeMapping>() {
                         new GenerationTypeMapping(){
                             From = new LocalDate(2019,1,1),
@@ -328,7 +326,20 @@ namespace Artesian.SDK.Tests
                       Operator = "SomethingAgain",
                       Data = new List<GMEPublicOfferDataDto>()
                       {
-                          new GMEPublicOfferDataDto(){ }
+                          new GMEPublicOfferDataDto()
+                          {
+                              Date = new LocalDate(2020, 1, 1),
+                              Hour = 1,
+                              Quarter = 1,
+                              Quantity = 100,
+                              AwardedQuantity = 50,
+                              AwardedPrice = 45.5m,
+                              EnergyPrice = 45m,
+                              MeritOrder = 1,
+                              PartialQuantityAccepted = false,
+                              ADJQuantity = 0,
+                              ADJEnergyPrice = 0
+                          }
                       }
                 };
 

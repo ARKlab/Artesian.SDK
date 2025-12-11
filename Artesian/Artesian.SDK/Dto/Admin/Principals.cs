@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 
 namespace Artesian.SDK.Dto
 {
@@ -12,11 +12,11 @@ namespace Artesian.SDK.Dto
         /// The Principals name
         /// </summary>
         [Key("Principal")]
-        public string Principal { get; set; }
+        public required string Principal { get; init; }
         /// <summary>
         /// The Principals type
         /// </summary>
         [Key("Type")]
-        public string Type { get; set; }
+        public required string Type { get; init; }
     }
 }

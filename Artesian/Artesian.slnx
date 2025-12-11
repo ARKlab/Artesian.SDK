@@ -1,0 +1,23 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="../.editorconfig" />
+    <File Path="../.github/dependabot.yml" />
+    <File Path="../.github/workflows/codeql.yml" />
+    <File Path="../.github/workflows/publish_nuget.yml" />
+    <File Path="../.gitignore" />
+    <File Path="../CODEOWNERS" />
+    <File Path="../global.json" />
+    <File Path="../renovate.json" />
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="Artesian.SDK.Tests/Artesian.SDK.Tests.csproj" />
+  <Project Path="Artesian.SDK/Artesian.SDK.csproj">
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+  </Project>
+</Solution>

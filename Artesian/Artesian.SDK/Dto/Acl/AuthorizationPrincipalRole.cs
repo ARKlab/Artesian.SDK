@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System;
 
 namespace Artesian.SDK.Dto
@@ -24,26 +24,13 @@ namespace Artesian.SDK.Dto
         /// The Principal Type
         /// </summary>
         [Key(0)]
-        public PrincipalType PrincipalType { get; set; }
+        public PrincipalType PrincipalType { get; init; }
+        
         /// <summary>
         /// The Principal Identifier
         /// </summary>
         [Key(1)]
-        public string PrincipalId { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Principal()
-        {
-
-        }
-
-        private Principal(string s)
-        {
-            PrincipalId = s.Substring(2);
-            PrincipalType = AuthorizationPrincipalRole.DecodePrincipalEnum(s.Substring(0, 1));
-        }
+        public required string PrincipalId { get; init; }
 
         /// <summary>
         /// Encodes the Principal to "g:group" or "u:user"
@@ -61,33 +48,42 @@ namespace Artesian.SDK.Dto
         public static implicit operator string(Principal p) { return p.ToString(); }
 
         /// <summary>
-        /// Implicit conversion from Principal to string
+        /// Implicit conversion from Principal to string - decodes "g:group" or "u:user" to Principal
         /// </summary>
         /// <param name="p"></param>
-        public static implicit operator Principal(string p) { return new Principal(p); }
+        public static implicit operator Principal(string p) 
+        { 
+            return new Principal 
+            { 
+                PrincipalId = p.Substring(2),
+                PrincipalType = AuthorizationPrincipalRole.DecodePrincipalEnum(p.Substring(0, 1))
+            }; 
+        }
     }
 
     /// <summary>
     /// The AuthorizationPrincipalRole Entity
     /// </summary>
     [MessagePackObject]
-    public class AuthorizationPrincipalRole
+    public record AuthorizationPrincipalRole
     {
         /// <summary>
         /// The Role
         /// </summary>
         [Key(0)]
-        public string Role { get; set; }
+        public required string Role { get; init; }
+        
         /// <summary>
         /// The Principal
         /// </summary>
         [Key(1)]
-        public Principal Principal { get; set; }
+        public required Principal Principal { get; init; }
+        
         /// <summary>
         /// The information regarding Inheritance
         /// </summary>
         [Key(2)]
-        public string InheritedFrom { get; set; }
+        public string? InheritedFrom { get; init; }
 
         /// <summary>
         /// Encode principal Enum
@@ -122,4 +118,3 @@ namespace Artesian.SDK.Dto
         }
     }
 }
-

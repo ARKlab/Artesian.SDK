@@ -1,4 +1,4 @@
-﻿using Artesian.SDK.Common;
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 
@@ -29,13 +29,13 @@ namespace Artesian.SDK.Factory
         internal BidAsk(MarketData marketData)
         {
             Guard.IsNotNull(marketData);
-            Guard.IsNotNull(marketData._entity);
-            Guard.IsNotNull(marketData._marketDataService);
+            var entity = Guard.IsNotNull(marketData._entity);
+            var marketDataService = Guard.IsNotNull(marketData._marketDataService);
 
-            _entity = marketData._entity;
-            _marketDataService = marketData._marketDataService;
+            _entity = entity;
+            _marketDataService = marketDataService;
 
-            _identifier = new MarketDataIdentifier(_entity.ProviderName, _entity.MarketDataName);
+            _identifier = new MarketDataIdentifier(entity.ProviderName, entity.MarketDataName);
 
             BidAsks = new ReadOnlyCollection<BidAskElement>(_values);
         }
@@ -149,8 +149,9 @@ namespace Artesian.SDK.Factory
         {
             if (_values.Count != 0)
             {
-                var data = new UpsertCurveData(_identifier)
+                var data = new UpsertCurveData
                 {
+                    ID = _identifier,
                     Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
                     DownloadedAt = downloadedAt,
                     DeferCommandExecution = deferCommandExecution,
@@ -183,10 +184,11 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string> product = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, List<string>? product = null, string? timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
-            var data = new DeleteCurveData(_identifier)
+            var data = new DeleteCurveData
             {
+                ID = _identifier,
                 Timezone = timezone,
                 // LocalDate.MinIsoValue has year -9998 and yearOfEra 9999. Using it without any string formatting, we got date 01-01-9999.
                 // So we use default(LocalDateTime) 01/01/0001
@@ -203,7 +205,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// BidAskElement entity
         /// </summary>
-        public sealed class BidAskElement
+        public sealed record BidAskElement
         {
             /// <summary>
             /// BidAskElement constructor
@@ -218,15 +220,15 @@ namespace Artesian.SDK.Factory
             /// <summary>
             /// BidAskElement ReportTime
             /// </summary>
-            public LocalDateTime ReportTime { get; set; }
+            public LocalDateTime ReportTime { get; init; }
             /// <summary>
             /// BidAskElement Product
             /// </summary>
-            public string Product { get; set; }
+            public string Product { get; init; }
             /// <summary>
             /// BidAskElement BidAskValue
             /// </summary>
-            public BidAskValue Value { get; set; }
+            public BidAskValue Value { get; init; }
         }
     }
 }

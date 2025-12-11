@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Dto;
@@ -42,7 +42,7 @@ namespace Artesian.SDK.Service
             IEnumerable<int> ids, 
             ExtractionRangeSelectionConfig extractionRangeSelectionConfig, 
             ExtractionRangeType? extractionRangeType,
-            string timezone,
+            string? timezone,
             int? filterId,
             Granularity? granularity,
             int? transformId,
@@ -52,7 +52,7 @@ namespace Artesian.SDK.Service
             FillerKindType fillerK,
             FillerConfig fillerConfig,
             LocalDate? analysisDate,
-            string unitOfMeasure,
+            string? unitOfMeasure,
             AggregationRule? aggregationRule
             )
             : base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
@@ -95,7 +95,7 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Unit of Measure
         /// </summary>
-        public string UnitOfMeasure { get; set; }
+        public string? UnitOfMeasure { get; set; }
         /// <summary>
         /// AggregationRule
         /// </summary>

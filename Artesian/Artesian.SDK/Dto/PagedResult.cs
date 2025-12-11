@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using MessagePack;
@@ -10,32 +10,42 @@ namespace Artesian.SDK.Dto
     /// Paged Result entity
     /// </summary>
     [MessagePackObject]
-    public class PagedResult<T>
+    public record PagedResult<T>
     {
         /// <summary>
         /// Page Number
         /// </summary>
         [Key(0)]
-        public int Page { get; set; }
+        public int Page { get; init; }
         /// <summary>
         /// Page size (number of elements by page)
         /// </summary>
         [Key(1)]
-        public int PageSize { get; set; }
+        public int PageSize { get; init; }
         /// <summary>
         ///Number of pages
         /// </summary>
         [Key(2)]
-        public long Count { get; set; }
+        public long Count { get; init; }
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PagedResult{T}"/> class.
+        /// </summary>
+        [SerializationConstructor]
+        public PagedResult()
+        {
+            Data = new List<T>();
+        }
+
         /// <summary>
         /// Indicated if the count is partial
         /// </summary>
         [Key(3)]
-        public bool IsCountPartial { get; set; }
+        public bool IsCountPartial { get; init; }
         /// <summary>
         ///Data
         /// </summary>
         [Key(4)]
-        public IEnumerable<T> Data { get; set; }
+        public IEnumerable<T> Data { get; init; }
     }
 }

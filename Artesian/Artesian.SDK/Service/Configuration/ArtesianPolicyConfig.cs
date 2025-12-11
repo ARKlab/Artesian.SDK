@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Common;
@@ -10,6 +10,7 @@ using Polly.Retry;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 
@@ -31,18 +32,18 @@ namespace Artesian.SDK.Service
         public const int RetryWaitTimeDefault = 200;
         public const int RetryCountDefault = 3;
         public const int DurationOfBreakDefault = 3;
-
+#pragma warning restore CS1591
 
         /// <summary>
         /// Artesian Policy Config
         /// </summary>
         public ArtesianPolicyConfig()
         {
-            RetryPolicyConfig().
-            CircuitBreakerPolicyConfig().
-            BulkheadPolicyConfig().
-            GetResillianceStrategy();
+            RetryPolicyConfig();
+            CircuitBreakerPolicyConfig();
+            BulkheadPolicyConfig();
         }
+        
         /// <summary>
         /// Wait and Retry Policy Config
         /// Exponential Backoff strategy
@@ -50,13 +51,33 @@ namespace Artesian.SDK.Service
         /// <param name="retryCount">Exponential backoff count</param>
         /// <param name="retryWaitTime">Wait time for exponential backoff in milliseconds</param>
         /// <returns></returns>
+        [MemberNotNull(nameof(_retryPolicy))]
         public ArtesianPolicyConfig RetryPolicyConfig(int retryCount = RetryCountDefault, int retryWaitTime = RetryWaitTimeDefault)
         {
             _retryPolicy = Policy
                 .Handle<Exception>(x =>
                 {
-                    var result = x.InnerException is HttpRequestException;
-                    return result;
+                    // Check if the exception itself is a non-retriable 4xx client error
+                    if (x is ArtesianSdkValidationException ||
+                        x is ArtesianSdkOptimisticConcurrencyException ||
+                        x is ArtesianSdkForbiddenException)
+                    {
+                        return false;
+                    }
+
+                    // Check if it's an AggregateException
+                    // Don't retry only if ALL inner exceptions are non-retriable 4xx client errors
+                    if (x is AggregateException aggregateException &&
+                        aggregateException.InnerExceptions.All(inner =>
+                            inner is ArtesianSdkValidationException ||
+                            inner is ArtesianSdkOptimisticConcurrencyException ||
+                            inner is ArtesianSdkForbiddenException))
+                    {
+                        return false;
+                    }
+
+                    // Retry all other exceptions
+                    return true;
                 })
                 .WaitAndRetryAsync(
                     DecorrelatedJitterBackoff(TimeSpan.FromMilliseconds(retryWaitTime), TimeSpan.FromSeconds(10), retryCount, fastFirst: true)
@@ -70,6 +91,7 @@ namespace Artesian.SDK.Service
         /// <param name="maxExceptions">Max exceptions allowed</param>
         /// <param name="durationOfBreak">Duration of break in seconds</param>
         /// <returns></returns>
+        [MemberNotNull(nameof(_circuitBreakerPolicy))]
         public ArtesianPolicyConfig CircuitBreakerPolicyConfig(int maxExceptions = MaxExceptionsDefault, int durationOfBreak = DurationOfBreakDefault)
         {
             _circuitBreakerPolicy = Policy
@@ -87,6 +109,7 @@ namespace Artesian.SDK.Service
         /// <param name="maxParallelism">Maximum parallelization of executions through the bulkhead</param>
         /// <param name="maxQueuingActions">Maximum number of actions that may be queuing (waiting to acquire an execution slot) at any time</param>
         /// <returns></returns>
+        [MemberNotNull(nameof(_bulkheadPolicy))]
         public ArtesianPolicyConfig BulkheadPolicyConfig(int maxParallelism = MaxParallelismDefault, int maxQueuingActions = MaxQueuingActionsDefault)
         {
             _bulkheadPolicy = Policy

@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 
@@ -8,24 +8,34 @@ namespace Artesian.SDK.Dto.GMEPublicOffer
     /// GMEPublicOfferUpsertDataDto class
     /// </summary>
     [MessagePackObject]
-    public class GMEPublicOfferUpsertDataDto
+    public record GMEPublicOfferUpsertDataDto
     {
         /// <summary>
         /// GMEPublicOffer
         /// </summary>
         [Key(0)]
-        public IList<GMEPublicOfferDto> GMEPublicOffer { get; set; }
+        public required IList<GMEPublicOfferDto> GMEPublicOffer { get; init; }
         /// <summary>
         /// Flag to choose between syncronoys and asyncronous command execution
         /// </summary>
         [Key(1)]
-        public bool DeferCommandExecution { get; set; } = true;
+        public bool DeferCommandExecution { get; init; }
 
         /// <summary>
         /// Flag to choose between syncronoys and asyncronous precomputed data generation
         /// </summary>
         [Key(2)]
-        public bool DeferDataGeneration { get; set; } = true;
+        public bool DeferDataGeneration { get; init; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        [SerializationConstructor]
+        public GMEPublicOfferUpsertDataDto()
+        {
+            DeferCommandExecution = true;
+            DeferDataGeneration = true;
+        }
     }
 
     internal static class GMEPublicOfferUpsertDataDtoExt
