@@ -1,9 +1,12 @@
-﻿using Artesian.SDK.Dto;
-using Artesian.SDK.Common;
+﻿using Artesian.SDK.Common;
+using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
+
 using NodaTime;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -53,7 +56,7 @@ namespace Artesian.SDK.Factory
         /// ActualTimeSerie AddData
         /// </summary>
         /// <remarks>
-        /// Add Data on to the curve with localDate
+        /// Add Data on to the curve with LocalDate
         /// </remarks>
         /// <returns>AddTimeSerieOperationResult</returns>
         public AddTimeSerieOperationResult AddData(LocalDate localDate, double? value)
@@ -82,6 +85,39 @@ namespace Artesian.SDK.Factory
             return _add(localTime, value);
         }
 
+        /// <summary>
+        /// ActualTimeSerie AddRange
+        /// </summary>
+        /// <remarks>
+        /// Add Range Data on to the curve with LocalDate
+        /// </remarks>
+        /// <returns>AddTimeSerieOperationResult</returns>
+        public AddTimeSerieOperationResult AddRange(Dictionary<LocalDate, double?> values)
+        {
+            if (_entity.OriginalGranularity.IsTimeGranularity())
+                throw new ActualTimeSerieException("This MarketData has Time granularity. Use AddRange(Dictionary<Instant, double?> values)");
+
+            var valuesToAdd = values.ToDictionary(x => x.Key.AtMidnight(), x => x.Value);
+
+            return _addRange(valuesToAdd);
+        }
+        /// <summary>
+        /// ActualTimeSerie AddRange
+        /// </summary>
+        /// <remarks>
+        /// Add Range Data on to the curve with Instant
+        /// </remarks>
+        /// <returns>AddTimeSerieOperationResult</returns>
+        public AddTimeSerieOperationResult AddRange(Dictionary<Instant, double?> values)
+        {
+            if (!_entity.OriginalGranularity.IsTimeGranularity())
+                throw new ActualTimeSerieException("This MarketData has Date granularity. Use AddRange(Dictionary<Instant, double?> values)");
+
+            var valuesToAdd = values.ToDictionary(x => x.Key.InUtc().LocalDateTime, x => x.Value);
+
+            return _addRange(valuesToAdd);
+        }
+
         private AddTimeSerieOperationResult _add(LocalDateTime localTime, double? value)
         {
             if (_values.ContainsKey(localTime))
@@ -101,6 +137,42 @@ namespace Artesian.SDK.Factory
             }
 
             _values.Add(localTime, value);
+            return AddTimeSerieOperationResult.ValueAdded;
+        }
+
+        private AddTimeSerieOperationResult _addRange(Dictionary<LocalDateTime, double?> values)
+        {
+            var duplicateKeys = _values.Keys.Intersect(values.Keys).ToList();
+
+            if (duplicateKeys.Any())
+                return AddTimeSerieOperationResult.TimeAlreadyPresent;
+
+            if (_entity.OriginalGranularity.IsTimeGranularity())
+            {
+                var period = ArtesianUtils.MapTimePeriod(_entity.OriginalGranularity);
+                if (!values.All(x => x.Key.IsStartOfInterval(period)))
+                {
+                    var timesWrong = string.Join(",", values.Where(x => x.Key.IsStartOfInterval(period)).Select(x => x.Key));
+
+                    throw new ArtesianSdkClientException("Trying to insert Time {0} with wrong format to serie {1}. Should be of period {2}", timesWrong, _identifier, period);
+                }
+            }
+            else
+            {
+                var period = ArtesianUtils.MapDatePeriod(_entity.OriginalGranularity);
+                if (!values.All(x => x.Key.IsStartOfInterval(period)))
+                {
+                    var timesWrong = string.Join(",", values.Where(x => x.Key.IsStartOfInterval(period)).Select(x => x.Key));
+
+                    throw new ArtesianSdkClientException("Trying to insert Time {0} with wrong format to serie {1}. Should be of period {2}", timesWrong, _identifier, period);
+                }
+            }
+
+            foreach (var item in values)
+            {
+                _values.Add(item.Key, item.Value);
+            }
+
             return AddTimeSerieOperationResult.ValueAdded;
         }
 
