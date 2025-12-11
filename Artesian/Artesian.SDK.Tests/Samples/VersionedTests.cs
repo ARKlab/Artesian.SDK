@@ -159,7 +159,7 @@ namespace Artesian.SDK.Tests.Samples
             await mktData.Load();
 
             //SET CURVEID
-            curveId = mktData.MarketDataId.Value;
+            curveId = mktData.MarketDataId!.Value;
 
             var writeMarketData = mktData.EditVersioned(versionName);
 
@@ -203,7 +203,7 @@ namespace Artesian.SDK.Tests.Samples
             {
                 var testResult = vtsResults.Where(x => x.Time == v.Key.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[originalTimezone]).ToDateTimeOffset());
 
-                ClassicAssert.AreEqual(v.Value, testResult.FirstOrDefault().Value);
+                ClassicAssert.AreEqual(v.Value, testResult.First().Value);
             }
 
             await marketDataService.DeleteMarketDataAsync(curveId);
