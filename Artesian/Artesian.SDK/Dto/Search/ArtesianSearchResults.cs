@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using MessagePack;
@@ -10,22 +10,32 @@ namespace Artesian.SDK.Dto
     /// Artesian search results
     /// </summary>
     [MessagePackObject]
-    public class ArtesianSearchResults
+    public record ArtesianSearchResults
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArtesianSearchResults"/> class.
+        /// </summary>
+        [SerializationConstructor]
+        public ArtesianSearchResults()
+        {
+            Results = new();
+            Facets = new();
+        }
+
         /// <summary>
         /// Results
         /// </summary>
         [Key(0)]
-        public List<MarketDataEntity.Output> Results { get; set; }
+        public List<MarketDataEntity.Output> Results { get; init; }
         /// <summary>
         /// Facets
         /// </summary>
         [Key(1)]
-        public List<ArtesianMetadataFacet> Facets { get; set; }
+        public List<ArtesianMetadataFacet> Facets { get; init; }
         /// <summary>
         /// Results count
         /// </summary>
         [Key(2)]
-        public long? CountResults { get; set; }
+        public long? CountResults { get; init; }
     }
 }

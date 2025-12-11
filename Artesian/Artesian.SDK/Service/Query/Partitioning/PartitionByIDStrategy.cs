@@ -25,7 +25,7 @@ namespace Artesian.SDK.Service
             if (queryParamaters.Any(g => g.Ids == null)) return queryParamaters;
 
             return queryParamaters.SelectMany(queryParamater =>
-                        _partitionIds(queryParamater.Ids)
+                        _partitionIds(queryParamater.Ids!)
                             .Select(g => new ActualQueryParamaters(g,
                                 queryParamater.ExtractionRangeSelectionConfig,
                                 queryParamater.ExtractionRangeType,
@@ -50,7 +50,7 @@ namespace Artesian.SDK.Service
             if (queryParamaters.Any(g => g.Ids == null)) return queryParamaters;
 
             return queryParamaters.SelectMany(queryParamater =>
-                         _partitionIds(queryParamater.Ids)
+                         _partitionIds(queryParamater.Ids!)
                             .Select(g => new VersionedQueryParamaters(g,
                                 queryParamater.ExtractionRangeSelectionConfig,
                                 queryParamater.ExtractionRangeType,
@@ -81,7 +81,7 @@ namespace Artesian.SDK.Service
             if (queryParamaters.Any(g => g.Ids == null)) return queryParamaters;
 
             return queryParamaters.SelectMany(queryParamater =>
-                        _partitionIds(queryParamater.Ids)
+                        _partitionIds(queryParamater.Ids!)
                             .Select(g => new MasQueryParamaters(g,
                                 queryParamater.ExtractionRangeSelectionConfig,
                                 queryParamater.ExtractionRangeType,
@@ -103,8 +103,9 @@ namespace Artesian.SDK.Service
         public IEnumerable<AuctionQueryParamaters> Partition(IEnumerable<AuctionQueryParamaters> queryParamaters)
         {
             if (queryParamaters.Any(g => g.Ids == null)) return queryParamaters;
+            
             return queryParamaters.SelectMany(queryParamater =>
-                        _partitionIds(queryParamater.Ids)
+                        _partitionIds(queryParamater.Ids!)
                             .Select(g => new AuctionQueryParamaters(g,
                                 queryParamater.ExtractionRangeSelectionConfig,
                                 queryParamater.ExtractionRangeType,
@@ -125,7 +126,7 @@ namespace Artesian.SDK.Service
             if (queryParamaters.Any(g => g.Ids == null)) return queryParamaters;
 
             return queryParamaters.SelectMany(queryParamater =>
-                        _partitionIds(queryParamater.Ids)
+                        _partitionIds(queryParamater.Ids!)
                             .Select(g => new BidAskQueryParamaters(g,
                                 queryParamater.ExtractionRangeSelectionConfig,
                                 queryParamater.ExtractionRangeType,

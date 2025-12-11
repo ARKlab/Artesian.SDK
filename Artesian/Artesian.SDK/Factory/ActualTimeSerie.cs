@@ -1,9 +1,10 @@
-﻿using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
+using Artesian.SDK.Common;
 using Artesian.SDK.Service;
 
 using NodaTime;
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -28,13 +29,13 @@ namespace Artesian.SDK.Factory
         internal ActualTimeSerie(MarketData marketData)
         {
             Guard.IsNotNull(marketData);
-            Guard.IsNotNull(marketData._entity);
-            Guard.IsNotNull(marketData._marketDataService);
+            var entity = Guard.IsNotNull(marketData._entity);
+            var marketDataService = Guard.IsNotNull(marketData._marketDataService);
 
-            _entity = marketData._entity;
-            _marketDataService = marketData._marketDataService;
+            _entity = entity;
+            _marketDataService = marketDataService;
 
-            _identifier = new MarketDataIdentifier(_entity.ProviderName, _entity.MarketDataName);
+            _identifier = new MarketDataIdentifier(entity.ProviderName, entity.MarketDataName);
 
             Values = new ReadOnlyDictionary<LocalDateTime, double?>(_values);
         }
@@ -217,8 +218,9 @@ namespace Artesian.SDK.Factory
         {
             if (_values.Count != 0)
             {
-                var data = new UpsertCurveData(_identifier)
+                var data = new UpsertCurveData
                 {
+                    ID = _identifier,
                     Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
                     DownloadedAt = downloadedAt,
                     Rows = _values,
@@ -245,10 +247,11 @@ namespace Artesian.SDK.Factory
         /// <param name="deferDataGeneration">DeferDataGeneration</param>
         /// <param name="ctk">The Cancellation Token</param> 
         /// <returns></returns>
-        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
+        public async Task Delete(LocalDateTime? rangeStart = null, LocalDateTime? rangeEnd = null, string? timezone = null, bool deferCommandExecution = false, bool deferDataGeneration = true, CancellationToken ctk = default)
         {
-            var data = new DeleteCurveData(_identifier)
+            var data = new DeleteCurveData
             {
+                ID = _identifier,
                 Timezone = timezone,
                 // LocalDate.MinIsoValue has year -9998 and yearOfEra 9999. Using it without any string formatting, we got date 01-01-9999.
                 // So we use default(LocalDateTime) 01/01/0001

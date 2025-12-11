@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System.Collections.Generic;
 
 namespace Artesian.SDK.Dto
@@ -12,25 +12,35 @@ namespace Artesian.SDK.Dto
         /// The Authorization Path entity Input
         /// </summary>
         [MessagePackObject]
-        public class Input
+        public record Input
         {
             /// <summary>
             /// The Authorization Path
             /// </summary>
             [Key(0)]
-            public string Path { get; set; }
+            public required string Path { get; init; }
+            
             /// <summary>
             /// The Authorization Roles related
             /// </summary>
             [Key(1)]
-            public IEnumerable<AuthorizationPrincipalRole> Roles { get; set; }
+            public IEnumerable<AuthorizationPrincipalRole> Roles { get; init; }
+
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            [SerializationConstructor]
+            public Input()
+            {
+                Roles = new List<AuthorizationPrincipalRole>();
+            }
         }
 
         /// <summary>
         /// The Authorization Path entity Output
         /// </summary>
         [MessagePackObject]
-        public class Output : Input
+        public record Output : Input
         {
         }
     }

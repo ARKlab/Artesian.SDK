@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System.ComponentModel.DataAnnotations;
 
 namespace Artesian.SDK.Dto
@@ -7,20 +7,20 @@ namespace Artesian.SDK.Dto
     /// The OperationEnableFacet class.
     /// </summary>
     [MessagePackObject]
-    public class OperationEnableDisableTag : IOperationParamsPayload
+    public record OperationEnableDisableTag : IOperationParamsPayload
     {
         /// <summary>
         /// The Facet Name.
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public string TagKey { get; set; }
+        public required string TagKey { get; init; }
 
         /// <summary>
         /// The Facet Value.
         /// </summary>
         [Required]
         [MessagePack.Key(1)]
-        public string TagValue { get; set; }
+        public required string TagValue { get; init; }
     }
 }

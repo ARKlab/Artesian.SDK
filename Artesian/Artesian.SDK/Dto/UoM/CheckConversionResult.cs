@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Artesian.SDK.Dto.UoM
 {
@@ -10,13 +10,6 @@ namespace Artesian.SDK.Dto.UoM
     /// </summary>
     public record CheckConversionResult
     {
-        /// <summary>
-        /// CheckConversionResult Constructor
-        /// </summary>
-        public CheckConversionResult()
-        {
-        }
-
         /// <summary>
         /// CheckConversionResult Constructor
         /// </summary>
@@ -49,7 +42,7 @@ namespace Artesian.SDK.Dto.UoM
         /// <summary>
         /// TargetUnitOfMeasure
         /// </summary>
-        public string TargetUnitOfMeasure { get; set; }
+        public required string TargetUnitOfMeasure { get; set; }
         /// <summary>
         /// ConvertibleInputUnitsOfMeasure
         /// </summary>

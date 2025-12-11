@@ -7,13 +7,13 @@ namespace Artesian.SDK.Dto
     /// The Operation for Update Time Transform
     /// </summary>
     [MessagePackObject]
-    public class OperationUpdateTimeTransform : IOperationParamsPayload
+    public record OperationUpdateTimeTransform : IOperationParamsPayload
     {
         /// <summary>
         /// The Time Transform Update value
         /// </summary>
         [Required]
         [MessagePack.Key(0)]
-        public int? Value { get; set; }
+        public int? Value { get; init; }
     }
 }

@@ -30,7 +30,7 @@ namespace Artesian.SDK.Service
             IEnumerable<int> ids, 
             ExtractionRangeSelectionConfig extractionRangeSelectionConfig, 
             ExtractionRangeType? extractionRangeType,
-            string timezone,
+            string? timezone,
             int? filterId
             )
             : base(ids,extractionRangeSelectionConfig, extractionRangeType, timezone, filterId)

@@ -1,4 +1,4 @@
-﻿// Copyright (c) ARK LTD. All rights reserved.
+// Copyright (c) ARK LTD. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using NodaTime;
@@ -21,15 +21,15 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Period for extraction
         /// </summary>
-        public Period Period { get; set; }
+        public Period? Period { get; set; }
         /// <summary>
         /// Period start range for extraction
         /// </summary>
-        public Period PeriodFrom { get; set; }
+        public Period? PeriodFrom { get; set; }
         /// <summary>
         /// Period end range for extraction
         /// </summary>
-        public Period PeriodTo { get; set; }
+        public Period? PeriodTo { get; set; }
         /// <summary>
         /// Relative Interval for extraction
         /// </summary>

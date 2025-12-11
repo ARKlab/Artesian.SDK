@@ -501,7 +501,7 @@ namespace Artesian.SDK.Tests
                 bid.Add(new AuctionBidValue(100, 10));
                 offer.Add(new AuctionBidValue(120, 12));
 
-                data.AuctionRows.Add(localDateTime, new AuctionBids(localDateTime, bid.ToArray(), offer.ToArray()));
+                data.AuctionRows.Add(localDateTime, new AuctionBids { BidTimestamp = localDateTime, Bid = bid.ToArray(), Offer = offer.ToArray() });
 
                 await mds.UpsertCurveDataAsync(data);
 
@@ -532,7 +532,7 @@ namespace Artesian.SDK.Tests
                 bid.Add(new AuctionBidValue(100, 10, 101, 10.1));
                 offer.Add(new AuctionBidValue(120, 12, 121, 12.1));
 
-                data.AuctionRows.Add(localDateTime, new AuctionBids(localDateTime, bid.ToArray(), offer.ToArray()));
+                data.AuctionRows.Add(localDateTime, new AuctionBids { BidTimestamp = localDateTime, Bid = bid.ToArray(), Offer = offer.ToArray() });
 
                 await mds.UpsertCurveDataAsync(data);
 
@@ -591,7 +591,7 @@ namespace Artesian.SDK.Tests
                 data.BidAsk[localDateTime].Add("test", new BidAskValue());
 
                 var ex = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
-                Assert.That(ex.Message, Does.StartWith("UpsertCurveData BidAsk must be NULL if Rows are Valorized"));
+                Assert.That(ex!.Message, Does.StartWith("UpsertCurveData BidAsk must be NULL if Rows are Valorized"));
             }
         }
 
@@ -618,13 +618,13 @@ namespace Artesian.SDK.Tests
                 bid.Add(new AuctionBidValue(100, 10));
                 offer.Add(new AuctionBidValue(120, 12));
 
-                data.AuctionRows.Add(localDateTime, new AuctionBids(localDateTime, bid.ToArray(), offer.ToArray()));
+                data.AuctionRows.Add(localDateTime, new AuctionBids { BidTimestamp = localDateTime, Bid = bid.ToArray(), Offer = offer.ToArray() });
 
                 data.MarketAssessment.Add(localDateTime, new Dictionary<string, MarketAssessmentValue>(StringComparer.Ordinal));
                 data.MarketAssessment[localDateTime].Add("test", new MarketAssessmentValue());
 
                 var ex = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
-                Assert.That(ex.Message, Does.StartWith("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized"));
+                Assert.That(ex!.Message, Does.StartWith("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized"));
             }
         }
         #endregion
@@ -665,6 +665,8 @@ namespace Artesian.SDK.Tests
                 {
                     ID = new MarketDataIdentifier("test", "testName"),
                     Timezone = "CET",
+                    RangeStart = new LocalDateTime(2018, 01, 01, 00, 00),
+                    RangeEnd = new LocalDateTime(2018, 12, 31, 23, 59),
                     Product = new List<string> { "Jan-15" }
                 };
 
@@ -710,6 +712,8 @@ namespace Artesian.SDK.Tests
                 {
                     ID = new MarketDataIdentifier("test", "testName"),
                     Timezone = "CET",
+                    RangeStart = new LocalDateTime(2018, 01, 01, 00, 00),
+                    RangeEnd = new LocalDateTime(2018, 12, 31, 23, 59)
                 };
 
                 await mds.DeleteCurveDataAsync(data);
@@ -757,6 +761,8 @@ namespace Artesian.SDK.Tests
                 {
                     ID = new MarketDataIdentifier("test", "testName"),
                     Timezone = "CET",
+                    RangeStart = new LocalDateTime(2018, 01, 01, 00, 00),
+                    RangeEnd = new LocalDateTime(2018, 12, 31, 23, 59),
                     Version = new LocalDateTime(2018, 09, 25, 12, 0, 0, 123).PlusNanoseconds(100)
                 };
 
@@ -914,8 +920,7 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var filter = new CustomFilter()
-                {
+                var filter = new CustomFilter() {
                     Id = 1,
                     SearchText = "Text",
                     Name = "TestName"
@@ -938,8 +943,7 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var filter = new CustomFilter()
-                {
+                var filter = new CustomFilter() {
                     Id = 1,
                     SearchText = "Text",
                     Name = "TestName"
@@ -962,7 +966,6 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var filter = new CustomFilter();
 
                 var mdq = await mds.RemoveFilter(1);
 
@@ -980,8 +983,6 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var filter = new CustomFilter();
-
                 var mdq = await mds.ReadFilter(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/filter/")
@@ -998,7 +999,6 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var filter = new CustomFilter();
 
                 var mdq = await mds.ReadFilters(1, 1);
 
