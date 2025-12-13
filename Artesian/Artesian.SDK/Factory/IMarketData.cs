@@ -439,6 +439,26 @@ namespace Artesian.SDK.Factory
         AddTimeSerieOperationResult AddData(Instant time, double? value);
 
         /// <summary>
+        /// TimeSerie AddRange
+        /// </summary>
+        /// <remarks>
+        /// Add Range Data on to the curve with LocalDate
+        /// </remarks>
+        /// <param name="values">The dictionary of the values</param>
+        /// <returns>AddTimeSerieOperationResult</returns>
+        AddTimeSerieOperationResult AddRange(Dictionary<LocalDate, double?> values);
+
+        /// <summary>
+        /// TimeSerie AddRange
+        /// </summary>
+        /// <remarks>
+        /// Add Range Data on to the curve with Instant
+        /// </remarks>
+        /// <param name="values">The dictionary of the values</param>
+        /// <returns>AddTimeSerieOperationResult</returns>
+        AddTimeSerieOperationResult AddRange(Dictionary<Instant, double?> values);
+
+        /// <summary>
         /// TimeSerie ClearData
         /// </summary>
         /// <remarks>
