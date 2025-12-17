@@ -1,18 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-using Artesian.SDK.Common;
+﻿using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.UoM;
+using Artesian.SDK.Factory;
 using Artesian.SDK.Service;
 
+using FluentAssertions;
+
 using Flurl.Http.Testing;
+
+using Moq;
 
 using NodaTime;
 
 using NUnit.Framework;
+
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Artesian.SDK.Tests
 {
@@ -100,6 +106,120 @@ namespace Artesian.SDK.Tests
                     .WithHeadersTest()
                     .Times(1);
             }
+        }
+
+        [Test]
+        public async Task MarketDataServiceAddRangeInstant()
+        {
+            var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
+
+            var marketDataEntity = new MarketDataEntity.Input()
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalGranularity = Granularity.Hour,
+                OriginalTimezone = "CET",
+                AggregationRule = AggregationRule.Undefined,
+                Type = MarketDataType.ActualTimeSerie,
+                UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
+            };
+
+            var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
+            var marketDataServiceMock = new Mock<IMarketDataService>();
+
+            marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
+
+            await marketData.Load();
+
+            // Instant values
+            var valuesInstant = new Dictionary<Instant, double?>()
+            {
+                { Instant.FromUtc(2025, 12, 14, 0, 0), 10 },
+                { Instant.FromUtc(2025, 12, 15, 0, 0), 11 },
+                { Instant.FromUtc(2025, 12, 16, 0, 0), 12 }
+            };
+
+            var valuesExpected = new Dictionary<LocalDateTime, double?>()
+            {
+                { new LocalDateTime(2025, 12, 14, 0, 0).InUtc().LocalDateTime, 10 },
+                { new LocalDateTime(2025, 12, 15, 0, 0).InUtc().LocalDateTime, 11 },
+                { new LocalDateTime(2025, 12, 16, 0, 0).InUtc().LocalDateTime, 12 }
+            };
+
+            var timeSerie = marketData.EditActual();
+            var result = timeSerie.AddRange(valuesInstant);
+
+            result.Should().Be(AddTimeSerieOperationResult.ValueAdded);
+            ((ActualTimeSerie)timeSerie).Values.Should().BeEquivalentTo(valuesExpected);
+        }
+
+        [Test]
+        public async Task MarketDataServiceAddRangeLocalDate()
+        {
+            var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
+
+            var marketDataEntity = new MarketDataEntity.Input()
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalGranularity = Granularity.Day,
+                OriginalTimezone = "CET",
+                AggregationRule = AggregationRule.Undefined,
+                Type = MarketDataType.ActualTimeSerie,
+                UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
+            };
+
+            var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
+            var marketDataServiceMock = new Mock<IMarketDataService>();
+
+            marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
+
+            await marketData.Load();
+
+            // LocalData values
+            var valuesLocalDate = new Dictionary<LocalDate, double?>()
+            {
+                { new LocalDate(2025, 12, 14), 10 },
+                { new LocalDate(2025, 12, 15), 11 },
+                { new LocalDate(2025, 12, 16), 12 }
+            };
+
+            var valuesExpected = new Dictionary<LocalDateTime, double?>()
+            {
+                { new LocalDateTime(2025, 12, 14, 0, 0), 10 },
+                { new LocalDateTime(2025, 12, 15, 0, 0), 11 },
+                { new LocalDateTime(2025, 12, 16, 0, 0), 12 }
+            };
+
+            var timeSerie = marketData.EditActual();
+            var result = timeSerie.AddRange(valuesLocalDate);
+
+            result.Should().Be(AddTimeSerieOperationResult.ValueAdded);
+            ((ActualTimeSerie)timeSerie).Values.Should().BeEquivalentTo(valuesExpected);
         }
 
         private const string _realProblemDetailsJson = @"{""Errors"":[{""Key"":""MarketDataEntity.Tags[0].Value[0]"",""Value"":[{""ErrorMessage"":""'Value' must be between 1 and 50 characters. You entered 155 characters."",""AttemptedValue"":""PowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPower"",""CustomState"":null,""ErrorCode"":""LengthValidator"",""FormattedMessagePlaceholderValues"":[{""Key"":""CollectionIndex"",""Value"":0},{""Key"":""MinLength"",""Value"":1},{""Key"":""MaxLength"",""Value"":50},{""Key"":""TotalLength"",""Value"":155},{""Key"":""PropertyName"",""Value"":""Value""},{""Key"":""PropertyValue"",""Value"":""PowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPower""}]}]}],""type"":""https://httpstatuses.com/400"",""title"":""Bad Request"",""status"":400,""detail"":""'Value' must be between 1 and 50 characters. You entered 155 characters."",""instance"":null}";
