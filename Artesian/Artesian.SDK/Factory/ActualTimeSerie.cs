@@ -90,9 +90,12 @@ namespace Artesian.SDK.Factory
         /// </summary>
         /// <remarks>
         /// Add Range Data on to the curve with LocalDate
+        /// Each value is added individually. If a timestamp already exists in the series,
+        /// that specific value will be ignored and marked accordingly in the returned dictionary.
         /// </remarks>
-        /// <returns>AddTimeSerieOperationResult</returns>
-        public AddTimeSerieOperationResult AddRange(Dictionary<LocalDate, double?> values)
+        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
+        /// representing the result of attempting to add that value.</returns>
+        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<LocalDate, double?> values)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
                 throw new ActualTimeSerieException("This MarketData has Time granularity. Use AddRange(Dictionary<Instant, double?> values)");
@@ -105,10 +108,13 @@ namespace Artesian.SDK.Factory
         /// ActualTimeSerie AddRange
         /// </summary>
         /// <remarks>
-        /// Add Range Data on to the curve with Instant
+        /// Add Range Data on to the curve with Instant.
+        /// Each value is added individually. If a timestamp already exists in the series,
+        /// that specific value will be ignored and marked accordingly in the returned dictionary.
         /// </remarks>
-        /// <returns>AddTimeSerieOperationResult</returns>
-        public AddTimeSerieOperationResult AddRange(Dictionary<Instant, double?> values)
+        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
+        /// representing the result of attempting to add that value.</returns>
+        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<Instant, double?> values)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
                 throw new ActualTimeSerieException("This MarketData has Date granularity. Use AddRange(Dictionary<Instant, double?> values)");
@@ -140,40 +146,16 @@ namespace Artesian.SDK.Factory
             return AddTimeSerieOperationResult.ValueAdded;
         }
 
-        private AddTimeSerieOperationResult _addRange(Dictionary<LocalDateTime, double?> values)
+        private Dictionary<LocalDateTime, AddTimeSerieOperationResult> _addRange(Dictionary<LocalDateTime, double?> values)
         {
-            var duplicateKeys = _values.Keys.Intersect(values.Keys).ToList();
+            var results = new Dictionary<LocalDateTime, AddTimeSerieOperationResult>();
 
-            if (duplicateKeys.Any())
-                return AddTimeSerieOperationResult.TimeAlreadyPresent;
-
-            if (_entity.OriginalGranularity.IsTimeGranularity())
+            foreach (var kvp in values)
             {
-                var period = ArtesianUtils.MapTimePeriod(_entity.OriginalGranularity);
-                if (!values.All(x => x.Key.IsStartOfInterval(period)))
-                {
-                    var timesWrong = string.Join(",", values.Where(x => x.Key.IsStartOfInterval(period)).Select(x => x.Key));
-
-                    throw new ArtesianSdkClientException("Trying to insert Time {0} with wrong format to serie {1}. Should be of period {2}", timesWrong, _identifier, period);
-                }
-            }
-            else
-            {
-                var period = ArtesianUtils.MapDatePeriod(_entity.OriginalGranularity);
-                if (!values.All(x => x.Key.IsStartOfInterval(period)))
-                {
-                    var timesWrong = string.Join(",", values.Where(x => x.Key.IsStartOfInterval(period)).Select(x => x.Key));
-
-                    throw new ArtesianSdkClientException("Trying to insert Time {0} with wrong format to serie {1}. Should be of period {2}", timesWrong, _identifier, period);
-                }
+                results[kvp.Key] = _add(kvp.Key, kvp.Value);
             }
 
-            foreach (var item in values)
-            {
-                _values.Add(item.Key, item.Value);
-            }
-
-            return AddTimeSerieOperationResult.ValueAdded;
+            return results;
         }
 
         /// <summary>

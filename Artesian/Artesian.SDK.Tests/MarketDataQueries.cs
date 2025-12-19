@@ -161,7 +161,10 @@ namespace Artesian.SDK.Tests
             var timeSerie = marketData.EditActual();
             var result = timeSerie.AddRange(valuesInstant);
 
-            result.Should().Be(AddTimeSerieOperationResult.ValueAdded);
+            foreach (var item in result)
+            {
+                item.Value.Should().Be(AddTimeSerieOperationResult.ValueAdded);                
+            }
             ((ActualTimeSerie)timeSerie).Values.Should().BeEquivalentTo(valuesExpected);
         }
 
@@ -218,7 +221,10 @@ namespace Artesian.SDK.Tests
             var timeSerie = marketData.EditActual();
             var result = timeSerie.AddRange(valuesLocalDate);
 
-            result.Should().Be(AddTimeSerieOperationResult.ValueAdded);
+            foreach (var item in result)
+            {
+                item.Value.Should().Be(AddTimeSerieOperationResult.ValueAdded);
+            }
             ((ActualTimeSerie)timeSerie).Values.Should().BeEquivalentTo(valuesExpected);
         }
 

@@ -443,20 +443,24 @@ namespace Artesian.SDK.Factory
         /// </summary>
         /// <remarks>
         /// Add Range Data on to the curve with LocalDate
+        /// Each value is added individually. If a timestamp already exists in the series,
+        /// that specific value will be ignored and marked accordingly in the returned dictionary.
         /// </remarks>
-        /// <param name="values">The dictionary of the values</param>
-        /// <returns>AddTimeSerieOperationResult</returns>
-        AddTimeSerieOperationResult AddRange(Dictionary<LocalDate, double?> values);
+        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
+        /// representing the result of attempting to add that value.</returns>
+        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<LocalDate, double?> values);
 
         /// <summary>
         /// TimeSerie AddRange
         /// </summary>
         /// <remarks>
-        /// Add Range Data on to the curve with Instant
+        /// Add Range Data on to the curve with Instant.
+        /// Each value is added individually. If a timestamp already exists in the series,
+        /// that specific value will be ignored and marked accordingly in the returned dictionary.
         /// </remarks>
-        /// <param name="values">The dictionary of the values</param>
-        /// <returns>AddTimeSerieOperationResult</returns>
-        AddTimeSerieOperationResult AddRange(Dictionary<Instant, double?> values);
+        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
+        /// representing the result of attempting to add that value.</returns>
+        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<Instant, double?> values);
 
         /// <summary>
         /// TimeSerie ClearData
