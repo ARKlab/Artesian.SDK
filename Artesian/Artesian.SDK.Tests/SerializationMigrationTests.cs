@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Artesian.SDK.Common;
@@ -38,15 +39,88 @@ namespace Artesian.SDK.Tests
         }
 
         /// <summary>
-        /// Helper to compare two JSON strings using JsonNode.DeepEquals
+        /// Helper to compare two JSON strings semantically, handling numeric representation differences
+        /// System.Text.Json 10.0+ serializes whole-number doubles without decimal points (99 vs 99.0)
+        /// This is semantically equivalent but JsonNode.DeepEquals in .NET 8.0 doesn't handle it correctly
         /// </summary>
         private void AssertJsonEquals(string expected, string actual, string message = "JSON should be equivalent")
         {
-            var expectedNode = JsonNode.Parse(expected, new JsonNodeOptions { PropertyNameCaseInsensitive = false });
-            var actualNode = JsonNode.Parse(actual, new JsonNodeOptions { PropertyNameCaseInsensitive = false });
+            using var expectedDoc = JsonDocument.Parse(expected);
+            using var actualDoc = JsonDocument.Parse(actual);
             
-            Assert.That(JsonNode.DeepEquals(expectedNode, actualNode), Is.True, 
-                $"{message}\nExpected: {expected}\nActual: {actual}");
+            if (!JsonElementEquals(expectedDoc.RootElement, actualDoc.RootElement))
+            {
+                Assert.Fail($"{message}\nExpected: {expected}\nActual: {actual}");
+            }
+        }
+
+        /// <summary>
+        /// Recursively compares two JsonElement instances for semantic equality,
+        /// treating numeric values as equal regardless of representation (99 == 99.0)
+        /// </summary>
+        private static bool JsonElementEquals(JsonElement expected, JsonElement actual)
+        {
+            if (expected.ValueKind != actual.ValueKind)
+            {
+                // Special case: allow Number comparison between integer and decimal representations
+                if (expected.ValueKind == JsonValueKind.Number && actual.ValueKind == JsonValueKind.Number)
+                {
+                    // Both are numbers, compare their numeric values
+                    if (expected.TryGetDouble(out var expectedDouble) && actual.TryGetDouble(out var actualDouble))
+                    {
+                        return Math.Abs(expectedDouble - actualDouble) < 1e-10;
+                    }
+                }
+                return false;
+            }
+
+            return expected.ValueKind switch
+            {
+                JsonValueKind.Number => Math.Abs(expected.GetDouble() - actual.GetDouble()) < 1e-10,
+                JsonValueKind.String => expected.GetString() == actual.GetString(),
+                JsonValueKind.True or JsonValueKind.False => expected.GetBoolean() == actual.GetBoolean(),
+                JsonValueKind.Null => true,
+                JsonValueKind.Array => ArrayEquals(expected, actual),
+                JsonValueKind.Object => ObjectEquals(expected, actual),
+                _ => false
+            };
+        }
+
+        private static bool ArrayEquals(JsonElement expected, JsonElement actual)
+        {
+            var expectedLength = expected.GetArrayLength();
+            var actualLength = actual.GetArrayLength();
+            
+            if (expectedLength != actualLength)
+                return false;
+
+            for (int i = 0; i < expectedLength; i++)
+            {
+                if (!JsonElementEquals(expected[i], actual[i]))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private static bool ObjectEquals(JsonElement expected, JsonElement actual)
+        {
+            var expectedProps = expected.EnumerateObject().ToList();
+            var actualProps = actual.EnumerateObject().ToList();
+
+            if (expectedProps.Count != actualProps.Count)
+                return false;
+
+            foreach (var expectedProp in expectedProps)
+            {
+                if (!actual.TryGetProperty(expectedProp.Name, out var actualValue))
+                    return false;
+
+                if (!JsonElementEquals(expectedProp.Value, actualValue))
+                    return false;
+            }
+
+            return true;
         }
 
         #region MarketData Entity Tags Dictionary Tests
