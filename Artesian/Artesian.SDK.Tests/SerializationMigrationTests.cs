@@ -70,13 +70,15 @@ namespace Artesian.SDK.Tests
                     {
                         return Math.Abs(expectedDouble - actualDouble) < 1e-10;
                     }
+                    // If either TryGetDouble fails, they're not equal
+                    return false;
                 }
                 return false;
             }
 
             return expected.ValueKind switch
             {
-                JsonValueKind.Number => Math.Abs(expected.GetDouble() - actual.GetDouble()) < 1e-10,
+                JsonValueKind.Number => NumberEquals(expected, actual),
                 JsonValueKind.String => expected.GetString() == actual.GetString(),
                 JsonValueKind.True or JsonValueKind.False => expected.GetBoolean() == actual.GetBoolean(),
                 JsonValueKind.Null => true,
@@ -84,6 +86,16 @@ namespace Artesian.SDK.Tests
                 JsonValueKind.Object => ObjectEquals(expected, actual),
                 _ => false
             };
+        }
+
+        private static bool NumberEquals(JsonElement expected, JsonElement actual)
+        {
+            // Use TryGetDouble for safe conversion
+            if (expected.TryGetDouble(out var expectedDouble) && actual.TryGetDouble(out var actualDouble))
+            {
+                return Math.Abs(expectedDouble - actualDouble) < 1e-10;
+            }
+            return false;
         }
 
         private static bool ArrayEquals(JsonElement expected, JsonElement actual)
@@ -105,14 +117,11 @@ namespace Artesian.SDK.Tests
 
         private static bool ObjectEquals(JsonElement expected, JsonElement actual)
         {
-            var expectedProps = expected.EnumerateObject().ToList();
-            var actualProps = actual.EnumerateObject().ToList();
-
-            if (expectedProps.Count != actualProps.Count)
-                return false;
-
-            foreach (var expectedProp in expectedProps)
+            // Enumerate directly without converting to List for better memory efficiency
+            var expectedPropCount = 0;
+            foreach (var expectedProp in expected.EnumerateObject())
             {
+                expectedPropCount++;
                 if (!actual.TryGetProperty(expectedProp.Name, out var actualValue))
                     return false;
 
@@ -120,7 +129,9 @@ namespace Artesian.SDK.Tests
                     return false;
             }
 
-            return true;
+            // Verify actual doesn't have extra properties
+            var actualPropCount = actual.EnumerateObject().Count();
+            return expectedPropCount == actualPropCount;
         }
 
         #region MarketData Entity Tags Dictionary Tests
