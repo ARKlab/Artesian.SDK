@@ -4,7 +4,6 @@ using Artesian.SDK.Service;
 
 using NodaTime;
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -111,6 +110,44 @@ namespace Artesian.SDK.Factory
             return _add(localTime, value);
         }
 
+        /// <summary>
+        /// VersionedTimeSerie AddRange
+        /// </summary>
+        /// <remarks>
+        /// Add Range Data on to the curve with LocalDate
+        /// Each value is added individually. If a timestamp already exists in the series,
+        /// that specific value will be ignored and marked accordingly in the returned dictionary.
+        /// </remarks>
+        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
+        /// representing the result of attempting to add that value.</returns>
+        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<LocalDate, double?> values)
+        {
+            if (_entity.OriginalGranularity.IsTimeGranularity())
+                throw new ActualTimeSerieException("This MarketData has Time granularity. Use AddRange(Dictionary<Instant, double?> values)");
+
+            var valuesToAdd = values.ToDictionary(x => x.Key.AtMidnight(), x => x.Value);
+
+            return _addRange(valuesToAdd);
+        }
+        /// <summary>
+        /// VersionedTimeSerie AddRange
+        /// </summary>
+        /// <remarks>
+        /// Add Range Data on to the curve with Instant.
+        /// Each value is added individually. If a timestamp already exists in the series,
+        /// that specific value will be ignored and marked accordingly in the returned dictionary.
+        /// </remarks>
+        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
+        /// representing the result of attempting to add that value.</returns>
+        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<Instant, double?> values)
+        {
+            if (!_entity.OriginalGranularity.IsTimeGranularity())
+                throw new ActualTimeSerieException("This MarketData has Date granularity. Use AddRange(Dictionary<Instant, double?> values)");
+
+            var valuesToAdd = values.ToDictionary(x => x.Key.InUtc().LocalDateTime, x => x.Value);
+
+            return _addRange(valuesToAdd);
+        }
         private AddTimeSerieOperationResult _add(LocalDateTime localTime, double? value)
         {
             if (_values.ContainsKey(localTime))
@@ -131,6 +168,18 @@ namespace Artesian.SDK.Factory
 
             _values.Add(localTime, value);
             return AddTimeSerieOperationResult.ValueAdded;
+        }
+
+        private Dictionary<LocalDateTime, AddTimeSerieOperationResult> _addRange(Dictionary<LocalDateTime, double?> values)
+        {
+            var results = new Dictionary<LocalDateTime, AddTimeSerieOperationResult>();
+
+            foreach (var kvp in values)
+            {
+                results[kvp.Key] = _add(kvp.Key, kvp.Value);
+            }
+
+            return results;
         }
 
         /// <summary>
