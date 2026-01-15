@@ -27,7 +27,7 @@
 	<PackageReference Include="NUnit" Version="4.4.0" />
 	<PackageReference Include="NUnit3TestAdapter" Version="6.1.0" />
 	<!-- Explicitly reference Microsoft.Extensions.DependencyModel to resolve version conflicts -->
-	<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.1" />
+	<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.2" />
   </ItemGroup>
   
   <!-- Pin MTP v2 packages for net462 to override transitive dependencies -->
