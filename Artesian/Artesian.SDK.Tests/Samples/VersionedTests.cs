@@ -1,4 +1,5 @@
-﻿using Artesian.SDK.Dto;
+﻿using Artesian.SDK.Common;
+using Artesian.SDK.Dto;
 using Artesian.SDK.Factory;
 using Artesian.SDK.Service;
 
@@ -169,7 +170,7 @@ namespace Artesian.SDK.Tests.Samples
                 values.Add(dt, value1);
             }
 
-            writeMarketData.AddRange(values);
+            writeMarketData.SetData(values, ConflictBehaviour.Overwrite);
 
             await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime())); // default upsertmode = Merge
 
@@ -188,7 +189,7 @@ namespace Artesian.SDK.Tests.Samples
                 valuesNew.Add(dt, value2);
             }
             
-            writeMarketData2.AddRange(valuesNew);
+            writeMarketData2.SetData(valuesNew, ConflictBehaviour.Overwrite);
 
             await writeMarketData2.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime())); // default upsertmode = Merge
 

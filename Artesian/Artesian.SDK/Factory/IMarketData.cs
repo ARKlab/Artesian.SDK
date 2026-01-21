@@ -1,3 +1,4 @@
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 
 using NodaTime;
@@ -199,6 +200,22 @@ namespace Artesian.SDK.Factory
         AddAssessmentOperationResult AddData(Instant time, string product, MarketAssessmentValue value);
 
         /// <summary>
+        /// MarketAssessment SetData
+        /// Sets the data of the MarketAssessment for a specific range.
+        /// Values are listed on AssessmentElement and the behavior on conflicts is controlled by ConflictBehaviour.
+        /// </summary>
+        /// <remarks>
+        /// ConflictBehaviour options:
+        /// Skip -> Each value is added individually. If a timestamp already exists in the series,
+        ///         that value is ignored.
+        /// Throw -> If the internal values are empty, they are replaced with the values passed to the method.
+        ///          If the internal values are not empty, an exception will be thrown.
+        /// Overwrite -> The internal values are cleared and replaced with the values passed to the method.
+        /// </remarks>
+        /// <returns></returns>
+        void SetData(List<AssessmentElement> values, ConflictBehaviour conflictBehaviour);
+
+        /// <summary>
         /// MarketAssessment ClearData
         /// </summary>
         void ClearData();
@@ -277,6 +294,22 @@ namespace Artesian.SDK.Factory
         /// <param name="value">Bid Ask Value</param>
         /// <returns></returns>
         AddBidAskOperationResult AddData(Instant time, string product, BidAskValue value);
+
+        /// <summary>
+        /// BidAsk SetData
+        /// Sets the data of the BidAsk for a specific range.
+        /// Values are listed on BidAskElements and the behavior on conflicts is controlled by ConflictBehaviour.
+        /// </summary>
+        /// <remarks>
+        /// ConflictBehaviour options:
+        /// Skip -> Each value is added individually. If a timestamp already exists in the series,
+        ///         that value is ignored.
+        /// Throw -> If the internal values are empty, they are replaced with the values passed to the method.
+        ///          If the internal values are not empty, an exception will be thrown.
+        /// Overwrite -> The internal values are cleared and replaced with the values passed to the method.
+        /// </remarks>
+        /// <returns></returns>
+        void SetData(List<BidAskElement> values, ConflictBehaviour conflictBehaviour);
 
         /// <summary>
         /// BidAsk ClearData
@@ -439,28 +472,36 @@ namespace Artesian.SDK.Factory
         AddTimeSerieOperationResult AddData(Instant time, double? value);
 
         /// <summary>
-        /// TimeSerie AddRange
+        /// TimeSerie SetData
+        /// Sets the data of the TimeSerie for a specific date range.
+        /// Values are keyed by LocalDate and the behavior on conflicts is controlled by ConflictBehaviour.
         /// </summary>
         /// <remarks>
-        /// Add Range Data on to the curve with LocalDate
-        /// Each value is added individually. If a timestamp already exists in the series,
-        /// that specific value will be ignored and marked accordingly in the returned dictionary.
+        /// ConflictBehaviour options:
+        /// Skip -> Each value is added individually. If a timestamp already exists in the series,
+        ///         that value is ignored.
+        /// Throw -> If the internal values are empty, they are replaced with the values passed to the method.
+        ///          If the internal values are not empty, an exception will be thrown.
+        /// Overwrite -> The internal values are cleared and replaced with the values passed to the method.
         /// </remarks>
-        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
-        /// representing the result of attempting to add that value.</returns>
-        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<LocalDate, double?> values);
+        /// <returns></returns>
+        void SetData(Dictionary<LocalDate, double?> values, ConflictBehaviour conflictBehaviour);
 
         /// <summary>
-        /// TimeSerie AddRange
+        /// TimeSerie SetData
+        /// Sets the data of the TimeSerie for a specific date range.
+        /// Values are keyed by Instant and the behavior on conflicts is controlled by ConflictBehaviour.
         /// </summary>
         /// <remarks>
-        /// Add Range Data on to the curve with Instant.
-        /// Each value is added individually. If a timestamp already exists in the series,
-        /// that specific value will be ignored and marked accordingly in the returned dictionary.
+        /// ConflictBehaviour options:
+        /// Skip -> Each value is added individually. If a timestamp already exists in the series,
+        ///         that value is ignored.
+        /// Throw -> If the internal values are empty, they are replaced with the values passed to the method.
+        ///          If the internal values are not empty, an exception will be thrown.
+        /// Overwrite -> The internal values are cleared and replaced with the values passed to the method.
         /// </remarks>
-        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
-        /// representing the result of attempting to add that value.</returns>
-        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<Instant, double?> values);
+        /// <returns></returns>
+        void SetData(Dictionary<Instant, double?> values, ConflictBehaviour conflictBehaviour);
 
         /// <summary>
         /// TimeSerie ClearData

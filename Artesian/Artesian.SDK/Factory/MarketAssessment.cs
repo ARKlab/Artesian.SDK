@@ -82,6 +82,27 @@ namespace Artesian.SDK.Factory
             return _addAssessment(time.InUtc().LocalDateTime, product, value);
         }
 
+        /// <summary>
+        /// MarketAssessment AddRange
+        /// Sets the data of the MarketAssessment for a specific range.
+        /// Values are listed on AssessmentElement and the behavior on conflicts is controlled by ConflictBehaviour.
+        /// </summary>
+        /// <remarks>
+        /// ConflictBehaviour options:
+        /// Skip -> Each value is added individually. If a timestamp already exists in the series,
+        ///         that value is ignored.
+        /// Throw -> If the internal values are empty, they are replaced with the values passed to the method.
+        ///          If the internal values are not empty, an exception will be thrown.
+        /// Overwrite -> The internal values are cleared and replaced with the values passed to the method.
+        /// </remarks>
+        /// <returns></returns>
+        public void SetData(List<AssessmentElement> values, ConflictBehaviour conflictBehaviour)
+        {
+            var valuesToAdd = values.Select(x => new AssessmentElement(x.ReportTime.InUtc().LocalDateTime, x.Product, x.Value));
+
+            _setData(valuesToAdd, conflictBehaviour);
+        }
+
         private AddAssessmentOperationResult _addAssessment(LocalDateTime reportTime, string product, MarketAssessmentValue value)
         {
             //Relative products
@@ -109,6 +130,33 @@ namespace Artesian.SDK.Factory
 
             _values.Add(new AssessmentElement(reportTime, product, value));
             return AddAssessmentOperationResult.AssessmentAdded;
+        }
+
+        private void _setData(IEnumerable<AssessmentElement> values, ConflictBehaviour conflictBehaviour)
+        {
+            switch (conflictBehaviour)
+            {
+                case ConflictBehaviour.Overwrite:
+                    _values.Clear();
+                    foreach (var val in values)
+                        _values.Add(val);
+                    break;
+                case ConflictBehaviour.Throw:
+                    if (_values.Any())
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    else
+                        foreach (var val in values)
+                            _values.Add(val);
+                    break;
+                case ConflictBehaviour.Skip:
+                    foreach (var val in values)
+                    {
+                        _addAssessment(val.ReportTime, val.Product, val.Value);
+                    }
+                    break;
+                default:
+                    throw new NotSupportedException("ConflictBehaviour not supported " + conflictBehaviour);
+            }
         }
 
         /// <summary>
@@ -204,34 +252,34 @@ namespace Artesian.SDK.Factory
 
             await _marketDataService.DeleteCurveDataAsync(data, ctk).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// AssessmentElement entity
+    /// </summary>
+    public sealed record AssessmentElement
+    {
+        /// <summary>
+        /// AssessmentElement constructor
+        /// </summary>
+        public AssessmentElement(LocalDateTime reportTime, string product, MarketAssessmentValue value)
+        {
+            ReportTime = reportTime;
+            Product = product;
+            Value = value;
+        }
 
         /// <summary>
-        /// AssessmentElement entity
+        /// AssessmentElement ReportTime
         /// </summary>
-        public sealed record AssessmentElement
-        {
-            /// <summary>
-            /// AssessmentElement constructor
-            /// </summary>
-            public AssessmentElement(LocalDateTime reportTime, string product, MarketAssessmentValue value)
-            {
-                ReportTime = reportTime;
-                Product = product;
-                Value = value;
-            }
-
-            /// <summary>
-            /// AssessmentElement ReportTime
-            /// </summary>
-            public LocalDateTime ReportTime { get; init; }
-            /// <summary>
-            /// AssessmentElement Product
-            /// </summary>
-            public string Product { get; init; }
-            /// <summary>
-            /// AssessmentElement MarketAssessmentValue
-            /// </summary>
-            public MarketAssessmentValue Value { get; init; }
-        }
+        public LocalDateTime ReportTime { get; init; }
+        /// <summary>
+        /// AssessmentElement Product
+        /// </summary>
+        public string Product { get; init; }
+        /// <summary>
+        /// AssessmentElement MarketAssessmentValue
+        /// </summary>
+        public MarketAssessmentValue Value { get; init; }
     }
 }

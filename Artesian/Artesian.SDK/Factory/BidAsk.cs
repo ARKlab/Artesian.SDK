@@ -82,6 +82,27 @@ namespace Artesian.SDK.Factory
             return _addBidAsk(time.InUtc().LocalDateTime, product, value);
         }
 
+        /// <summary>
+        /// BidAsk AddRange
+        /// Sets the data of the BidAsk for a specific range.
+        /// Values are listed on BidAskElements and the behavior on conflicts is controlled by ConflictBehaviour.
+        /// </summary>
+        /// <remarks>
+        /// ConflictBehaviour options:
+        /// Skip -> Each value is added individually. If a timestamp already exists in the series,
+        ///         that value is ignored.
+        /// Throw -> If the internal values are empty, they are replaced with the values passed to the method.
+        ///          If the internal values are not empty, an exception will be thrown.
+        /// Overwrite -> The internal values are cleared and replaced with the values passed to the method.
+        /// </remarks>
+        /// <returns></returns>
+        public void SetData(List<BidAskElement> values, ConflictBehaviour conflictBehaviour)
+        {
+            var valuesToAdd = values.Select(x => new BidAskElement(x.ReportTime.InUtc().LocalDateTime, x.Product, x.Value));
+
+            _setData(valuesToAdd, conflictBehaviour);
+        }
+
         private AddBidAskOperationResult _addBidAsk(LocalDateTime reportTime, string product, BidAskValue value)
         {
             //Relative products
@@ -107,6 +128,33 @@ namespace Artesian.SDK.Factory
 
             _values.Add(new BidAskElement(reportTime, product, value));
             return AddBidAskOperationResult.BidAskAdded;
+        }
+
+        private void _setData(IEnumerable<BidAskElement> values, ConflictBehaviour conflictBehaviour)
+        {
+            switch (conflictBehaviour)
+            {
+                case ConflictBehaviour.Overwrite:
+                    _values.Clear();
+                    foreach (var val in values)
+                        _values.Add(val);
+                    break;
+                case ConflictBehaviour.Throw:
+                    if (_values.Any())
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    else
+                        foreach (var val in values)
+                            _values.Add(val);
+                    break;
+                case ConflictBehaviour.Skip:
+                    foreach (var val in values)
+                    {
+                        _addBidAsk(val.ReportTime, val.Product, val.Value);
+                    }
+                    break;
+                default:
+                    throw new NotSupportedException("ConflictBehaviour not supported " + conflictBehaviour);
+            }
         }
 
         /// <summary>
@@ -201,34 +249,34 @@ namespace Artesian.SDK.Factory
 
             await _marketDataService.DeleteCurveDataAsync(data, ctk).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// BidAskElement entity
+    /// </summary>
+    public sealed record BidAskElement
+    {
+        /// <summary>
+        /// BidAskElement constructor
+        /// </summary>
+        public BidAskElement(LocalDateTime reportTime, string product, BidAskValue value)
+        {
+            ReportTime = reportTime;
+            Product = product;
+            Value = value;
+        }
 
         /// <summary>
-        /// BidAskElement entity
+        /// BidAskElement ReportTime
         /// </summary>
-        public sealed record BidAskElement
-        {
-            /// <summary>
-            /// BidAskElement constructor
-            /// </summary>
-            public BidAskElement(LocalDateTime reportTime, string product, BidAskValue value)
-            {
-                ReportTime = reportTime;
-                Product = product;
-                Value = value;
-            }
-
-            /// <summary>
-            /// BidAskElement ReportTime
-            /// </summary>
-            public LocalDateTime ReportTime { get; init; }
-            /// <summary>
-            /// BidAskElement Product
-            /// </summary>
-            public string Product { get; init; }
-            /// <summary>
-            /// BidAskElement BidAskValue
-            /// </summary>
-            public BidAskValue Value { get; init; }
-        }
+        public LocalDateTime ReportTime { get; init; }
+        /// <summary>
+        /// BidAskElement Product
+        /// </summary>
+        public string Product { get; init; }
+        /// <summary>
+        /// BidAskElement BidAskValue
+        /// </summary>
+        public BidAskValue Value { get; init; }
     }
 }

@@ -4,6 +4,7 @@ using Artesian.SDK.Service;
 
 using NodaTime;
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -112,41 +113,49 @@ namespace Artesian.SDK.Factory
 
         /// <summary>
         /// VersionedTimeSerie AddRange
+        /// Sets the data of the VersionedTimeSerie for a specific date range.
+        /// Values are keyed by Instant and the behavior on conflicts is controlled by ConflictBehaviour.
         /// </summary>
         /// <remarks>
-        /// Add Range Data on to the curve with LocalDate
-        /// Each value is added individually. If a timestamp already exists in the series,
-        /// that specific value will be ignored and marked accordingly in the returned dictionary.
+        /// ConflictBehaviour options:
+        /// Skip -> Each value is added individually. If a timestamp already exists in the series,
+        ///         that value is ignored.
+        /// Throw -> If the internal values are empty, they are replaced with the values passed to the method.
+        ///          If the internal values are not empty, an exception will be thrown.
+        /// Overwrite -> The internal values are cleared and replaced with the values passed to the method.
         /// </remarks>
-        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
-        /// representing the result of attempting to add that value.</returns>
-        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<LocalDate, double?> values)
+        /// <returns></returns>
+        public void SetData(Dictionary<LocalDate, double?> values, ConflictBehaviour conflictBehaviour)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
                 throw new ActualTimeSerieException("This MarketData has Time granularity. Use AddRange(Dictionary<Instant, double?> values)");
 
             var valuesToAdd = values.ToDictionary(x => x.Key.AtMidnight(), x => x.Value);
 
-            return _addRange(valuesToAdd);
+            _setData(valuesToAdd, conflictBehaviour);
         }
         /// <summary>
         /// VersionedTimeSerie AddRange
+        /// Sets the data of the VersionedTimeSerie for a specific date range.
+        /// Values are keyed by Instant and the behavior on conflicts is controlled by ConflictBehaviour.
         /// </summary>
         /// <remarks>
-        /// Add Range Data on to the curve with Instant.
-        /// Each value is added individually. If a timestamp already exists in the series,
-        /// that specific value will be ignored and marked accordingly in the returned dictionary.
+        /// ConflictBehaviour options:
+        /// Skip -> Each value is added individually. If a timestamp already exists in the series,
+        ///         that value is ignored.
+        /// Throw -> If the internal values are empty, they are replaced with the values passed to the method.
+        ///          If the internal values are not empty, an exception will be thrown.
+        /// Overwrite -> The internal values are cleared and replaced with the values passed to the method.
         /// </remarks>
-        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
-        /// representing the result of attempting to add that value.</returns>
-        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<Instant, double?> values)
+        /// <returns></returns>
+        public void SetData(Dictionary<Instant, double?> values, ConflictBehaviour conflictBehaviour)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
                 throw new ActualTimeSerieException("This MarketData has Date granularity. Use AddRange(Dictionary<Instant, double?> values)");
 
             var valuesToAdd = values.ToDictionary(x => x.Key.InUtc().LocalDateTime, x => x.Value);
 
-            return _addRange(valuesToAdd);
+            _setData(valuesToAdd, conflictBehaviour);
         }
         private AddTimeSerieOperationResult _add(LocalDateTime localTime, double? value)
         {
@@ -170,16 +179,31 @@ namespace Artesian.SDK.Factory
             return AddTimeSerieOperationResult.ValueAdded;
         }
 
-        private Dictionary<LocalDateTime, AddTimeSerieOperationResult> _addRange(Dictionary<LocalDateTime, double?> values)
+        private void _setData(Dictionary<LocalDateTime, double?> values, ConflictBehaviour conflictBehaviour)
         {
-            var results = new Dictionary<LocalDateTime, AddTimeSerieOperationResult>();
-
-            foreach (var kvp in values)
+            switch (conflictBehaviour)
             {
-                results[kvp.Key] = _add(kvp.Key, kvp.Value);
+                case ConflictBehaviour.Overwrite:
+                    _values.Clear();
+                    foreach (var kv in values)
+                        _values.Add(kv.Key, kv.Value);
+                    break;
+                case ConflictBehaviour.Throw:
+                    if (_values.Any())
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    else
+                        foreach (var kv in values)
+                            _values.Add(kv.Key, kv.Value);
+                    break;
+                case ConflictBehaviour.Skip:
+                    foreach (var kvp in values)
+                    {
+                        _add(kvp.Key, kvp.Value);
+                    }
+                    break;
+                default:
+                    throw new NotSupportedException("ConflictBehaviour not supported " + conflictBehaviour);
             }
-
-            return results;
         }
 
         /// <summary>
