@@ -109,7 +109,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public async Task MarketDataServiceAddRangeInstant()
+        public async Task MarketDataServiceSetDataInitReplace()
         {
             var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
 
@@ -144,41 +144,52 @@ namespace Artesian.SDK.Tests
             await marketData.Load();
 
             // Instant values
-            var valuesInstant = new Dictionary<Instant, double?>()
+            var valuesLocalDateInit = new Dictionary<LocalDateTime, double?>()
             {
-                { Instant.FromUtc(2025, 12, 14, 0, 0), 10 },
-                { Instant.FromUtc(2025, 12, 15, 0, 0), 11 },
-                { Instant.FromUtc(2025, 12, 16, 0, 0), 12 }
-            };
-
-            var valuesExpected = new Dictionary<LocalDateTime, double?>()
-            {
-                { new LocalDateTime(2025, 12, 14, 0, 0).InUtc().LocalDateTime, 10 },
-                { new LocalDateTime(2025, 12, 15, 0, 0).InUtc().LocalDateTime, 11 },
-                { new LocalDateTime(2025, 12, 16, 0, 0).InUtc().LocalDateTime, 12 }
+                { new LocalDateTime(2025, 12, 14, 0, 0), 10 },
+                { new LocalDateTime(2025, 12, 15, 0, 0), 11 },
+                { new LocalDateTime(2025, 12, 18, 0, 0), 13 }
             };
 
             var timeSerie = marketData.EditActual();
-            var result = timeSerie.AddRange(valuesInstant);
+            timeSerie.SetData(valuesLocalDateInit, SetMode.Init);
 
-            foreach (var item in result)
+            var valuesLocalDateReplace = new Dictionary<LocalDateTime, double?>()
             {
-                item.Value.Should().Be(AddTimeSerieOperationResult.ValueAdded);                
+                { new LocalDateTime(2025, 12, 19, 0, 0), 10 },
+                { new LocalDateTime(2025, 12, 21, 0, 0), 11 },
+                { new LocalDateTime(2025, 12, 22, 0, 0), 13 }
+            };
+
+            try
+            {
+                timeSerie.SetData(valuesLocalDateReplace, SetMode.Init);
             }
-            ((ActualTimeSerie)timeSerie).Values.Should().BeEquivalentTo(valuesExpected);
+            catch (ArtesianSdkClientException ex)
+            {
+                ex.Message.Should().Be("Data already present, cannot be updated!");
+            }
+
+            timeSerie.SetData(valuesLocalDateReplace, SetMode.Replace);
         }
 
         [Test]
-        public async Task MarketDataServiceAddRangeLocalDate()
+        public async Task MarketDataServiceTryAddData()
         {
+            var qs = new QueryService(_cfg);
             var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
+
+            var providerName = "TestName";
+            var curveName = "Test";
+            var originalTimezone = "CET";
+            var originalGranularity = Granularity.Day;
 
             var marketDataEntity = new MarketDataEntity.Input()
             {
-                ProviderName = "Test",
-                MarketDataName = "TestName",
-                OriginalGranularity = Granularity.Day,
-                OriginalTimezone = "CET",
+                ProviderName = providerName,
+                MarketDataName = curveName,
+                OriginalGranularity = originalGranularity,
+                OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
                 Type = MarketDataType.ActualTimeSerie,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
@@ -186,9 +197,9 @@ namespace Artesian.SDK.Tests
 
             var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
             {
-                ProviderName = "Test",
-                MarketDataName = "TestName",
-                OriginalTimezone = "CET"
+                ProviderName = providerName,
+                MarketDataName = curveName,
+                OriginalTimezone = originalTimezone
             };
 
             var marketDataServiceMock = new Mock<IMarketDataService>();
@@ -203,29 +214,35 @@ namespace Artesian.SDK.Tests
 
             await marketData.Load();
 
-            // LocalData values
-            var valuesLocalDate = new Dictionary<LocalDate, double?>()
-            {
-                { new LocalDate(2025, 12, 14), 10 },
-                { new LocalDate(2025, 12, 15), 11 },
-                { new LocalDate(2025, 12, 16), 12 }
-            };
-
-            var valuesExpected = new Dictionary<LocalDateTime, double?>()
-            {
-                { new LocalDateTime(2025, 12, 14, 0, 0), 10 },
-                { new LocalDateTime(2025, 12, 15, 0, 0), 11 },
-                { new LocalDateTime(2025, 12, 16, 0, 0), 12 }
-            };
-
             var timeSerie = marketData.EditActual();
-            var result = timeSerie.AddRange(valuesLocalDate);
 
-            foreach (var item in result)
+            var curveId = marketData.MarketDataId!.Value;
+
+            var value = 10;
+            var valueUpdated = 14;
+            var valueUpdated1 = 18;
+            var date = new LocalDate(2025, 12, 14);
+
+            var result = timeSerie.TryAddData(date, value, KeyConflictPolicy.Throw);
+
+            result.Should().Be(AddTimeSerieOperationResult.ValueAdded);
+
+            result = timeSerie.TryAddData(date, valueUpdated, KeyConflictPolicy.Overwrite);
+
+            result.Should().Be(AddTimeSerieOperationResult.ValueAdded);
+
+            result = timeSerie.TryAddData(date, valueUpdated1, KeyConflictPolicy.Skip);
+
+            result.Should().Be(AddTimeSerieOperationResult.TimeAlreadyPresent);
+
+            try
             {
-                item.Value.Should().Be(AddTimeSerieOperationResult.ValueAdded);
+                result = timeSerie.TryAddData(date, valueUpdated1, KeyConflictPolicy.Throw);
             }
-            ((ActualTimeSerie)timeSerie).Values.Should().BeEquivalentTo(valuesExpected);
+            catch (ArtesianSdkClientException ex)
+            {
+                ex.Message.Should().Be("Data already present, cannot be updated!");
+            }
         }
 
         private const string _realProblemDetailsJson = @"{""Errors"":[{""Key"":""MarketDataEntity.Tags[0].Value[0]"",""Value"":[{""ErrorMessage"":""'Value' must be between 1 and 50 characters. You entered 155 characters."",""AttemptedValue"":""PowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPower"",""CustomState"":null,""ErrorCode"":""LengthValidator"",""FormattedMessagePlaceholderValues"":[{""Key"":""CollectionIndex"",""Value"":0},{""Key"":""MinLength"",""Value"":1},{""Key"":""MaxLength"",""Value"":50},{""Key"":""TotalLength"",""Value"":155},{""Key"":""PropertyName"",""Value"":""Value""},{""Key"":""PropertyValue"",""Value"":""PowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPower""}]}]}],""type"":""https://httpstatuses.com/400"",""title"":""Bad Request"",""status"":400,""detail"":""'Value' must be between 1 and 50 characters. You entered 155 characters."",""instance"":null}";

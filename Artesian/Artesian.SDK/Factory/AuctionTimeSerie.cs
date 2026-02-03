@@ -87,6 +87,52 @@ namespace Artesian.SDK.Factory
             return _add(localTime, bid, offer);
         }
 
+        /// <summary>
+        /// Attempts to add a data point to the AuctionTimeSerie for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="bid">The bid to add.</param>
+        /// <param name="offer">The offer to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddAuctionTimeSerieOperationResult</returns>
+        public AddAuctionTimeSerieOperationResult TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)
+        {
+            if (_entity.OriginalGranularity.IsTimeGranularity())
+                throw new ActualTimeSerieException("This MarketData has Time granularity. Use TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)");
+
+            var localTime = localDate.AtMidnight();
+
+            return _tryAdd(localTime, bid, offer, keyConflictPolicy);
+        }
+
+        /// <summary>
+        /// Attempts to add a data point to the AuctionTimeSerie for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="bid">The bid to add.</param>
+        /// <param name="offer">The offer to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddAuctionTimeSerieOperationResult</returns>
+        public AddAuctionTimeSerieOperationResult TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)
+        {
+            if (!_entity.OriginalGranularity.IsTimeGranularity())
+                throw new ActualTimeSerieException("This MarketData has Date granularity. Use TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)");
+
+            var localTime = time.InUtc().LocalDateTime;
+
+            return _tryAdd(localTime, bid, offer, keyConflictPolicy);
+        }
+
         private AddAuctionTimeSerieOperationResult _add(LocalDateTime bidTime, AuctionBidValue[] bid, AuctionBidValue[] offer)
         {
             if (_bids.ContainsKey(bidTime))
@@ -118,6 +164,33 @@ namespace Artesian.SDK.Factory
 
             _bids.Add(bidTime, new AuctionBids { BidTimestamp = bidTime, Bid = bid, Offer = offer });
             return AddAuctionTimeSerieOperationResult.ValueAdded;
+        }
+
+        private AddAuctionTimeSerieOperationResult _tryAdd(LocalDateTime bidTime, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)
+        {
+            var valueToAdd = new AuctionBids { BidTimestamp = bidTime, Bid = bid, Offer = offer };
+            var exists = _bids.ContainsKey(bidTime);
+
+            switch (keyConflictPolicy)
+            {
+                case KeyConflictPolicy.Overwrite:
+                    if (exists)
+                    {
+                        _bids[bidTime] = valueToAdd;
+                        return AddAuctionTimeSerieOperationResult.ValueAdded;
+                    }
+                    return _add(bidTime, bid, offer);
+                case KeyConflictPolicy.Throw:
+                    if (exists)
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    return _add(bidTime, bid, offer);
+                case KeyConflictPolicy.Skip:
+                    if (exists)
+                        return AddAuctionTimeSerieOperationResult.TimeAlreadyPresent;
+                    return _add(bidTime, bid, offer);
+                default:
+                    throw new NotSupportedException("KeyConflictPolicy not supported " + keyConflictPolicy);
+            }
         }
 
         /// <summary>

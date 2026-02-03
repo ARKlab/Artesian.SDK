@@ -1,9 +1,10 @@
-using Artesian.SDK.Dto;
 using Artesian.SDK.Common;
+using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
 
 using NodaTime;
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace Artesian.SDK.Factory
         private readonly IMarketDataService _marketDataService;
         private readonly MarketDataEntity.Output _entity;
         private readonly MarketDataIdentifier _identifier;
-        private readonly Dictionary<LocalDateTime, double?> _values = new Dictionary<LocalDateTime, double?>();
+        private Dictionary<LocalDateTime, double?> _values = new Dictionary<LocalDateTime, double?>();
 
         /// <summary>
         /// ActualTimeSerie Constructor
@@ -86,42 +87,74 @@ namespace Artesian.SDK.Factory
         }
 
         /// <summary>
-        /// ActualTimeSerie AddRange
+        /// Attempts to add a data point to the ActualTimeSerie for a specific date.
         /// </summary>
         /// <remarks>
-        /// Add Range Data on to the curve with LocalDate
-        /// Each value is added individually. If a timestamp already exists in the series,
-        /// that specific value will be ignored and marked accordingly in the returned dictionary.
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
         /// </remarks>
-        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
-        /// representing the result of attempting to add that value.</returns>
-        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<LocalDate, double?> values)
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddTimeSerieOperationResult</returns>
+        public AddTimeSerieOperationResult TryAddData(LocalDate localDate, double? value, KeyConflictPolicy keyConflictPolicy)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
-                throw new ActualTimeSerieException("This MarketData has Time granularity. Use AddRange(Dictionary<Instant, double?> values)");
+                throw new ActualTimeSerieException("This MarketData has Time granularity. Use AddData(Instant time, double? value)");
 
-            var valuesToAdd = values.ToDictionary(x => x.Key.AtMidnight(), x => x.Value);
+            var localTime = localDate.AtMidnight();
 
-            return _addRange(valuesToAdd);
+            return _tryAdd(localTime, value, keyConflictPolicy);
         }
+
         /// <summary>
-        /// ActualTimeSerie AddRange
+        /// Attempts to add a data point to the ActualTimeSerie for a specific date.
         /// </summary>
         /// <remarks>
-        /// Add Range Data on to the curve with Instant.
-        /// Each value is added individually. If a timestamp already exists in the series,
-        /// that specific value will be ignored and marked accordingly in the returned dictionary.
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
         /// </remarks>
-        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
-        /// representing the result of attempting to add that value.</returns>
-        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<Instant, double?> values)
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddTimeSerieOperationResult</returns>
+        public AddTimeSerieOperationResult TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
-                throw new ActualTimeSerieException("This MarketData has Date granularity. Use AddRange(Dictionary<Instant, double?> values)");
+                throw new ActualTimeSerieException("This MarketData has Date granularity. Use AddData(LocalDate date, double? value)");
 
-            var valuesToAdd = values.ToDictionary(x => x.Key.InUtc().LocalDateTime, x => x.Value);
+            var localTime = time.InUtc().LocalDateTime;
 
-            return _addRange(valuesToAdd);
+            return _tryAdd(localTime, value, keyConflictPolicy);
+        }
+
+        /// <summary>
+        /// ActualTimeSerie SetData (bulk operation).
+        /// Sets the internal data of the ActualTimeSerie using the provided values,
+        /// keyed by LocalDateTime.
+        /// 
+        /// This method performs a bulk operation and does not apply per-record
+        /// conflict resolution or validation on the input dictionary.
+        /// </summary>
+        /// <remarks>
+        /// SetMode options:
+        /// Init:
+        ///   Initializes the internal data only if it is empty;
+        ///   otherwise an exception is thrown.
+        /// 
+        /// Replace:
+        ///   Clears and completely replaces the internal data with the provided values.
+        /// 
+        /// This method is intended as a fast-path for scenarios where the caller
+        /// has already constructed and validated the dictionary.
+        /// Any remaining validations (e.g. granularity constraints) are enforced
+        /// by server-side logic outside of this method.
+        /// </remarks>
+        public void SetData(Dictionary<LocalDateTime, double?> values, SetMode setMode)
+        {
+            _setData(values, setMode);
         }
 
         private AddTimeSerieOperationResult _add(LocalDateTime localTime, double? value)
@@ -146,16 +179,48 @@ namespace Artesian.SDK.Factory
             return AddTimeSerieOperationResult.ValueAdded;
         }
 
-        private Dictionary<LocalDateTime, AddTimeSerieOperationResult> _addRange(Dictionary<LocalDateTime, double?> values)
+        private AddTimeSerieOperationResult _tryAdd(LocalDateTime localTime, double? value, KeyConflictPolicy keyConflictPolicy)
         {
-            var results = new Dictionary<LocalDateTime, AddTimeSerieOperationResult>();
+            var exists = _values.ContainsKey(localTime);
 
-            foreach (var kvp in values)
+            switch (keyConflictPolicy)
             {
-                results[kvp.Key] = _add(kvp.Key, kvp.Value);
+                case KeyConflictPolicy.Overwrite:
+                    if (exists)
+                    {
+                        _values[localTime] = value;
+                        return AddTimeSerieOperationResult.ValueAdded;
+                    }
+                    return _add(localTime, value);
+                case KeyConflictPolicy.Throw:
+                    if (exists)
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    return _add(localTime, value);
+                case KeyConflictPolicy.Skip:
+                    if (exists)
+                        return AddTimeSerieOperationResult.TimeAlreadyPresent;
+                    return _add(localTime, value);
+                default:
+                    throw new NotSupportedException("KeyConflictPolicy not supported " + keyConflictPolicy);
             }
+        }
 
-            return results;
+        private void _setData(Dictionary<LocalDateTime, double?> values, SetMode conflictBehaviour)
+        {
+            switch (conflictBehaviour)
+            {
+                case SetMode.Replace:
+                    _values = values;
+                    break;
+                case SetMode.Init:
+                    if (_values.Any())
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    else
+                        _values = values;
+                    break;
+                default:
+                    throw new NotSupportedException("SetMode not supported " + conflictBehaviour);
+            }
         }
 
         /// <summary>

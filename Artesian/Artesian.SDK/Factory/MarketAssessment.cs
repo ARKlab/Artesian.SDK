@@ -21,7 +21,7 @@ namespace Artesian.SDK.Factory
         private readonly IMarketDataService _marketDataService;
         private readonly MarketDataEntity.Output _entity;
         private readonly MarketDataIdentifier _identifier;
-        private readonly List<AssessmentElement> _values = new();
+        private List<AssessmentElement> _values = new();
 
         /// <summary>
         /// MarketAssessment Constructor
@@ -82,6 +82,79 @@ namespace Artesian.SDK.Factory
             return _addAssessment(time.InUtc().LocalDateTime, product, value);
         }
 
+        /// <summary>
+        /// Attempts to add a data point to the MarketAssessment for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddAssessmentOperationResult</returns>
+        public AddAssessmentOperationResult TryAddData(LocalDate localDate, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy)
+        {
+            if (_entity.OriginalGranularity.IsTimeGranularity())
+                throw new ActualTimeSerieException("This MarketData has Time granularity. Use TryAddData(Instant time, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy)");
+
+            var localTime = localDate.AtMidnight();
+
+            return _tryAdd(localTime, product, value, keyConflictPolicy);
+        }
+
+        /// <summary>
+        /// Attempts to add a data point to the MarketAssessment for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddAssessmentOperationResult</returns>
+        public AddAssessmentOperationResult TryAddData(Instant time, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy)
+        {
+            if (!_entity.OriginalGranularity.IsTimeGranularity())
+                throw new ActualTimeSerieException("This MarketData has Date granularity. Use TryAddData(LocalDate localDate, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy)");
+
+            var localTime = time.InUtc().LocalDateTime;
+
+            return _tryAdd(localTime, product, value, keyConflictPolicy);
+        }
+
+        /// <summary>
+        /// MarketAssessment SetData (bulk operation).
+        /// Sets the internal data of the ActualTimeSerie using the provided values,
+        /// keyed by LocalDateTime.
+        /// 
+        /// This method performs a bulk operation and does not apply per-record
+        /// conflict resolution or validation on the input dictionary.
+        /// </summary>
+        /// <remarks>
+        /// SetMode options:
+        /// Init:
+        ///   Initializes the internal data only if it is empty;
+        ///   otherwise an exception is thrown.
+        /// 
+        /// Replace:
+        ///   Clears and completely replaces the internal data with the provided values.
+        /// 
+        /// This method is intended as a fast-path for scenarios where the caller
+        /// has already constructed and validated the dictionary.
+        /// Any remaining validations (e.g. granularity constraints) are enforced
+        /// by server-side logic outside of this method.
+        /// </remarks>
+        public void SetData(List<AssessmentElement> values, SetMode conflictBehaviour)
+        {
+            _setData(values, conflictBehaviour);
+        }
+
         private AddAssessmentOperationResult _addAssessment(LocalDateTime reportTime, string product, MarketAssessmentValue value)
         {
             //Relative products
@@ -109,6 +182,61 @@ namespace Artesian.SDK.Factory
 
             _values.Add(new AssessmentElement(reportTime, product, value));
             return AddAssessmentOperationResult.AssessmentAdded;
+        }
+
+        private AddAssessmentOperationResult _tryAdd(LocalDateTime reportTime, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy)
+        {
+            var valueToAdd = new AssessmentElement(reportTime, product, value);
+            var existing = _values.FirstOrDefault(x => x.ReportTime == reportTime && x.Product == product);
+
+            switch (keyConflictPolicy)
+            {
+                case KeyConflictPolicy.Overwrite:
+                    if (existing != null)
+                    {
+                        _values.Remove(existing);
+                        _values.Add(valueToAdd);
+                        return AddAssessmentOperationResult.AssessmentAdded;
+                    }
+                    else
+                    {
+                        _values.Add(valueToAdd);
+                        return AddAssessmentOperationResult.AssessmentAdded;
+                    }
+
+                case KeyConflictPolicy.Throw:
+                    if (existing != null)
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    _values.Add(valueToAdd);
+                    return AddAssessmentOperationResult.AssessmentAdded;
+
+                case KeyConflictPolicy.Skip:
+                    if (existing != null)
+                        return AddAssessmentOperationResult.ProductAlreadyPresent;
+                    _values.Add(valueToAdd);
+                    return AddAssessmentOperationResult.AssessmentAdded;
+
+                default:
+                    throw new NotSupportedException("KeyConflictPolicy not supported " + keyConflictPolicy);
+            }
+        }
+
+        private void _setData(List<AssessmentElement> values, SetMode conflictBehaviour)
+        {
+            switch (conflictBehaviour)
+            {
+                case SetMode.Replace:
+                    _values = values;
+                    break;
+                case SetMode.Init:
+                    if (_values.Any())
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    else
+                        _values = values;
+                    break;
+                default:
+                    throw new NotSupportedException("SetMode not supported " + conflictBehaviour);
+            }
         }
 
         /// <summary>
@@ -204,34 +332,34 @@ namespace Artesian.SDK.Factory
 
             await _marketDataService.DeleteCurveDataAsync(data, ctk).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// AssessmentElement entity
+    /// </summary>
+    public sealed record AssessmentElement
+    {
+        /// <summary>
+        /// AssessmentElement constructor
+        /// </summary>
+        public AssessmentElement(LocalDateTime reportTime, string product, MarketAssessmentValue value)
+        {
+            ReportTime = reportTime;
+            Product = product;
+            Value = value;
+        }
 
         /// <summary>
-        /// AssessmentElement entity
+        /// AssessmentElement ReportTime
         /// </summary>
-        public sealed record AssessmentElement
-        {
-            /// <summary>
-            /// AssessmentElement constructor
-            /// </summary>
-            public AssessmentElement(LocalDateTime reportTime, string product, MarketAssessmentValue value)
-            {
-                ReportTime = reportTime;
-                Product = product;
-                Value = value;
-            }
-
-            /// <summary>
-            /// AssessmentElement ReportTime
-            /// </summary>
-            public LocalDateTime ReportTime { get; init; }
-            /// <summary>
-            /// AssessmentElement Product
-            /// </summary>
-            public string Product { get; init; }
-            /// <summary>
-            /// AssessmentElement MarketAssessmentValue
-            /// </summary>
-            public MarketAssessmentValue Value { get; init; }
-        }
+        public LocalDateTime ReportTime { get; init; }
+        /// <summary>
+        /// AssessmentElement Product
+        /// </summary>
+        public string Product { get; init; }
+        /// <summary>
+        /// AssessmentElement MarketAssessmentValue
+        /// </summary>
+        public MarketAssessmentValue Value { get; init; }
     }
 }

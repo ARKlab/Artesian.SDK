@@ -1,3 +1,4 @@
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 
 using NodaTime;
@@ -197,6 +198,60 @@ namespace Artesian.SDK.Factory
         /// <param name="value">Market assessment Value</param>
         /// <returns></returns>
         AddAssessmentOperationResult AddData(Instant time, string product, MarketAssessmentValue value);
+        
+        /// <summary>
+        /// Attempts to add a data point to the MarketAssessment for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddAssessmentOperationResult</returns>
+        AddAssessmentOperationResult TryAddData(LocalDate localDate, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy);
+
+        /// <summary>
+        /// Attempts to add a data point to the MarketAssessment for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddAssessmentOperationResult</returns>
+        AddAssessmentOperationResult TryAddData(Instant time, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy);
+
+        /// <summary>
+        /// MarketAssessment SetData (bulk operation).
+        /// Sets the internal data of the ActualTimeSerie using the provided values,
+        /// keyed by LocalDateTime.
+        /// 
+        /// This method performs a bulk operation and does not apply per-record
+        /// conflict resolution or validation on the input dictionary.
+        /// </summary>
+        /// <remarks>
+        /// SetMode options:
+        /// Init:
+        ///   Initializes the internal data only if it is empty;
+        ///   otherwise an exception is thrown.
+        /// 
+        /// Replace:
+        ///   Clears and completely replaces the internal data with the provided values.
+        /// 
+        /// This method is intended as a fast-path for scenarios where the caller
+        /// has already constructed and validated the dictionary.
+        /// Any remaining validations (e.g. granularity constraints) are enforced
+        /// by server-side logic outside of this method.
+        /// </remarks>
+        void SetData(List<AssessmentElement> values, SetMode setMode);
 
         /// <summary>
         /// MarketAssessment ClearData
@@ -279,6 +334,60 @@ namespace Artesian.SDK.Factory
         AddBidAskOperationResult AddData(Instant time, string product, BidAskValue value);
 
         /// <summary>
+        /// Attempts to add a data point to the BidAsk for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddTimeSerieOperationResult</returns>
+        AddTimeSerieOperationResult TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy);
+
+        /// <summary>
+        /// Attempts to add a data point to the BidAsk for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddTimeSerieOperationResult</returns>
+        AddTimeSerieOperationResult TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy);
+
+        /// <summary>
+        /// BidAsk SetData (bulk operation).
+        /// Sets the internal data of the ActualTimeSerie using the provided values,
+        /// keyed by LocalDateTime.
+        /// 
+        /// This method performs a bulk operation and does not apply per-record
+        /// conflict resolution or validation on the input dictionary.
+        /// </summary>
+        /// <remarks>
+        /// SetMode options:
+        /// Init:
+        ///   Initializes the internal data only if it is empty;
+        ///   otherwise an exception is thrown.
+        /// 
+        /// Replace:
+        ///   Clears and completely replaces the internal data with the provided values.
+        /// 
+        /// This method is intended as a fast-path for scenarios where the caller
+        /// has already constructed and validated the dictionary.
+        /// Any remaining validations (e.g. granularity constraints) are enforced
+        /// by server-side logic outside of this method.
+        /// </remarks>
+        void SetData(List<BidAskElement> values, SetMode setMode);
+
+        /// <summary>
         /// BidAsk ClearData
         /// </summary>
         void ClearData();
@@ -357,6 +466,36 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         AddAuctionTimeSerieOperationResult AddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer);
 
+        /// <summary>
+        /// Attempts to add a data point to the AuctionTimeSerie for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="bid">The bid to add.</param>
+        /// <param name="offer">The offer to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddAuctionTimeSerieOperationResult</returns>
+        AddAuctionTimeSerieOperationResult TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy);
+
+        /// <summary>
+        /// Attempts to add a data point to the AuctionTimeSerie for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="bid">The bid to add.</param>
+        /// <param name="offer">The offer to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddAuctionTimeSerieOperationResult</returns>
+        AddAuctionTimeSerieOperationResult TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy);
+        
         /// <summary>
         /// Auction ClearData
         /// </summary>
@@ -439,28 +578,55 @@ namespace Artesian.SDK.Factory
         AddTimeSerieOperationResult AddData(Instant time, double? value);
 
         /// <summary>
-        /// TimeSerie AddRange
+        /// Attempts to add a data point to the TimeSerie for a specific date.
         /// </summary>
         /// <remarks>
-        /// Add Range Data on to the curve with LocalDate
-        /// Each value is added individually. If a timestamp already exists in the series,
-        /// that specific value will be ignored and marked accordingly in the returned dictionary.
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
         /// </remarks>
-        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
-        /// representing the result of attempting to add that value.</returns>
-        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<LocalDate, double?> values);
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddTimeSerieOperationResult</returns>
+        AddTimeSerieOperationResult TryAddData(LocalDate localDate, double? value, KeyConflictPolicy keyConflictPolicy);
+        /// <summary>
+        /// Attempts to add a data point to the VersionedTimeSerie for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        /// <returns>AddTimeSerieOperationResult</returns>
+        AddTimeSerieOperationResult TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy);
 
         /// <summary>
-        /// TimeSerie AddRange
+        /// TimeSerie SetData (bulk operation).
+        /// Sets the internal data of the ActualTimeSerie using the provided values,
+        /// keyed by LocalDateTime.
+        /// 
+        /// This method performs a bulk operation and does not apply per-record
+        /// conflict resolution or validation on the input dictionary.
         /// </summary>
         /// <remarks>
-        /// Add Range Data on to the curve with Instant.
-        /// Each value is added individually. If a timestamp already exists in the series,
-        /// that specific value will be ignored and marked accordingly in the returned dictionary.
+        /// SetMode options:
+        /// Init:
+        ///   Initializes the internal data only if it is empty;
+        ///   otherwise an exception is thrown.
+        /// 
+        /// Replace:
+        ///   Clears and completely replaces the internal data with the provided values.
+        /// 
+        /// This method is intended as a fast-path for scenarios where the caller
+        /// has already constructed and validated the dictionary.
+        /// Any remaining validations (e.g. granularity constraints) are enforced
+        /// by server-side logic outside of this method.
         /// </remarks>
-        /// <returns>A dictionary mapping each <see cref="LocalDateTime"/> to an <see cref="AddTimeSerieOperationResult"/> 
-        /// representing the result of attempting to add that value.</returns>
-        public Dictionary<LocalDateTime, AddTimeSerieOperationResult> AddRange(Dictionary<Instant, double?> values);
+        void SetData(Dictionary<LocalDateTime, double?> values, SetMode setMode);
 
         /// <summary>
         /// TimeSerie ClearData
