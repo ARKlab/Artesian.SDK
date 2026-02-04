@@ -1,7 +1,7 @@
 ﻿namespace Artesian.SDK.Common
 {
     /// <summary>
-    /// The Conflic Behaviour Enum
+    /// Defines how a key conflict is handled when adding a value.
     /// </summary>
     public enum KeyConflictPolicy
     {

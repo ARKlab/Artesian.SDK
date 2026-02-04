@@ -152,7 +152,7 @@ namespace Artesian.SDK.Tests
             };
 
             var timeSerie = marketData.EditActual();
-            timeSerie.SetData(valuesLocalDateInit, SetMode.Init);
+            timeSerie.SetData(valuesLocalDateInit, BulkSetPolicy.Init);
 
             var valuesLocalDateReplace = new Dictionary<LocalDateTime, double?>()
             {
@@ -163,14 +163,14 @@ namespace Artesian.SDK.Tests
 
             try
             {
-                timeSerie.SetData(valuesLocalDateReplace, SetMode.Init);
+                timeSerie.SetData(valuesLocalDateReplace, BulkSetPolicy.Init);
             }
             catch (ArtesianSdkClientException ex)
             {
                 ex.Message.Should().Be("Data already present, cannot be updated!");
             }
 
-            timeSerie.SetData(valuesLocalDateReplace, SetMode.Replace);
+            timeSerie.SetData(valuesLocalDateReplace, BulkSetPolicy.Replace);
         }
 
         [Test]

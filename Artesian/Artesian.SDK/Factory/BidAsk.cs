@@ -60,6 +60,7 @@ namespace Artesian.SDK.Factory
         /// Add Data on to the curve with localDate
         /// </remarks>
         /// <returns>AddBidAskOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddBidAskOperationResult AddData(LocalDate localDate, string product, BidAskValue value)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
@@ -74,6 +75,7 @@ namespace Artesian.SDK.Factory
         /// Add Data on to the curve with Instant
         /// </remarks>
         /// <returns>AddBidAskOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddBidAskOperationResult AddData(Instant time, string product, BidAskValue value)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
@@ -98,7 +100,7 @@ namespace Artesian.SDK.Factory
         public AddTimeSerieOperationResult TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
-                throw new ActualTimeSerieException("This MarketData has Time granularity. Use TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)");
+                throw new BidAskException("This MarketData has Time granularity. Use TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)");
 
             var localTime = localDate.AtMidnight();
 
@@ -121,7 +123,7 @@ namespace Artesian.SDK.Factory
         public AddTimeSerieOperationResult TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
-                throw new ActualTimeSerieException("This MarketData has Date granularity. Use TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)");
+                throw new BidAskException("This MarketData has Date granularity. Use TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)");
 
             var localTime = time.InUtc().LocalDateTime;
 
@@ -130,14 +132,14 @@ namespace Artesian.SDK.Factory
 
         /// <summary>
         /// BidAsk SetData (bulk operation).
-        /// Sets the internal data of the ActualTimeSerie using the provided values,
+        /// Sets the internal data of the BidAsk using the provided values,
         /// keyed by LocalDateTime.
         /// 
         /// This method performs a bulk operation and does not apply per-record
         /// conflict resolution or validation on the input dictionary.
         /// </summary>
         /// <remarks>
-        /// SetMode options:
+        /// BulkSetPolicy options:
         /// Init:
         ///   Initializes the internal data only if it is empty;
         ///   otherwise an exception is thrown.
@@ -150,9 +152,9 @@ namespace Artesian.SDK.Factory
         /// Any remaining validations (e.g. granularity constraints) are enforced
         /// by server-side logic outside of this method.
         /// </remarks>
-        public void SetData(List<BidAskElement> values, SetMode conflictBehaviour)
+        public void SetData(List<BidAskElement> values, BulkSetPolicy bulkSetPolicy)
         {
-            _setData(values, conflictBehaviour);
+            _setData(values, bulkSetPolicy);
         }
 
         private AddBidAskOperationResult _addBidAsk(LocalDateTime reportTime, string product, BidAskValue value)
@@ -219,21 +221,21 @@ namespace Artesian.SDK.Factory
             }
         }
 
-        private void _setData(List<BidAskElement> values, SetMode conflictBehaviour)
+        private void _setData(List<BidAskElement> values, BulkSetPolicy bulkSetPolicy)
         {
-            switch (conflictBehaviour)
+            switch (bulkSetPolicy)
             {
-                case SetMode.Replace:
+                case BulkSetPolicy.Replace:
                     _values = values;
                     break;
-                case SetMode.Init:
+                case BulkSetPolicy.Init:
                     if (_values.Any())
                         throw new ArtesianSdkClientException("Data already present, cannot be updated!");
                     else
                         _values = values;
                     break;
                 default:
-                    throw new NotSupportedException("SetMode not supported " + conflictBehaviour);
+                    throw new NotSupportedException("BulkSetPolicy not supported " + bulkSetPolicy);
             }
         }
 

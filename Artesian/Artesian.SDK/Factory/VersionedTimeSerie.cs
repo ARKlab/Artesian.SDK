@@ -81,6 +81,7 @@ namespace Artesian.SDK.Factory
         /// Add Data on to the curve with localDate
         /// </remarks>
         /// <returns>AddTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddTimeSerieOperationResult AddData(LocalDate localDate, double? value)
         {
             Guard.IsNotNull(_entity);
@@ -99,6 +100,7 @@ namespace Artesian.SDK.Factory
         /// Add Data on to the curve with Instant
         /// </remarks>
         /// <returns>AddTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddTimeSerieOperationResult AddData(Instant time, double? value)
         {
             Guard.IsNotNull(_entity);
@@ -128,7 +130,7 @@ namespace Artesian.SDK.Factory
             Guard.IsNotNull(_entity);
 
             if (_entity.OriginalGranularity.IsTimeGranularity())
-                throw new ActualTimeSerieException("This MarketData has Time granularity. Use TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy)");
+                throw new VersionedTimeSerieException("This MarketData has Time granularity. Use TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy)");
 
             var localTime = localDate.AtMidnight();
 
@@ -152,7 +154,7 @@ namespace Artesian.SDK.Factory
             Guard.IsNotNull(_entity);
 
             if (!_entity.OriginalGranularity.IsTimeGranularity())
-                throw new ActualTimeSerieException("This MarketData has Date granularity. Use TryAddData(LocalDate date, double? value, KeyConflictPolicy keyConflictPolicy)");
+                throw new VersionedTimeSerieException("This MarketData has Date granularity. Use TryAddData(LocalDate date, double? value, KeyConflictPolicy keyConflictPolicy)");
 
             var localTime = time.InUtc().LocalDateTime;
 
@@ -161,14 +163,14 @@ namespace Artesian.SDK.Factory
 
         /// <summary>
         /// VersionedTimeSerie SetData (bulk operation).
-        /// Sets the internal data of the ActualTimeSerie using the provided values,
+        /// Sets the internal data of the VersionedTimeSerie using the provided values,
         /// keyed by LocalDateTime.
         /// 
         /// This method performs a bulk operation and does not apply per-record
         /// conflict resolution or validation on the input dictionary.
         /// </summary>
         /// <remarks>
-        /// SetMode options:
+        /// BulkSetPolicy options:
         /// Init:
         ///   Initializes the internal data only if it is empty;
         ///   otherwise an exception is thrown.
@@ -181,9 +183,9 @@ namespace Artesian.SDK.Factory
         /// Any remaining validations (e.g. granularity constraints) are enforced
         /// by server-side logic outside of this method.
         /// </remarks>
-        public void SetData(Dictionary<LocalDateTime, double?> values, SetMode setMode)
+        public void SetData(Dictionary<LocalDateTime, double?> values, BulkSetPolicy bulkSetPolicy)
         {
-            _setData(values, setMode);
+            _setData(values, bulkSetPolicy);
         }
 
         private AddTimeSerieOperationResult _add(LocalDateTime localTime, double? value)
@@ -234,21 +236,21 @@ namespace Artesian.SDK.Factory
             }
         }
 
-        private void _setData(Dictionary<LocalDateTime, double?> values, SetMode setMode)
+        private void _setData(Dictionary<LocalDateTime, double?> values, BulkSetPolicy bulkSetPolicy)
         {
-            switch (setMode)
+            switch (bulkSetPolicy)
             {
-                case SetMode.Replace:
+                case BulkSetPolicy.Replace:
                     _values = values;
                     break;
-                case SetMode.Init:
+                case BulkSetPolicy.Init:
                     if (_values.Any())
                         throw new ArtesianSdkClientException("Data already present, cannot be updated!");
                     else
                         _values = values;
                     break;
                 default:
-                    throw new NotSupportedException("SetMode not supported " + setMode);
+                    throw new NotSupportedException("BulkSetPolicy not supported " + bulkSetPolicy);
             }
         }
 

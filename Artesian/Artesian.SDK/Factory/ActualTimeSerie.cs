@@ -60,6 +60,7 @@ namespace Artesian.SDK.Factory
         /// Add Data on to the curve with LocalDate
         /// </remarks>
         /// <returns>AddTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddTimeSerieOperationResult AddData(LocalDate localDate, double? value)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
@@ -76,6 +77,7 @@ namespace Artesian.SDK.Factory
         /// Add Data on to the curve with Instant
         /// </remarks>
         /// <returns>AddTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddTimeSerieOperationResult AddData(Instant time, double? value)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
@@ -139,7 +141,7 @@ namespace Artesian.SDK.Factory
         /// conflict resolution or validation on the input dictionary.
         /// </summary>
         /// <remarks>
-        /// SetMode options:
+        /// BulkSetPolicy options:
         /// Init:
         ///   Initializes the internal data only if it is empty;
         ///   otherwise an exception is thrown.
@@ -152,9 +154,9 @@ namespace Artesian.SDK.Factory
         /// Any remaining validations (e.g. granularity constraints) are enforced
         /// by server-side logic outside of this method.
         /// </remarks>
-        public void SetData(Dictionary<LocalDateTime, double?> values, SetMode setMode)
+        public void SetData(Dictionary<LocalDateTime, double?> values, BulkSetPolicy bulkSetPolicy)
         {
-            _setData(values, setMode);
+            _setData(values, bulkSetPolicy);
         }
 
         private AddTimeSerieOperationResult _add(LocalDateTime localTime, double? value)
@@ -205,21 +207,21 @@ namespace Artesian.SDK.Factory
             }
         }
 
-        private void _setData(Dictionary<LocalDateTime, double?> values, SetMode conflictBehaviour)
+        private void _setData(Dictionary<LocalDateTime, double?> values, BulkSetPolicy bulkSetPolicy)
         {
-            switch (conflictBehaviour)
+            switch (bulkSetPolicy)
             {
-                case SetMode.Replace:
+                case BulkSetPolicy.Replace:
                     _values = values;
                     break;
-                case SetMode.Init:
+                case BulkSetPolicy.Init:
                     if (_values.Any())
                         throw new ArtesianSdkClientException("Data already present, cannot be updated!");
                     else
                         _values = values;
                     break;
                 default:
-                    throw new NotSupportedException("SetMode not supported " + conflictBehaviour);
+                    throw new NotSupportedException("BulkSetPolicy not supported " + bulkSetPolicy);
             }
         }
 

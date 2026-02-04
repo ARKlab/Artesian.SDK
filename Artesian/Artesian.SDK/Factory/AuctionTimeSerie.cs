@@ -60,10 +60,11 @@ namespace Artesian.SDK.Factory
         /// Add Data on to the curve with localDate
         /// </remarks>
         /// <returns>AddAuctionTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddAuctionTimeSerieOperationResult AddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
-                throw new ActualTimeSerieException("This MarketData has Time granularity. Use AddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer)");
+                throw new AuctionTimeSerieException("This MarketData has Time granularity. Use AddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer)");
 
             var localTime = localDate.AtMidnight();
 
@@ -77,6 +78,7 @@ namespace Artesian.SDK.Factory
         /// Add Data on to the curve with Instant
         /// </remarks>
         /// <returns>AddAuctionTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddAuctionTimeSerieOperationResult AddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
@@ -103,7 +105,7 @@ namespace Artesian.SDK.Factory
         public AddAuctionTimeSerieOperationResult TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
-                throw new ActualTimeSerieException("This MarketData has Time granularity. Use TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)");
+                throw new AuctionTimeSerieException("This MarketData has Time granularity. Use TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)");
 
             var localTime = localDate.AtMidnight();
 
@@ -126,7 +128,7 @@ namespace Artesian.SDK.Factory
         public AddAuctionTimeSerieOperationResult TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
-                throw new ActualTimeSerieException("This MarketData has Date granularity. Use TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)");
+                throw new AuctionTimeSerieException("This MarketData has Date granularity. Use TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)");
 
             var localTime = time.InUtc().LocalDateTime;
 

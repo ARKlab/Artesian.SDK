@@ -6,7 +6,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
-	<NoWarn>CS1591</NoWarn>
+	<NoWarn>CS1591,CS0618</NoWarn>
 	<Nullable>enable</Nullable>
   </PropertyGroup>
 
