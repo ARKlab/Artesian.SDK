@@ -125,7 +125,6 @@ namespace Artesian.SDK.Tests.Samples
             var start1 = new LocalDate(2025, 1, 1);
             var end1 = new LocalDate(2025, 1, 10);
             var value1 = 99.99;
-            var start2 = new LocalDate(2025, 1, 8);
             var end2 = new LocalDate(2025, 1, 16);
             var value2 = 55.55;
             var versionName = new LocalDateTime(2025, 1, 1, 12, 0);
