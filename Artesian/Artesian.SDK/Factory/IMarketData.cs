@@ -185,8 +185,8 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The local date of the value</param>
         /// <param name="product">The product</param>
         /// <param name="value">Market assessment Value</param>
-        /// <returns></returns>
-        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
+        /// <returns>AddAssessmentOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddAssessmentOperationResult AddData(LocalDate localDate, string product, MarketAssessmentValue value);
 
         /// <summary>
@@ -198,8 +198,8 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The instant of the value</param>
         /// <param name="product">The product</param>
         /// <param name="value">Market assessment Value</param>
-        /// <returns></returns>
-        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
+        /// <returns>AddAssessmentOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddAssessmentOperationResult AddData(Instant time, string product, MarketAssessmentValue value);
         
         /// <summary>
@@ -214,7 +214,6 @@ namespace Artesian.SDK.Factory
         /// <param name="value">The value to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
         /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddAssessmentOperationResult</returns>
         AddAssessmentOperationResult TryAddData(LocalDate localDate, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy);
 
         /// <summary>
@@ -229,7 +228,6 @@ namespace Artesian.SDK.Factory
         /// <param name="value">The value to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
         /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddAssessmentOperationResult</returns>
         AddAssessmentOperationResult TryAddData(Instant time, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy);
 
         /// <summary>
@@ -321,8 +319,8 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The local date of the value</param>
         /// <param name="product">The product</param>
         /// <param name="value">Bid Ask Value</param>
-        /// <returns></returns>
-        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
+        /// <returns>AddBidAskOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddBidAskOperationResult AddData(LocalDate localDate, string product, BidAskValue value);
 
         /// <summary>
@@ -334,8 +332,8 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The instant of the value</param>
         /// <param name="product">The product</param>
         /// <param name="value">Bid Ask Value</param>
-        /// <returns></returns>
-        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
+        /// <returns>AddBidAskOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddBidAskOperationResult AddData(Instant time, string product, BidAskValue value);
 
         /// <summary>
@@ -350,7 +348,6 @@ namespace Artesian.SDK.Factory
         /// <param name="value">The value to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
         /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddTimeSerieOperationResult</returns>
         AddTimeSerieOperationResult TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy);
 
         /// <summary>
@@ -365,7 +362,6 @@ namespace Artesian.SDK.Factory
         /// <param name="value">The value to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
         /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddTimeSerieOperationResult</returns>
         AddTimeSerieOperationResult TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy);
 
         /// <summary>
@@ -456,8 +452,8 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The local date of the value</param>
         /// <param name="bid">The bid</param>
         /// <param name="offer">The offer</param>
-        /// <returns></returns>
-        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
+        /// <returns>AddAuctionTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddAuctionTimeSerieOperationResult AddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer);
 
         /// <summary>
@@ -469,8 +465,8 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The instant of the value</param>
         /// <param name="bid">The bid</param>
         /// <param name="offer">The offer</param>
-        /// <returns></returns>
-        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
+        /// <returns>AddAuctionTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddAuctionTimeSerieOperationResult AddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer);
 
         /// <summary>
@@ -485,7 +481,6 @@ namespace Artesian.SDK.Factory
         /// <param name="offer">The offer to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
         /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddAuctionTimeSerieOperationResult</returns>
         AddAuctionTimeSerieOperationResult TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy);
 
         /// <summary>
@@ -500,7 +495,6 @@ namespace Artesian.SDK.Factory
         /// <param name="offer">The offer to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
         /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddAuctionTimeSerieOperationResult</returns>
         AddAuctionTimeSerieOperationResult TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy);
         
         /// <summary>
@@ -559,7 +553,6 @@ namespace Artesian.SDK.Factory
     /// <remarks>
     /// Common for Actual and Versioned timeserie
     /// </remarks>
-    /// <returns> Marketdata </returns>
     public interface ITimeserieWritable
     {
         /// <summary>
@@ -571,7 +564,7 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The local date of the value</param>
         /// <param name="value">Value</param>
         /// <returns>AddTimeSerieOperationResult</returns>
-        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddTimeSerieOperationResult AddData(LocalDate localDate, double? value);
 
         /// <summary>
@@ -583,7 +576,7 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The instant of the value</param>
         /// <param name="value">Value</param>
         /// <returns>AddTimeSerieOperationResult</returns>
-        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddTimeSerieOperationResult AddData(Instant time, double? value);
 
         /// <summary>
@@ -597,10 +590,10 @@ namespace Artesian.SDK.Factory
         /// <param name="value">The value to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
         /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddTimeSerieOperationResult</returns>
         AddTimeSerieOperationResult TryAddData(LocalDate localDate, double? value, KeyConflictPolicy keyConflictPolicy);
+
         /// <summary>
-        /// Attempts to add a data point to the VersionedTimeSerie for a specific date.
+        /// Attempts to add a data point to the TimeSerie for a specific date.
         /// </summary>
         /// <remarks>
         /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
@@ -610,12 +603,11 @@ namespace Artesian.SDK.Factory
         /// <param name="value">The value to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
         /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddTimeSerieOperationResult</returns>
         AddTimeSerieOperationResult TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy);
 
         /// <summary>
         /// TimeSerie SetData (bulk operation).
-        /// Sets the internal data of the ActualTimeSerie using the provided values,
+        /// Sets the internal data of the TimeSerie using the provided values,
         /// keyed by LocalDateTime.
         /// 
         /// This method performs a bulk operation and does not apply per-record
@@ -643,7 +635,6 @@ namespace Artesian.SDK.Factory
         /// <remarks>
         /// Clear all the data set in the Values
         /// </remarks>
-        /// <returns></returns>
         void ClearData();
 
         /// <summary>
