@@ -92,7 +92,7 @@ namespace Artesian.SDK.Tests.Samples
 
             for (var dt = start; dt <= end; dt = dt.PlusDays(1))
             {
-                writeMarketData.AddData(dt, bids, offs);
+                writeMarketData.TryAddData(dt, bids, offs);
             }
 
             await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));

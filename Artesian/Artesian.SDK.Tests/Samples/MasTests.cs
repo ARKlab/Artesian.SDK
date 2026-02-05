@@ -69,7 +69,7 @@ namespace Artesian.SDK.Tests.Samples
             //CHECK UPSERT MODE MERGE
             foreach (var p in products1)
             {
-                writableMas.AddData(date, p, new MarketAssessmentValue() 
+                writableMas.TryAddData(date, p, new MarketAssessmentValue() 
                 { 
                     Settlement = value1,
                     Volume = value1
@@ -83,7 +83,7 @@ namespace Artesian.SDK.Tests.Samples
             var writableMasForMerge = mktData.EditMarketAssessment();
             foreach (var p in products2)
             {
-                writableMasForMerge.AddData(date, p, new MarketAssessmentValue() 
+                writableMasForMerge.TryAddData(date, p, new MarketAssessmentValue() 
                 { 
                     Settlement = value2,
                     Volume = value2
@@ -159,7 +159,7 @@ namespace Artesian.SDK.Tests.Samples
             //CHECK UPSERT MODE MERGE
             foreach (var p in products1)
             {
-                writableMas.AddData(date, p, new MarketAssessmentValue()
+                writableMas.TryAddData(date, p, new MarketAssessmentValue()
                 {
                     Settlement = value1,
                     Volume = value1
@@ -173,7 +173,7 @@ namespace Artesian.SDK.Tests.Samples
             var writableMasForReplace = mktData.EditMarketAssessment();
             foreach (var p in products2)
             {
-                writableMasForReplace.AddData(date, p, new MarketAssessmentValue()
+                writableMasForReplace.TryAddData(date, p, new MarketAssessmentValue()
                 {
                     Settlement = value2,
                     Volume = value2

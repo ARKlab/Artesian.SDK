@@ -212,9 +212,9 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The date of the value to add.</param>
         /// <param name="product">The product to add.</param>
         /// <param name="value">The value to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
-        AddAssessmentOperationResult TryAddData(LocalDate localDate, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy);
+        AddAssessmentOperationResult TryAddData(LocalDate localDate, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
 
         /// <summary>
         /// Attempts to add a data point to the MarketAssessment for a specific date.
@@ -226,9 +226,9 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The date of the value to add.</param>
         /// <param name="product">The product to add.</param>
         /// <param name="value">The value to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
-        AddAssessmentOperationResult TryAddData(Instant time, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy);
+        AddAssessmentOperationResult TryAddData(Instant time, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
 
         /// <summary>
         /// MarketAssessment SetData (bulk operation).
@@ -345,9 +345,9 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The date of the value to add.</param>
         /// <param name="product">The product to add.</param>
         /// <param name="value">The value to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        AddTimeSerieOperationResult TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy);
+        AddTimeSerieOperationResult TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
 
         /// <summary>
         /// Attempts to add a data point to the BidAsk for a specific date.
@@ -359,9 +359,9 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The date of the value to add.</param>
         /// <param name="product">The product to add.</param>
         /// <param name="value">The value to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        AddTimeSerieOperationResult TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy);
+        AddTimeSerieOperationResult TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
 
         /// <summary>
         /// BidAsk SetData (bulk operation).
@@ -477,9 +477,9 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The date of the value to add.</param>
         /// <param name="bid">The bid to add.</param>
         /// <param name="offer">The offer to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        AddAuctionTimeSerieOperationResult TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy);
+        AddAuctionTimeSerieOperationResult TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
 
         /// <summary>
         /// Attempts to add a data point to the AuctionTimeSerie for a specific date.
@@ -491,9 +491,9 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The date of the value to add.</param>
         /// <param name="bid">The bid to add.</param>
         /// <param name="offer">The offer to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        AddAuctionTimeSerieOperationResult TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy);
+        AddAuctionTimeSerieOperationResult TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
         
         /// <summary>
         /// Auction ClearData
@@ -586,9 +586,9 @@ namespace Artesian.SDK.Factory
         /// </remarks>
         /// <param name="localDate">The date of the value to add.</param>
         /// <param name="value">The value to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        AddTimeSerieOperationResult TryAddData(LocalDate localDate, double? value, KeyConflictPolicy keyConflictPolicy);
+        AddTimeSerieOperationResult TryAddData(LocalDate localDate, double? value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
 
         /// <summary>
         /// Attempts to add a data point to the TimeSerie for a specific date.
@@ -599,9 +599,9 @@ namespace Artesian.SDK.Factory
         /// </remarks>
         /// <param name="time">The date of the value to add.</param>
         /// <param name="value">The value to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        AddTimeSerieOperationResult TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy);
+        AddTimeSerieOperationResult TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
 
         /// <summary>
         /// TimeSerie SetData (bulk operation).

@@ -74,7 +74,7 @@ namespace Artesian.SDK.Tests.Samples
             //CHECK UPSERT MODE MERGE
             for (var dt = start1; dt <= end1; dt = dt.PlusDays(1))
             {
-                writeMarketData.AddData(dt, value1);
+                writeMarketData.TryAddData(dt, value1);
                 values.Add(dt.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[originalTimezone]).ToDateTimeOffset(), value1);
             }
 
@@ -85,7 +85,7 @@ namespace Artesian.SDK.Tests.Samples
             var writeMarketData2 = mktData.EditVersioned(versionName);
             for (var dt = start2; dt <= end2; dt = dt.PlusDays(1))
             {
-                writeMarketData2.AddData(dt, value2);
+                writeMarketData2.TryAddData(dt, value2);
                 if (values.ContainsKey(dt.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[originalTimezone]).ToDateTimeOffset()))
                     values[dt.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[originalTimezone]).ToDateTimeOffset()] = value2;
                 else
@@ -258,7 +258,7 @@ namespace Artesian.SDK.Tests.Samples
             //CHECK UPSERT MODE REPLACE
             for (var dt = start1; dt <= end1; dt = dt.PlusDays(1))
             {
-                writeMarketData.AddData(dt, value1);
+                writeMarketData.TryAddData(dt, value1);
                 //these will be replaced so set them to null in the comparison set
                 values.Add(dt.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[originalTimezone]).ToDateTimeOffset(), null); 
             }
@@ -270,7 +270,7 @@ namespace Artesian.SDK.Tests.Samples
             var writeMarketData2 = mktData.EditVersioned(versionName);
             for (var dt = start2; dt <= end2; dt = dt.PlusDays(1))
             {
-                writeMarketData2.AddData(dt, value2);
+                writeMarketData2.TryAddData(dt, value2);
                 if (values.ContainsKey(dt.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[originalTimezone]).ToDateTimeOffset()))
                     values[dt.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[originalTimezone]).ToDateTimeOffset()] = value2;
                 else

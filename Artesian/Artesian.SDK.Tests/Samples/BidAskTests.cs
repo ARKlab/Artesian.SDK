@@ -167,7 +167,7 @@ namespace Artesian.SDK.Tests.Samples
             //CHECK UPSERT MODE REPLACE
             foreach (var p in products1)
             {
-                writableBidAsk.AddData(date, p, new BidAskValue()
+                writableBidAsk.TryAddData(date, p, new BidAskValue()
                 {
                     BestAskPrice = value1,
                     BestBidPrice = value1,
@@ -185,7 +185,7 @@ namespace Artesian.SDK.Tests.Samples
             var writableBidAskForMerge = mktData.EditBidAsk();
             foreach (var p in products2)
             {
-                writableBidAskForMerge.AddData(date, p, new BidAskValue()
+                writableBidAskForMerge.TryAddData(date, p, new BidAskValue()
                 {
                     BestAskPrice = value2,
                     BestBidPrice = value2,

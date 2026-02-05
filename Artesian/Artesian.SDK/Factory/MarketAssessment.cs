@@ -94,10 +94,9 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The date of the value to add.</param>
         /// <param name="product">The product to add.</param>
         /// <param name="value">The value to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddAssessmentOperationResult</returns>
-        public AddAssessmentOperationResult TryAddData(LocalDate localDate, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy)
+        public AddAssessmentOperationResult TryAddData(LocalDate localDate, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
                 throw new MarketAssessmentException("This MarketData has Time granularity. Use TryAddData(Instant time, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy)");
@@ -117,10 +116,9 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The date of the value to add.</param>
         /// <param name="product">The product to add.</param>
         /// <param name="value">The value to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddAssessmentOperationResult</returns>
-        public AddAssessmentOperationResult TryAddData(Instant time, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy)
+        public AddAssessmentOperationResult TryAddData(Instant time, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
                 throw new MarketAssessmentException("This MarketData has Date granularity. Use TryAddData(LocalDate localDate, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy)");

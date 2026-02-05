@@ -99,10 +99,9 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The date of the value to add.</param>
         /// <param name="bid">The bid to add.</param>
         /// <param name="offer">The offer to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddAuctionTimeSerieOperationResult</returns>
-        public AddAuctionTimeSerieOperationResult TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)
+        public AddAuctionTimeSerieOperationResult TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
                 throw new AuctionTimeSerieException("This MarketData has Time granularity. Use TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)");
@@ -122,10 +121,9 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The date of the value to add.</param>
         /// <param name="bid">The bid to add.</param>
         /// <param name="offer">The offer to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddAuctionTimeSerieOperationResult</returns>
-        public AddAuctionTimeSerieOperationResult TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)
+        public AddAuctionTimeSerieOperationResult TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
                 throw new AuctionTimeSerieException("This MarketData has Date granularity. Use TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy)");

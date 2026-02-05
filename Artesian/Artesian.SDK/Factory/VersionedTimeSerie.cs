@@ -122,10 +122,9 @@ namespace Artesian.SDK.Factory
         /// </remarks>
         /// <param name="localDate">The date of the value to add.</param>
         /// <param name="value">The value to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddTimeSerieOperationResult</returns>
-        public AddTimeSerieOperationResult TryAddData(LocalDate localDate, double? value, KeyConflictPolicy keyConflictPolicy)
+        public AddTimeSerieOperationResult TryAddData(LocalDate localDate, double? value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
         {
             Guard.IsNotNull(_entity);
 
@@ -146,10 +145,9 @@ namespace Artesian.SDK.Factory
         /// </remarks>
         /// <param name="time">The date of the value to add.</param>
         /// <param name="value">The value to add.</param>
-        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip).</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
         /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        /// <returns>AddTimeSerieOperationResult</returns>
-        public AddTimeSerieOperationResult TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy)
+        public AddTimeSerieOperationResult TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
         {
             Guard.IsNotNull(_entity);
 
