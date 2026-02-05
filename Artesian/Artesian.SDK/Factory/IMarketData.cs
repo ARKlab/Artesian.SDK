@@ -237,22 +237,23 @@ namespace Artesian.SDK.Factory
         /// Sets the internal data of the ActualTimeSerie using the provided values,
         /// keyed by LocalDateTime.
         /// 
-        /// This method performs a bulk operation and does not apply per-record
-        /// conflict resolution or validation on the input dictionary.
+        /// <summary>
+        /// Sets the assessment data for this MarketAssessment instance using the specified mode.
         /// </summary>
+        /// <param name="values">
+        /// The list of assessment elements to apply to the MarketAssessment.
+        /// Each element represents an assessment value for a specific time and bucket.
+        /// </param>
+        /// <param name="setMode">
+        /// Determines how the provided assessment data is applied to the internal collection.
+        /// Use <see cref="SetMode.Init"/> to initialize data only when empty, or
+        /// <see cref="SetMode.Replace"/> to clear and fully replace existing data.
+        /// </param>
         /// <remarks>
-        /// BulkSetPolicy options:
-        /// Init:
-        ///   Initializes the internal data only if it is empty;
-        ///   otherwise an exception is thrown.
-        /// 
-        /// Replace:
-        ///   Clears and completely replaces the internal data with the provided values.
-        /// 
-        /// This method is intended as a fast-path for scenarios where the caller
-        /// has already constructed and validated the dictionary.
-        /// Any remaining validations (e.g. granularity constraints) are enforced
-        /// by server-side logic outside of this method.
+        /// This method performs a bulk operation over the provided assessment elements and
+        /// does not apply per-record conflict resolution or validation beyond basic checks.
+        /// Any remaining validations (for example, granularity or schema constraints) are
+        /// enforced by server-side logic outside of this method.
         /// </remarks>
         void SetData(List<AssessmentElement> values, BulkSetPolicy bulkSetPolicy);
 
