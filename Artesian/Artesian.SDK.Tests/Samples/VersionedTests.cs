@@ -144,8 +144,6 @@ namespace Artesian.SDK.Tests.Samples
                 MarketDataId = 0,
             };
 
-            var values = new Dictionary<LocalDateTime, double?>();
-
             var mktData = marketDataService.GetMarketDataReference(
                 new MarketDataIdentifier(
                     marketDataEntity.ProviderName,

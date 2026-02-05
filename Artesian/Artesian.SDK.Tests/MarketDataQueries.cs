@@ -176,7 +176,6 @@ namespace Artesian.SDK.Tests
         [Test]
         public async Task MarketDataServiceTryAddData()
         {
-            var qs = new QueryService(_cfg);
             var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
 
             var providerName = "TestName";
@@ -216,8 +215,6 @@ namespace Artesian.SDK.Tests
 
             var timeSerie = marketData.EditActual();
 
-            var curveId = marketData.MarketDataId!.Value;
-
             var value = 10;
             var valueUpdated = 14;
             var valueUpdated1 = 18;
@@ -237,7 +234,7 @@ namespace Artesian.SDK.Tests
 
             try
             {
-                result = timeSerie.TryAddData(date, valueUpdated1, KeyConflictPolicy.Throw);
+                timeSerie.TryAddData(date, valueUpdated1, KeyConflictPolicy.Throw);
             }
             catch (ArtesianSdkClientException ex)
             {
