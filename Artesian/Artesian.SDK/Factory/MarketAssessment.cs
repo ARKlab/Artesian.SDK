@@ -21,7 +21,7 @@ namespace Artesian.SDK.Factory
         private readonly IMarketDataService _marketDataService;
         private readonly MarketDataEntity.Output _entity;
         private readonly MarketDataIdentifier _identifier;
-        private List<AssessmentElement> _values = new();
+        private readonly List<AssessmentElement> _values = new();
 
         /// <summary>
         /// MarketAssessment Constructor
@@ -221,13 +221,13 @@ namespace Artesian.SDK.Factory
             switch (bulkSetPolicy)
             {
                 case BulkSetPolicy.Replace:
-                    _values = values;
+                    _values.AddRange(values);
                     break;
                 case BulkSetPolicy.Init:
                     if (_values.Any())
                         throw new ArtesianSdkClientException("Data already present, cannot be updated!");
                     else
-                        _values = values;
+                        _values.AddRange(values);
                     break;
                 default:
                     throw new NotSupportedException("BulkSetPolicy not supported " + bulkSetPolicy);
