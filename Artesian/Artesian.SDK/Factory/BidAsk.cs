@@ -222,8 +222,7 @@ namespace Artesian.SDK.Factory
                 case BulkSetPolicy.Init:
                     if (_values.Any())
                         throw new ArtesianSdkClientException("Data already present, cannot be updated!");
-                    else
-                        _values = values;
+                    _values = values;
                     break;
                 default:
                     throw new NotSupportedException("BulkSetPolicy not supported " + bulkSetPolicy);
