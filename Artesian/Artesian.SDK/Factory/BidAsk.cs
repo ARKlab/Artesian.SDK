@@ -218,11 +218,13 @@ namespace Artesian.SDK.Factory
             {
                 case BulkSetPolicy.Replace:
                     _values = values;
+                    BidAsks = new ReadOnlyCollection<BidAskElement>(_values);
                     break;
                 case BulkSetPolicy.Init:
                     if (_values.Any())
                         throw new ArtesianSdkClientException("Data already present, cannot be updated!");
                     _values = values;
+                    BidAsks = new ReadOnlyCollection<BidAskElement>(_values);
                     break;
                 default:
                     throw new NotSupportedException("BulkSetPolicy not supported " + bulkSetPolicy);

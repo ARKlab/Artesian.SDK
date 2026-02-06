@@ -177,6 +177,11 @@ namespace Artesian.SDK.Factory
     public interface IMarketAssessmentWritable
     {
         /// <summary>
+        /// MarketData AssessmentElement
+        /// </summary>
+        IReadOnlyCollection<AssessmentElement> Assessments { get; }
+
+        /// <summary>
         /// MarketAssessment AddData
         /// </summary>
         /// <remarks>
@@ -309,6 +314,11 @@ namespace Artesian.SDK.Factory
     /// </summary>
     public interface IBidAskWritable
     {
+        /// <summary>
+        /// BidAsk BidAskElement
+        /// </summary>
+        IReadOnlyCollection<BidAskElement> BidAsks { get; }
+
         /// <summary>
         /// BidAsk AddData
         /// </summary>
@@ -553,6 +563,11 @@ namespace Artesian.SDK.Factory
     /// </remarks>
     public interface ITimeserieWritable
     {
+        /// <summary>
+        /// TimeSerie Curve Values
+        /// </summary>
+        IReadOnlyDictionary<LocalDateTime, double?> Values { get; }
+
         /// <summary>
         /// TimeSerie AddData
         /// </summary>
