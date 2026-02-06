@@ -60,6 +60,7 @@ namespace Artesian.SDK.Factory
         /// Add Data on to the curve with localDate
         /// </remarks>
         /// <returns>AddBidAskOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddBidAskOperationResult AddData(LocalDate localDate, string product, BidAskValue value)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
@@ -74,12 +75,84 @@ namespace Artesian.SDK.Factory
         /// Add Data on to the curve with Instant
         /// </remarks>
         /// <returns>AddBidAskOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddBidAskOperationResult AddData(Instant time, string product, BidAskValue value)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
                 throw new BidAskException("This MarketData has Date granularity. Use AddData(LocalDate date...)");
 
             return _addBidAsk(time.InUtc().LocalDateTime, product, value);
+        }
+
+        /// <summary>
+        /// Attempts to add a data point to the BidAsk for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddBidAskOperationResult"/> indicating the outcome of the operation.</returns>
+        public AddBidAskOperationResult TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
+        {
+            if (_entity.OriginalGranularity.IsTimeGranularity())
+                throw new BidAskException("This MarketData has Time granularity. Use TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)");
+
+            var localTime = localDate.AtMidnight();
+
+            return _tryAdd(localTime, product, value, keyConflictPolicy);
+        }
+
+        /// <summary>
+        /// Attempts to add a data point to the BidAsk for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddBidAskOperationResult"/> indicating the outcome of the operation.</returns>
+        public AddBidAskOperationResult TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
+        {
+            if (!_entity.OriginalGranularity.IsTimeGranularity())
+                throw new BidAskException("This MarketData has Date granularity. Use TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)");
+
+            var localTime = time.InUtc().LocalDateTime;
+
+            return _tryAdd(localTime, product, value, keyConflictPolicy);
+        }
+
+        /// <summary>
+        /// BidAsk SetData (bulk operation).
+        /// Sets the internal data of the BidAsk using the provided values,
+        /// keyed by LocalDateTime.
+        /// 
+        /// This method performs a bulk operation and does not apply per-record
+        /// conflict resolution or validation on the input dictionary.
+        /// </summary>
+        /// <remarks>
+        /// BulkSetPolicy options:
+        /// Init:
+        ///   Initializes the internal data only if it is empty;
+        ///   otherwise an exception is thrown.
+        /// 
+        /// Replace:
+        ///   Clears and completely replaces the internal data with the provided values.
+        /// 
+        /// This method is intended as a fast-path for scenarios where the caller
+        /// has already constructed and validated the dictionary.
+        /// Any remaining validations (e.g. granularity constraints) are enforced
+        /// by server-side logic outside of this method.
+        /// </remarks>
+        public void SetData(List<BidAskElement> values, BulkSetPolicy bulkSetPolicy)
+        {
+            _setData(values, bulkSetPolicy);
         }
 
         private AddBidAskOperationResult _addBidAsk(LocalDateTime reportTime, string product, BidAskValue value)
@@ -107,6 +180,57 @@ namespace Artesian.SDK.Factory
 
             _values.Add(new BidAskElement(reportTime, product, value));
             return AddBidAskOperationResult.BidAskAdded;
+        }
+
+        private AddBidAskOperationResult _tryAdd(LocalDateTime reportTime, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)
+        {
+            var valueToAdd = new BidAskElement(reportTime, product, value);
+            var existing = _values.FirstOrDefault(x => x.ReportTime == reportTime && x.Product == product);
+
+            switch (keyConflictPolicy)
+            {
+                case KeyConflictPolicy.Overwrite:
+                    if (existing != null)
+                        _values.Remove(existing);
+                    _values.Add(valueToAdd);
+                    return AddBidAskOperationResult.BidAskAdded;
+
+                case KeyConflictPolicy.Throw:
+                    if (existing != null)
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    _values.Add(valueToAdd);
+                    return AddBidAskOperationResult.BidAskAdded;
+
+                case KeyConflictPolicy.Skip:
+                    if (existing != null)
+                        return AddBidAskOperationResult.ProductAlreadyPresent;
+                    _values.Add(valueToAdd);
+                    return AddBidAskOperationResult.BidAskAdded;
+
+                default:
+                    throw new NotSupportedException("KeyConflictPolicy not supported " + keyConflictPolicy);
+            }
+        }
+
+        private void _setData(List<BidAskElement> values, BulkSetPolicy bulkSetPolicy)
+        {
+            switch (bulkSetPolicy)
+            {
+                case BulkSetPolicy.Replace:
+                    _values.Clear();
+                    _values.AddRange(values);
+                    BidAsks = new ReadOnlyCollection<BidAskElement>(_values);
+                    break;
+                case BulkSetPolicy.Init:
+                    if (_values.Any())
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    _values.Clear();
+                    _values.AddRange(values);
+                    BidAsks = new ReadOnlyCollection<BidAskElement>(_values);
+                    break;
+                default:
+                    throw new NotSupportedException("BulkSetPolicy not supported " + bulkSetPolicy);
+            }
         }
 
         /// <summary>
@@ -201,34 +325,34 @@ namespace Artesian.SDK.Factory
 
             await _marketDataService.DeleteCurveDataAsync(data, ctk).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// BidAskElement entity
+    /// </summary>
+    public sealed record BidAskElement
+    {
+        /// <summary>
+        /// BidAskElement constructor
+        /// </summary>
+        public BidAskElement(LocalDateTime reportTime, string product, BidAskValue value)
+        {
+            ReportTime = reportTime;
+            Product = product;
+            Value = value;
+        }
 
         /// <summary>
-        /// BidAskElement entity
+        /// BidAskElement ReportTime
         /// </summary>
-        public sealed record BidAskElement
-        {
-            /// <summary>
-            /// BidAskElement constructor
-            /// </summary>
-            public BidAskElement(LocalDateTime reportTime, string product, BidAskValue value)
-            {
-                ReportTime = reportTime;
-                Product = product;
-                Value = value;
-            }
-
-            /// <summary>
-            /// BidAskElement ReportTime
-            /// </summary>
-            public LocalDateTime ReportTime { get; init; }
-            /// <summary>
-            /// BidAskElement Product
-            /// </summary>
-            public string Product { get; init; }
-            /// <summary>
-            /// BidAskElement BidAskValue
-            /// </summary>
-            public BidAskValue Value { get; init; }
-        }
+        public LocalDateTime ReportTime { get; init; }
+        /// <summary>
+        /// BidAskElement Product
+        /// </summary>
+        public string Product { get; init; }
+        /// <summary>
+        /// BidAskElement BidAskValue
+        /// </summary>
+        public BidAskValue Value { get; init; }
     }
 }

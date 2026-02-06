@@ -1,7 +1,9 @@
+using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
 
 using NodaTime;
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -175,6 +177,11 @@ namespace Artesian.SDK.Factory
     public interface IMarketAssessmentWritable
     {
         /// <summary>
+        /// MarketData AssessmentElement
+        /// </summary>
+        IReadOnlyCollection<AssessmentElement> Assessments { get; }
+
+        /// <summary>
         /// MarketAssessment AddData
         /// </summary>
         /// <remarks>
@@ -183,7 +190,8 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The local date of the value</param>
         /// <param name="product">The product</param>
         /// <param name="value">Market assessment Value</param>
-        /// <returns></returns>
+        /// <returns>AddAssessmentOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddAssessmentOperationResult AddData(LocalDate localDate, string product, MarketAssessmentValue value);
 
         /// <summary>
@@ -195,8 +203,60 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The instant of the value</param>
         /// <param name="product">The product</param>
         /// <param name="value">Market assessment Value</param>
-        /// <returns></returns>
+        /// <returns>AddAssessmentOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddAssessmentOperationResult AddData(Instant time, string product, MarketAssessmentValue value);
+        
+        /// <summary>
+        /// Attempts to add a data point to the MarketAssessment for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
+        AddAssessmentOperationResult TryAddData(LocalDate localDate, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
+
+        /// <summary>
+        /// Attempts to add a data point to the MarketAssessment for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddAssessmentOperationResult"/> indicating the outcome of the operation.</returns>
+        AddAssessmentOperationResult TryAddData(Instant time, string product, MarketAssessmentValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
+
+        /// <summary>
+        /// MarketAssessment SetData (bulk operation).
+        /// Sets the internal data of the MarketAssessment using the provided values, keyed by LocalDateTime.
+        /// 
+        /// This method performs a bulk operation and does not apply per-record
+        /// conflict resolution or validation on the input dictionary.
+        /// </summary>
+        /// <remarks>
+        /// BulkSetPolicy options:
+        /// Init:
+        ///   Initializes the internal data only if it is empty;
+        ///   otherwise an exception is thrown.
+        /// 
+        /// Replace:
+        ///   Clears and completely replaces the internal data with the provided values.
+        /// 
+        /// This method is intended as a fast-path for scenarios where the caller
+        /// has already constructed and validated the dictionary.
+        /// Any remaining validations (e.g. granularity constraints) are enforced
+        /// by server-side logic outside of this method.
+        /// </remarks>
+        void SetData(List<AssessmentElement> values, BulkSetPolicy bulkSetPolicy);
 
         /// <summary>
         /// MarketAssessment ClearData
@@ -255,6 +315,11 @@ namespace Artesian.SDK.Factory
     public interface IBidAskWritable
     {
         /// <summary>
+        /// BidAsk BidAskElement
+        /// </summary>
+        IReadOnlyCollection<BidAskElement> BidAsks { get; }
+
+        /// <summary>
         /// BidAsk AddData
         /// </summary>
         /// <remarks>
@@ -263,7 +328,8 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The local date of the value</param>
         /// <param name="product">The product</param>
         /// <param name="value">Bid Ask Value</param>
-        /// <returns></returns>
+        /// <returns>AddBidAskOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddBidAskOperationResult AddData(LocalDate localDate, string product, BidAskValue value);
 
         /// <summary>
@@ -275,8 +341,60 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The instant of the value</param>
         /// <param name="product">The product</param>
         /// <param name="value">Bid Ask Value</param>
-        /// <returns></returns>
+        /// <returns>AddBidAskOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddBidAskOperationResult AddData(Instant time, string product, BidAskValue value);
+
+        /// <summary>
+        /// Attempts to add a data point to the BidAsk for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddBidAskOperationResult"/> indicating the outcome of the operation.</returns>
+        AddBidAskOperationResult TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
+
+        /// <summary>
+        /// Attempts to add a data point to the BidAsk for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="product">The product to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddBidAskOperationResult"/> indicating the outcome of the operation.</returns>
+        AddBidAskOperationResult TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
+
+        /// <summary>
+        /// BidAsk SetData (bulk operation).
+        /// Sets the internal data of the BidAsk using the provided values, keyed by LocalDateTime.
+        /// 
+        /// This method performs a bulk operation and does not apply per-record
+        /// conflict resolution or validation on the input dictionary.
+        /// </summary>
+        /// <remarks>
+        /// BulkSetPolicy options:
+        /// Init:
+        ///   Initializes the internal data only if it is empty;
+        ///   otherwise an exception is thrown.
+        /// 
+        /// Replace:
+        ///   Clears and completely replaces the internal data with the provided values.
+        /// 
+        /// This method is intended as a fast-path for scenarios where the caller
+        /// has already constructed and validated the dictionary.
+        /// Any remaining validations (e.g. granularity constraints) are enforced
+        /// by server-side logic outside of this method.
+        /// </remarks>
+        void SetData(List<BidAskElement> values, BulkSetPolicy bulkSetPolicy);
 
         /// <summary>
         /// BidAsk ClearData
@@ -342,7 +460,8 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The local date of the value</param>
         /// <param name="bid">The bid</param>
         /// <param name="offer">The offer</param>
-        /// <returns></returns>
+        /// <returns>AddAuctionTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddAuctionTimeSerieOperationResult AddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer);
 
         /// <summary>
@@ -354,9 +473,38 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The instant of the value</param>
         /// <param name="bid">The bid</param>
         /// <param name="offer">The offer</param>
-        /// <returns></returns>
+        /// <returns>AddAuctionTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddAuctionTimeSerieOperationResult AddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer);
 
+        /// <summary>
+        /// Attempts to add a data point to the AuctionTimeSerie for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="bid">The bid to add.</param>
+        /// <param name="offer">The offer to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        AddAuctionTimeSerieOperationResult TryAddData(LocalDate localDate, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
+
+        /// <summary>
+        /// Attempts to add a data point to the AuctionTimeSerie for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="bid">The bid to add.</param>
+        /// <param name="offer">The offer to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddAuctionTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        AddAuctionTimeSerieOperationResult TryAddData(Instant time, AuctionBidValue[] bid, AuctionBidValue[] offer, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
+        
         /// <summary>
         /// Auction ClearData
         /// </summary>
@@ -413,9 +561,13 @@ namespace Artesian.SDK.Factory
     /// <remarks>
     /// Common for Actual and Versioned timeserie
     /// </remarks>
-    /// <returns> Marketdata </returns>
     public interface ITimeserieWritable
     {
+        /// <summary>
+        /// TimeSerie Curve Values
+        /// </summary>
+        IReadOnlyDictionary<LocalDateTime, double?> Values { get; }
+
         /// <summary>
         /// TimeSerie AddData
         /// </summary>
@@ -425,6 +577,7 @@ namespace Artesian.SDK.Factory
         /// <param name="localDate">The local date of the value</param>
         /// <param name="value">Value</param>
         /// <returns>AddTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddTimeSerieOperationResult AddData(LocalDate localDate, double? value);
 
         /// <summary>
@@ -436,7 +589,58 @@ namespace Artesian.SDK.Factory
         /// <param name="time">The instant of the value</param>
         /// <param name="value">Value</param>
         /// <returns>AddTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...) for per-record conflict handling", false)]
         AddTimeSerieOperationResult AddData(Instant time, double? value);
+
+        /// <summary>
+        /// Attempts to add a data point to the TimeSerie for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        AddTimeSerieOperationResult TryAddData(LocalDate localDate, double? value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
+
+        /// <summary>
+        /// Attempts to add a data point to the TimeSerie for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        AddTimeSerieOperationResult TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
+
+        /// <summary>
+        /// TimeSerie SetData (bulk operation).
+        /// Sets the internal data of the TimeSerie using the provided values,
+        /// keyed by LocalDateTime.
+        /// 
+        /// This method performs a bulk operation and does not apply per-record
+        /// conflict resolution or validation on the input dictionary.
+        /// </summary>
+        /// <remarks>
+        /// BulkSetPolicy options:
+        /// Init:
+        ///   Initializes the internal data only if it is empty;
+        ///   otherwise an exception is thrown.
+        /// 
+        /// Replace:
+        ///   Clears and completely replaces the internal data with the provided values.
+        /// 
+        /// This method is intended as a fast-path for scenarios where the caller
+        /// has already constructed and validated the dictionary.
+        /// Any remaining validations (e.g. granularity constraints) are enforced
+        /// by server-side logic outside of this method.
+        /// </remarks>
+        void SetData(Dictionary<LocalDateTime, double?> values, BulkSetPolicy bulkSetPolicy);
 
         /// <summary>
         /// TimeSerie ClearData
@@ -444,7 +648,6 @@ namespace Artesian.SDK.Factory
         /// <remarks>
         /// Clear all the data set in the Values
         /// </remarks>
-        /// <returns></returns>
         void ClearData();
 
         /// <summary>
