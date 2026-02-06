@@ -4,7 +4,7 @@ using Artesian.SDK.Dto.UoM;
 using Artesian.SDK.Factory;
 using Artesian.SDK.Service;
 
-using FluentAssertions;
+using AwesomeAssertions;
 
 using Flurl.Http.Testing;
 
