@@ -1,10 +1,13 @@
-using Artesian.SDK.Dto;
 using Artesian.SDK.Common;
+using Artesian.SDK.Dto;
 using Artesian.SDK.Service;
+
 using NodaTime;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +21,7 @@ namespace Artesian.SDK.Factory
         private readonly IMarketDataService _marketDataService;
         private readonly MarketDataEntity.Output _entity;
         private readonly MarketDataIdentifier _identifier;
-        private readonly Dictionary<LocalDateTime, double?> _values = new Dictionary<LocalDateTime, double?>();
+        private Dictionary<LocalDateTime, double?> _values = new Dictionary<LocalDateTime, double?>();
 
         /// <summary>
         /// ActualTimeSerie Constructor
@@ -54,9 +57,10 @@ namespace Artesian.SDK.Factory
         /// ActualTimeSerie AddData
         /// </summary>
         /// <remarks>
-        /// Add Data on to the curve with localDate
+        /// Add Data on to the curve with LocalDate
         /// </remarks>
         /// <returns>AddTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddTimeSerieOperationResult AddData(LocalDate localDate, double? value)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
@@ -73,6 +77,7 @@ namespace Artesian.SDK.Factory
         /// Add Data on to the curve with Instant
         /// </remarks>
         /// <returns>AddTimeSerieOperationResult</returns>
+        [Obsolete("AddData is deprecated. Use TryAddData(...)", false)]
         public AddTimeSerieOperationResult AddData(Instant time, double? value)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
@@ -81,6 +86,75 @@ namespace Artesian.SDK.Factory
             var localTime = time.InUtc().LocalDateTime;
 
             return _add(localTime, value);
+        }
+
+        /// <summary>
+        /// Attempts to add a data point to the ActualTimeSerie for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="LocalDate"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="localDate">The date of the value to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        public AddTimeSerieOperationResult TryAddData(LocalDate localDate, double? value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
+        {
+            if (_entity.OriginalGranularity.IsTimeGranularity())
+                throw new ActualTimeSerieException("This MarketData has Time granularity. Use TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy)");
+
+            var localTime = localDate.AtMidnight();
+
+            return _tryAdd(localTime, value, keyConflictPolicy);
+        }
+
+        /// <summary>
+        /// Attempts to add a data point to the ActualTimeSerie for a specific date.
+        /// </summary>
+        /// <remarks>
+        /// Adds a value to the series keyed by <see cref="Instant"/>. The behavior when a value for the same date already exists
+        /// is controlled by <paramref name="keyConflictPolicy"/>.
+        /// </remarks>
+        /// <param name="time">The date of the value to add.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
+        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
+        public AddTimeSerieOperationResult TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
+        {
+            if (!_entity.OriginalGranularity.IsTimeGranularity())
+                throw new ActualTimeSerieException("This MarketData has Date granularity. Use TryAddData(LocalDate date, double? value, KeyConflictPolicy keyConflictPolicy)");
+
+            var localTime = time.InUtc().LocalDateTime;
+
+            return _tryAdd(localTime, value, keyConflictPolicy);
+        }
+
+        /// <summary>
+        /// ActualTimeSerie SetData (bulk operation).
+        /// Sets the internal data of the ActualTimeSerie using the provided values,
+        /// keyed by LocalDateTime.
+        /// 
+        /// This method performs a bulk operation and does not apply per-record
+        /// conflict resolution or validation on the input dictionary.
+        /// </summary>
+        /// <remarks>
+        /// BulkSetPolicy options:
+        /// Init:
+        ///   Initializes the internal data only if it is empty;
+        ///   otherwise an exception is thrown.
+        /// 
+        /// Replace:
+        ///   Clears and completely replaces the internal data with the provided values.
+        /// 
+        /// This method is intended as a fast-path for scenarios where the caller
+        /// has already constructed and validated the dictionary.
+        /// Any remaining validations (e.g. granularity constraints) are enforced
+        /// by server-side logic outside of this method.
+        /// </remarks>
+        public void SetData(Dictionary<LocalDateTime, double?> values, BulkSetPolicy bulkSetPolicy)
+        {
+            _setData(values, bulkSetPolicy);
         }
 
         private AddTimeSerieOperationResult _add(LocalDateTime localTime, double? value)
@@ -103,6 +177,52 @@ namespace Artesian.SDK.Factory
 
             _values.Add(localTime, value);
             return AddTimeSerieOperationResult.ValueAdded;
+        }
+
+        private AddTimeSerieOperationResult _tryAdd(LocalDateTime localTime, double? value, KeyConflictPolicy keyConflictPolicy)
+        {
+            var exists = _values.ContainsKey(localTime);
+
+            switch (keyConflictPolicy)
+            {
+                case KeyConflictPolicy.Overwrite:
+                    if (exists)
+                    {
+                        _values[localTime] = value;
+                        return AddTimeSerieOperationResult.ValueAdded;
+                    }
+                    return _add(localTime, value);
+                case KeyConflictPolicy.Throw:
+                    if (exists)
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    return _add(localTime, value);
+                case KeyConflictPolicy.Skip:
+                    if (exists)
+                        return AddTimeSerieOperationResult.TimeAlreadyPresent;
+                    return _add(localTime, value);
+                default:
+                    throw new NotSupportedException("KeyConflictPolicy not supported " + keyConflictPolicy);
+            }
+        }
+
+        private void _setData(Dictionary<LocalDateTime, double?> values, BulkSetPolicy bulkSetPolicy)
+        {
+            switch (bulkSetPolicy)
+            {
+                case BulkSetPolicy.Replace:
+                    _values = values;
+                    Values = new ReadOnlyDictionary<LocalDateTime, double?>(_values);
+                    break;
+                case BulkSetPolicy.Init:
+                    if (_values.Any())
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
+                    else
+                        _values = values;
+                    Values = new ReadOnlyDictionary<LocalDateTime, double?>(_values);
+                    break;
+                default:
+                    throw new NotSupportedException("BulkSetPolicy not supported " + bulkSetPolicy);
+            }
         }
 
         /// <summary>
