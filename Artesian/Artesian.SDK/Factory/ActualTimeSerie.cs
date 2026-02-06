@@ -218,7 +218,7 @@ namespace Artesian.SDK.Factory
                         throw new ArtesianSdkClientException("Data already present, cannot be updated!");
                     else
                         _values = values;
-                        Values = new ReadOnlyDictionary<LocalDateTime, double?>(_values);
+                    Values = new ReadOnlyDictionary<LocalDateTime, double?>(_values);
                     break;
                 default:
                     throw new NotSupportedException("BulkSetPolicy not supported " + bulkSetPolicy);
