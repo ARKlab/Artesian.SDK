@@ -21,7 +21,7 @@ namespace Artesian.SDK.Factory
         private readonly IMarketDataService _marketDataService;
         private readonly MarketDataEntity.Output _entity;
         private readonly MarketDataIdentifier _identifier;
-        private List<BidAskElement> _values = new();
+        private readonly List<BidAskElement> _values = new();
 
         /// <summary>
         /// BidAsks Constructor
@@ -95,8 +95,8 @@ namespace Artesian.SDK.Factory
         /// <param name="product">The product to add.</param>
         /// <param name="value">The value to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
-        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        public AddTimeSerieOperationResult TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
+        /// <returns>An <see cref="AddBidAskOperationResult"/> indicating the outcome of the operation.</returns>
+        public AddBidAskOperationResult TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
         {
             if (_entity.OriginalGranularity.IsTimeGranularity())
                 throw new BidAskException("This MarketData has Time granularity. Use TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)");
@@ -117,8 +117,8 @@ namespace Artesian.SDK.Factory
         /// <param name="product">The product to add.</param>
         /// <param name="value">The value to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
-        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        public AddTimeSerieOperationResult TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
+        /// <returns>An <see cref="AddBidAskOperationResult"/> indicating the outcome of the operation.</returns>
+        public AddBidAskOperationResult TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
                 throw new BidAskException("This MarketData has Date granularity. Use TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)");
@@ -182,7 +182,7 @@ namespace Artesian.SDK.Factory
             return AddBidAskOperationResult.BidAskAdded;
         }
 
-        private AddTimeSerieOperationResult _tryAdd(LocalDateTime reportTime, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)
+        private AddBidAskOperationResult _tryAdd(LocalDateTime reportTime, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy)
         {
             var valueToAdd = new BidAskElement(reportTime, product, value);
             var existing = _values.FirstOrDefault(x => x.ReportTime == reportTime && x.Product == product);
@@ -193,19 +193,19 @@ namespace Artesian.SDK.Factory
                     if (existing != null)
                         _values.Remove(existing);
                     _values.Add(valueToAdd);
-                    return AddTimeSerieOperationResult.ValueAdded;
+                    return AddBidAskOperationResult.BidAskAdded;
 
                 case KeyConflictPolicy.Throw:
                     if (existing != null)
                         throw new ArtesianSdkClientException("Data already present, cannot be updated!");
                     _values.Add(valueToAdd);
-                    return AddTimeSerieOperationResult.ValueAdded;
+                    return AddBidAskOperationResult.BidAskAdded;
 
                 case KeyConflictPolicy.Skip:
                     if (existing != null)
-                        return AddTimeSerieOperationResult.TimeAlreadyPresent;
+                        return AddBidAskOperationResult.ProductAlreadyPresent;
                     _values.Add(valueToAdd);
-                    return AddTimeSerieOperationResult.ValueAdded;
+                    return AddBidAskOperationResult.BidAskAdded;
 
                 default:
                     throw new NotSupportedException("KeyConflictPolicy not supported " + keyConflictPolicy);
@@ -223,8 +223,7 @@ namespace Artesian.SDK.Factory
                 case BulkSetPolicy.Init:
                     if (_values.Any())
                         throw new ArtesianSdkClientException("Data already present, cannot be updated!");
-                    else
-                        _values = values;
+                    _values = values;
                     BidAsks = new ReadOnlyCollection<BidAskElement>(_values);
                     break;
                 default:
