@@ -221,15 +221,16 @@ namespace Artesian.SDK.Factory
             switch (bulkSetPolicy)
             {
                 case BulkSetPolicy.Replace:
-                    _values = values;
+                    _values.Clear();
+                    _values.AddRange(values);
                     Assessments = new ReadOnlyCollection<AssessmentElement>(_values);
                     break;
                 case BulkSetPolicy.Init:
                     if (_values.Any())
-                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");
-                    else
-                        _values = values;
-                        Assessments = new ReadOnlyCollection<AssessmentElement>(_values);
+                        throw new ArtesianSdkClientException("Data already present, cannot be updated!");                    
+                    _values.Clear();
+                    _values.AddRange(values);
+                    Assessments = new ReadOnlyCollection<AssessmentElement>(_values);
                     break;
                 default:
                     throw new NotSupportedException("BulkSetPolicy not supported " + bulkSetPolicy);

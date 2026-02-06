@@ -217,13 +217,15 @@ namespace Artesian.SDK.Factory
             switch (bulkSetPolicy)
             {
                 case BulkSetPolicy.Replace:
-                    _values = values;
+                    _values.Clear();
+                    _values.AddRange(values);
                     BidAsks = new ReadOnlyCollection<BidAskElement>(_values);
                     break;
                 case BulkSetPolicy.Init:
                     if (_values.Any())
                         throw new ArtesianSdkClientException("Data already present, cannot be updated!");
-                    _values = values;
+                    _values.Clear();
+                    _values.AddRange(values);
                     BidAsks = new ReadOnlyCollection<BidAskElement>(_values);
                     break;
                 default:
