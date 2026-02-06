@@ -195,15 +195,10 @@ namespace Artesian.SDK.Factory
                     if (existing != null)
                     {
                         _values.Remove(existing);
-                        _values.Add(valueToAdd);
-                        return AddAssessmentOperationResult.AssessmentAdded;
-                    }
-                    else
-                    {
-                        _values.Add(valueToAdd);
-                        return AddAssessmentOperationResult.AssessmentAdded;
                     }
 
+                    _values.Add(valueToAdd);
+                    return AddAssessmentOperationResult.AssessmentAdded;
                 case KeyConflictPolicy.Throw:
                     if (existing != null)
                         throw new ArtesianSdkClientException("Data already present, cannot be updated!");

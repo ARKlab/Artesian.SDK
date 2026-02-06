@@ -123,7 +123,7 @@ namespace Artesian.SDK.Factory
         public AddTimeSerieOperationResult TryAddData(Instant time, double? value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip)
         {
             if (!_entity.OriginalGranularity.IsTimeGranularity())
-                throw new ActualTimeSerieException("This MarketData has Date granularity. Use AddData(LocalDate date, double? value)");
+                throw new ActualTimeSerieException("This MarketData has Date granularity. Use TryAddData(LocalDate date, double? value, KeyConflictPolicy keyConflictPolicy)");
 
             var localTime = time.InUtc().LocalDateTime;
 
