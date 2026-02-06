@@ -551,17 +551,31 @@ Using `Write mode` to edit MarketData and `Save` to save the data of the current
 ### Update Actual Time Series
 
 `EditActual` starts the write mode for an Actual Time serie. Checks are done to verify registration and MarketDataType to verify it is an Actual Time Serie.
-Using `AddData` to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
+Data points can be added using `TryAddData`, specifying a `KeyConflictPolicy`:
+- Skip (default): if a value for the same key already exists, the new value is ignored
+- Overwrite: if a value for the same key already exists, it is replaced
+- Throw: if a value for the same key already exists, an exception is thrown; otherwise the value is added
+
+Once the data has been written, it can be persisted using `Save`.
+Persisted data can be removed using the Delete method by specifying a start and end range.
 
 ```csharp
 var writeMarketData = marketdata.EditActual();
 
-writeMarketData.AddData(new LocalDate(2018, 10, 03), 10);
-writeMarketData.AddData(new LocalDate(2018, 10, 04), 15);
+writeMarketData.TryAddData(new LocalDate(2018, 10, 03), 10, KeyConflictPolicy.Skip);
+writeMarketData.TryAddData(new LocalDate(2018, 10, 04), 15, KeyConflictPolicy.Skip);
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
+```
+
+`SetData` sets the internal data of the TimeSerie using the provided values keyed by LocalDateTime with Dictionary format. This method performs a bulk operation and does not apply per-record conflict resolution or validation on the input dictionary. BulkSetPolicy options:
+Init: Initializes the internal data only if it is empty; otherwise an exception is thrown.
+Replace: Clears and completely replaces the internal data with the provided values.
+
+```csharp
+SetData(values, BulkSetPolicy.Init);
 ```
 
 The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
@@ -577,17 +591,31 @@ await writeMarketData.Delete();
 ### Update Versioned Time Series
 
 `EditVersioned` starts the write mode for a Versioned Time serie. Checks are done to verify registration and MarketDataType to verify it is a Versioned Time Serie.
-Using `AddData` to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
+Data points can be added using `TryAddData`, specifying a `KeyConflictPolicy`:
+- Skip (default): if a value for the same key already exists, the new value is ignored
+- Overwrite: if a value for the same key already exists, it is replaced
+- Throw: if a value for the same key already exists, an exception is thrown; otherwise the value is added
+
+Once the data has been written, it can be persisted using `Save`.
+Persisted data can be removed using the Delete method by specifying a start and end range.
 
 ```csharp
 var writeMarketData = marketData.EditVersioned(new LocalDateTime(2018, 10, 18, 00, 00));
 
-writeMarketData.AddData(new LocalDate(2018, 10, 03), 10);
-writeMarketData.AddData(new LocalDate(2018, 10, 04), 15);
+writeMarketData.TryAddData(new LocalDate(2018, 10, 03), 10, KeyConflictPolicy.Skip);
+writeMarketData.TryAddData(new LocalDate(2018, 10, 04), 15, KeyConflictPolicy.Skip);
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), version);
+```
+
+`SetData` sets the internal data of the TimeSerie using the provided values keyed by LocalDateTime with Dictionary format. This method performs a bulk operation and does not apply per-record conflict resolution or validation on the input dictionary. BulkSetPolicy options:
+Init: Initializes the internal data only if it is empty; otherwise an exception is thrown.
+Replace: Clears and completely replaces the internal data with the provided values.
+
+```csharp
+SetData(values, BulkSetPolicy.Init);
 ```
 
 The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
@@ -603,7 +631,13 @@ await writeMarketData.Delete();
 ### Update Market Assessment Time Series
 
 `EditMarketAssessment` starts the write mode for a Market Assessment. Checks are done to verify registration and MarketDataType to verify it is a Market Assessment.
-Using `AddData` to provide a local date time and a MarketAssessmentValue to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
+LocalDateTime and MarketAssessmentValue can be added using `TryAddData`, specifying a `KeyConflictPolicy`:
+- Skip (default): if a value for the same key already exists, the new value is ignored
+- Overwrite: if a value for the same key already exists, it is replaced
+- Throw: if a value for the same key already exists, an exception is thrown; otherwise the value is added
+
+Once the data has been written, it can be persisted using `Save`.
+Persisted data can be removed using the Delete method by specifying a start and end range.
 
 ```csharp
 var writeMarketData = marketData.EditMarketAssessment();
@@ -621,7 +655,7 @@ var marketAssessmentValue = new MarketAssessmentValue()
 
 };
 
-writeMarketData.AddData(new LocalDate(2018, 11, 28), "Dec-18", marketAssessmentValue);
+writeMarketData.TryAddData(new LocalDate(2018, 11, 28), "Dec-18", marketAssessmentValue, KeyConflictPolicy.Skip);
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
@@ -629,6 +663,15 @@ var product = new List<string>(){"Dec-18"};
 
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
 ```
+
+`SetData` sets the internal data of the MarketAssessment using the provided values keyed by LocalDateTime. This method performs a bulk operation and does not apply per-record conflict resolution or validation on the input dictionary. BulkSetPolicy options:
+Init: Initializes the internal data only if it is empty; otherwise an exception is thrown.
+Replace: Clears and completely replaces the internal data with the provided values.
+
+```csharp
+SetData(values, BulkSetPolicy.Init);
+```
+
 The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
 
 To delete the whole range of the Market Assessment Time serie, the `Delete` command can be used without specifying any start and end range.
@@ -642,7 +685,12 @@ await writeMarketData.Delete();
 ### Update Auction Time Series
 
 `EditAuction` starts the write mode for an Auction entity. Checks are done to verify registration and MarketDataType to verify it is an Auction entity.
-Using `AddData` to provide a local date time and Auction bid and offer arrays to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
+LocalDateTime and Auction bid and offer arrays can be added using `TryAddData`, specifying a `KeyConflictPolicy`:
+- Skip (default): if a value for the same key already exists, the new value is ignored
+- Overwrite: if a value for the same key already exists, it is replaced
+- Throw: if a value for the same key already exists, an exception is thrown; otherwise the value is added
+
+Once the data has been written, it can be persisted using `Save`.
 
 ```csharp
 var writeMarketData = marketData.EditAuction();
@@ -653,7 +701,7 @@ var offer = new List<AuctionBidValue>();
 bid.Add(new AuctionBidValue(100, 10));
 offer.Add(new AuctionBidValue(120, 12));
 
-writeMarketData.Add(localDateTime, new AuctionBids(localDateTime, bid.ToArray(), offer.ToArray()));
+writeMarketData.TryAddData(localDateTime, new AuctionBids(localDateTime, bid.ToArray(), offer.ToArray()), KeyConflictPolicy.Skip);
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05));
@@ -672,7 +720,10 @@ await writeMarketData.Delete();
 ### Update Bid Ask Time Series
 
 `EditBidAsk` starts the write mode for a Bid Ask. Checks are done to verify registration and MarketDataType to verify it is a Bid Ask.
-Using `AddData` to provide a local date time and a BidAskValue to be written. When data is saved with `Save`, can be deleted with `Delete` function specifying the start and the end range.
+LocalDateTime and a BidAskValue can be added using `TryAddData`, specifying a `KeyConflictPolicy`:
+- Skip (default): if a value for the same key already exists, the new value is ignored
+- Overwrite: if a value for the same key already exists, it is replaced
+- Throw: if a value for the same key already exists, an exception is thrown; otherwise the value is added
 
 ```csharp
 var writeMarketData = marketData.EditBidAsk();
@@ -687,13 +738,21 @@ var bidAskValue = new BidAskValue()
     LastQuantity = 13
 };
 
-writeMarketData.AddData(new LocalDate(2018, 11, 28), "Dec-18", bidAskValue);
+writeMarketData.TryAddData(new LocalDate(2018, 11, 28), "Dec-18", bidAskValue, KeyConflictPolicy.Skip);
 
 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
 
 var product = new List<string>(){"Dec-18"};
 
 await writeMarketData.Delete(new LocalDateTime(2018, 10, 04), new LocalDateTime(2018, 10, 05), product);
+```
+
+`SetData` sets the internal data of the BidAsk using the provided values keyed by LocalDateTime. This method performs a bulk operation and does not apply per-record conflict resolution or validation on the input dictionary. BulkSetPolicy options:
+Init: Initializes the internal data only if it is empty; otherwise an exception is thrown.
+Replace: Clears and completely replaces the internal data with the provided values.
+
+```csharp
+SetData(values, BulkSetPolicy.Init);
 ```
 
 The save method has two **UpsertModes**: *Merge* and *Replace*. Go to [upsert mode](#upsert-mode) for details.
