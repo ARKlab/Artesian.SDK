@@ -356,8 +356,8 @@ namespace Artesian.SDK.Factory
         /// <param name="product">The product to add.</param>
         /// <param name="value">The value to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
-        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        AddTimeSerieOperationResult TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
+        /// <returns>An <see cref="AddBidAskOperationResult"/> indicating the outcome of the operation.</returns>
+        AddBidAskOperationResult TryAddData(LocalDate localDate, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
 
         /// <summary>
         /// Attempts to add a data point to the BidAsk for a specific date.
@@ -370,8 +370,8 @@ namespace Artesian.SDK.Factory
         /// <param name="product">The product to add.</param>
         /// <param name="value">The value to add.</param>
         /// <param name="keyConflictPolicy">Specifies what to do if a value already exists for the given date (Throw, Overwrite, Skip). Default value is Skip.</param>
-        /// <returns>An <see cref="AddTimeSerieOperationResult"/> indicating the outcome of the operation.</returns>
-        AddTimeSerieOperationResult TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
+        /// <returns>An <see cref="AddBidAskOperationResult"/> indicating the outcome of the operation.</returns>
+        AddBidAskOperationResult TryAddData(Instant time, string product, BidAskValue value, KeyConflictPolicy keyConflictPolicy = KeyConflictPolicy.Skip);
 
         /// <summary>
         /// BidAsk SetData (bulk operation).

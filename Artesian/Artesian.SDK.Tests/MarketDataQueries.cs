@@ -109,7 +109,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public async Task MarketDataServiceSetDataInitReplace()
+        public async Task MarketDataServiceSetDataInitReplace_ActualTimeSerie()
         {
             var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
 
@@ -172,143 +172,8 @@ namespace Artesian.SDK.Tests
 
             timeSerie.SetData(valuesLocalDateReplace, BulkSetPolicy.Replace);
         }
-
         [Test]
-        public async Task MarketDataServiceSetDataUpdatesPublicProperty()
-        {
-            var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
-
-            var marketDataEntity = new MarketDataEntity.Input()
-            {
-                ProviderName = "Test",
-                MarketDataName = "TestName",
-                OriginalGranularity = Granularity.Hour,
-                OriginalTimezone = "CET",
-                AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.ActualTimeSerie,
-                UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
-            };
-
-            var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
-            {
-                ProviderName = "Test",
-                MarketDataName = "TestName",
-                OriginalTimezone = "CET"
-            };
-
-            var marketDataServiceMock = new Mock<IMarketDataService>();
-
-            marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
-
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
-
-            var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
-
-            await marketData.Load();
-
-            var valuesInit = new Dictionary<LocalDateTime, double?>()
-            {
-                { new LocalDateTime(2025, 12, 14, 0, 0), 10 },
-                { new LocalDateTime(2025, 12, 15, 0, 0), 11 }
-            };
-
-            var timeSerie = marketData.EditActual();
-            timeSerie.SetData(valuesInit, BulkSetPolicy.Init);
-
-            // Verify that Values property is accessible and contains the data
-            timeSerie.Values.Count.Should().Be(2);
-            timeSerie.Values[new LocalDateTime(2025, 12, 14, 0, 0)].Should().Be(10);
-            timeSerie.Values[new LocalDateTime(2025, 12, 15, 0, 0)].Should().Be(11);
-
-            // Replace with new data
-            var valuesReplace = new Dictionary<LocalDateTime, double?>()
-            {
-                { new LocalDateTime(2025, 12, 19, 0, 0), 20 },
-                { new LocalDateTime(2025, 12, 21, 0, 0), 21 },
-                { new LocalDateTime(2025, 12, 22, 0, 0), 22 }
-            };
-
-            timeSerie.SetData(valuesReplace, BulkSetPolicy.Replace);
-
-            // Verify that Values property now reflects the replaced data
-            timeSerie.Values.Count.Should().Be(3);
-            timeSerie.Values[new LocalDateTime(2025, 12, 19, 0, 0)].Should().Be(20);
-            timeSerie.Values[new LocalDateTime(2025, 12, 21, 0, 0)].Should().Be(21);
-            timeSerie.Values[new LocalDateTime(2025, 12, 22, 0, 0)].Should().Be(22);
-
-            // Verify old keys are no longer present
-            timeSerie.Values.ContainsKey(new LocalDateTime(2025, 12, 14, 0, 0)).Should().BeFalse();
-            timeSerie.Values.ContainsKey(new LocalDateTime(2025, 12, 15, 0, 0)).Should().BeFalse();
-        }
-
-        [Test]
-        public async Task MarketDataServiceSetDataUpdatesPublicProperty_VersionedTimeSerie()
-        {
-            var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
-
-            var marketDataEntity = new MarketDataEntity.Input()
-            {
-                ProviderName = "Test",
-                MarketDataName = "TestName",
-                OriginalGranularity = Granularity.Hour,
-                OriginalTimezone = "CET",
-                AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.VersionedTimeSerie,
-                UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
-            };
-
-            var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
-            {
-                ProviderName = "Test",
-                MarketDataName = "TestName",
-                OriginalTimezone = "CET"
-            };
-
-            var marketDataServiceMock = new Mock<IMarketDataService>();
-
-            marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
-
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
-
-            var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
-
-            await marketData.Load();
-
-            var valuesInit = new Dictionary<LocalDateTime, double?>()
-            {
-                { new LocalDateTime(2025, 12, 14, 0, 0), 10 },
-                { new LocalDateTime(2025, 12, 15, 0, 0), 11 }
-            };
-
-            var timeSerie = marketData.EditVersioned(new LocalDateTime(2025, 1, 1, 0, 0));
-            timeSerie.SetData(valuesInit, BulkSetPolicy.Init);
-
-            // Verify that Values property is accessible and contains the data
-            timeSerie.Values.Count.Should().Be(2);
-            timeSerie.Values[new LocalDateTime(2025, 12, 14, 0, 0)].Should().Be(10);
-
-            // Replace with new data
-            var valuesReplace = new Dictionary<LocalDateTime, double?>()
-            {
-                { new LocalDateTime(2025, 12, 19, 0, 0), 20 }
-            };
-
-            timeSerie.SetData(valuesReplace, BulkSetPolicy.Replace);
-
-            // Verify that Values property now reflects the replaced data
-            timeSerie.Values.Count.Should().Be(1);
-            timeSerie.Values[new LocalDateTime(2025, 12, 19, 0, 0)].Should().Be(20);
-
-            // Verify old keys are no longer present
-            timeSerie.Values.ContainsKey(new LocalDateTime(2025, 12, 14, 0, 0)).Should().BeFalse();
-        }
-
-        [Test]
-        public async Task MarketDataServiceSetDataUpdatesPublicProperty_MarketAssessment()
+        public async Task MarketDataServiceSetDataInitReplace_MarketAssessment()
         {
             var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
 
@@ -344,39 +209,35 @@ namespace Artesian.SDK.Tests
 
             var valuesInit = new List<AssessmentElement>()
             {
-                new AssessmentElement(new LocalDateTime(2025, 12, 14, 0, 0), "Product1", new MarketAssessmentValue { Settlement = 10 }),
-                new AssessmentElement(new LocalDateTime(2025, 12, 15, 0, 0), "Product2", new MarketAssessmentValue { Settlement = 11 })
+                new AssessmentElement(new LocalDateTime(2025, 12, 14, 0, 0), "Product1", new MarketAssessmentValue { Settlement = 10.5 }),
+                new AssessmentElement(new LocalDateTime(2025, 12, 15, 0, 0), "Product1", new MarketAssessmentValue { Settlement = 11.5 }),
+                new AssessmentElement(new LocalDateTime(2025, 12, 18, 0, 0), "Product2", new MarketAssessmentValue { Settlement = 13.5 })
             };
 
-            var assessment = marketData.EditMarketAssessment();
-            assessment.SetData(valuesInit, BulkSetPolicy.Init);
+            var marketAssessment = marketData.EditMarketAssessment();
+            marketAssessment.SetData(valuesInit, BulkSetPolicy.Init);
 
-            // Verify that Assessments property is accessible and contains the data
-            assessment.Assessments.Count.Should().Be(2);
-            var initList = new List<AssessmentElement>(assessment.Assessments);
-            initList.Should().Contain(x => x.Product == "Product1" && x.ReportTime == new LocalDateTime(2025, 12, 14, 0, 0));
-
-            // Replace with new data
             var valuesReplace = new List<AssessmentElement>()
             {
-                new AssessmentElement(new LocalDateTime(2025, 12, 19, 0, 0), "Product3", new MarketAssessmentValue { Settlement = 20 })
+                new AssessmentElement(new LocalDateTime(2025, 12, 19, 0, 0), "Product3", new MarketAssessmentValue { Settlement = 20.5 }),
+                new AssessmentElement(new LocalDateTime(2025, 12, 21, 0, 0), "Product3", new MarketAssessmentValue { Settlement = 21.5 }),
+                new AssessmentElement(new LocalDateTime(2025, 12, 22, 0, 0), "Product4", new MarketAssessmentValue { Settlement = 23.5 })
             };
 
-            assessment.SetData(valuesReplace, BulkSetPolicy.Replace);
+            try
+            {
+                marketAssessment.SetData(valuesReplace, BulkSetPolicy.Init);
+            }
+            catch (ArtesianSdkClientException ex)
+            {
+                ex.Message.Should().Be("Data already present, cannot be updated!");
+            }
 
-            // Verify that Assessments property now reflects the replaced data
-            assessment.Assessments.Count.Should().Be(1);
-            var replaceList = new List<AssessmentElement>(assessment.Assessments);
-            replaceList[0].Product.Should().Be("Product3");
-            replaceList[0].ReportTime.Should().Be(new LocalDateTime(2025, 12, 19, 0, 0));
-
-            // Verify old data is no longer present
-            replaceList.Should().NotContain(x => x.Product == "Product1");
-            replaceList.Should().NotContain(x => x.Product == "Product2");
+            marketAssessment.SetData(valuesReplace, BulkSetPolicy.Replace);
         }
 
         [Test]
-        public async Task MarketDataServiceSetDataUpdatesPublicProperty_BidAsk()
+        public async Task MarketDataServiceSetDataInitReplace_BidAsk()
         {
             var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
 
@@ -384,7 +245,7 @@ namespace Artesian.SDK.Tests
             {
                 ProviderName = "Test",
                 MarketDataName = "TestName",
-                OriginalGranularity = Granularity.Day,
+                OriginalGranularity = Granularity.Hour,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.Undefined,
                 Type = MarketDataType.BidAsk,
@@ -412,39 +273,101 @@ namespace Artesian.SDK.Tests
 
             var valuesInit = new List<BidAskElement>()
             {
-                new BidAskElement(new LocalDateTime(2025, 12, 14, 0, 0), "Product1", new BidAskValue(bestBidPrice: 10, bestAskPrice: 11)),
-                new BidAskElement(new LocalDateTime(2025, 12, 15, 0, 0), "Product2", new BidAskValue(bestBidPrice: 12, bestAskPrice: 13))
+                new BidAskElement(new LocalDateTime(2025, 12, 14, 0, 0), "Product1", new BidAskValue { BestBidPrice = 10.0, BestAskPrice = 10.5 }),
+                new BidAskElement(new LocalDateTime(2025, 12, 15, 0, 0), "Product1", new BidAskValue { BestBidPrice = 11.0, BestAskPrice = 11.5 }),
+                new BidAskElement(new LocalDateTime(2025, 12, 18, 0, 0), "Product2", new BidAskValue { BestBidPrice = 13.0, BestAskPrice = 13.5 })
             };
 
             var bidAsk = marketData.EditBidAsk();
             bidAsk.SetData(valuesInit, BulkSetPolicy.Init);
 
-            // Verify that BidAsks property is accessible and contains the data
-            bidAsk.BidAsks.Count.Should().Be(2);
-            var initList = new List<BidAskElement>(bidAsk.BidAsks);
-            initList.Should().Contain(x => x.Product == "Product1" && x.ReportTime == new LocalDateTime(2025, 12, 14, 0, 0));
-
-            // Replace with new data
             var valuesReplace = new List<BidAskElement>()
             {
-                new BidAskElement(new LocalDateTime(2025, 12, 19, 0, 0), "Product3", new BidAskValue(bestBidPrice: 20, bestAskPrice: 21))
+                new BidAskElement(new LocalDateTime(2025, 12, 19, 0, 0), "Product3", new BidAskValue { BestBidPrice = 20.0, BestAskPrice = 20.5 }),
+                new BidAskElement(new LocalDateTime(2025, 12, 21, 0, 0), "Product3", new BidAskValue { BestBidPrice = 21.0, BestAskPrice = 21.5 }),
+                new BidAskElement(new LocalDateTime(2025, 12, 22, 0, 0), "Product4", new BidAskValue { BestBidPrice = 23.0, BestAskPrice = 23.5 })
             };
 
+            try
+            {
+                bidAsk.SetData(valuesReplace, BulkSetPolicy.Init);
+            }
+            catch (ArtesianSdkClientException ex)
+            {
+                ex.Message.Should().Be("Data already present, cannot be updated!");
+            }
+
             bidAsk.SetData(valuesReplace, BulkSetPolicy.Replace);
-
-            // Verify that BidAsks property now reflects the replaced data
-            bidAsk.BidAsks.Count.Should().Be(1);
-            var replaceList = new List<BidAskElement>(bidAsk.BidAsks);
-            replaceList[0].Product.Should().Be("Product3");
-            replaceList[0].ReportTime.Should().Be(new LocalDateTime(2025, 12, 19, 0, 0));
-
-            // Verify old data is no longer present
-            replaceList.Should().NotContain(x => x.Product == "Product1");
-            replaceList.Should().NotContain(x => x.Product == "Product2");
         }
 
         [Test]
-        public async Task MarketDataServiceTryAddData()
+        public async Task MarketDataServiceSetDataInitReplace_VersionedTimeSerie()
+        {
+            var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
+
+            var marketDataEntity = new MarketDataEntity.Input()
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalGranularity = Granularity.Day,
+                OriginalTimezone = "CET",
+                AggregationRule = AggregationRule.Undefined,
+                Type = MarketDataType.VersionedTimeSerie,
+                UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
+            };
+
+            var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
+            var marketDataServiceMock = new Mock<IMarketDataService>();
+
+            marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
+
+            await marketData.Load();
+
+            var version = new LocalDateTime(2025, 12, 01, 10, 0);
+
+            var valuesInit = new Dictionary<LocalDateTime, double?>()
+            {
+                { new LocalDateTime(2025, 12, 14, 0, 0), 10 },
+                { new LocalDateTime(2025, 12, 15, 0, 0), 11 },
+                { new LocalDateTime(2025, 12, 18, 0, 0), 13 }
+            };
+
+            var versionedTimeSerie = marketData.EditVersioned(version);
+            versionedTimeSerie.SetData(valuesInit, BulkSetPolicy.Init);
+
+            var valuesReplace = new Dictionary<LocalDateTime, double?>()
+            {
+                { new LocalDateTime(2025, 12, 19, 0, 0), 10 },
+                { new LocalDateTime(2025, 12, 21, 0, 0), 11 },
+                { new LocalDateTime(2025, 12, 22, 0, 0), 13 }
+            };
+
+            try
+            {
+                versionedTimeSerie.SetData(valuesReplace, BulkSetPolicy.Init);
+            }
+            catch (ArtesianSdkClientException ex)
+            {
+                ex.Message.Should().Be("Data already present, cannot be updated!");
+            }
+
+            versionedTimeSerie.SetData(valuesReplace, BulkSetPolicy.Replace);
+        }
+
+        [Test]
+        public async Task MarketDataServiceTryAddData_ActualTimeSerie()
         {
             var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
 
@@ -512,6 +435,293 @@ namespace Artesian.SDK.Tests
             }
         }
 
+        [Test]
+        public async Task MarketDataServiceTryAddData_VersionedTimeSerie()
+        {
+            var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
+
+            var providerName = "TestName";
+            var curveName = "Test";
+            var originalTimezone = "CET";
+            var originalGranularity = Granularity.Day;
+
+            var marketDataEntity = new MarketDataEntity.Input()
+            {
+                ProviderName = providerName,
+                MarketDataName = curveName,
+                OriginalGranularity = originalGranularity,
+                OriginalTimezone = originalTimezone,
+                AggregationRule = AggregationRule.Undefined,
+                Type = MarketDataType.VersionedTimeSerie,
+                UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
+            };
+
+            var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
+            {
+                ProviderName = providerName,
+                MarketDataName = curveName,
+                OriginalTimezone = originalTimezone
+            };
+
+            var marketDataServiceMock = new Mock<IMarketDataService>();
+
+            marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
+
+            await marketData.Load();
+
+            var version = new LocalDateTime(2025, 12, 01, 10, 0);
+            var versionedTimeSerie = marketData.EditVersioned(version);
+
+            var value = 10;
+            var valueUpdated = 14;
+            var valueUpdated1 = 18;
+            var date = new LocalDate(2025, 12, 14);
+
+            var result = versionedTimeSerie.TryAddData(date, value, KeyConflictPolicy.Throw);
+
+            result.Should().Be(AddTimeSerieOperationResult.ValueAdded);
+
+            result = versionedTimeSerie.TryAddData(date, valueUpdated, KeyConflictPolicy.Overwrite);
+
+            result.Should().Be(AddTimeSerieOperationResult.ValueAdded);
+
+            result = versionedTimeSerie.TryAddData(date, valueUpdated1, KeyConflictPolicy.Skip);
+
+            result.Should().Be(AddTimeSerieOperationResult.TimeAlreadyPresent);
+
+            try
+            {
+                versionedTimeSerie.TryAddData(date, valueUpdated1, KeyConflictPolicy.Throw);
+            }
+            catch (ArtesianSdkClientException ex)
+            {
+                ex.Message.Should().Be("Data already present, cannot be updated!");
+            }
+        }
+
+        [Test]
+        public async Task MarketDataServiceTryAddData_Auction()
+        {
+            var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
+
+            var providerName = "TestName";
+            var curveName = "Test";
+            var originalTimezone = "CET";
+            var originalGranularity = Granularity.Day;
+
+            var marketDataEntity = new MarketDataEntity.Input()
+            {
+                ProviderName = providerName,
+                MarketDataName = curveName,
+                OriginalGranularity = originalGranularity,
+                OriginalTimezone = originalTimezone,
+                AggregationRule = AggregationRule.Undefined,
+                Type = MarketDataType.Auction,
+                UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
+            };
+
+            var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
+            {
+                ProviderName = providerName,
+                MarketDataName = curveName,
+                OriginalTimezone = originalTimezone
+            };
+
+            var marketDataServiceMock = new Mock<IMarketDataService>();
+
+            marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
+
+            await marketData.Load();
+
+            var auction = marketData.EditAuction();
+
+            var bid = new AuctionBidValue[] { new AuctionBidValue(100, 10) };
+            var offer = new AuctionBidValue[] { new AuctionBidValue(120, 12) };
+
+            var bidUpdated = new AuctionBidValue[] { new AuctionBidValue(110, 11) };
+            var offerUpdated = new AuctionBidValue[] { new AuctionBidValue(130, 13) };
+
+            var bidUpdated1 = new AuctionBidValue[] { new AuctionBidValue(115, 11.5) };
+            var offerUpdated1 = new AuctionBidValue[] { new AuctionBidValue(135, 13.5) };
+
+            var date = new LocalDate(2025, 12, 14);
+
+            var result = auction.TryAddData(date, bid, offer, KeyConflictPolicy.Throw);
+
+            result.Should().Be(AddAuctionTimeSerieOperationResult.ValueAdded);
+
+            result = auction.TryAddData(date, bidUpdated, offerUpdated, KeyConflictPolicy.Overwrite);
+
+            result.Should().Be(AddAuctionTimeSerieOperationResult.ValueAdded);
+
+            result = auction.TryAddData(date, bidUpdated1, offerUpdated1, KeyConflictPolicy.Skip);
+
+            result.Should().Be(AddAuctionTimeSerieOperationResult.TimeAlreadyPresent);
+
+            try
+            {
+                auction.TryAddData(date, bidUpdated1, offerUpdated1, KeyConflictPolicy.Throw);
+            }
+            catch (ArtesianSdkClientException ex)
+            {
+                ex.Message.Should().Be("Data already present, cannot be updated!");
+            }
+        }
+
+        [Test]
+        public async Task MarketDataServiceTryAddData_BidAsk()
+        {
+            var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
+
+            var providerName = "TestName";
+            var curveName = "Test";
+            var originalTimezone = "CET";
+            var originalGranularity = Granularity.Day;
+
+            var marketDataEntity = new MarketDataEntity.Input()
+            {
+                ProviderName = providerName,
+                MarketDataName = curveName,
+                OriginalGranularity = originalGranularity,
+                OriginalTimezone = originalTimezone,
+                AggregationRule = AggregationRule.Undefined,
+                Type = MarketDataType.BidAsk,
+                UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
+            };
+
+            var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
+            {
+                ProviderName = providerName,
+                MarketDataName = curveName,
+                OriginalTimezone = originalTimezone
+            };
+
+            var marketDataServiceMock = new Mock<IMarketDataService>();
+
+            marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
+
+            await marketData.Load();
+
+            var bidAsk = marketData.EditBidAsk();
+
+            var product = "Product1";
+            var date = new LocalDate(2025, 12, 14);
+
+            var value = new BidAskValue { BestBidPrice = 10.0, BestAskPrice = 10.5 };
+            var valueUpdated = new BidAskValue { BestBidPrice = 14.0, BestAskPrice = 14.5 };
+            var valueUpdated1 = new BidAskValue { BestBidPrice = 18.0, BestAskPrice = 18.5 };
+
+            var result = bidAsk.TryAddData(date, product, value, KeyConflictPolicy.Throw);
+
+            result.Should().Be(AddBidAskOperationResult.BidAskAdded);
+
+            result = bidAsk.TryAddData(date, product, valueUpdated, KeyConflictPolicy.Overwrite);
+
+            result.Should().Be(AddBidAskOperationResult.BidAskAdded);
+
+            result = bidAsk.TryAddData(date, product, valueUpdated1, KeyConflictPolicy.Skip);
+
+            result.Should().Be(AddBidAskOperationResult.ProductAlreadyPresent);
+
+            try
+            {
+                bidAsk.TryAddData(date, product, valueUpdated1, KeyConflictPolicy.Throw);
+            }
+            catch (ArtesianSdkClientException ex)
+            {
+                ex.Message.Should().Be("Data already present, cannot be updated!");
+            }
+        }
+
+        [Test]
+        public async Task MarketDataServiceTryAddData_MarketAssessment()
+        {
+            var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
+
+            var providerName = "TestName";
+            var curveName = "Test";
+            var originalTimezone = "CET";
+            var originalGranularity = Granularity.Day;
+
+            var marketDataEntity = new MarketDataEntity.Input()
+            {
+                ProviderName = providerName,
+                MarketDataName = curveName,
+                OriginalGranularity = originalGranularity,
+                OriginalTimezone = originalTimezone,
+                AggregationRule = AggregationRule.Undefined,
+                Type = MarketDataType.MarketAssessment,
+                UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
+            };
+
+            var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
+            {
+                ProviderName = providerName,
+                MarketDataName = curveName,
+                OriginalTimezone = originalTimezone
+            };
+
+            var marketDataServiceMock = new Mock<IMarketDataService>();
+
+            marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutput);
+
+            var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
+
+            await marketData.Load();
+
+            var marketAssessment = marketData.EditMarketAssessment();
+
+            var product = "Product1";
+            var date = new LocalDate(2025, 12, 14);
+
+            var value = new MarketAssessmentValue { Settlement = 10.5 };
+            var valueUpdated = new MarketAssessmentValue { Settlement = 14.5 };
+            var valueUpdated1 = new MarketAssessmentValue { Settlement = 18.5 };
+
+            var result = marketAssessment.TryAddData(date, product, value, KeyConflictPolicy.Throw);
+
+            result.Should().Be(AddAssessmentOperationResult.AssessmentAdded);
+
+            result = marketAssessment.TryAddData(date, product, valueUpdated, KeyConflictPolicy.Overwrite);
+
+            result.Should().Be(AddAssessmentOperationResult.AssessmentAdded);
+
+            result = marketAssessment.TryAddData(date, product, valueUpdated1, KeyConflictPolicy.Skip);
+
+            result.Should().Be(AddAssessmentOperationResult.ProductAlreadyPresent);
+
+            try
+            {
+                marketAssessment.TryAddData(date, product, valueUpdated1, KeyConflictPolicy.Throw);
+            }
+            catch (ArtesianSdkClientException ex)
+            {
+                ex.Message.Should().Be("Data already present, cannot be updated!");
+            }
+        }
+
         private const string _realProblemDetailsJson = @"{""Errors"":[{""Key"":""MarketDataEntity.Tags[0].Value[0]"",""Value"":[{""ErrorMessage"":""'Value' must be between 1 and 50 characters. You entered 155 characters."",""AttemptedValue"":""PowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPower"",""CustomState"":null,""ErrorCode"":""LengthValidator"",""FormattedMessagePlaceholderValues"":[{""Key"":""CollectionIndex"",""Value"":0},{""Key"":""MinLength"",""Value"":1},{""Key"":""MaxLength"",""Value"":50},{""Key"":""TotalLength"",""Value"":155},{""Key"":""PropertyName"",""Value"":""Value""},{""Key"":""PropertyValue"",""Value"":""PowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPower""}]}]}],""type"":""https://httpstatuses.com/400"",""title"":""Bad Request"",""status"":400,""detail"":""'Value' must be between 1 and 50 characters. You entered 155 characters."",""instance"":null}";
 
         [Test]
@@ -532,13 +742,14 @@ namespace Artesian.SDK.Tests
                 };
 
                 httpTest
-                    .RespondWith(_realProblemDetailsJson, 
-                    status: 400, 
-                    headers: new { content_type = "application/problem+json; charset=utf-8"});
+                    .RespondWith(_realProblemDetailsJson,
+                    status: 400,
+                    headers: new { content_type = "application/problem+json; charset=utf-8" });
 
                 Assert.ThrowsAsync<ArtesianSdkValidationException>(
-                  () => { 
-                      return mds.RegisterMarketDataAsync(marketDataEntity); 
+                  () =>
+                  {
+                      return mds.RegisterMarketDataAsync(marketDataEntity);
                   }
                 );
 
@@ -654,7 +865,7 @@ namespace Artesian.SDK.Tests
 
                 var operations = new Operations()
                 {
-                    IDS = new HashSet<MarketDataETag>() { new MarketDataETag(0, "provaEtag")},
+                    IDS = new HashSet<MarketDataETag>() { new MarketDataETag(0, "provaEtag") },
                     OperationList = new List<OperationParams>() {
                         new  OperationParams()
                         {
@@ -1330,7 +1541,8 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var filter = new CustomFilter() {
+                var filter = new CustomFilter()
+                {
                     Id = 1,
                     SearchText = "Text",
                     Name = "TestName"
@@ -1353,7 +1565,8 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var filter = new CustomFilter() {
+                var filter = new CustomFilter()
+                {
                     Id = 1,
                     SearchText = "Text",
                     Name = "TestName"

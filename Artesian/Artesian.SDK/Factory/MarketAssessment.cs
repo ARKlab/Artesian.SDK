@@ -21,7 +21,7 @@ namespace Artesian.SDK.Factory
         private readonly IMarketDataService _marketDataService;
         private readonly MarketDataEntity.Output _entity;
         private readonly MarketDataIdentifier _identifier;
-        private List<AssessmentElement> _values = new();
+        private readonly List<AssessmentElement> _values = new();
 
         /// <summary>
         /// MarketAssessment Constructor
