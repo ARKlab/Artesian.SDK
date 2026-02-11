@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Artesian.SDK" Version="7.7.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.102" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.103" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
