@@ -147,8 +147,6 @@ namespace Artesian.SDK.Dto
                                 Version = 1
                             };
                         }
-                        // Return a default configuration if not VersionedTimeSerie
-                        return _derivedCfg;
                     }
                     return _derivedCfg;
                 }
