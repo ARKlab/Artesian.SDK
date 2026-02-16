@@ -159,7 +159,7 @@ namespace Artesian.SDK.Tests
         public void MarketDataEntity_WithTags_STJ_Serializes_CompatibleJson()
         {
             // Arrange - Expected JSON from Newtonsoft.Json (literal)
-            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Tags"":[{""Key"":""Region"",""Value"":[""Europe"",""EMEA""]},{""Key"":""Product"",""Value"":[""Power"",""Electricity""]},{""Key"":""Market"",""Value"":[""DayAhead""]}],""Path"":""/marketdata/system/TestProvider/TestCurve"",""DerivedCfg"":{""DerivedAlgorithm"":""MUV"",""Version"":1},""UnitOfMeasure"":{}}";
+            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Tags"":[{""Key"":""Region"",""Value"":[""Europe"",""EMEA""]},{""Key"":""Product"",""Value"":[""Power"",""Electricity""]},{""Key"":""Market"",""Value"":[""DayAhead""]}],""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{}}";
             
             var entity = new MarketDataEntity.Input()
             {
@@ -185,10 +185,39 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
+        public void MarketDataEntity_Versioned_WithTags_STJ_Serializes_CompatibleJson()
+        {
+            // Arrange - Expected JSON from Newtonsoft.Json (literal)
+            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""VersionedTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Tags"":[{""Key"":""Region"",""Value"":[""Europe"",""EMEA""]},{""Key"":""Product"",""Value"":[""Power"",""Electricity""]},{""Key"":""Market"",""Value"":[""DayAhead""]}],""Path"":""/marketdata/system/TestProvider/TestCurve"",""DerivedCfg"":{""DerivedAlgorithm"":""MUV"",""Version"":1},""UnitOfMeasure"":{}}";
+
+            var entity = new MarketDataEntity.Input()
+            {
+                MarketDataId = 100000001,
+                ProviderName = "TestProvider",
+                MarketDataName = "TestCurve",
+                OriginalGranularity = Granularity.Day,
+                OriginalTimezone = "CET",
+                Type = MarketDataType.VersionedTimeSerie,
+                Tags = new Dictionary<string, List<string>>
+                {
+                    { "Region", new List<string> { "Europe", "EMEA" } },
+                    { "Product", new List<string> { "Power", "Electricity" } },
+                    { "Market", new List<string> { "DayAhead" } }
+                }
+            };
+
+            // Act - Serialize with STJ
+            var stjJson = System.Text.Json.JsonSerializer.Serialize(entity, _stjOptions);
+
+            // Assert - STJ produces equivalent JSON to Newtonsoft
+            AssertJsonEquals(expectedJson, stjJson, "STJ should produce JSON equivalent to Newtonsoft");
+        }
+
+        [Test]
         public void MarketDataEntity_WithNullTags_STJ_SkipsInSerialization()
         {
             // Arrange - Expected JSON from Newtonsoft.Json (literal)
-            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Path"":""/marketdata/system/TestProvider/TestCurve"",""DerivedCfg"":{""DerivedAlgorithm"":""MUV"",""Version"":1},""UnitOfMeasure"":{}}";
+            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{}}";
             
             var entity = new MarketDataEntity.Input()
             {
@@ -213,7 +242,7 @@ namespace Artesian.SDK.Tests
         public void MarketDataEntity_Tags_STJ_PreservesDictionaryKeyCasing()
         {
             // Arrange - Expected JSON from Newtonsoft.Json (literal)
-            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Tags"":[{""Key"":""RegionCode"",""Value"":[""EU""]},{""Key"":""PRODUCT_TYPE"",""Value"":[""POWER""]},{""Key"":""marketSegment"",""Value"":[""wholesale""]}],""Path"":""/marketdata/system/TestProvider/TestCurve"",""DerivedCfg"":{""DerivedAlgorithm"":""MUV"",""Version"":1},""UnitOfMeasure"":{}}";
+            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Tags"":[{""Key"":""RegionCode"",""Value"":[""EU""]},{""Key"":""PRODUCT_TYPE"",""Value"":[""POWER""]},{""Key"":""marketSegment"",""Value"":[""wholesale""]}],""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{}}";
             
             var entity = new MarketDataEntity.Input()
             {
@@ -575,7 +604,7 @@ namespace Artesian.SDK.Tests
         public void STJ_Serialization_SkipsNullProperties()
         {
             // Arrange - Expected JSON from Newtonsoft.Json (literal)
-            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Path"":""/marketdata/system/TestProvider/TestCurve"",""DerivedCfg"":{""DerivedAlgorithm"":""MUV"",""Version"":1},""UnitOfMeasure"":{}}";
+            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{}}";
             
             var entity = new MarketDataEntity.Input()
             {

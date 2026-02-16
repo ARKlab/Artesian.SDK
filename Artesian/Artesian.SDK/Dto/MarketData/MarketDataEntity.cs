@@ -134,7 +134,7 @@ namespace Artesian.SDK.Dto
             /// The Derived Configuration
             /// </summary>
             [MessagePack.Key(18)]
-            public DerivedCfgBase DerivedCfg
+            public DerivedCfgBase? DerivedCfg
             {
                 get
                 {
@@ -147,8 +147,6 @@ namespace Artesian.SDK.Dto
                                 Version = 1
                             };
                         }
-                        // Return a default configuration if not VersionedTimeSerie
-                        return new DerivedCfgMuv() { Version = 1 };
                     }
                     return _derivedCfg;
                 }
