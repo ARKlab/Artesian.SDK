@@ -75,7 +75,7 @@ namespace Artesian.SDK.Factory
 
             _entity = await _marketDataService.RegisterMarketDataAsync(metadata, ctk).ConfigureAwait(false);
 
-            DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
+            DerivedCfg = _entity.DerivedCfg != null ? new DerivedCfg(_entity.DerivedCfg) : null;
 
             Metadata = new MarketDataMetadata(_entity);
         }
@@ -113,7 +113,7 @@ namespace Artesian.SDK.Factory
 
             if (_entity != null)
             {
-                DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
+                DerivedCfg = _entity.DerivedCfg != null ? new DerivedCfg(_entity.DerivedCfg) : null;
 
                 Metadata = new MarketDataMetadata(_entity);
             }
@@ -259,7 +259,7 @@ namespace Artesian.SDK.Factory
 
             _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity!.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
 
-            DerivedCfg = new DerivedCfg(_entity.DerivedCfg);
+            DerivedCfg = _entity.DerivedCfg != null ? new DerivedCfg(_entity.DerivedCfg) : null;
 
             Metadata = new MarketDataMetadata(_entity);
         }
@@ -288,7 +288,7 @@ namespace Artesian.SDK.Factory
 
             _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity!.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
 
-            DerivedCfg = new DerivedCfg(_entity!.DerivedCfg);
+            DerivedCfg = _entity.DerivedCfg != null ? new DerivedCfg(_entity.DerivedCfg) : null;
 
             Metadata = new MarketDataMetadata(_entity);
         }
@@ -317,7 +317,7 @@ namespace Artesian.SDK.Factory
 
             _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity!.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
 
-            DerivedCfg = new DerivedCfg(_entity!.DerivedCfg);
+            DerivedCfg = _entity.DerivedCfg != null ? new DerivedCfg(_entity.DerivedCfg) : null;
 
             Metadata = new MarketDataMetadata(_entity);
         }
