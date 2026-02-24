@@ -125,6 +125,8 @@
         UPV = 1,
         UC = 2,
         UCV = 3,
+        UVZi = 4,
+        UVZp = 5,
         UNKNOWN = 99,
     }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
