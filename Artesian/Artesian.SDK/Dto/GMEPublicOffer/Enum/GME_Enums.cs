@@ -24,7 +24,8 @@
         MBh = 36,
         MRR = 50,
         MIXBID = 70,
-        AFRR = 100
+        AFRR = 100,
+        AFRE = 200
     }
 
     public enum Status : byte
