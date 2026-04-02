@@ -13,7 +13,6 @@ using Polly;
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -168,29 +167,49 @@ namespace Artesian.SDK.Service
                                     }
                                 }
 
+                                var originalStream = await res.ResponseMessage.Content.ReadAsStreamAsync(
+#if NET6_0_OR_GREATER
+                                ctk
+#endif
+                                ).ConfigureAwait(false);
+
+                                using var ms = new MemoryStream();
                                 // If content type is exactly "application/problem+json", deserialize directly as ProblemDetail without buffering
                                 // The server guarantees this is a ProblemDetail response, so let any deserialization exceptions bubble up
                                 if (string.Equals(contentType, "application/problem+json", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
+#if NET6_0_OR_GREATER
+                                    await originalStream.CopyToAsync(ms, ctk).ConfigureAwait(false);
+#else
+                                    await originalStream.CopyToAsync(ms, 81920, ctk).ConfigureAwait(false);
+#endif
+
+                                    ms.Position = 0;
+                                    try
+                                    {
+                                        problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(originalStream, ctk).ConfigureAwait(false);
+                                    }
+                                    catch(Exception)
+                                    {
+                                        ms.Position = 0;
+                                        using var reader = new StreamReader(ms);
+                                        responseText = await reader.ReadToEndAsync(
 #if NET6_0_OR_GREATER
                                         ctk
 #endif
-                                    ).ConfigureAwait(false);
-                                    
-                                    problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(stream, ctk).ConfigureAwait(false);
+                                        ).ConfigureAwait(false);
+                                    }
                                 }
                                 else
                                 {
                                     // For other error responses, read as text directly (no deserialization needed)
-                                    // Include first 1000 chars in exception details
-                                    var fullText = await res.ResponseMessage.Content.ReadAsStringAsync(
+                                    ms.Position = 0;
+                                    using var reader = new StreamReader(ms);
+                                    responseText = await reader.ReadToEndAsync(
 #if NET6_0_OR_GREATER
-                                        ctk
+                                    ctk
 #endif
                                     ).ConfigureAwait(false);
-                                    
-                                    responseText = fullText.Length > 1000 ? fullText.Substring(0, 1000) : fullText;
                                 }
 
                                 string detailMessage;
