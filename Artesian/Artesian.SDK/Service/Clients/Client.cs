@@ -189,7 +189,17 @@ namespace Artesian.SDK.Service
                                     {
                                         problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(originalStream, ctk).ConfigureAwait(false);
                                     }
-                                    catch(Exception)
+                                    catch (JsonException)
+                                    {
+                                        ms.Position = 0;
+                                        using var reader = new StreamReader(ms);
+                                        responseText = await reader.ReadToEndAsync(
+#if NET6_0_OR_GREATER
+                                        ctk
+#endif
+                                        ).ConfigureAwait(false);
+                                    }
+                                    catch (FormatException)
                                     {
                                         ms.Position = 0;
                                         using var reader = new StreamReader(ms);
