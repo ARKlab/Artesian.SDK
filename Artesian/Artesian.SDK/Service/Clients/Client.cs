@@ -187,7 +187,7 @@ namespace Artesian.SDK.Service
                                     ms.Position = 0;
                                     try
                                     {
-                                        problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(originalStream, ctk).ConfigureAwait(false);
+                                        problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(ms, ctk).ConfigureAwait(false);
                                     }
                                     catch (JsonException)
                                     {
