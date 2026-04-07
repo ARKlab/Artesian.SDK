@@ -13,7 +13,6 @@ using Polly;
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -53,7 +52,7 @@ namespace Artesian.SDK.Service
         {
             if (config.BaseAddress == null)
                 throw new ArgumentException("BaseAddress cannot be null", nameof(config));
-            
+
             _url = config.BaseAddress.ToString().AppendPathSegment(Url);
             _apiKey = config.ApiKey;
             _config = config;
@@ -82,7 +81,7 @@ namespace Artesian.SDK.Service
                     throw new ArgumentException("ClientSecret cannot be null when ApiKey is not provided", nameof(config));
                 if (config.Audience == null)
                     throw new ArgumentException("Audience cannot be null when ApiKey is not provided", nameof(config));
-                
+
                 var domain = new Uri(config.Domain);
 
                 var tenantId = domain.Segments
@@ -100,7 +99,7 @@ namespace Artesian.SDK.Service
             _client.WithTimeout(TimeSpan.FromMinutes(ArtesianConstants._serviceRequestTimeOutMinutes));
         }
 
-       
+
         public async Task<TResult> Exec<TResult, TBody>(HttpMethod method, string resource, TBody? body = default, CancellationToken ctk = default)
         {
             try
@@ -117,7 +116,7 @@ namespace Artesian.SDK.Service
                         throw new InvalidOperationException("ConfidentialClientApplication not initialized");
                     if (_config.Audience == null)
                         throw new InvalidOperationException("Audience not configured");
-                    
+
                     var c = _confidentialClientApplication
                         .AcquireTokenForClient(new[] { _config.Audience });
                     var res = await c.ExecuteAsync(ctk).ConfigureAwait(false);
@@ -148,7 +147,7 @@ namespace Artesian.SDK.Service
                                 string responseText = string.Empty;
 
                                 var contentType = res.ResponseMessage.Content.Headers.ContentType?.MediaType;
-                                
+
                                 // Flurl.Http.Testing might set Content-Type as a response header instead of content header
                                 // Try multiple variations: "Content-Type", "Content_Type", and "ContentType"
                                 if (string.IsNullOrEmpty(contentType))
@@ -167,59 +166,41 @@ namespace Artesian.SDK.Service
                                     }
                                 }
 
-                                var originalStream = await res.ResponseMessage.Content.ReadAsStreamAsync(
-#if NET6_0_OR_GREATER
-                                ctk
-#endif
-                                ).ConfigureAwait(false);
-
-                                using var ms = new MemoryStream();
                                 // If content type is exactly "application/problem+json", deserialize directly as ProblemDetail without buffering
                                 // The server guarantees this is a ProblemDetail response, so let any deserialization exceptions bubble up
                                 if (string.Equals(contentType, "application/problem+json", StringComparison.OrdinalIgnoreCase))
                                 {
-#if NET6_0_OR_GREATER
-                                    await originalStream.CopyToAsync(ms, ctk).ConfigureAwait(false);
-#else
-                                    await originalStream.CopyToAsync(ms, 81920, ctk).ConfigureAwait(false);
-#endif
-
-                                    ms.Position = 0;
                                     try
                                     {
-                                        problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(ms, ctk).ConfigureAwait(false);
+                                        var stream = await res.ResponseMessage.Content.ReadAsStreamAsync(
+#if NET6_0_OR_GREATER
+                                            ctk
+#endif
+                                        ).ConfigureAwait(false);
+
+                                        problemDetail = await _jsonSerializer.DeserializeAsync<ArtesianSdkProblemDetail>(stream, ctk).ConfigureAwait(false);
                                     }
                                     catch (JsonException)
                                     {
-                                        ms.Position = 0;
-                                        using var reader = new StreamReader(ms);
-                                        responseText = await reader.ReadToEndAsync(
-#if NET6_0_OR_GREATER
-                                        ctk
-#endif
-                                        ).ConfigureAwait(false);
-                                    }
-                                    catch (FormatException)
-                                    {
-                                        ms.Position = 0;
-                                        using var reader = new StreamReader(ms);
-                                        responseText = await reader.ReadToEndAsync(
-#if NET6_0_OR_GREATER
-                                        ctk
-#endif
-                                        ).ConfigureAwait(false);
+                                        var traceId = res.ResponseMessage.Headers.TryGetValues("trace-id", out var values)
+                                        ? values.FirstOrDefault()
+                                        : null;
+
+                                        // If deserialization fails, capture the error and fallback to reading as text
+                                        responseText = $"Failed to deserialize ProblemDetail: StatusCode {(int)res.ResponseMessage.StatusCode}. ReasonPhrase {res.ResponseMessage.ReasonPhrase}. TraceId {traceId}";
                                     }
                                 }
                                 else
                                 {
                                     // For other error responses, read as text directly (no deserialization needed)
-                                    ms.Position = 0;
-                                    using var reader = new StreamReader(ms);
-                                    responseText = await reader.ReadToEndAsync(
+                                    // Include first 1000 chars in exception details
+                                    var fullText = await res.ResponseMessage.Content.ReadAsStringAsync(
 #if NET6_0_OR_GREATER
-                                    ctk
+                                        ctk
 #endif
                                     ).ConfigureAwait(false);
+
+                                    responseText = fullText.Length > 1000 ? fullText.Substring(0, 1000) : fullText;
                                 }
 
                                 string detailMessage;
@@ -233,14 +214,14 @@ namespace Artesian.SDK.Service
                                         parts.Add(problemDetail.Detail);
                                     if (parts.Count == 0 && problemDetail.Type != null && !string.IsNullOrEmpty(problemDetail.Type))
                                         parts.Add(problemDetail.Type);
-                                    
+
                                     detailMessage = parts.Count > 0 ? string.Join(": ", parts) : responseText;
                                 }
                                 else
                                 {
                                     detailMessage = "Content:" + Environment.NewLine + responseText;
                                 }
-                                
+
                                 var exceptionMessage = $"Failed handling REST call to WebInterface {method} {_url + resource}. Returned status: {res.StatusCode}. {detailMessage}";
 
                                 // Throw appropriate exception based on status code
@@ -271,7 +252,7 @@ namespace Artesian.SDK.Service
                             ).ConfigureAwait(false);
 
                             var responseContentType = res.ResponseMessage.Content.Headers.ContentType?.MediaType;
-                            
+
                             // Flurl.Http.Testing might set Content-Type as a response header instead of content header
                             // Try both "Content-Type" and "ContentType" (Flurl might not convert the property name)
                             if (string.IsNullOrEmpty(responseContentType))
@@ -289,10 +270,10 @@ namespace Artesian.SDK.Service
                                     responseContentType = ct3Values.FirstOrDefault()?.Split(';')[0].Trim();
                                 }
                             }
-                            
+
                             var responseBaseMediaType = _getBaseMediaType(responseContentType);
                             var responseSerializer = _getSerializer(responseBaseMediaType);
-                            
+
                             if (responseSerializer == null)
                             {
                                 throw new ArtesianSdkClientException($"Unsupported content type: {responseContentType}. Supported types are: application/json, application/x-msgpack, application/x.msgpacklz4");
