@@ -58,7 +58,8 @@ jobs:
         name: DotNET Tests
         path: "**/*.trx"                            
         reporter: dotnet-trx
-        fail-on-error: true 
+        fail-on-error: true
+        use-actions-summary: 'false'
 
     - name: Create code coverage report
       if: always()
