@@ -16,6 +16,7 @@ using NUnit.Framework;
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,6 +78,28 @@ namespace Artesian.SDK.Tests
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity/100000001")
                    .WithVerb(HttpMethod.Get)
                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadMarketDataRegistryAsync_Unauthorized()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                httpTest.RespondWith(
+                    "Bearer token missing or invalid",
+                    401,
+                    new { Content_Type = "application/problem+json" }
+                );
+
+                var mds = new MarketDataService(_cfg);
+
+                var ex = Assert.ThrowsAsync<ArtesianSdkRemoteException>(async () =>
+                {
+                    await mds.ReadMarketDataRegistryAsync(new MarketDataIdentifier("TestProvider", "TestCurveName")).ConfigureAwait(false);
+                });
+
+                ex?.Message.Should().Contain("Failed handling REST call to WebInterface GET https://fake-artesian-env/v2.1/marketdata/entity?provider=TestProvider&curveName=TestCurveName. Returned status: 401. Content:\r\nFailed to deserialize ProblemDetail: StatusCode 401. ReasonPhrase Unauthorized. TraceId ");
             }
         }
 
