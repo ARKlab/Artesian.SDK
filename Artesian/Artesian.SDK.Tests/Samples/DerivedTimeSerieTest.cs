@@ -358,7 +358,7 @@ namespace Artesian.SDK.Tests.Samples
 
                 for (var dt = curve.Start; dt <= curve.End; dt = dt.PlusDays(1))
                 {
-                    writeMarketData.AddData(dt, curve.Value);
+                    writeMarketData.TryAddData(dt, curve.Value);
                 }
 
                 await writeMarketData.Save(Instant.FromDateTimeUtc(DateTime.Now.ToUniversalTime()));
