@@ -826,7 +826,7 @@ namespace Artesian.SDK.Tests
                     Query = "SELECT Time, (Value + 1) as Value FROM table_name"
                 };
 
-                var derivedTransformResponse = await mds.DerivedTransformQueryValidation(request);
+                await mds.DerivedTransformQueryValidation(request);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/utils/derivedTransform/queryValidation")
                     .WithVerb(HttpMethod.Post)
