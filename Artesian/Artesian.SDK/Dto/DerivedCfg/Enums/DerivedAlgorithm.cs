@@ -17,7 +17,11 @@
         /// <summary>
         /// Coalesce algorithm.
         /// </summary>
-        Coalesce
+        Coalesce,
+        /// <summary>
+        /// Transform algorithm.
+        /// </summary>
+        Transform
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 }

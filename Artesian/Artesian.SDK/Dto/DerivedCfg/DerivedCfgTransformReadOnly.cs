@@ -5,17 +5,18 @@ namespace Artesian.SDK.Dto
     /// <summary>
     /// DerivedMuv Configuration Readonly
     /// </summary>
-    public record DerivedCfgMuvReadOnly : DerivedCfgMuv
+    public record DerivedCfgTransformReadOnly : DerivedCfgTransform
     {
         /// <summary>
-        /// DerivedMuv constructor
+        /// DerivedTransform constructor
         /// </summary>
         /// <param name="cfg"></param>
-        public DerivedCfgMuvReadOnly(DerivedCfgMuv cfg)
+        public DerivedCfgTransformReadOnly(DerivedCfgTransform cfg)
         {
             // Copy properties from the original cfg to the read-only version
             this.Version = cfg.Version;
             this.DerivedAlgorithm = cfg.DerivedAlgorithm;
+            this.Transform = cfg.Transform;
             // Copy other properties as needed
         }
 
@@ -27,6 +28,10 @@ namespace Artesian.SDK.Dto
         /// Version
         /// </summary>
         public new int Version { get; }
+        /// <summary>
+        /// Transform query
+        /// </summary>
+        public new string? Transform { get; set; }
 
     }
 }

@@ -805,6 +805,36 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
+        public async Task MarketData_DerivedTransformQueryValidationAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var request = new DerivedTransformQueryValidation.V1()
+                {
+                    Data = new TimeSerieData.V1()
+                    {
+                        Rows = new Dictionary<LocalDateTime, double?>()
+                        {
+                            { new LocalDateTime(2018, 10, 01, 00, 00), 100 },
+                            { new LocalDateTime(2018, 10, 01, 01, 00), 100 }
+                        },
+                        Type = MarketDataType.ActualTimeSerie,
+                        Timezone = "UTC"
+                    },
+                    Query = "SELECT Time, (Value + 1) as Value FROM table_name"
+                };
+
+                var derivedTransformResponse = await mds.DerivedTransformQueryValidation(request);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/utils/derivedTransform/queryValidation")
+                    .WithVerb(HttpMethod.Post)
+                    .Times(1);
+            }
+        }
+
+        [Test]
         public async Task MarketData_DeleteMarketDataAsync()
         {
             using (var httpTest = new HttpTest())

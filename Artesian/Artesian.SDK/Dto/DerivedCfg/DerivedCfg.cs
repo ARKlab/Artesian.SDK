@@ -1,7 +1,8 @@
-﻿namespace Artesian.SDK.Dto
+﻿
+namespace Artesian.SDK.Dto
 {
     /// <summary>
-    /// The DerivedCfg containing the three type of derived configurations (DerivedCfgCoalesce, DerivedCfgSum, DerivedCfgMuv)
+    /// The DerivedCfg containing all types of derived configurations (DerivedCfgCoalesce, DerivedCfgSum, DerivedCfgMuv, DerivedCfgTransform)
     /// </summary>
     public record DerivedCfg
     {
@@ -17,7 +18,14 @@
                 Sum = new DerivedCfgSumReadOnly(sum);
             else if (derivedCfg is DerivedCfgMuv muv)
                 Muv = new DerivedCfgMuvReadOnly(muv);
+            else if (derivedCfg is DerivedCfgTransform transform)
+                Transform = new DerivedCfgTransformReadOnly(transform);
         }
+
+        /// <summary>
+        /// DerivedCfgTransform
+        /// </summary>
+        public DerivedCfgTransformReadOnly? Transform { get; protected set; } = null;
 
         /// <summary>
         /// DerivedCfgCoalesce

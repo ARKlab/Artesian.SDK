@@ -18,6 +18,7 @@ namespace Artesian.SDK.Dto.Serialize
                 DerivedAlgorithm.MUV => typeof(DerivedCfgMuv),
                 DerivedAlgorithm.Coalesce => typeof(DerivedCfgCoalesce),
                 DerivedAlgorithm.Sum => typeof(DerivedCfgSum),
+                DerivedAlgorithm.Transform => typeof(DerivedCfgTransform),
                 _ => typeof(DerivedCfgBase)
             };
         }
