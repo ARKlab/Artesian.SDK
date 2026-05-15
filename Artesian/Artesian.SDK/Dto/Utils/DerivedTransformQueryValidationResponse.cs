@@ -19,7 +19,7 @@
             }
 
             /// <summary>
-            /// The query is valid or invalid.
+            /// The transformation is valid or invalid.
             /// </summary>
             public bool Valid { get; set; }
 
