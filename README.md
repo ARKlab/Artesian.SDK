@@ -483,7 +483,12 @@ var checkResults = marketDataService.CheckConversion(inputUnits, outputUnit);
 3. NotConvertibleInputUnitsOfMeasure: [ "`s`" ]
 
 ### DerivedTransform: Query Validation
-Use the `DerivedTransformQueryValidation` to validates and executes a derived transform query against a sample TimeSerieData
+Use the `DerivedTransformQueryValidation` to validate the provided `Transform` expression against the input time series data and returns the transformed result.
+The request body must include a `transform` expression and `data` with `rows`, `type`, `timezone`, and optionally `version` for versioned series.
+The query is executed against the helper table `$table`.
+For ActualTimeSerie the table exposes `Time` (datetime) and `Value` (double).
+For VersionedTimeSerie it exposes `Version` (datetime), `Time` (datetime) and `Value` (double).
+The transform query should return `Time` and `Value` columns in the response.
 ```csharp
 var request = new DerivedTransformQueryValidation.V1()
 {
@@ -521,12 +526,27 @@ var derivedTransformResponse = await mds.DerivedTransformQueryValidation(request
 
 #### Query examples
 ```
-SELECT Time + INTERVAL 1 DAY AS Time, Value FROM table_name
+SELECT Time + INTERVAL 1 DAY AS Time, Value FROM $table
 
-SELECT Time, CASE WHEN EXTRACT(HOUR FROM (Time AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome') < 10 THEN Value + 1 ELSE Value END AS Value FROM table_name WHERE Time IS NOT NULL
+SELECT Time, CASE WHEN EXTRACT(HOUR FROM (Time AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome') < 10 THEN Value + 1 ELSE Value END AS Value FROM $table WHERE Time IS NOT NULL
 
-SELECT Time, Value FROM table_name WHERE Version IS NOT NULL AND ((EXTRACT(hour FROM Version) < 10 AND Time >= date_trunc('day', Version + interval '1 day')) OR (EXTRACT(hour FROM Version) >= 10 AND Time >= date_trunc('day', Version + interval '2 day')))
+SELECT Time, Value FROM $table WHERE Version IS NOT NULL AND ((EXTRACT(hour FROM Version) < 10 AND Time >= date_trunc('day', Version + interval '1 day')) OR (EXTRACT(hour FROM Version) >= 10 AND Time >= date_trunc('day', Version + interval '2 day')))
 ```
+#### SQL Dialect & Execution Model
+
+The query engine uses a DuckDB-compatible SQL dialect (PostgreSQL-like).
+
+Queries are executed against a virtual table named table_name, which represents the provided sample TimeSerieData.
+
+The engine supports common SQL features including:
+
+SELECT expressions
+WHERE filtering
+CASE WHEN expressions
+Date/time arithmetic and functions
+Timezone conversion functions
+
+Full DuckDB SQL reference: https://duckdb.org/docs/sql/introduction.html
 
 ### Filler Strategy
 

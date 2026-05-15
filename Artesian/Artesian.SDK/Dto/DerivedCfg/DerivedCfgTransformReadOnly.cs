@@ -29,7 +29,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         public new int Version { get; }
         /// <summary>
-        /// Transform query
+        /// Transform
         /// </summary>
         public new string? Transform { get; set; }
 
