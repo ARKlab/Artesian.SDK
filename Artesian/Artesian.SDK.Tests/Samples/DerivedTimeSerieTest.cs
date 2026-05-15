@@ -388,7 +388,7 @@ namespace Artesian.SDK.Tests.Samples
                 {
                     OrderedReferencedMarketDataIds = curveIds.ToArray(),
                     Version = 1,
-                    Transform = "SELECT Time, (Value + 1) as Value FROM table_name"
+                    Transform = "SELECT Time, (Value + 1) as Value FROM $table"
                 },
                 MarketDataId = 0
             };

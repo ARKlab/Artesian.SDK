@@ -502,7 +502,7 @@ var request = new DerivedTransformQueryValidation.V1()
         Type = MarketDataType.ActualTimeSerie,
         Timezone = "UTC"
     },
-    Query = "SELECT Time, (Value + 1) as Value FROM table_name"
+    Query = "SELECT Time, (Value + 1) as Value FROM $table"
 };
 
 var derivedTransformResponse = await mds.DerivedTransformQueryValidation(request);
@@ -514,7 +514,7 @@ var derivedTransformResponse = await mds.DerivedTransformQueryValidation(request
 | Time   | datetime |
 | Value  | double |
 
-> `table_name` is a virtual table exposed by the query engine.
+> `$table` is a virtual table exposed by the query engine.
 
 **Returned Object: DerivedTransformQueryValidationResponse.V1**
 
@@ -536,7 +536,7 @@ SELECT Time, Value FROM $table WHERE Version IS NOT NULL AND ((EXTRACT(hour FROM
 
 The query engine uses a DuckDB-compatible SQL dialect (PostgreSQL-like).
 
-Queries are executed against a virtual table named table_name, which represents the provided sample TimeSerieData.
+Queries are executed against a virtual table named $table, which represents the provided sample TimeSerieData.
 
 The engine supports common SQL features including:
 

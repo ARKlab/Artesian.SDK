@@ -823,7 +823,7 @@ namespace Artesian.SDK.Tests
                         Type = MarketDataType.ActualTimeSerie,
                         Timezone = "UTC"
                     },
-                    Transform = "SELECT Time, (Value + 1) as Value FROM table_name"
+                    Transform = "SELECT Time, (Value + 1) as Value FROM $table"
                 };
 
                 await mds.DerivedTransformQueryValidation(request);
