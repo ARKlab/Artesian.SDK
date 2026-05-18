@@ -21,7 +21,7 @@ namespace Artesian.SDK.Dto
         /// </summary>
         /// <remarks>
         /// The query is executed against the helper table <c>$table</c>.
-        ///
+        /// <para>
         /// Available columns depend on the referenced time series type:
         /// <list type="bullet">
         /// <item>
@@ -31,23 +31,21 @@ namespace Artesian.SDK.Dto
         /// </item>
         /// <item>
         /// <description>
-        /// <c>VersionedTimeSerie</c>: exposes <c>Version</c> (DateTime),
-        /// <c>Time</c> (DateTime) and <c>Value</c> (double).
+        /// <c>VersionedTimeSerie</c>: exposes <c>Version</c> (DateTime), <c>Time</c> (DateTime) and <c>Value</c> (double).
         /// </description>
         /// </item>
         /// </list>
-        ///
         /// The query must return <c>Time</c> and <c>Value</c> columns.
-        /// </remarks>
-        /// <example>
-        /// Shift all timestamps by one day:
+        /// </para>
+        /// <para>
+        /// <b>Examples:</b>
+        /// </para>
+        /// <para>Shift all timestamps by one day:</para>
         /// <code>
         /// SELECT Time + INTERVAL 1 DAY AS Time, Value
         /// FROM $table
         /// </code>
-        /// </example>
-        /// <example>
-        /// Increase values before 10:00 (Europe/Rome timezone):
+        /// <para>Increase values before 10:00 (Europe/Rome timezone):</para>
         /// <code>
         /// SELECT Time,
         ///        CASE WHEN EXTRACT(HOUR FROM (Time AT TIME ZONE 'UTC')
@@ -57,7 +55,7 @@ namespace Artesian.SDK.Dto
         ///        END AS Value
         /// FROM $table
         /// </code>
-        /// </example>
+        /// </remarks>
         [Key("Transform")]
         public string? Transform { get; set; }
     }

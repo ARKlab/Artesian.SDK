@@ -26,13 +26,20 @@
             /// For <b>ActualTimeSerie</b>, the table exposes <c>Time</c> (datetime) and <c>Value</c> (double).
             /// For <b>VersionedTimeSerie</b>, it exposes <c>Version</c> (datetime), <c>Time</c> (datetime), and <c>Value</c> (double).
             /// The transform query should return <c>Time</c> and <c>Value</c> columns in the response.
-            /// </remarks>
-            /// <example>
-            /// Example queries:
+            /// <para><b>Examples:</b></para>
+            /// <para>Shift all timestamps by one day:</para>
+            /// <code>
             /// SELECT Time + INTERVAL 1 DAY AS Time, Value FROM $table
+            /// </code>
+            /// <para>Increase values before 10:00 (Europe/Rome timezone):</para>
+            /// <code>
             /// SELECT Time, CASE WHEN EXTRACT(HOUR FROM (Time AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome') &lt; 10 THEN Value + 1 ELSE Value END AS Value FROM $table WHERE Time IS NOT NULL
+            /// </code>
+            /// <para>Version-based filtering:</para>
+            /// <code>
             /// SELECT Time, Value FROM $table WHERE Version IS NOT NULL AND ((EXTRACT(hour FROM Version) &lt; 10 AND Time &gt;= date_trunc('day', Version + interval '1 day')) OR (EXTRACT(hour FROM Version) &gt;= 10 AND Time &gt;= date_trunc('day', Version + interval '2 day')))
-            /// </example>
+            /// </code>
+            /// </remarks>
             public string? Transform { get; init; }
 
             /// <summary>
