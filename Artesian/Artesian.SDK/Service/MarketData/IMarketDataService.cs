@@ -360,5 +360,15 @@ namespace Artesian.SDK.Service
         ///             NotConvertibleInputUnitsOfMeasure = list of not convertible input units of measure</returns>
         Task<CheckConversionResult> CheckConversionAsync(string[] inputUnitsOfMeasure, string targetUnitOfMeasure, CancellationToken ctk = default);
         #endregion
+
+        #region Utils
+        /// <summary>
+        /// Derived Transform Query Validation
+        /// </summary>
+        /// <param name="request">Query to be validated from Derived Transform</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        Task<DerivedTransformQueryValidationResponse.V1> DerivedTransformQueryValidation(DerivedTransformQueryValidation.V1 request, CancellationToken ctk = default);
+        #endregion
     }
 }
