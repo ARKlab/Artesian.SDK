@@ -11,7 +11,7 @@ namespace Artesian.SDK.Dto
     public record DerivedCfgSumReadOnly : DerivedCfgSum
     {
         /// <summary>
-        /// DerivedCoalesce constructor
+        /// DerivedSum constructor
         /// </summary>
         /// <param name="cfg"></param>
         public DerivedCfgSumReadOnly(DerivedCfgSum cfg)
