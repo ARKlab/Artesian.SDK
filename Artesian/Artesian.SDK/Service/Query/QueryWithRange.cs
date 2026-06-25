@@ -103,7 +103,6 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Validate query
         /// </summary>
-        /// <returns></returns>
         protected virtual void ValidateQuery()
         {
             if (QueryParamaters.ExtractionRangeType == null)

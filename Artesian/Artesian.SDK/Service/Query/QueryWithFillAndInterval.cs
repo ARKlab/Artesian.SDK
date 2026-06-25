@@ -53,7 +53,6 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Validate query
         /// </summary>
-        /// <returns></returns>
         protected override void ValidateQuery()
         {
             base.ValidateQuery();
