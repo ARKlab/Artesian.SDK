@@ -56,7 +56,6 @@ namespace Artesian.SDK.Factory
         /// Register a MarketData
         /// </remarks>
         /// <param name="version">LocalDateTime</param>
-        /// <returns></returns>
         internal void SetSelectedVersion(LocalDateTime version)
         {
             if ((SelectedVersion.HasValue) && (Values.Count != 0))
