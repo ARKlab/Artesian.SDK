@@ -139,7 +139,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// Update Derived Configuration
         /// </summary>
-        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="derivedCfg">The Derived Configuration Coalesce to be updated</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
         Task UpdateDerivedConfiguration(DerivedCfgCoalesce derivedCfg, CancellationToken ctk = default);
@@ -147,7 +147,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// Update Derived Configuration
         /// </summary>
-        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="derivedCfg">The Derived Configuration Coalesce to be updated</param>
         /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
@@ -156,7 +156,24 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// Update Derived Configuration
         /// </summary>
-        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="derivedCfg">The Derived Configuration Transform to be updated</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        Task UpdateDerivedConfiguration(DerivedCfgTransform derivedCfg, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Transform to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        Task UpdateDerivedConfiguration(DerivedCfgTransform derivedCfg, bool force, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Sum to be updated</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
         Task UpdateDerivedConfiguration(DerivedCfgSum derivedCfg, CancellationToken ctk = default);
@@ -164,7 +181,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// Update Derived Configuration
         /// </summary>
-        /// <param name="derivedCfg">The Derived Configuration Muv to be updated</param>
+        /// <param name="derivedCfg">The Derived Configuration Sum to be updated</param>
         /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>

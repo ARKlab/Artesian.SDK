@@ -293,6 +293,36 @@ namespace Artesian.SDK.Factory
             Metadata = new MarketDataMetadata(_entity);
         }
 
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Transform to be updated</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        public async Task UpdateDerivedConfiguration(DerivedCfgTransform derivedCfg, CancellationToken ctk = default)
+        {
+            await UpdateDerivedConfiguration(derivedCfg, false, ctk).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Update Derived Configuration
+        /// </summary>
+        /// <param name="derivedCfg">The Derived Configuration Transform to be updated</param>
+        /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
+        /// <param name="ctk">Cancellation Token</param>
+        /// <returns></returns>
+        public async Task UpdateDerivedConfiguration(DerivedCfgTransform derivedCfg, bool force, CancellationToken ctk = default)
+        {
+            _entity!.ValidateUpdateDerivedCfg(derivedCfg);
+
+            _entity = await _marketDataService.UpdateDerivedConfigurationAsync(_entity!.MarketDataId, derivedCfg, force, ctk).ConfigureAwait(false);
+
+            DerivedCfg = _entity.DerivedCfg != null ? new DerivedCfg(_entity.DerivedCfg) : null;
+
+            Metadata = new MarketDataMetadata(_entity);
+        }
+
         /// <summary>
         /// Update Derived Configuration
         /// </summary>
