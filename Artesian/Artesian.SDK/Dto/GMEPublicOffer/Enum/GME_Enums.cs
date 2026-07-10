@@ -25,7 +25,12 @@
         MRR = 50,
         MIXBID = 70,
         AFRR = 100,
-        AFRE = 200
+        AFRE = 200,
+        GMP_ASTA = 230,
+        GMP_Cont = 234,
+        MI_Cont = 235,
+        MGS = 240
+
     }
 
     public enum Status : byte
@@ -38,7 +43,8 @@
         SUB = 5,
         COM = 6,
         PCOM = 7,
-        PREJ = 8
+        PREJ = 8,
+        DIS = 9
     }
 
     public enum Purpose : byte
