@@ -23,7 +23,6 @@ namespace Artesian.SDK.Tests.Samples
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "<Pending>")]
         public async Task DataQualityCrud()
         {
-            var qs = new QueryService(_cfg);
             var marketDataService = new MarketDataService(_cfg);
 
             CancellationToken ctk = default;
