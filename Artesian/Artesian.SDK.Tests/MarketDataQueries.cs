@@ -158,7 +158,7 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var dqr = await mds.ReadDataQualityRuleByIdAsync(1);
+                await mds.ReadDataQualityRuleByIdAsync(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
                     .WithVerb(HttpMethod.Get)
