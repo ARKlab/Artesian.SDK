@@ -1,5 +1,7 @@
 ﻿using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.DataQuality;
+using Artesian.SDK.Dto.DataQuality.Enums;
 using Artesian.SDK.Dto.UoM;
 using Artesian.SDK.Factory;
 using Artesian.SDK.Service;
@@ -103,6 +105,142 @@ namespace Artesian.SDK.Tests
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity")
                     .WithVerb(HttpMethod.Post)
                     .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_RegisterDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var dataQualityRule = new DataQualityRuleDto.Input()
+                {
+                    Name = "TestRule",
+                    Type = RuleType.CompletenessAndFreshness,
+                    Configuration = new ActualCompletenessAndFreshnessConfigDto
+                    {
+                        MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                        ScheduleConfig = new ScheduleConfigDto
+                        {
+                            ScheduleDefinition = new CronScheduleDefinitionDto
+                            {
+                                CronExpression = "0 0 * * *",
+                                TimeZone = "UTC"
+                            },
+                            MaxDelay = Period.FromHours(1)
+                        },
+                        RecordValidationConfig = new RecordValidationConfigDto
+                        {
+                            RecordRangeFrom = Period.Zero,
+                            RecordRangeTo = Period.FromHours(1)
+                        }
+                    }
+                };
+
+                var dqr = await mds.RegisterDataQualityRuleAsync(dataQualityRule);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var dqr = await mds.ReadDataQualityRuleByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var dqr = await mds.ReadDataQualityRuleAsync(1, 10, RuleType.CompletenessAndFreshness, 1, string.Empty, Array.Empty<int>(), Array.Empty<string>());
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
+                    .WithQueryParam("marketDataId", 1)
+                    .WithQueryParam("page", 1)
+                    .WithQueryParam("pageSize", 10)
+                    .WithQueryParam("type", RuleType.CompletenessAndFreshness)
+                    .WithQueryParam("name", string.Empty)
+                    .WithoutQueryParam("ruleIds")
+                    .WithoutQueryParam("sort")
+                    .WithVerb(HttpMethod.Get)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpdateDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var dataQualityRule = new DataQualityRuleDto.Input()
+                {
+                    Name = "TestRuleUpdate",
+                    Type = RuleType.CompletenessAndFreshness,
+                    Configuration = new ActualCompletenessAndFreshnessConfigDto
+                    {
+                        MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                        ScheduleConfig = new ScheduleConfigDto
+                        {
+                            ScheduleDefinition = new CronScheduleDefinitionDto
+                            {
+                                CronExpression = "0 0 * * *",
+                                TimeZone = "UTC"
+                            },
+                            MaxDelay = Period.FromHours(1)
+                        },
+                        RecordValidationConfig = new RecordValidationConfigDto
+                        {
+                            RecordRangeFrom = Period.Zero,
+                            RecordRangeTo = Period.FromHours(1)
+                        }
+                    }
+                };
+
+                var dqr = await mds.UpdateDataQualityRuleAsync(1, dataQualityRule);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Put)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteDataQualityRuleAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Delete)
                     .WithHeadersTest()
                     .Times(1);
             }
