@@ -220,7 +220,7 @@ namespace Artesian.SDK.Tests
                     }
                 };
 
-                var dqr = await mds.UpdateDataQualityRuleAsync(1, dataQualityRule);
+                await mds.UpdateDataQualityRuleAsync(1, dataQualityRule);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
                     .WithVerb(HttpMethod.Put)
