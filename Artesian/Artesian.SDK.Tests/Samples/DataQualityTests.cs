@@ -60,7 +60,7 @@ namespace Artesian.SDK.Tests.Samples
             ClassicAssert.AreEqual(readDataQualityRule.Id, ruleCreated.Id);
 
             // Update rule
-            var ruleUpdated = await marketDataService.UpdateDataQualityRuleAsync(ruleCreated.Id, new DataQualityRuleDto.Input
+            await marketDataService.UpdateDataQualityRuleAsync(ruleCreated.Id, new DataQualityRuleDto.Input
             {
                 Name = "TestRuleUpdated",
                 Type = RuleType.CompletenessAndFreshness,
