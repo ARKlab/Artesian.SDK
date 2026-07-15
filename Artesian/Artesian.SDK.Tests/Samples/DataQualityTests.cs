@@ -19,7 +19,7 @@ namespace Artesian.SDK.Tests.Samples
         private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri("https://arkive.artesian.cloud/tenantName/"), "APIKey");
 
         [Test]
-        //[Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        [Ignore("Run only manually with proper artesian URI and ApiKey set")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "<Pending>")]
         public async Task DataQualityCrud()
         {
