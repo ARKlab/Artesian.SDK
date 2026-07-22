@@ -27,6 +27,9 @@ namespace Artesian.SDK.Service
         /// <returns>The created MarketDataQualityRuleAssignmentDto.Output with server-assigned Id.</returns>
         public Task<MarketDataQualityRuleAssignmentDto.Output> RegisterDataQualityRuleAssignmentAsync(MarketDataQualityRuleAssignmentDto.Input entity, Period? initializationLookbackPeriod = null, CancellationToken ctk = default)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
             var url = "/dataquality/dqruleassignment"
                     .SetQueryParam("initializationLookbackPeriod", initializationLookbackPeriod);
 
