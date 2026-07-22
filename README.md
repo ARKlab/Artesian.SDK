@@ -864,7 +864,7 @@ Check the status after creating or reading rules:
 
 ```csharp
 var rule = await marketDataService.ReadDataQualityRuleByIdAsync(123);
-if (rule.AggregatedStatus == CheckAggregatedStatus.Error)
+if (rule.AggregatedStatus == CheckAggregatedStatus.KO)
 {
     Console.WriteLine($"Rule {rule.Name} has failing checks!");
 }
