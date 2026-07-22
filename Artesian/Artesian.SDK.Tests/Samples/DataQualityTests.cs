@@ -173,11 +173,11 @@ namespace Artesian.SDK.Tests.Samples
 
             var assignmentCreated = await marketDataService.RegisterDataQualityRuleAssignmentAsync(assignmentPayload, ctk: ctk);
 
-            var dataQualityRuleAssignement = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentCreated.Id, ctk);
+            var dataQualityRuleAssignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentCreated.Id, ctk);
 
-            ClassicAssert.AreEqual(dataQualityRuleAssignement.Id, assignmentCreated.Id);
+            ClassicAssert.AreEqual(dataQualityRuleAssignment.Id, assignmentCreated.Id);
 
-            // Delete assignement
+            // Delete assignment
             await marketDataService.DeleteDataQualityRuleAssignmentAsync(assignmentCreated.Id, ctk);
 
             dataQualityRuleAssignement = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentCreated.Id, ctk);
