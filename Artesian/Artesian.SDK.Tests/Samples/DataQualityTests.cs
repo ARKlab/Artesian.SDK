@@ -29,7 +29,7 @@ namespace Artesian.SDK.Tests.Samples
             CancellationToken ctk = default;
 
             // Register rule
-            var _rulePayload = new DataQualityRuleDto.Input
+            var rulePayload = new DataQualityRuleDto.Input
             {
                 Name = "TestRule",
                 Type = RuleType.CompletenessAndFreshness,
@@ -54,7 +54,7 @@ namespace Artesian.SDK.Tests.Samples
             };
 
             // Read Rule
-            var ruleCreated = await marketDataService.RegisterDataQualityRuleAsync(_rulePayload, ctk);
+            var ruleCreated = await marketDataService.RegisterDataQualityRuleAsync(rulePayload, ctk);
 
             var readDataQualityRule = await marketDataService.ReadDataQualityRuleByIdAsync(ruleCreated.Id, ctk);
 
