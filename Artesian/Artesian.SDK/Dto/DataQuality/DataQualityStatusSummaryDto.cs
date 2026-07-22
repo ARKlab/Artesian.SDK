@@ -16,12 +16,8 @@ namespace Artesian.SDK.Dto.DataQuality
     [MessagePackObject]
     public class DataQualityStatusSummaryDto
     {
-        /// <summary>
-        /// The timestamp of the most recent quality check execution for this Market Data.
-        /// </summary>
         [Key(0)]
-        public Instant LastCheckTime { get; set; }
-
+        public Instant? LastCheckTime { get; set; }
         /// <summary>
         /// The overall aggregated quality status across all active rule assignments (OK if all pass, KO if any fail).
         /// </summary>
