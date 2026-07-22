@@ -87,7 +87,7 @@ namespace Artesian.SDK.Dto.DataQuality
                 throw new ArgumentException("DataQualityRule Configuration must be valorized", nameof(dataQualityRule));
 
             if (dataQualityRule.Configuration.Type != dataQualityRule.Type)
-                throw new ArgumentException("DataQualityRule Configuration type must match the rule type", nameof(dataQualityRule));
+                throw new ArgumentException("DataQualityRule configuration type must match the rule type.", nameof(dataQualityRule.Type));
 
         }
     }
