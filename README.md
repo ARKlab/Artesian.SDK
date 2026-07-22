@@ -826,7 +826,7 @@ var updatedAssignment = await marketDataService.UpdateDataQualityRuleAssignmentA
 #### Delete an Assignment
 
 ```csharp
-await marketDataService.DeleteDataQualityRuleAssignmentAsync(assignmentId: 456);
+await marketDataService.DeleteDataQualityRuleAssignmentAsync(id: 456);
 ```
 
 #### Read Assignment Event Feed
