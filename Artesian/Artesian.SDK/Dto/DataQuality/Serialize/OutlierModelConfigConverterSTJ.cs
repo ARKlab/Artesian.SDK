@@ -29,7 +29,7 @@ namespace Artesian.SDK.Dto.DataQuality.Serialize
             {
                 OutlierModel.AbsoluteBound => typeof(OutlierAbsoluteBoundConfigDto),
                 OutlierModel.RefCurve => typeof(OutlierRefCurveConfigDto),
-                _ => typeof(OutlierModelConfigDto),
+                _ => throw new InvalidOperationException($"Can't deserialize OutlierModelConfigDto. OutlierModel '{discriminatorValue}' is not valid.")
             };
         }
     }
