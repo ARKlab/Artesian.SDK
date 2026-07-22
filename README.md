@@ -855,9 +855,7 @@ Rules and assignments expose aggregated check status through the `AggregatedStat
 <table>
   <tr><th>Status</th><th>Description</th></tr>
   <tr><td>OK</td><td>All checks passed</td></tr>
-  <tr><td>Warning</td><td>Some checks failed but within acceptable thresholds</td></tr>
-  <tr><td>Error</td><td>Critical checks failed</td></tr>
-  <tr><td>Unknown</td><td>No checks have been executed yet</td></tr>
+  <tr><td>KO</td><td>One or more checks failed</td></tr>
 </table>
 
 Check the status after creating or reading rules:
