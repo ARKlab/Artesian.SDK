@@ -138,7 +138,7 @@ namespace Artesian.SDK.Service
         /// <param name="id">The unique identifier of the assignment.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>The MarketDataQualityRuleAssignmentDto.Output if found; otherwise <see langword="null"/>.</returns>
-        Task<MarketDataQualityRuleAssignmentDto.Output?> ReadDataQualityRuleAssignmentByIdAsync(int id, CancellationToken ctk = default);
+        Task<MarketDataQualityRuleAssignmentDto.Output> ReadDataQualityRuleAssignmentByIdAsync(int id, CancellationToken ctk = default);
         /// <summary>
         /// Retrieves a paginated list of DQ rule assignments, optionally filtered by MarketData, Rule, or rule name.
         /// </summary>

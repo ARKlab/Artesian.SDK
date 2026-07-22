@@ -28,8 +28,6 @@ namespace Artesian.SDK.Service
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            entity.Validate();
-
             var url = "/dataquality/dqrule";
 
             return _client.Exec<DataQualityRuleDto.Output, DataQualityRuleDto.Input>(HttpMethod.Post, url, entity, ctk: ctk);
@@ -41,11 +39,11 @@ namespace Artesian.SDK.Service
         /// <param name="id">The unique identifier of the rule.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>The <see cref="DataQualityRuleDto.Output"/> if found; otherwise <see langword="null"/>.</returns>
-        public Task<DataQualityRuleDto.Output?> ReadDataQualityRuleByIdAsync(int id, CancellationToken ctk = default)
+        public Task<DataQualityRuleDto.Output> ReadDataQualityRuleByIdAsync(int id, CancellationToken ctk = default)
         {
             var url = "/dataquality/dqrule".AppendPathSegment(id);
 
-            return _client.Exec<DataQualityRuleDto.Output?>(HttpMethod.Get, url, ctk: ctk);
+            return _client.Exec<DataQualityRuleDto.Output>(HttpMethod.Get, url, ctk: ctk);
         }
 
         /// <summary>
@@ -101,8 +99,6 @@ namespace Artesian.SDK.Service
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
-
-            entity.Validate();
 
             var url = "/dataquality/dqrule".AppendPathSegment(id);
 

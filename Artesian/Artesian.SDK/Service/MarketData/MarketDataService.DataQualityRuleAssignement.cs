@@ -42,11 +42,11 @@ namespace Artesian.SDK.Service
         /// <param name="id">The unique identifier of the assignment.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>The MarketDataQualityRuleAssignmentDto.Output if found; otherwise <see langword="null"/>.</returns>
-        public Task<MarketDataQualityRuleAssignmentDto.Output?> ReadDataQualityRuleAssignmentByIdAsync(int id, CancellationToken ctk = default)
+        public Task<MarketDataQualityRuleAssignmentDto.Output> ReadDataQualityRuleAssignmentByIdAsync(int id, CancellationToken ctk = default)
         {
             var url = "/dataquality/dqruleassignment".AppendPathSegment(id);
 
-            return _client.Exec<MarketDataQualityRuleAssignmentDto.Output?>(HttpMethod.Get, url, ctk: ctk);
+            return _client.Exec<MarketDataQualityRuleAssignmentDto.Output>(HttpMethod.Get, url, ctk: ctk);
         }
 
         /// <summary>

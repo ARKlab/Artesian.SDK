@@ -2,8 +2,6 @@
 
 using MessagePack;
 
-using System;
-
 namespace Artesian.SDK.Dto.DataQuality
 {
     /// <summary>
@@ -73,22 +71,6 @@ namespace Artesian.SDK.Dto.DataQuality
             /// </summary>
             [Key(6)]
             public CheckAggregatedStatus? AggregatedStatus { get; set; }
-        }
-    }
-
-    internal static class DataQualityRuleExt
-    {
-        public static void Validate(this DataQualityRuleDto.Input dataQualityRule)
-        {
-            if (string.IsNullOrWhiteSpace(dataQualityRule.Name))
-                throw new ArgumentException("DataQualityRule name must be provided.", nameof(dataQualityRule.Name));
-
-            if (dataQualityRule.Configuration == null)
-                throw new ArgumentException("DataQualityRule configuration must be provided.", nameof(dataQualityRule.Configuration));
-
-            if (dataQualityRule.Configuration.Type != dataQualityRule.Type)
-                throw new ArgumentException("DataQualityRule configuration type must match the rule type.", nameof(dataQualityRule.Type));
-
         }
     }
 }
