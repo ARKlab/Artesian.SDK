@@ -5,7 +5,6 @@ using Artesian.SDK.Common;
 using Artesian.SDK.Dto.DataQuality;
 using Artesian.SDK.Dto.DataQuality.Enums;
 using Artesian.SDK.Dto.UoM;
-using Artesian.SDK.Service;
 
 using MessagePack;
 
