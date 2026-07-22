@@ -99,6 +99,9 @@ namespace Artesian.SDK.Service
         /// <param name="ctk">Cancellation token.</param>
         public Task<DataQualityRuleDto.Output> UpdateDataQualityRuleAsync(int id, DataQualityRuleDto.Input entity, CancellationToken ctk = default)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
             entity.Validate();
 
             var url = "/dataquality/dqrule".AppendPathSegment(id);
