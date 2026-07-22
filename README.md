@@ -754,7 +754,7 @@ var updatedRule = await marketDataService.UpdateDataQualityRuleAsync(
 ### Delete a Data Quality Rule
 
 ```csharp
-await marketDataService.DeleteDataQualityRuleAsync(ruleId: 123);
+await marketDataService.DeleteDataQualityRuleAsync(id: 123);
 ```
 
 ### Data Quality Rule Assignments
