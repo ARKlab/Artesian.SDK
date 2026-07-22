@@ -786,7 +786,7 @@ Console.WriteLine($"Assignment ID: {createdAssignment.Id}");
 Get a single assignment:
 
 ```csharp
-var assignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentId: 456);
+var assignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(id: 456);
 Console.WriteLine($"MarketData: {assignment.MarketData?.MarketDataName}");
 Console.WriteLine($"Rule: {assignment.DataQualityRule?.Name}");
 ```
