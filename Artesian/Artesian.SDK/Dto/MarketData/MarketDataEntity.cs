@@ -5,6 +5,7 @@ using Artesian.SDK.Common;
 using Artesian.SDK.Dto.DataQuality;
 using Artesian.SDK.Dto.DataQuality.Enums;
 using Artesian.SDK.Dto.UoM;
+using Artesian.SDK.Service;
 
 using MessagePack;
 
@@ -294,6 +295,7 @@ namespace Artesian.SDK.Dto
             /// The latest data quality status summary per rule type. Populated when includeDataQuality=true.
             /// </summary>
             [MessagePack.Key(22)]
+            [System.Text.Json.Serialization.JsonConverter(typeof(DictionaryJsonConverterSTJFactory))]
             public Dictionary<RuleType, DataQualityStatusSummaryDto>? DataQualityStatusSummary { get; set; }
 
             /// <summary>
