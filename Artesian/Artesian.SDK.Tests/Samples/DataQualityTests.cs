@@ -100,7 +100,7 @@ namespace Artesian.SDK.Tests.Samples
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "<Pending>")]
-        public async Task DataQualityAssignement()
+        public async Task DataQualityAssignment()
         {
             var marketDataService = new MarketDataService(_cfg);
 
@@ -173,16 +173,16 @@ namespace Artesian.SDK.Tests.Samples
 
             var assignmentCreated = await marketDataService.RegisterDataQualityRuleAssignmentAsync(assignmentPayload, ctk: ctk);
 
-            var dataQualityRuleAssignement = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentCreated.Id, ctk);
+            var dataQualityRuleAssignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentCreated.Id, ctk);
 
-            ClassicAssert.AreEqual(dataQualityRuleAssignement.Id, assignmentCreated.Id);
+            ClassicAssert.AreEqual(dataQualityRuleAssignment.Id, assignmentCreated.Id);
 
-            // Delete assignement
+            // Delete assignment
             await marketDataService.DeleteDataQualityRuleAssignmentAsync(assignmentCreated.Id, ctk);
 
-            dataQualityRuleAssignement = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentCreated.Id, ctk);
+            dataQualityRuleAssignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentCreated.Id, ctk);
 
-            ClassicAssert.IsNull(dataQualityRuleAssignement);
+            ClassicAssert.IsNull(dataQualityRuleAssignment);
 
             // Delete rule
             await marketDataService.DeleteDataQualityRuleAsync(ruleCreated.Id, ctk);
@@ -194,12 +194,6 @@ namespace Artesian.SDK.Tests.Samples
             // Delete MarketData entity
             if (mktData.MarketDataId.HasValue)
                 await marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value, ctk);
-
-            mktData = marketDataService.GetMarketDataReference(
-                new MarketDataIdentifier(
-                    input.ProviderName,
-                    input.MarketDataName)
-                );
         }
     }
 }

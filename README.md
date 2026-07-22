@@ -844,7 +844,7 @@ var events = await marketDataService.ReadDataQualityRuleAssignmentEventsFeedAsyn
 Console.WriteLine($"Retrieved {events.Length} events");
 foreach (var evt in events)
 {
-    Console.WriteLine($"Event at {evt.Timestamp}: {evt.Status}");
+    Console.WriteLine($"Event at {evt.Timestamp}: {evt.NewStatus}");
 }
 ```
 

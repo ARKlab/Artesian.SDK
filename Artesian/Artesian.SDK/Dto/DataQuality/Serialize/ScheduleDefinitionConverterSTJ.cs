@@ -29,7 +29,7 @@ namespace Artesian.SDK.Dto.DataQuality.Serialize
             return discriminatorValue switch
             {
                 ScheduleDefinitionType.Cron => typeof(CronScheduleDefinitionDto),
-                _ => typeof(ScheduleDefinitionType),
+                _ => throw new InvalidOperationException($"Can't deserialize ScheduleDefinitionDto. ScheduleDefinitionType '{discriminatorValue}' is not valid.")
             };
         }
     }

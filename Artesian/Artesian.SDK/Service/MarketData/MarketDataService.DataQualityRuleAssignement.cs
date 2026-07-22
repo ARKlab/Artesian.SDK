@@ -27,6 +27,9 @@ namespace Artesian.SDK.Service
         /// <returns>The created MarketDataQualityRuleAssignmentDto.Output with server-assigned Id.</returns>
         public Task<MarketDataQualityRuleAssignmentDto.Output> RegisterDataQualityRuleAssignmentAsync(MarketDataQualityRuleAssignmentDto.Input entity, Period? initializationLookbackPeriod = null, CancellationToken ctk = default)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
             var url = "/dataquality/dqruleassignment"
                     .SetQueryParam("initializationLookbackPeriod", initializationLookbackPeriod);
 
@@ -65,8 +68,6 @@ namespace Artesian.SDK.Service
                                                                                                                  string[]? sort = null,
                                                                                                                  CancellationToken ctk = default)
         {
-            sort ??= Array.Empty<string>();
-
             if (page < 1)
                 throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
             if (pageSize < 1)
@@ -77,8 +78,10 @@ namespace Artesian.SDK.Service
                     .SetQueryParam("pageSize", pageSize)
                     .SetQueryParam("marketDataId", marketDataId)
                     .SetQueryParam("ruleId", ruleId)
-                    .SetQueryParam("ruleName", ruleName)
-                    .SetQueryParam("sort", sort);
+                    .SetQueryParam("ruleName", ruleName);
+
+            if (sort is { Length: > 0 })
+                url = url.SetQueryParam("sort", sort);
 
             return _client.Exec<PagedResult<MarketDataQualityRuleAssignmentDto.Output>>(HttpMethod.Get, url, ctk: ctk);
         }
@@ -120,7 +123,7 @@ namespace Artesian.SDK.Service
         /// Returns events after the given timestamp (max 8-day lookback).
         /// </summary>
         /// <param name="id">The rule assignment identifier.</param>
-        /// <param name="afterTimestamp">Optional lower bound (events after this instant). Clamped to 8 days ago.</param>
+        /// <param name="afterTimestamp">Optional lower bound (events after this instant).</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>An array of DqCheckChangeEventDto.Output.</returns>
         public Task<DqCheckChangeEventDto.Output[]> ReadDataQualityRuleAssignmentEventsFeedAsync(int id, Instant? afterTimestamp = null, CancellationToken ctk = default)
