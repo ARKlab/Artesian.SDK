@@ -64,9 +64,6 @@ namespace Artesian.SDK.Service
                                                                          string[]? sort = null, 
                                                                          CancellationToken ctk = default)
         {
-            ruleIds ??= Array.Empty<int>();
-            sort ??= Array.Empty<string>();
-
             if (page < 1)
                 throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
             if (pageSize < 1)
@@ -77,10 +74,13 @@ namespace Artesian.SDK.Service
                     .SetQueryParam("page", page)
                     .SetQueryParam("type", type)
                     .SetQueryParam("marketDataId", marketDataId)
-                    .SetQueryParam("name", name)
-                    .SetQueryParam("ruleIds", ruleIds)
-                    .SetQueryParam("sort", sort)
-                    ;
+                    .SetQueryParam("name", name);
+
+            if (ruleIds is { Length: > 0 })
+                url = url.SetQueryParam("ruleIds", ruleIds);
+
+            if (sort is { Length: > 0 })
+                url = url.SetQueryParam("sort", sort);
 
             return _client.Exec<PagedResult<DataQualityRuleDto.Output>>(HttpMethod.Get, url, ctk: ctk);
         }
