@@ -295,7 +295,6 @@ namespace Artesian.SDK.Dto
             /// The latest data quality status summary per rule type. Populated when includeDataQuality=true.
             /// </summary>
             [MessagePack.Key(22)]
-            [System.Text.Json.Serialization.JsonConverter(typeof(DictionaryJsonConverterSTJFactory))]
             public Dictionary<RuleType, DataQualityStatusSummaryDto>? DataQualityStatusSummary { get; set; }
 
             /// <summary>
