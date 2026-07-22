@@ -32,7 +32,7 @@ namespace Artesian.SDK.Dto.DataQuality.Serialize
             {
                 RuleType.CompletenessAndFreshness => typeof(CompletenessAndFreshnessConfigDto),
                 RuleType.Outlier => typeof(OutlierConfigDto),
-                _ => typeof(DataQualityRuleConfigDto),
+                _ => throw new InvalidOperationException($"Can't deserialize DataQualityRuleConfigDto. RuleType '{discriminatorValue}' is not valid.")
             };
         }
     }
