@@ -100,7 +100,7 @@ namespace Artesian.SDK.Tests.Samples
         [Test]
         [Ignore("Run only manually with proper artesian URI and ApiKey set")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "<Pending>")]
-        public async Task DataQualityAssignement()
+        public async Task DataQualityAssignment()
         {
             var marketDataService = new MarketDataService(_cfg);
 
