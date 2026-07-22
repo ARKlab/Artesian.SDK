@@ -80,11 +80,11 @@ namespace Artesian.SDK.Dto.DataQuality
     {
         public static void Validate(this DataQualityRuleDto.Input dataQualityRule)
         {
-            if (String.IsNullOrWhiteSpace(dataQualityRule.Name))
-                throw new ArgumentException("DataQualityRule Name must be valorized", nameof(dataQualityRule));
+            if (string.IsNullOrWhiteSpace(dataQualityRule.Name))
+                throw new ArgumentException("DataQualityRule name must be provided.", nameof(dataQualityRule.Name));
 
             if (dataQualityRule.Configuration == null)
-                throw new ArgumentException("DataQualityRule Configuration must be valorized", nameof(dataQualityRule));
+                throw new ArgumentException("DataQualityRule configuration must be provided.", nameof(dataQualityRule.Configuration));
 
             if (dataQualityRule.Configuration.Type != dataQualityRule.Type)
                 throw new ArgumentException("DataQualityRule configuration type must match the rule type.", nameof(dataQualityRule.Type));
