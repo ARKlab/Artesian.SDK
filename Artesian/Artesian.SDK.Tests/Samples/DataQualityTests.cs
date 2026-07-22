@@ -87,7 +87,7 @@ namespace Artesian.SDK.Tests.Samples
 
             readDataQualityRule = await marketDataService.ReadDataQualityRuleByIdAsync(ruleCreated.Id, ctk);
 
-            ClassicAssert.AreEqual(readDataQualityRule.Name, "TestRuleUpdated");
+            ClassicAssert.AreEqual("TestRuleUpdated", readDataQualityRule.Name);
 
             // Delete rule
             await marketDataService.DeleteDataQualityRuleAsync(ruleCreated.Id, ctk);
