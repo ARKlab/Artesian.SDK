@@ -101,6 +101,10 @@ namespace Artesian.SDK.Service
     /// </summary>
     internal sealed class DictionaryJsonConverterSTJFactory : JsonConverterFactory
     {
+        public DictionaryJsonConverterSTJFactory()
+        {
+        }
+
         public override bool CanConvert(Type typeToConvert)
         {
             if (!typeToConvert.IsGenericType)
