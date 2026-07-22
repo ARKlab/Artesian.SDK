@@ -40,12 +40,12 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="id">The unique identifier of the rule.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The <see cref="DataQualityRuleDto.Output"/> if found; otherwise 404 Not Found.</returns>
-        public Task<DataQualityRuleDto.Output> ReadDataQualityRuleByIdAsync(int id, CancellationToken ctk = default)
+        /// <returns>The <see cref="DataQualityRuleDto.Output"/> if found; otherwise <see langword="null"/>.</returns>
+        public Task<DataQualityRuleDto.Output?> ReadDataQualityRuleByIdAsync(int id, CancellationToken ctk = default)
         {
             var url = "/dataquality/dqrule".AppendPathSegment(id);
 
-            return _client.Exec<DataQualityRuleDto.Output>(HttpMethod.Get, url, ctk: ctk);
+            return _client.Exec<DataQualityRuleDto.Output?>(HttpMethod.Get, url, ctk: ctk);
         }
 
         /// <summary>
