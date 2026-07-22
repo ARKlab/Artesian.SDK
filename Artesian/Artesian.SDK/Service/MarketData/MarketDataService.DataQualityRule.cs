@@ -57,7 +57,7 @@ namespace Artesian.SDK.Service
         /// <returns>A paginated result containing <see cref="DataQualityRuleDto.Output"/> items.</returns>
         public Task<PagedResult<DataQualityRuleDto.Output>> ReadDataQualityRuleAsync(int page, 
                                                                          int pageSize, 
-                                                                         RuleType? type, 
+                                                                         RuleType? type = null,
                                                                          int? marketDataId = null, 
                                                                          string? name = null, 
                                                                          int[]? ruleIds = null, 
