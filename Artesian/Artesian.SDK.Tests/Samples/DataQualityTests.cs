@@ -194,12 +194,6 @@ namespace Artesian.SDK.Tests.Samples
             // Delete MarketData entity
             if (mktData.MarketDataId.HasValue)
                 await marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value, ctk);
-
-            mktData = marketDataService.GetMarketDataReference(
-                new MarketDataIdentifier(
-                    input.ProviderName,
-                    input.MarketDataName)
-                );
         }
     }
 }
