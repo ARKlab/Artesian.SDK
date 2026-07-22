@@ -25,6 +25,8 @@ namespace Artesian.SDK.Service
         /// <returns>The created <see cref="DataQualityRuleDto.Output"/> with server-assigned Id and metadata.</returns>
         public Task<DataQualityRuleDto.Output> RegisterDataQualityRuleAsync(DataQualityRuleDto.Input entity, CancellationToken ctk = default)
         {
+            entity.Validate();
+
             var url = "/dataquality/dqrule";
 
             return _client.Exec<DataQualityRuleDto.Output, DataQualityRuleDto.Input>(HttpMethod.Post, url, entity, ctk: ctk);
