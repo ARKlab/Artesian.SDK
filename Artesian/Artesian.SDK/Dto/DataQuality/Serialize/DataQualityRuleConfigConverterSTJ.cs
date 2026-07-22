@@ -22,10 +22,11 @@ namespace Artesian.SDK.Dto.DataQuality.Serialize
         }
 
         /// <summary>
-        /// Resolves the concrete DTO type associated with the provided market data type discriminator.
+        /// Resolves the concrete DTO type associated with the provided rule type discriminator.
         /// </summary>
-        /// <param name="discriminatorValue">The market data type discriminator value.</param>
-        /// <returns>The concrete type to deserialize, or <see langword="null"/> when the discriminator is unsupported.</returns>
+        /// <param name="discriminatorValue">The rule type discriminator value.</param>
+        /// <returns>The concrete type to deserialize.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the discriminator is unsupported.</exception>
         protected override Type GetType(RuleType discriminatorValue)
         {
             return discriminatorValue switch
