@@ -711,7 +711,7 @@ var createdOutlierRule = await marketDataService.RegisterDataQualityRuleAsync(ou
 #### Get a Single Rule by ID
 
 ```csharp
-var rule = await marketDataService.ReadDataQualityRuleByIdAsync(ruleId: 123);
+var rule = await marketDataService.ReadDataQualityRuleByIdAsync(id: 123);
 Console.WriteLine($"Rule Name: {rule.Name}, Type: {rule.Type}");
 ```
 
