@@ -7,10 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
-using Artesian.SDK.Dto.UoM;
 using Artesian.SDK.Service;
 using NodaTime;
 using NUnit.Framework;
@@ -43,12 +40,12 @@ namespace Artesian.SDK.Tests
         /// System.Text.Json 10.0+ serializes whole-number doubles without decimal points (99 vs 99.0)
         /// This is semantically equivalent but JsonNode.DeepEquals in .NET 8.0 doesn't handle it correctly
         /// </summary>
-        private void AssertJsonEquals(string expected, string actual, string message = "JSON should be equivalent")
+        private void _assertJsonEquals(string expected, string actual, string message = "JSON should be equivalent")
         {
             using var expectedDoc = JsonDocument.Parse(expected);
             using var actualDoc = JsonDocument.Parse(actual);
             
-            if (!JsonElementEquals(expectedDoc.RootElement, actualDoc.RootElement))
+            if (!_jsonElementEquals(expectedDoc.RootElement, actualDoc.RootElement))
             {
                 Assert.Fail($"{message}\nExpected: {expected}\nActual: {actual}");
             }
@@ -58,7 +55,7 @@ namespace Artesian.SDK.Tests
         /// Recursively compares two JsonElement instances for semantic equality,
         /// treating numeric values as equal regardless of representation (99 == 99.0)
         /// </summary>
-        private static bool JsonElementEquals(JsonElement expected, JsonElement actual)
+        private static bool _jsonElementEquals(JsonElement expected, JsonElement actual)
         {
             if (expected.ValueKind != actual.ValueKind)
             {
@@ -78,17 +75,17 @@ namespace Artesian.SDK.Tests
 
             return expected.ValueKind switch
             {
-                JsonValueKind.Number => NumberEquals(expected, actual),
+                JsonValueKind.Number => _numberEquals(expected, actual),
                 JsonValueKind.String => expected.GetString() == actual.GetString(),
                 JsonValueKind.True or JsonValueKind.False => expected.GetBoolean() == actual.GetBoolean(),
                 JsonValueKind.Null => true,
-                JsonValueKind.Array => ArrayEquals(expected, actual),
-                JsonValueKind.Object => ObjectEquals(expected, actual),
+                JsonValueKind.Array => _arrayEquals(expected, actual),
+                JsonValueKind.Object => _objectEquals(expected, actual),
                 _ => false
             };
         }
 
-        private static bool NumberEquals(JsonElement expected, JsonElement actual)
+        private static bool _numberEquals(JsonElement expected, JsonElement actual)
         {
             // Use TryGetDouble for safe conversion
             if (expected.TryGetDouble(out var expectedDouble) && actual.TryGetDouble(out var actualDouble))
@@ -98,7 +95,7 @@ namespace Artesian.SDK.Tests
             return false;
         }
 
-        private static bool ArrayEquals(JsonElement expected, JsonElement actual)
+        private static bool _arrayEquals(JsonElement expected, JsonElement actual)
         {
             var expectedLength = expected.GetArrayLength();
             var actualLength = actual.GetArrayLength();
@@ -108,14 +105,14 @@ namespace Artesian.SDK.Tests
 
             for (int i = 0; i < expectedLength; i++)
             {
-                if (!JsonElementEquals(expected[i], actual[i]))
+                if (!_jsonElementEquals(expected[i], actual[i]))
                     return false;
             }
 
             return true;
         }
 
-        private static bool ObjectEquals(JsonElement expected, JsonElement actual)
+        private static bool _objectEquals(JsonElement expected, JsonElement actual)
         {
             // Enumerate directly without converting to List for better memory efficiency
             var expectedPropCount = 0;
@@ -125,7 +122,7 @@ namespace Artesian.SDK.Tests
                 if (!actual.TryGetProperty(expectedProp.Name, out var actualValue))
                     return false;
 
-                if (!JsonElementEquals(expectedProp.Value, actualValue))
+                if (!_jsonElementEquals(expectedProp.Value, actualValue))
                     return false;
             }
 
@@ -159,7 +156,7 @@ namespace Artesian.SDK.Tests
         public void MarketDataEntity_WithTags_STJ_Serializes_CompatibleJson()
         {
             // Arrange - Expected JSON from Newtonsoft.Json (literal)
-            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Tags"":[{""Key"":""Region"",""Value"":[""Europe"",""EMEA""]},{""Key"":""Product"",""Value"":[""Power"",""Electricity""]},{""Key"":""Market"",""Value"":[""DayAhead""]}],""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{}}";
+            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Tags"":[{""Key"":""Region"",""Value"":[""Europe"",""EMEA""]},{""Key"":""Product"",""Value"":[""Power"",""Electricity""]},{""Key"":""Market"",""Value"":[""DayAhead""]}],""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{},""DerivedError"":false}";
             
             var entity = new MarketDataEntity.Input()
             {
@@ -181,14 +178,14 @@ namespace Artesian.SDK.Tests
             var stjJson = System.Text.Json.JsonSerializer.Serialize(entity, _stjOptions);
 
             // Assert - STJ produces equivalent JSON to Newtonsoft
-            AssertJsonEquals(expectedJson, stjJson, "STJ should produce JSON equivalent to Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should produce JSON equivalent to Newtonsoft");
         }
 
         [Test]
         public void MarketDataEntity_Versioned_WithTags_STJ_Serializes_CompatibleJson()
         {
             // Arrange - Expected JSON from Newtonsoft.Json (literal)
-            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""VersionedTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Tags"":[{""Key"":""Region"",""Value"":[""Europe"",""EMEA""]},{""Key"":""Product"",""Value"":[""Power"",""Electricity""]},{""Key"":""Market"",""Value"":[""DayAhead""]}],""Path"":""/marketdata/system/TestProvider/TestCurve"",""DerivedCfg"":{""DerivedAlgorithm"":""MUV"",""Version"":1},""UnitOfMeasure"":{}}";
+            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""VersionedTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Tags"":[{""Key"":""Region"",""Value"":[""Europe"",""EMEA""]},{""Key"":""Product"",""Value"":[""Power"",""Electricity""]},{""Key"":""Market"",""Value"":[""DayAhead""]}],""Path"":""/marketdata/system/TestProvider/TestCurve"",""DerivedCfg"":{""DerivedAlgorithm"":""MUV"",""Version"":1},""UnitOfMeasure"":{},""DerivedError"":false}";
 
             var entity = new MarketDataEntity.Input()
             {
@@ -210,14 +207,14 @@ namespace Artesian.SDK.Tests
             var stjJson = System.Text.Json.JsonSerializer.Serialize(entity, _stjOptions);
 
             // Assert - STJ produces equivalent JSON to Newtonsoft
-            AssertJsonEquals(expectedJson, stjJson, "STJ should produce JSON equivalent to Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should produce JSON equivalent to Newtonsoft");
         }
 
         [Test]
         public void MarketDataEntity_WithNullTags_STJ_SkipsInSerialization()
         {
             // Arrange - Expected JSON from Newtonsoft.Json (literal)
-            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{}}";
+            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{},""DerivedError"":false}";
             
             var entity = new MarketDataEntity.Input()
             {
@@ -235,14 +232,14 @@ namespace Artesian.SDK.Tests
 
             // Assert - Null Tags should not be present in JSON
             Assert.That(stjJson, Does.Not.Contain("Tags"));
-            AssertJsonEquals(expectedJson, stjJson, "STJ should handle null properties same as Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should handle null properties same as Newtonsoft");
         }
 
         [Test]
         public void MarketDataEntity_Tags_STJ_PreservesDictionaryKeyCasing()
         {
             // Arrange - Expected JSON from Newtonsoft.Json (literal)
-            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Tags"":[{""Key"":""RegionCode"",""Value"":[""EU""]},{""Key"":""PRODUCT_TYPE"",""Value"":[""POWER""]},{""Key"":""marketSegment"",""Value"":[""wholesale""]}],""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{}}";
+            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Tags"":[{""Key"":""RegionCode"",""Value"":[""EU""]},{""Key"":""PRODUCT_TYPE"",""Value"":[""POWER""]},{""Key"":""marketSegment"",""Value"":[""wholesale""]}],""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{},""DerivedError"":false}";
             
             var entity = new MarketDataEntity.Input()
             {
@@ -267,7 +264,7 @@ namespace Artesian.SDK.Tests
             Assert.That(stjJson, Does.Contain("RegionCode"));
             Assert.That(stjJson, Does.Contain("PRODUCT_TYPE"));
             Assert.That(stjJson, Does.Contain("marketSegment"));
-            AssertJsonEquals(expectedJson, stjJson, "STJ should preserve dictionary key casing like Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should preserve dictionary key casing like Newtonsoft");
 
             // Verify STJ deserialization preserves keys
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<MarketDataEntity.Input>(stjJson, _stjOptions);
@@ -319,7 +316,7 @@ namespace Artesian.SDK.Tests
             // Assert - Both produce equivalent JSON including Type discriminator
             Assert.That(stjJson, Does.Contain("\"Type\""));
             Assert.That(stjJson, Does.Contain("SimpleShift"));
-            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize polymorphic types like Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should serialize polymorphic types like Newtonsoft");
         }
 
         [Test]
@@ -376,7 +373,7 @@ namespace Artesian.SDK.Tests
             // Assert
             Assert.That(stjJson, Does.Contain("DerivedAlgorithm"));
             Assert.That(stjJson, Does.Contain("MUV"));
-            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize DerivedCfg like Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should serialize DerivedCfg like Newtonsoft");
         }
 
         [Test]
@@ -396,7 +393,7 @@ namespace Artesian.SDK.Tests
             // Assert
             Assert.That(stjJson, Does.Contain("DerivedAlgorithm"));
             Assert.That(stjJson, Does.Contain("Sum"));
-            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize DerivedCfgSum like Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should serialize DerivedCfgSum like Newtonsoft");
 
             // Verify STJ deserialization
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<DerivedCfgBase>(stjJson, _stjOptions);
@@ -423,7 +420,7 @@ namespace Artesian.SDK.Tests
             // Assert
             Assert.That(stjJson, Does.Contain("DerivedAlgorithm"));
             Assert.That(stjJson, Does.Contain("Coalesce"));
-            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize DerivedCfgCoalesce like Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should serialize DerivedCfgCoalesce like Newtonsoft");
 
             // Verify STJ deserialization
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<DerivedCfgBase>(stjJson, _stjOptions);
@@ -474,7 +471,7 @@ namespace Artesian.SDK.Tests
             var stjJson = System.Text.Json.JsonSerializer.Serialize(upsertData, _stjOptions);
 
             // Assert - Dictionary with complex keys serialized the same way
-            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize Rows dictionary like Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should serialize Rows dictionary like Newtonsoft");
         }
 
         [Test]
@@ -505,7 +502,7 @@ namespace Artesian.SDK.Tests
             var stjJson = System.Text.Json.JsonSerializer.Serialize(upsertData, _stjOptions);
 
             // Assert
-            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize MarketAssessment like Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should serialize MarketAssessment like Newtonsoft");
 
             // Verify STJ deserialization
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<UpsertCurveData>(stjJson, _stjOptions);
@@ -550,7 +547,7 @@ namespace Artesian.SDK.Tests
             var stjJson = System.Text.Json.JsonSerializer.Serialize(upsertData, _stjOptions);
 
             // Assert
-            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize AuctionRows like Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should serialize AuctionRows like Newtonsoft");
 
             // Verify STJ deserialization
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<UpsertCurveData>(stjJson, _stjOptions);
@@ -587,7 +584,7 @@ namespace Artesian.SDK.Tests
             var stjJson = System.Text.Json.JsonSerializer.Serialize(upsertData, _stjOptions);
 
             // Assert
-            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize BidAsk like Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should serialize BidAsk like Newtonsoft");
 
             // Verify STJ deserialization
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<UpsertCurveData>(stjJson, _stjOptions);
@@ -604,7 +601,7 @@ namespace Artesian.SDK.Tests
         public void STJ_Serialization_SkipsNullProperties()
         {
             // Arrange - Expected JSON from Newtonsoft.Json (literal)
-            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{}}";
+            const string expectedJson = @"{""MarketDataId"":100000001,""ProviderName"":""TestProvider"",""MarketDataName"":""TestCurve"",""OriginalGranularity"":""Day"",""Type"":""ActualTimeSerie"",""OriginalTimezone"":""CET"",""AggregationRule"":""Undefined"",""Path"":""/marketdata/system/TestProvider/TestCurve"",""UnitOfMeasure"":{},""DerivedError"":false}";
             
             var entity = new MarketDataEntity.Input()
             {
@@ -626,7 +623,7 @@ namespace Artesian.SDK.Tests
             Assert.That(stjJson, Does.Not.Contain("Tags"));
             Assert.That(stjJson, Does.Not.Contain("ProviderDescription"));
             Assert.That(stjJson, Does.Not.Contain("TransformID"));
-            AssertJsonEquals(expectedJson, stjJson, "STJ should skip null properties like Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should skip null properties like Newtonsoft");
         }
 
         [Test]
@@ -657,7 +654,7 @@ namespace Artesian.SDK.Tests
             Assert.That(stjJson, Does.Not.Contain("MarketAssessment"));
             Assert.That(stjJson, Does.Not.Contain("AuctionRows"));
             Assert.That(stjJson, Does.Not.Contain("BidAsk"));
-            AssertJsonEquals(expectedJson, stjJson, "STJ should skip null dictionaries like Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should skip null dictionaries like Newtonsoft");
         }
 
         #endregion
@@ -682,7 +679,7 @@ namespace Artesian.SDK.Tests
             // Assert - Should use Key/Value format in both
             Assert.That(stjJson, Does.Contain("Key"));
             Assert.That(stjJson, Does.Contain("Value"));
-            AssertJsonEquals(expectedJson, stjJson, "STJ should use same Key/Value format as Newtonsoft");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should use same Key/Value format as Newtonsoft");
 
             // Verify STJ deserialization
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<Dictionary<LocalDateTime, double?>>(stjJson, _stjOptions);
@@ -840,7 +837,7 @@ namespace Artesian.SDK.Tests
             // Assert - Should include extension data
             Assert.That(stjJson, Does.Contain("\"balance\""));
             Assert.That(stjJson, Does.Contain("\"accounts\""));
-            AssertJsonEquals(expectedJson, stjJson, "STJ should serialize ProblemDetails with extension data");
+            _assertJsonEquals(expectedJson, stjJson, "STJ should serialize ProblemDetails with extension data");
 
             // Verify STJ deserialization including extension data
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<ArtesianSdkProblemDetail>(stjJson, _stjOptions);

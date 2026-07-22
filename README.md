@@ -588,6 +588,288 @@ Latest Value
  .WithLFillLatestValue(Period.FromDays(7))
 ```
 
+## Data Quality Rules
+
+Artesian supports Data Quality Rules to validate market data for completeness, freshness, and outlier detection. 
+Rules are reusable configurations that can be assigned to one or more Market Data entities through rule assignments.
+
+### Data Quality Rule Types
+
+Two types of rules are supported:
+
+<table>
+  <tr><th>Rule Type</th><th>Description</th></tr>
+  <tr><td>Completeness and Freshness</td><td>Validates that expected data records are present within the defined time window and arrive within an acceptable delay</td></tr>
+  <tr><td>Outlier Detection</td><td>Identifies anomalous data points using statistical models</td></tr>
+</table>
+
+### MarketDataService Configuration
+
+Create an instance of MarketDataService to manage Data Quality Rules:
+
+```csharp
+var cfg = new ArtesianServiceConfig(
+    new Uri("https://fake-artesian-env/"),
+    "5418B0DB-7AB9-4875-81BA-6EE609E073B6"
+);
+
+var marketDataService = new MarketDataService(cfg);
+```
+
+### Create a Data Quality Rule
+
+#### Completeness and Freshness Rule for Actual Time Series
+
+```csharp
+using Artesian.SDK.Dto.DataQuality;
+using Artesian.SDK.Dto.DataQuality.Enums;
+using NodaTime;
+
+var actualCompletenessRule = new DataQualityRuleDto.Input
+{
+    Name = "Daily weather station completeness",
+    Type = RuleType.CompletenessAndFreshness,
+    Configuration = new ActualCompletenessAndFreshnessConfigDto
+    {
+        MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+        ScheduleConfig = new ScheduleConfigDto
+        {
+            ScheduleDefinition = new CronScheduleDefinitionDto
+            {
+                CronExpression = "0 9 * * *",  // Run daily at 9 AM
+                TimeZone = "UTC"
+            },
+            MaxDelay = Period.FromHours(2)
+        },
+        RecordValidationConfig = new RecordValidationConfigDto
+        {
+            RecordRangeFrom = Period.FromDays(-1),
+            RecordRangeTo = Period.FromDays(0)
+        }
+    }
+};
+
+var createdRule = await marketDataService.RegisterDataQualityRuleAsync(actualCompletenessRule);
+Console.WriteLine($"Created rule with ID: {createdRule.Id}");
+```
+
+#### Completeness and Freshness Rule for Versioned Time Series
+
+```csharp
+var versionedCompletenessRule = new DataQualityRuleDto.Input
+{
+    Name = "Hourly forecast version check",
+    Type = RuleType.CompletenessAndFreshness,
+    Configuration = new VersionedCompletenessAndFreshnessConfigDto
+    {
+        MarketDataType = MarketDataTypeV2.VersionedTimeSerie,
+        ScheduleConfig = new ScheduleConfigDto
+        {
+            ScheduleDefinition = new CronScheduleDefinitionDto
+            {
+                CronExpression = "15 * * * *",  // Run every hour at minute 15
+                TimeZone = "UTC"
+            },
+            MaxDelay = Period.FromMinutes(30)
+        },
+        RecordValidationConfig = new RecordValidationConfigDto
+        {
+            RecordRangeFrom = Period.FromDays(0),
+            RecordRangeTo = Period.FromDays(7)
+        },
+        VersionToleranceFrom = Period.FromHours(-1),
+        VersionToleranceTo = Period.FromHours(1),
+        VersionPrecision = PeriodPrecision.Hour
+    }
+};
+
+var createdVersionedRule = await marketDataService.RegisterDataQualityRuleAsync(versionedCompletenessRule);
+```
+
+#### Outlier Detection Rule
+
+```csharp
+var outlierRule = new DataQualityRuleDto.Input
+{
+    Name = "Temperature outlier detection",
+    Type = RuleType.Outlier,
+    Configuration = new OutlierConfigDto
+    {
+        Model = new OutlierAbsoluteBoundConfigDto
+        {
+            LowerBound = -10.0,
+            UpperBound = 45.0
+        }
+    }
+};
+
+var createdOutlierRule = await marketDataService.RegisterDataQualityRuleAsync(outlierRule);
+```
+
+### Read Data Quality Rules
+
+#### Get a Single Rule by ID
+
+```csharp
+var rule = await marketDataService.ReadDataQualityRuleByIdAsync(ruleId: 123);
+Console.WriteLine($"Rule Name: {rule.Name}, Type: {rule.Type}");
+```
+
+#### Get All Rules with Pagination and Filters
+
+```csharp
+var rules = await marketDataService.ReadDataQualityRuleAsync(
+    page: 1,
+    pageSize: 20,
+    type: RuleType.CompletenessAndFreshness,
+    name: "weather",  // Partial match filter
+    sort: new[] { "Name asc" }
+);
+
+Console.WriteLine($"Total rules: {rules.Count}");
+foreach (var rule in rules.Data)
+{
+    Console.WriteLine($"- {rule.Name} (ID: {rule.Id})");
+}
+```
+
+### Update a Data Quality Rule
+
+```csharp
+var existingRule = await marketDataService.ReadDataQualityRuleByIdAsync(123);
+
+// Modify the rule
+existingRule.Name = "Updated rule name";
+if (existingRule.Configuration is ActualCompletenessAndFreshnessConfigDto actualConfig)
+{
+    actualConfig.ScheduleConfig.MaxDelay = Period.FromHours(3);
+}
+
+var updatedRule = await marketDataService.UpdateDataQualityRuleAsync(
+    id: existingRule.Id,
+    entity: existingRule
+);
+```
+
+### Delete a Data Quality Rule
+
+```csharp
+await marketDataService.DeleteDataQualityRuleAsync(ruleId: 123);
+```
+
+### Data Quality Rule Assignments
+
+Once you have created Data Quality Rules, you can assign them to Market Data entities to start validating data.
+
+#### Create an Assignment
+
+```csharp
+var assignment = new MarketDataQualityRuleAssignmentDto.Input
+{
+    MarketDataId = 100000001,
+    DataQualityRuleId = 123
+};
+
+// Optional: specify how far back to validate on initial assignment
+var initializationLookback = Period.FromDays(30);
+
+var createdAssignment = await marketDataService.RegisterDataQualityRuleAssignmentAsync(
+    entity: assignment,
+    initializationLookbackPeriod: initializationLookback
+);
+
+Console.WriteLine($"Assignment ID: {createdAssignment.Id}");
+```
+
+#### Read Assignments
+
+Get a single assignment:
+
+```csharp
+var assignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentId: 456);
+Console.WriteLine($"MarketData: {assignment.MarketData?.MarketDataName}");
+Console.WriteLine($"Rule: {assignment.DataQualityRule?.Name}");
+```
+
+Get all assignments with filters:
+
+```csharp
+var assignments = await marketDataService.ReadDataQualityRuleAssignmentAsync(
+    page: 1,
+    pageSize: 20,
+    marketDataId: 100000001,  // Filter by Market Data
+    ruleId: 123,              // Filter by Rule
+    ruleName: "weather",      // Filter by rule name (partial match)
+    sort: new[] { "Id desc" }
+);
+
+foreach (var a in assignments.Data)
+{
+    Console.WriteLine($"Assignment {a.Id}: MD {a.MarketDataId} -> Rule {a.DataQualityRuleId}");
+}
+```
+
+#### Update an Assignment
+
+Re-configure the lookback period to re-evaluate the data:
+
+```csharp
+var assignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(456);
+
+var updatedAssignment = await marketDataService.UpdateDataQualityRuleAssignmentAsync(
+    id: assignment.Id,
+    initializationLookbackPeriod: Period.FromDays(60),
+    etag: assignment.ETag
+);
+```
+
+#### Delete an Assignment
+
+```csharp
+await marketDataService.DeleteDataQualityRuleAssignmentAsync(assignmentId: 456);
+```
+
+#### Read Assignment Event Feed
+
+Retrieve raw events for a specific assignment (max 8-day lookback):
+
+```csharp
+using NodaTime;
+
+var events = await marketDataService.ReadDataQualityRuleAssignmentEventsFeedAsync(
+    id: 456,
+    afterTimestamp: Instant.FromUtc(2024, 1, 15, 0, 0)
+);
+
+Console.WriteLine($"Retrieved {events.Length} events");
+foreach (var evt in events)
+{
+    Console.WriteLine($"Event at {evt.Timestamp}: {evt.Status}");
+}
+```
+
+### Data Quality Rule Status
+
+Rules and assignments expose aggregated check status through the `AggregatedStatus` property:
+
+<table>
+  <tr><th>Status</th><th>Description</th></tr>
+  <tr><td>OK</td><td>All checks passed</td></tr>
+  <tr><td>Warning</td><td>Some checks failed but within acceptable thresholds</td></tr>
+  <tr><td>Error</td><td>Critical checks failed</td></tr>
+  <tr><td>Unknown</td><td>No checks have been executed yet</td></tr>
+</table>
+
+Check the status after creating or reading rules:
+
+```csharp
+var rule = await marketDataService.ReadDataQualityRuleByIdAsync(123);
+if (rule.AggregatedStatus == CheckAggregatedStatus.Error)
+{
+    Console.WriteLine($"Rule {rule.Name} has failing checks!");
+}
+```
+
 ## MarketData Service
 
 Using the ArtesianServiceConfig `cfg` we create an instance of the MarketDataService which is used to retrieve, edit or delete

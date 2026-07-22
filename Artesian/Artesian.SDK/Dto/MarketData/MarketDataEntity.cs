@@ -2,7 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information. 
 using Artesian.SDK.Common;
+using Artesian.SDK.Dto.DataQuality;
+using Artesian.SDK.Dto.DataQuality.Enums;
 using Artesian.SDK.Dto.UoM;
+using Artesian.SDK.Service;
 
 using MessagePack;
 
@@ -158,6 +161,16 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [MessagePack.Key(19)]
             public UnitOfMeasure UnitOfMeasure { get; set; } = new UnitOfMeasure();
+            /// <summary>
+            /// The Error on Transform
+            /// </summary>
+            [MessagePack.Key(20)]
+            public bool DerivedError { get; set; }
+            /// <summary>
+            /// The Error Message on Transform
+            /// </summary>
+            [MessagePack.Key(21)]
+            public string? DerivedErrorMessage { get; set; }
 
             internal DerivedCfgBase? _derivedCfg;
 
@@ -248,6 +261,71 @@ namespace Artesian.SDK.Dto
             /// The Curve Ranges
             /// </summary>
             public IEnumerable<CurveRange>? Curves { get; set; }
+        }
+
+        /// <summary>
+        /// The MarketData Output Enriched with additional optional information
+        /// </summary>
+        [MessagePackObject]
+        public class OutputEnriched : Output
+        {
+            /// <summary>
+            /// The MarketData Enriched Default Constructor
+            /// </summary>
+            public OutputEnriched() { }
+
+            /// <summary>
+            /// The MarketData Enriched Constructor by MarketDataEntity.Output
+            /// </summary>
+            /// <param name="v">The Output entity to create from</param>
+            public OutputEnriched(Output v) : base(v)
+            {
+                this.Transform = v.Transform;
+                this.LastUpdated = v.LastUpdated;
+                this.DataLastWritedAt = v.DataLastWritedAt;
+                this.DataRangeStart = v.DataRangeStart;
+                this.DataRangeEnd = v.DataRangeEnd;
+                this.Created = v.Created;
+                this.DerivedCfg = v.DerivedCfg;
+                this.DerivedError = v.DerivedError;
+                this.DerivedErrorMessage = v.DerivedErrorMessage;
+            }
+
+            /// <summary>
+            /// The latest data quality status summary per rule type. Populated when includeDataQuality=true.
+            /// </summary>
+            [MessagePack.Key(22)]
+            [System.Text.Json.Serialization.JsonConverter(typeof(DictionaryJsonConverterSTJFactory))]
+            public Dictionary<RuleType, DataQualityStatusSummaryDto>? DataQualityStatusSummary { get; set; }
+
+            /// <summary>
+            /// CurveSummary info about the market data. Populated when includeCurveSummary=true.
+            /// </summary>
+            [MessagePack.Key(23)]
+            public MarketDataCurveSummaryDto? CurveSummary { get; set; }
+        }
+
+        /// <summary>
+        /// Summary information about the market data curve, including data range and last write timestamp
+        /// </summary>
+        [MessagePackObject]
+        public class MarketDataCurveSummaryDto
+        {
+            /// <summary>
+            /// The Last time the metadata has been updated
+            /// </summary>
+            [MessagePack.Key(1)]
+            public Instant? DataLastWritedAt { get; set; }
+            /// <summary>
+            /// Date start of range for this curve  
+            /// </summary>
+            [MessagePack.Key(2)]
+            public LocalDate? DataRangeStart { get; set; }
+            /// <summary>
+            /// Date end of range for this curve  
+            /// </summary>
+            [MessagePack.Key(3)]
+            public LocalDate? DataRangeEnd { get; set; }
         }
     }
 }

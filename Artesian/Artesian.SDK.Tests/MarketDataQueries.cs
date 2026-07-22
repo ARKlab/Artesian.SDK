@@ -247,6 +247,102 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
+        public async Task MarketData_RegisterDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var assignment = new MarketDataQualityRuleAssignmentDto.Input()
+                {
+                    MarketDataId = 100,
+                    DataQualityRuleId = 1
+                };
+
+                await mds.RegisterDataQualityRuleAssignmentAsync(assignment, Period.FromDays(30));
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
+                    .WithQueryParam("initializationLookbackPeriod", Period.FromDays(30))
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAssignmentByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleAssignmentByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleAssignmentAsync(1, 10, 100, 1, "TestRule", new string[] { "Id asc" });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
+                    .WithQueryParam("page", 1)
+                    .WithQueryParam("pageSize", 10)
+                    .WithQueryParam("marketDataId", 100)
+                    .WithQueryParam("ruleId", 1)
+                    .WithQueryParam("ruleName", "TestRule")
+                    .WithQueryParam("sort", "Id asc")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpdateDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.UpdateDataQualityRuleAssignmentAsync(1, Period.FromDays(60), "test-etag");
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithQueryParam("initializationLookbackPeriod", Period.FromDays(60))
+                    .WithQueryParam("etag", "test-etag")
+                    .WithVerb(HttpMethod.Put)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteDataQualityRuleAssignmentAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
         public async Task MarketDataServiceSetDataInitReplace_ActualTimeSerie()
         {
             var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
