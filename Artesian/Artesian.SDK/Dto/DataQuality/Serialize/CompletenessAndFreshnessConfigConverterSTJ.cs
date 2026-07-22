@@ -31,7 +31,7 @@ namespace Artesian.SDK.Dto.DataQuality.Serialize
             {
                 MarketDataTypeV2.ActualTimeSerie => typeof(ActualCompletenessAndFreshnessConfigDto),
                 MarketDataTypeV2.VersionedTimeSerie => typeof(VersionedCompletenessAndFreshnessConfigDto),
-                _ => typeof(MarketDataTypeV2),
+                _ => throw new InvalidOperationException($"Can't deserialize CompletenessAndFreshnessConfigDto. MarketDataTypeV2 '{discriminatorValue}' is not valid.")
             };
         }
     }
