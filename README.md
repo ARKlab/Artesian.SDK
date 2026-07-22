@@ -726,7 +726,7 @@ var rules = await marketDataService.ReadDataQualityRuleAsync(
     sort: new[] { "Name asc" }
 );
 
-Console.WriteLine($"Total rules: {rules.Count}");
+Console.WriteLine($"Total pages: {rules.Count}");
 foreach (var rule in rules.Data)
 {
     Console.WriteLine($"- {rule.Name} (ID: {rule.Id})");
