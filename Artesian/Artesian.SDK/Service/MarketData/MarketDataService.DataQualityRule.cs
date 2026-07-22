@@ -70,9 +70,9 @@ namespace Artesian.SDK.Service
                                                                          CancellationToken ctk = default)
         {
             if (page < 1)
-                throw new ArgumentException("Page must to be greater than 0. Page:" + page, nameof(page));
+                throw new ArgumentException($"Page must be greater than 0. Page: {page}", nameof(page));
             if (pageSize < 1)
-                throw new ArgumentException("PageSize must to be greater than 0. Page Size:" + pageSize, nameof(pageSize));
+                throw new ArgumentException($"PageSize must be greater than 0. PageSize: {pageSize}", nameof(pageSize));
 
             var url = "/dataquality/dqrule"
                     .SetQueryParam("pageSize", pageSize)
