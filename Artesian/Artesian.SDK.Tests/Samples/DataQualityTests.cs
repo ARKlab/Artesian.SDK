@@ -111,7 +111,7 @@ namespace Artesian.SDK.Tests.Samples
             {
                 ProviderName = "SpecFlowDataQuality",
                 MarketDataName = Guid.NewGuid().ToString(),
-                Type = MarketDataType.ActualTimeSerie,
+                Type = MarketDataTypeV2.ActualTimeSerie,
                 OriginalGranularity = Granularity.Hour,
                 OriginalTimezone = "UTC",
                 AggregationRule = AggregationRule.Undefined,

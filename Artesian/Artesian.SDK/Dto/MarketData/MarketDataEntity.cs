@@ -92,7 +92,7 @@ namespace Artesian.SDK.Dto
             /// </summary>
             [Required]
             [MessagePack.Key(5)]
-            public MarketDataType Type { get; set; }
+            public MarketDataTypeV2 Type { get; set; }
             /// <summary>
             /// The Original Timezone
             /// </summary>
@@ -143,7 +143,7 @@ namespace Artesian.SDK.Dto
                 {
                     if (_derivedCfg == null)
                     {
-                        if (this.Type == MarketDataType.VersionedTimeSerie)
+                        if (this.Type == MarketDataTypeV2.VersionedTimeSerie)
                         {
                             return new DerivedCfgMuv()
                             {

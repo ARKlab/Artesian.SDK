@@ -165,7 +165,7 @@ namespace Artesian.SDK.Tests
                 MarketDataName = "TestCurve",
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
-                Type = MarketDataType.ActualTimeSerie,
+                Type = MarketDataTypeV2.ActualTimeSerie,
                 Tags = new Dictionary<string, List<string>>
                 {
                     { "Region", new List<string> { "Europe", "EMEA" } },
@@ -194,7 +194,7 @@ namespace Artesian.SDK.Tests
                 MarketDataName = "TestCurve",
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
-                Type = MarketDataType.VersionedTimeSerie,
+                Type = MarketDataTypeV2.VersionedTimeSerie,
                 Tags = new Dictionary<string, List<string>>
                 {
                     { "Region", new List<string> { "Europe", "EMEA" } },
@@ -223,7 +223,7 @@ namespace Artesian.SDK.Tests
                 MarketDataName = "TestCurve",
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
-                Type = MarketDataType.ActualTimeSerie,
+                Type = MarketDataTypeV2.ActualTimeSerie,
                 Tags = null
             };
 
@@ -248,7 +248,7 @@ namespace Artesian.SDK.Tests
                 MarketDataName = "TestCurve",
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
-                Type = MarketDataType.ActualTimeSerie,
+                Type = MarketDataTypeV2.ActualTimeSerie,
                 Tags = new Dictionary<string, List<string>>
                 {
                     { "RegionCode", new List<string> { "EU" } },
@@ -610,7 +610,7 @@ namespace Artesian.SDK.Tests
                 MarketDataName = "TestCurve",
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
-                Type = MarketDataType.ActualTimeSerie,
+                Type = MarketDataTypeV2.ActualTimeSerie,
                 Tags = null,
                 ProviderDescription = null,
                 TransformID = null

@@ -96,7 +96,7 @@ namespace Artesian.SDK.Tests
                     OriginalGranularity = Granularity.Day,
                     OriginalTimezone = "CET",
                     AggregationRule = AggregationRule.Undefined,
-                    Type = MarketDataType.VersionedTimeSerie,
+                    Type = MarketDataTypeV2.VersionedTimeSerie,
                     UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
                 };
 
@@ -354,7 +354,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = Granularity.Hour,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.ActualTimeSerie,
+                Type = MarketDataTypeV2.ActualTimeSerie,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -418,7 +418,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.MarketAssessment,
+                Type = MarketDataTypeV2.MarketAssessment,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -482,7 +482,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = Granularity.Hour,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.BidAsk,
+                Type = MarketDataTypeV2.BidAsk,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -546,7 +546,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.VersionedTimeSerie,
+                Type = MarketDataTypeV2.VersionedTimeSerie,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -617,7 +617,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.ActualTimeSerie,
+                Type = MarketDataTypeV2.ActualTimeSerie,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -686,7 +686,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.VersionedTimeSerie,
+                Type = MarketDataTypeV2.VersionedTimeSerie,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -756,7 +756,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.Auction,
+                Type = MarketDataTypeV2.Auction,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -831,7 +831,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.BidAsk,
+                Type = MarketDataTypeV2.BidAsk,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -902,7 +902,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.MarketAssessment,
+                Type = MarketDataTypeV2.MarketAssessment,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -972,7 +972,7 @@ namespace Artesian.SDK.Tests
                     OriginalGranularity = Granularity.Day,
                     OriginalTimezone = "CET",
                     AggregationRule = AggregationRule.Undefined,
-                    Type = MarketDataType.VersionedTimeSerie
+                    Type = MarketDataTypeV2.VersionedTimeSerie
                 };
 
                 httpTest
@@ -1004,7 +1004,7 @@ namespace Artesian.SDK.Tests
                     OriginalGranularity = Granularity.Day,
                     OriginalTimezone = "CET",
                     AggregationRule = AggregationRule.Undefined,
-                    Type = MarketDataType.VersionedTimeSerie,
+                    Type = MarketDataTypeV2.VersionedTimeSerie,
                     MarketDataId = 1
                 };
 
@@ -1054,7 +1054,7 @@ namespace Artesian.SDK.Tests
                             { new LocalDateTime(2018, 10, 01, 00, 00), 100 },
                             { new LocalDateTime(2018, 10, 01, 01, 00), 100 }
                         },
-                        Type = MarketDataType.ActualTimeSerie,
+                        Type = MarketDataTypeV2.ActualTimeSerie,
                         Timezone = "UTC"
                     },
                     Transform = "SELECT Time, (Value + 1) as Value FROM $table"
