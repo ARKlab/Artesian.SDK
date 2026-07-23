@@ -1,6 +1,5 @@
-﻿using Artesian.SDK.Dto.DataQuality.Enums;
+using Artesian.SDK.Dto.DataQuality.Enums;
 using Artesian.SDK.Dto.DataQuality.Serialize;
-using Artesian.SDK.Dto.MarketData;
 
 using MessagePack;
 
