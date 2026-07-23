@@ -1,5 +1,7 @@
 ﻿using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.DataQuality;
+using Artesian.SDK.Dto.DataQuality.Enums;
 using Artesian.SDK.Dto.UoM;
 using Artesian.SDK.Factory;
 using Artesian.SDK.Service;
@@ -94,7 +96,7 @@ namespace Artesian.SDK.Tests
                     OriginalGranularity = Granularity.Day,
                     OriginalTimezone = "CET",
                     AggregationRule = AggregationRule.Undefined,
-                    Type = MarketDataType.VersionedTimeSerie,
+                    Type = MarketDataTypeV2.VersionedTimeSerie,
                     UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
                 };
 
@@ -103,6 +105,238 @@ namespace Artesian.SDK.Tests
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity")
                     .WithVerb(HttpMethod.Post)
                     .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_RegisterDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var dataQualityRule = new DataQualityRuleDto.Input()
+                {
+                    Name = "TestRule",
+                    Type = RuleType.CompletenessAndFreshness,
+                    Configuration = new ActualCompletenessAndFreshnessConfigDto
+                    {
+                        MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                        ScheduleConfig = new ScheduleConfigDto
+                        {
+                            ScheduleDefinition = new CronScheduleDefinitionDto
+                            {
+                                CronExpression = "0 0 * * *",
+                                TimeZone = "UTC"
+                            },
+                            MaxDelay = Period.FromHours(1)
+                        },
+                        RecordValidationConfig = new RecordValidationConfigDto
+                        {
+                            RecordRangeFrom = Period.Zero,
+                            RecordRangeTo = Period.FromHours(1)
+                        }
+                    }
+                };
+
+                await mds.RegisterDataQualityRuleAsync(dataQualityRule);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleAsync(1, 10, RuleType.CompletenessAndFreshness, 1, string.Empty, Array.Empty<int>(), Array.Empty<string>());
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
+                    .WithQueryParam("marketDataId", 1)
+                    .WithQueryParam("page", 1)
+                    .WithQueryParam("pageSize", 10)
+                    .WithQueryParam("type", RuleType.CompletenessAndFreshness)
+                    .WithQueryParam("name", string.Empty)
+                    .WithoutQueryParam("ruleIds")
+                    .WithoutQueryParam("sort")
+                    .WithVerb(HttpMethod.Get)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpdateDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var dataQualityRule = new DataQualityRuleDto.Input()
+                {
+                    Name = "TestRuleUpdate",
+                    Type = RuleType.CompletenessAndFreshness,
+                    Configuration = new ActualCompletenessAndFreshnessConfigDto
+                    {
+                        MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                        ScheduleConfig = new ScheduleConfigDto
+                        {
+                            ScheduleDefinition = new CronScheduleDefinitionDto
+                            {
+                                CronExpression = "0 0 * * *",
+                                TimeZone = "UTC"
+                            },
+                            MaxDelay = Period.FromHours(1)
+                        },
+                        RecordValidationConfig = new RecordValidationConfigDto
+                        {
+                            RecordRangeFrom = Period.Zero,
+                            RecordRangeTo = Period.FromHours(1)
+                        }
+                    }
+                };
+
+                await mds.UpdateDataQualityRuleAsync(1, dataQualityRule);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Put)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteDataQualityRuleAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_RegisterDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var assignment = new MarketDataQualityRuleAssignmentDto.Input()
+                {
+                    MarketDataId = 100,
+                    DataQualityRuleId = 1
+                };
+
+                await mds.RegisterDataQualityRuleAssignmentAsync(assignment, Period.FromDays(30));
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
+                    .WithQueryParam("initializationLookbackPeriod", Period.FromDays(30))
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAssignmentByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleAssignmentByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleAssignmentAsync(1, 10, 100, 1, "TestRule", new string[] { "Id asc" });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
+                    .WithQueryParam("page", 1)
+                    .WithQueryParam("pageSize", 10)
+                    .WithQueryParam("marketDataId", 100)
+                    .WithQueryParam("ruleId", 1)
+                    .WithQueryParam("ruleName", "TestRule")
+                    .WithQueryParam("sort", "Id asc")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpdateDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.UpdateDataQualityRuleAssignmentAsync(1, Period.FromDays(60), "test-etag");
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithQueryParam("initializationLookbackPeriod", Period.FromDays(60))
+                    .WithQueryParam("etag", "test-etag")
+                    .WithVerb(HttpMethod.Put)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteDataQualityRuleAssignmentAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithVerb(HttpMethod.Delete)
                     .WithHeadersTest()
                     .Times(1);
             }
@@ -120,7 +354,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = Granularity.Hour,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.ActualTimeSerie,
+                Type = MarketDataTypeV2.ActualTimeSerie,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -184,7 +418,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.MarketAssessment,
+                Type = MarketDataTypeV2.MarketAssessment,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -248,7 +482,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = Granularity.Hour,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.BidAsk,
+                Type = MarketDataTypeV2.BidAsk,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -312,7 +546,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.VersionedTimeSerie,
+                Type = MarketDataTypeV2.VersionedTimeSerie,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -383,7 +617,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.ActualTimeSerie,
+                Type = MarketDataTypeV2.ActualTimeSerie,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -452,7 +686,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.VersionedTimeSerie,
+                Type = MarketDataTypeV2.VersionedTimeSerie,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -522,7 +756,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.Auction,
+                Type = MarketDataTypeV2.Auction,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -597,7 +831,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.BidAsk,
+                Type = MarketDataTypeV2.BidAsk,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -668,7 +902,7 @@ namespace Artesian.SDK.Tests
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.MarketAssessment,
+                Type = MarketDataTypeV2.MarketAssessment,
                 UnitOfMeasure = new UnitOfMeasure() { Value = CommonUnitOfMeasure.MW },
             };
 
@@ -738,7 +972,7 @@ namespace Artesian.SDK.Tests
                     OriginalGranularity = Granularity.Day,
                     OriginalTimezone = "CET",
                     AggregationRule = AggregationRule.Undefined,
-                    Type = MarketDataType.VersionedTimeSerie
+                    Type = MarketDataTypeV2.VersionedTimeSerie
                 };
 
                 httpTest
@@ -770,7 +1004,7 @@ namespace Artesian.SDK.Tests
                     OriginalGranularity = Granularity.Day,
                     OriginalTimezone = "CET",
                     AggregationRule = AggregationRule.Undefined,
-                    Type = MarketDataType.VersionedTimeSerie,
+                    Type = MarketDataTypeV2.VersionedTimeSerie,
                     MarketDataId = 1
                 };
 
@@ -820,7 +1054,7 @@ namespace Artesian.SDK.Tests
                             { new LocalDateTime(2018, 10, 01, 00, 00), 100 },
                             { new LocalDateTime(2018, 10, 01, 01, 00), 100 }
                         },
-                        Type = MarketDataType.ActualTimeSerie,
+                        Type = MarketDataTypeV2.ActualTimeSerie,
                         Timezone = "UTC"
                     },
                     Transform = "SELECT Time, (Value + 1) as Value FROM $table"
