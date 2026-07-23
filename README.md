@@ -621,10 +621,10 @@ var marketDataService = new MarketDataService(cfg);
 #### Completeness and Freshness Rule for Actual Time Series
 
 ```csharp
+using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.DataQuality;
 using Artesian.SDK.Dto.DataQuality.Enums;
 using NodaTime;
-
 var actualCompletenessRule = new DataQualityRuleDto.Input
 {
     Name = "Daily weather station completeness",
