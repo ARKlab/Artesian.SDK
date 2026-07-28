@@ -6,7 +6,7 @@ namespace Artesian.SDK.Dto.DataQuality
 {
     /// <summary>
     /// Defines when and how often a quality check should be executed.
-    /// Combines a schedule definition (cron or custom) with a maximum allowed delay and an optional business calendar.
+    /// Combines a schedule definition (e.g., cron expression) with a maximum allowed delay.
     /// </summary>
     [MessagePackObject]
     public class ScheduleConfigDto
