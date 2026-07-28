@@ -177,6 +177,78 @@ namespace Artesian.SDK.Service
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>An array of DqCheckChangeEventDto.Output.</returns>
         Task<DqCheckChangeEventDto.Output[]> ReadDataQualityRuleAssignmentEventsFeedAsync(int id, Instant? afterTimestamp = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Extracts data quality check results for versioned time series (VTS).
+        /// Returns compact, abbreviated DTOs designed for high-volume extraction.
+        /// </summary>
+        /// <param name="version">Version timestamp.</param>
+        /// <param name="granularity">Time granularity (Day, Hour, etc.).</param>
+        /// <param name="start">Range start date.</param>
+        /// <param name="end">Range end date (not inclusive).</param>
+        /// <param name="timeZone">IANA timezone identifier (e.g., "UTC", "Europe/Rome").</param>
+        /// <param name="assignmentIds">Optional filter by assignment IDs. If null or empty, returns results for all assignments.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>An enumerable of <see cref="CheckResultExtract.Vts"/> with Version populated.</returns>
+        Task<IEnumerable<CheckResultExtract.Vts>> GetDataQualityCheckResultExtractVtsAsync(LocalDateTime version, Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Extracts data quality check results for (non-versioned) time series (TS).
+        /// Returns compact DTOs without version information.
+        /// </summary>
+        /// <param name="granularity">Time granularity (Day, Hour, etc.).</param>
+        /// <param name="start">Range start date.</param>
+        /// <param name="end">Range end date (not inclusive).</param>
+        /// <param name="timeZone">IANA timezone identifier (e.g., "UTC", "Europe/Rome").</param>
+        /// <param name="assignmentIds">Optional filter by assignment IDs. If null or empty, returns results for all assignments.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>An enumerable of <see cref="CheckResultExtract.Ts"/>.</returns>
+        Task<IEnumerable<CheckResultExtract.Ts>> GetDataQualityCheckResultExtractTsAsync(Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Retrieves a paged summary of data quality check results (CurveRange-like view per assignment).
+        /// Includes range metadata, product info, and assignment details.
+        /// </summary>
+        /// <param name="page">Page number (1-based, default: 1).</param>
+        /// <param name="pageSize">Items per page (default: 10).</param>
+        /// <param name="marketDataIds">Optional filter by MarketData IDs.</param>
+        /// <param name="ruleIds">Optional filter by Rule IDs.</param>
+        /// <param name="assignmentIds">Optional filter by Assignment IDs.</param>
+        /// <param name="dqStatus">Optional filter by aggregated DQ status (OK/KO).</param>
+        /// <param name="from">Optional range start filter.</param>
+        /// <param name="to">Optional range end filter.</param>
+        /// <param name="versionFrom">Optional version range start.</param>
+        /// <param name="versionTo">Optional version range end.</param>
+        /// <param name="products">Optional filter by products.</param>
+        /// <param name="skipEmptyRanges">When true, return only summaries with non-empty range data (default: false).</param>
+        /// <param name="sort">Optional sort expressions (e.g., "RuleName asc", "LastCheckTime desc").</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A paginated result containing <see cref="CheckResultCheckSummaryDto"/> items.</returns>
+        Task<PagedResult<CheckResultCheckSummaryDto>> GetDataQualityCheckResultCheckSummaryAsync(int page, int pageSize, int[]? marketDataIds = null, int[]? ruleIds = null, int[]? assignmentIds = null, CheckAggregatedStatus? dqStatus = null, Instant? from = null, Instant? to = null, LocalDateTime? versionFrom = null, LocalDateTime? versionTo = null, string[]? products = null, bool skipEmptyRanges = false, string[]? sort = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Retrieves market data entities with their DQ status summary for a given rule.
+        /// Results are sorted by LastCheckTime descending.
+        /// </summary>
+        /// <param name="ruleId">Optional Rule ID filter.</param>
+        /// <param name="marketDataIds">Optional filter by MarketData IDs.</param>
+        /// <param name="dqStatus">Optional aggregated DQ status filter (OK/KO). When KO, returns only Market Data whose overall status is KO.</param>
+        /// <param name="limit">Maximum number of results to return (1..1000, default: 10).</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>An enumerable of <see cref="MarketDataDqStatusSummaryDto"/> items.</returns>
+        Task<IEnumerable<MarketDataDqStatusSummaryDto>> GetMarketDataDqStatusSummaryAsync(int? ruleId = null, int[]? marketDataIds = null, CheckAggregatedStatus? dqStatus = null, int limit = 10, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Retrieves DQ rules with their status summary, optionally filtered by a specific market data entity.
+        /// Results are sorted by LastCheckTime descending.
+        /// </summary>
+        /// <param name="marketDataId">Optional filter by a specific MarketData ID.</param>
+        /// <param name="ruleIds">Optional filter by specific Rule IDs.</param>
+        /// <param name="dqStatus">Optional aggregated DQ status filter (OK/KO). When KO, returns only rules whose overall status is KO.</param>
+        /// <param name="limit">Maximum number of results to return (1..1000, default: 10).</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>An enumerable of <see cref="DqRuleDqStatusSummaryDto"/> items.</returns>
+        Task<IEnumerable<DqRuleDqStatusSummaryDto>> GetDqRuleDqStatusSummaryAsync(int? marketDataId = null, int[]? ruleIds = null, CheckAggregatedStatus? dqStatus = null, int limit = 10, CancellationToken ctk = default);
         #endregion
 
         #region SearchFacet
