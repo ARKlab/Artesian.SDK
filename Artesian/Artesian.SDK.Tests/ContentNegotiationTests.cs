@@ -29,7 +29,7 @@ namespace Artesian.SDK.Tests
         private readonly ArtesianServiceConfig _cfg = new ArtesianServiceConfig(new Uri(TestConstants.BaseAddress), TestConstants.APIKey);
 
         // Helper method to serialize using System.Text.Json with configured options
-        private static string SerializeToJson<T>(T value)
+        private static string _serializeToJson<T>(T value)
         {
             var options = Client.CreateDefaultJsonSerializerOptions();
             return JsonSerializer.Serialize(value, options);
@@ -70,7 +70,7 @@ namespace Artesian.SDK.Tests
                     Value = 42.5
                 };
 
-                var json = SerializeToJson(new[] { testData });
+                var json = _serializeToJson(new[] { testData });
 
                 httpTest.RespondWith(json, 200, headers: new { Content_Type = "application/json" });
 
@@ -101,7 +101,7 @@ namespace Artesian.SDK.Tests
                     Value = 42.5
                 };
 
-                var json = SerializeToJson(new[] { testData });
+                var json = _serializeToJson(new[] { testData });
 
                 httpTest.RespondWith(json, 200, headers: new { Content_Type = "application/json; charset=utf-8" });
 
@@ -133,7 +133,7 @@ namespace Artesian.SDK.Tests
                     detail = "Invalid request parameters"
                 };
 
-                var json = SerializeToJson(problemDetail);
+                var json = _serializeToJson(problemDetail);
 
                 httpTest.RespondWith(json, 400, headers: new { Content_Type = "application/problem+json" });
 
@@ -171,7 +171,7 @@ namespace Artesian.SDK.Tests
                     detail = "Resource conflict"
                 };
 
-                var json = SerializeToJson(problemDetail);
+                var json = _serializeToJson(problemDetail);
 
                 httpTest.RespondWith(json, 409, headers: new { Content_Type = "application/problem+json" });
 
@@ -229,7 +229,7 @@ namespace Artesian.SDK.Tests
             {
                 // Regular JSON (not problem+json) for error response
                 var errorResponse = new { error = "Something went wrong" };
-                var json = SerializeToJson(errorResponse);
+                var json = _serializeToJson(errorResponse);
 
                 httpTest.RespondWith(json, 400, headers: new { Content_Type = "application/json" });
 
@@ -338,7 +338,7 @@ namespace Artesian.SDK.Tests
                 // Convert bytes to Base64 string for Flurl.Http.Testing, then decode in test
                 // Note: Flurl.Http.Testing has limitations with binary content
                 // For now, we'll use a JSON response to test the content negotiation logic
-                var json = SerializeToJson(new[] { testData });
+                var json = _serializeToJson(new[] { testData });
                 httpTest.RespondWith(status: 200, body: json, headers: new { Content_Type = "application/json" });
 
                 var qs = new QueryService(_cfg);
@@ -390,7 +390,7 @@ namespace Artesian.SDK.Tests
                 // Convert bytes to Base64 string for Flurl.Http.Testing, then decode in test
                 // Note: Flurl.Http.Testing has limitations with binary content
                 // For now, we'll use a JSON response to test the content negotiation logic
-                var json = SerializeToJson(testData);
+                var json = _serializeToJson(testData);
                 httpTest.RespondWith(status: 200, body: json, headers: new { Content_Type = "application/json" });
 
                 var qs = new QueryService(_cfg);

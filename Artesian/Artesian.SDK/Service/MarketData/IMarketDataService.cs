@@ -3,6 +3,8 @@
 // license information. 
 
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.DataQuality;
+using Artesian.SDK.Dto.DataQuality.Enums;
 using Artesian.SDK.Dto.UoM;
 
 using NodaTime;
@@ -74,6 +76,179 @@ namespace Artesian.SDK.Service
         /// <param name="ctk">Cancellation Token</param>
         /// <returns>MarketData Entity Output</returns>
         Task<MarketDataEntity.Output> UpdateDerivedConfigurationAsync(int marketDataId, DerivedCfgBase derivedCfg, bool force = false, CancellationToken ctk = default);
+        #endregion
+
+        #region DataQualityRule
+        /// <summary>
+        /// Creates a new Data Quality Rule with the specified configuration.
+        /// The rule defines validation logic (completeness/freshness or outlier detection) that can be assigned to Market Data entities.
+        /// </summary>
+        /// <param name="entity">The rule definition including name, type, and configuration.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The created <see cref="DataQualityRuleDto.Output"/> with server-assigned Id and metadata.</returns>
+        Task<DataQualityRuleDto.Output> RegisterDataQualityRuleAsync(DataQualityRuleDto.Input entity, CancellationToken ctk = default);
+        /// <summary>
+        /// Retrieves a Data Quality Rule by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the rule.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The <see cref="DataQualityRuleDto.Output"/> if found; otherwise 404 Not Found.</returns>
+        Task<DataQualityRuleDto.Output> ReadDataQualityRuleByIdAsync(int id, CancellationToken ctk = default);
+        /// <summary>
+        /// Retrieves a paginated list of Data Quality Rules, optionally filtered by rule type, name, and sorted.
+        /// </summary>
+        /// <param name="type">Optional filter by rule type (CompletenessAndFreshness or Outlier).</param>
+        /// <param name="marketDataId">Optional filter: returns rules assigned to this MarketData.</param>
+        /// <param name="name">Optional partial match filter on rule name.</param>
+        /// <param name="ruleIds">Optional filter by specific rule IDs.</param>
+        /// <param name="sort">Optional sort expressions (e.g., "Name asc").</param>
+        /// <param name="page">The page number (1-based, default: 1).</param>
+        /// <param name="pageSize">The number of items per page (default: 10).</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A paginated result containing <see cref="DataQualityRuleDto.Output"/> items.</returns>
+        Task<PagedResult<DataQualityRuleDto.Output>> ReadDataQualityRuleAsync(int page, int pageSize, RuleType? type = null, int? marketDataId = null, string? name = null, int[]? ruleIds = null, string[]? sort = null, CancellationToken ctk = default);
+        /// <summary>
+        /// Updates an existing Data Quality Rule. The rule's configuration, name, and type can be modified.
+        /// Uses optimistic concurrency via the ETag property.
+        /// </summary>
+        /// <param name="id">The unique identifier of the rule to update.</param>
+        /// <param name="entity">The updated rule definition.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        Task<DataQualityRuleDto.Output> UpdateDataQualityRuleAsync(int id, DataQualityRuleDto.Input entity, CancellationToken ctk = default);
+        /// <summary>
+        /// Deletes a Data Quality Rule by its unique identifier.
+        /// Existing assignments referencing this rule should be removed first.
+        /// </summary>
+        /// <param name="id">The unique identifier of the rule to delete.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>204 No Content on successful deletion.</returns>
+        Task DeleteDataQualityRuleAsync(int id, CancellationToken ctk = default);
+        /// <summary>
+        /// Creates a new assignment binding a Market Data entity to a Data Quality Rule.
+        /// The assignment defines which rule validates which market data.
+        /// </summary>
+        /// <param name="entity">The assignment definition including MarketDataId and DataQualityRuleId.</param>
+        /// <param name="initializationLookbackPeriod">Optional ISO 8601 period (e.g. "P30D") defining how far back in time the rule should validate data on initial assignment. Not persisted.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The created MarketDataQualityRuleAssignmentDto.Output with server-assigned Id.</returns>
+        Task<MarketDataQualityRuleAssignmentDto.Output> RegisterDataQualityRuleAssignmentAsync(MarketDataQualityRuleAssignmentDto.Input entity, Period? initializationLookbackPeriod = null, CancellationToken ctk = default);
+        /// <summary>
+        /// Retrieves a DQ rule assignment by its unique identifier, including enriched MarketData and Rule data.
+        /// </summary>
+        /// <param name="id">The unique identifier of the assignment.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The MarketDataQualityRuleAssignmentDto.Output if found; otherwise <see langword="null"/>.</returns>
+        Task<MarketDataQualityRuleAssignmentDto.Output> ReadDataQualityRuleAssignmentByIdAsync(int id, CancellationToken ctk = default);
+        /// <summary>
+        /// Retrieves a paginated list of DQ rule assignments, optionally filtered by MarketData, Rule, or rule name.
+        /// </summary>
+        /// <param name="marketDataId">Optional filter: returns assignments for the specified Market Data.</param>
+        /// <param name="ruleId">Optional filter: returns assignments for the specified Data Quality Rule.</param>
+        /// <param name="ruleName">Optional partial match filter on rule name.</param>
+        /// <param name="sort">Optional sort expressions (e.g., "Id asc", "RuleName desc").</param>
+        /// <param name="page">The page number (1-based, default: 1).</param>
+        /// <param name="pageSize">The number of items per page (default: 10).</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A paginated result containing MarketDataQualityRuleAssignmentDto.Output items.</returns>
+        Task<PagedResult<MarketDataQualityRuleAssignmentDto.Output>> ReadDataQualityRuleAssignmentAsync(int page, int pageSize, int? marketDataId = null, int? ruleId = null, string? ruleName = null, string[]? sort = null, CancellationToken ctk = default);
+        /// <summary>
+        /// Updates an assignment's initialization lookback, triggering re-evaluation from the new lookback date.
+        /// All existing check results for this assignment are deleted and re-computed.
+        /// </summary>
+        /// <param name="id">The unique identifier of the assignment to update.</param>
+        /// <param name="initializationLookbackPeriod">ISO 8601 period (e.g. "P30D") defining the new lookback window.</param>
+        /// <param name="etag">The current ETag for optimistic concurrency control.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The updated MarketDataQualityRuleAssignmentDto.Output.</returns>
+        Task<MarketDataQualityRuleAssignmentDto.Output> UpdateDataQualityRuleAssignmentAsync(int id, Period initializationLookbackPeriod, string etag, CancellationToken ctk = default);
+        /// <summary>
+        /// Deletes an assignment, removing the binding between a Market Data entity and a Data Quality Rule.
+        /// </summary>
+        /// <param name="id">The unique identifier of the assignment to delete.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>204 No Content on successful deletion.</returns>
+        Task DeleteDataQualityRuleAssignmentAsync(int id, CancellationToken ctk = default);
+        /// <summary>
+        /// Retrieves the raw event feed for a specific rule assignment.
+        /// Returns events after the given timestamp (max 8-day lookback).
+        /// </summary>
+        /// <param name="id">The rule assignment identifier.</param>
+        /// <param name="afterTimestamp">Optional lower bound (events after this instant).</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>An array of DqCheckChangeEventDto.Output.</returns>
+        Task<DqCheckChangeEventDto.Output[]> ReadDataQualityRuleAssignmentEventsFeedAsync(int id, Instant? afterTimestamp = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Extracts data quality check results for versioned time series (VTS).
+        /// Returns compact, abbreviated DTOs designed for high-volume extraction.
+        /// </summary>
+        /// <param name="version">Version timestamp.</param>
+        /// <param name="granularity">Time granularity (Day, Hour, etc.).</param>
+        /// <param name="start">Range start date.</param>
+        /// <param name="end">Range end date (not inclusive).</param>
+        /// <param name="timeZone">IANA timezone identifier (e.g., "UTC", "Europe/Rome").</param>
+        /// <param name="assignmentIds">Optional filter by assignment IDs. If null or empty, returns results for all assignments.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>An enumerable of <see cref="CheckResultExtract.Vts"/> with Version populated.</returns>
+        Task<IEnumerable<CheckResultExtract.Vts>> GetDataQualityCheckResultExtractVtsAsync(LocalDateTime version, Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Extracts data quality check results for (non-versioned) time series (TS).
+        /// Returns compact DTOs without version information.
+        /// </summary>
+        /// <param name="granularity">Time granularity (Day, Hour, etc.).</param>
+        /// <param name="start">Range start date.</param>
+        /// <param name="end">Range end date (not inclusive).</param>
+        /// <param name="timeZone">IANA timezone identifier (e.g., "UTC", "Europe/Rome").</param>
+        /// <param name="assignmentIds">Optional filter by assignment IDs. If null or empty, returns results for all assignments.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>An enumerable of <see cref="CheckResultExtract.Ts"/>.</returns>
+        Task<IEnumerable<CheckResultExtract.Ts>> GetDataQualityCheckResultExtractTsAsync(Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Retrieves a paged summary of data quality check results (CurveRange-like view per assignment).
+        /// Includes range metadata, product info, and assignment details.
+        /// </summary>
+        /// <param name="page">Page number (1-based, default: 1).</param>
+        /// <param name="pageSize">Items per page (default: 10).</param>
+        /// <param name="marketDataIds">Optional filter by MarketData IDs.</param>
+        /// <param name="ruleIds">Optional filter by Rule IDs.</param>
+        /// <param name="assignmentIds">Optional filter by Assignment IDs.</param>
+        /// <param name="dqStatus">Optional filter by aggregated DQ status (OK/KO).</param>
+        /// <param name="from">Optional range start filter.</param>
+        /// <param name="to">Optional range end filter.</param>
+        /// <param name="versionFrom">Optional version range start.</param>
+        /// <param name="versionTo">Optional version range end.</param>
+        /// <param name="products">Optional filter by products.</param>
+        /// <param name="skipEmptyRanges">When true, return only summaries with non-empty range data (default: false).</param>
+        /// <param name="sort">Optional sort expressions (e.g., "RuleName asc", "LastCheckTime desc").</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A paginated result containing <see cref="CheckResultCheckSummaryDto"/> items.</returns>
+        Task<PagedResult<CheckResultCheckSummaryDto>> GetDataQualityCheckResultCheckSummaryAsync(int page, int pageSize, int[]? marketDataIds = null, int[]? ruleIds = null, int[]? assignmentIds = null, CheckAggregatedStatus? dqStatus = null, Instant? from = null, Instant? to = null, LocalDateTime? versionFrom = null, LocalDateTime? versionTo = null, string[]? products = null, bool skipEmptyRanges = false, string[]? sort = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Retrieves market data entities with their DQ status summary for a given rule.
+        /// Results are sorted by LastCheckTime descending.
+        /// </summary>
+        /// <param name="ruleId">Optional Rule ID filter.</param>
+        /// <param name="marketDataIds">Optional filter by MarketData IDs.</param>
+        /// <param name="dqStatus">Optional aggregated DQ status filter (OK/KO). When KO, returns only Market Data whose overall status is KO.</param>
+        /// <param name="limit">Maximum number of results to return (1..1000, default: 10).</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>An enumerable of <see cref="MarketDataDqStatusSummaryDto"/> items.</returns>
+        Task<IEnumerable<MarketDataDqStatusSummaryDto>> GetMarketDataDqStatusSummaryAsync(int? ruleId = null, int[]? marketDataIds = null, CheckAggregatedStatus? dqStatus = null, int limit = 10, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Retrieves DQ rules with their status summary, optionally filtered by a specific market data entity.
+        /// Results are sorted by LastCheckTime descending.
+        /// </summary>
+        /// <param name="marketDataId">Optional filter by a specific MarketData ID.</param>
+        /// <param name="ruleIds">Optional filter by specific Rule IDs.</param>
+        /// <param name="dqStatus">Optional aggregated DQ status filter (OK/KO). When KO, returns only rules whose overall status is KO.</param>
+        /// <param name="limit">Maximum number of results to return (1..1000, default: 10).</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>An enumerable of <see cref="DqRuleDqStatusSummaryDto"/> items.</returns>
+        Task<IEnumerable<DqRuleDqStatusSummaryDto>> GetDqRuleDqStatusSummaryAsync(int? marketDataId = null, int[]? ruleIds = null, CheckAggregatedStatus? dqStatus = null, int limit = 10, CancellationToken ctk = default);
         #endregion
 
         #region SearchFacet

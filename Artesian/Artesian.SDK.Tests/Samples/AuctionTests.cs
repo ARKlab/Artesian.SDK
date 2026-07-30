@@ -42,7 +42,7 @@ namespace Artesian.SDK.Tests.Samples
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataType.Auction,
+                Type = MarketDataTypeV2.Auction,
                 MarketDataId = 0,
             };
 

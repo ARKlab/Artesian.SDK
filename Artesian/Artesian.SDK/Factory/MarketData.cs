@@ -150,7 +150,7 @@ namespace Artesian.SDK.Factory
             if (_entity == null)
                 throw new ActualTimeSerieException("Actual Time Serie is not yet registered");
 
-            if (_entity.Type != MarketDataType.ActualTimeSerie)
+            if (_entity.Type != MarketDataTypeV2.ActualTimeSerie)
                 throw new MarketAssessmentException("Entity is not an Actual Time Serie");
 
             var actual = new ActualTimeSerie(this);
@@ -169,7 +169,7 @@ namespace Artesian.SDK.Factory
             if (_entity == null)
                 throw new AuctionTimeSerieException("Auction Time Serie is not yet registered");
 
-            if (_entity.Type != MarketDataType.Auction)
+            if (_entity.Type != MarketDataTypeV2.Auction)
                 throw new MarketAssessmentException("Entity is not an Auction Time Serie");
 
             var auction = new AuctionTimeSerie(this);
@@ -188,7 +188,7 @@ namespace Artesian.SDK.Factory
             if (_entity == null)
                 throw new VersionedTimeSerieException("Versioned Time Serie is not yet registered");
 
-            if (_entity.Type != MarketDataType.VersionedTimeSerie)
+            if (_entity.Type != MarketDataTypeV2.VersionedTimeSerie)
                 throw new MarketAssessmentException("Entity is not  a Versioned Time Serie");
 
             var versioned = new VersionedTimeSerie(this);
@@ -209,7 +209,7 @@ namespace Artesian.SDK.Factory
             if (_entity == null)
                 throw new MarketAssessmentException("Market Assessement is not yet registered");
 
-            if (_entity.Type != MarketDataType.MarketAssessment)
+            if (_entity.Type != MarketDataTypeV2.MarketAssessment)
                 throw new MarketAssessmentException("Entity is not a Market Assessement");
 
             var mas = new MarketAssessment(this);
@@ -228,7 +228,7 @@ namespace Artesian.SDK.Factory
             if (_entity == null)
                 throw new BidAskException("Bid Ask is not yet registered");
 
-            if (_entity.Type != MarketDataType.BidAsk)
+            if (_entity.Type != MarketDataTypeV2.BidAsk)
                 throw new BidAskException("Entity is not a Bid Ask");
 
             var bask = new BidAsk(this);

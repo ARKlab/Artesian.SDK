@@ -49,7 +49,7 @@ namespace Artesian.SDK.Factory
         /// <summary>
         /// The Type
         /// </summary>
-        public MarketDataType Type => _output.Type;
+        public MarketDataTypeV2 Type => _output.Type;
         /// <summary>
         /// The Original Timezone
         /// </summary>

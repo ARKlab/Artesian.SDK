@@ -33,7 +33,7 @@ namespace Artesian.SDK.Tests.Samples
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.AverageAndReplicate,
-                Type = MarketDataType.ActualTimeSerie,
+                Type = MarketDataTypeV2.ActualTimeSerie,
                 MarketDataId = 0
             };
 
@@ -108,7 +108,7 @@ namespace Artesian.SDK.Tests.Samples
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.AverageAndReplicate,
-                Type = MarketDataType.VersionedTimeSerie,
+                Type = MarketDataTypeV2.VersionedTimeSerie,
                 MarketDataId = 0
             };
 
@@ -184,7 +184,7 @@ namespace Artesian.SDK.Tests.Samples
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
                 AggregationRule = AggregationRule.AverageAndReplicate,
-                Type = MarketDataType.Auction,
+                Type = MarketDataTypeV2.Auction,
                 MarketDataId = 0
             };
 
@@ -265,7 +265,7 @@ namespace Artesian.SDK.Tests.Samples
                 MarketDataName = "TestMarketDataName8",
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
-                Type = MarketDataType.MarketAssessment,
+                Type = MarketDataTypeV2.MarketAssessment,
                 MarketDataId = 0
             };
 
@@ -375,7 +375,7 @@ namespace Artesian.SDK.Tests.Samples
                 MarketDataName = "TestMarketDataName9",
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "CET",
-                Type = MarketDataType.BidAsk,
+                Type = MarketDataTypeV2.BidAsk,
                 MarketDataId = 0
             };
 
