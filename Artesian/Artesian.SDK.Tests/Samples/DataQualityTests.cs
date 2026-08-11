@@ -208,7 +208,7 @@ namespace Artesian.SDK.Tests.Samples
             var input = new MarketDataEntity.Input
             {
                 ProviderName = "DqCheckResult",
-                MarketDataName = "TsCheckSummaryQuery_" + Guid.NewGuid().ToString(),
+                MarketDataName = "TsCheckSummaryQuery_" + Guid.NewGuid(),
                 Type = MarketDataTypeV2.ActualTimeSerie,
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "UTC",
@@ -239,7 +239,7 @@ namespace Artesian.SDK.Tests.Samples
             // Step 3: Create a data quality rule
             var rulePayload = new DataQualityRuleDto.Input
             {
-                Name = "TsSummaryRule_" + Guid.NewGuid().ToString(),
+                Name = "TsSummaryRule_" + Guid.NewGuid(),
                 Type = RuleType.CompletenessAndFreshness,
                 Configuration = new ActualCompletenessAndFreshnessConfigDto
                 {
