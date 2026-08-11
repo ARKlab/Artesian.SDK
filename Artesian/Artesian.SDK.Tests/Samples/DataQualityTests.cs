@@ -375,7 +375,7 @@ namespace Artesian.SDK.Tests.Samples
             var input = new MarketDataEntity.Input
             {
                 ProviderName = "DqNotificationAlert",
-                MarketDataName = "TsCheckSummaryQuery_" + Guid.NewGuid().ToString(),
+                MarketDataName = "TsCheckSummaryQuery_" + Guid.NewGuid(),
                 Type = MarketDataTypeV2.ActualTimeSerie,
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "UTC",
