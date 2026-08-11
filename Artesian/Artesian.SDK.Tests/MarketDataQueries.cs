@@ -111,385 +111,6 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public async Task MarketData_RegisterDataQualityRuleAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                var dataQualityRule = new DataQualityRuleDto.Input()
-                {
-                    Name = "TestRule",
-                    Type = RuleType.CompletenessAndFreshness,
-                    Configuration = new ActualCompletenessAndFreshnessConfigDto
-                    {
-                        MarketDataType = MarketDataTypeV2.ActualTimeSerie,
-                        ScheduleConfig = new ScheduleConfigDto
-                        {
-                            ScheduleDefinition = new CronScheduleDefinitionDto
-                            {
-                                CronExpression = "0 0 * * *",
-                                TimeZone = "UTC"
-                            },
-                            MaxDelay = Period.FromHours(1)
-                        },
-                        RecordValidationConfig = new RecordValidationConfigDto
-                        {
-                            RecordRangeFrom = Period.Zero,
-                            RecordRangeTo = Period.FromHours(1)
-                        }
-                    }
-                };
-
-                await mds.RegisterDataQualityRuleAsync(dataQualityRule);
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
-                    .WithVerb(HttpMethod.Post)
-                    .WithContentType("application/x.msgpacklz4")
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_ReadDataQualityRuleByIdAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                await mds.ReadDataQualityRuleByIdAsync(1);
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
-                    .WithVerb(HttpMethod.Get)
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_ReadDataQualityRuleAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                await mds.ReadDataQualityRuleAsync(1, 10, RuleType.CompletenessAndFreshness, 1, string.Empty, Array.Empty<int>(), Array.Empty<string>());
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
-                    .WithQueryParam("marketDataId", 1)
-                    .WithQueryParam("page", 1)
-                    .WithQueryParam("pageSize", 10)
-                    .WithQueryParam("type", RuleType.CompletenessAndFreshness)
-                    .WithQueryParam("name", string.Empty)
-                    .WithoutQueryParam("ruleIds")
-                    .WithoutQueryParam("sort")
-                    .WithVerb(HttpMethod.Get)
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_UpdateDataQualityRuleAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                var dataQualityRule = new DataQualityRuleDto.Input()
-                {
-                    Name = "TestRuleUpdate",
-                    Type = RuleType.CompletenessAndFreshness,
-                    Configuration = new ActualCompletenessAndFreshnessConfigDto
-                    {
-                        MarketDataType = MarketDataTypeV2.ActualTimeSerie,
-                        ScheduleConfig = new ScheduleConfigDto
-                        {
-                            ScheduleDefinition = new CronScheduleDefinitionDto
-                            {
-                                CronExpression = "0 0 * * *",
-                                TimeZone = "UTC"
-                            },
-                            MaxDelay = Period.FromHours(1)
-                        },
-                        RecordValidationConfig = new RecordValidationConfigDto
-                        {
-                            RecordRangeFrom = Period.Zero,
-                            RecordRangeTo = Period.FromHours(1)
-                        }
-                    }
-                };
-
-                await mds.UpdateDataQualityRuleAsync(1, dataQualityRule);
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
-                    .WithVerb(HttpMethod.Put)
-                    .WithContentType("application/x.msgpacklz4")
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_DeleteDataQualityRuleAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                await mds.DeleteDataQualityRuleAsync(1);
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
-                    .WithVerb(HttpMethod.Delete)
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_RegisterDataQualityRuleAssignmentAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                var assignment = new MarketDataQualityRuleAssignmentDto.Input()
-                {
-                    MarketDataId = 100,
-                    DataQualityRuleId = 1
-                };
-
-                await mds.RegisterDataQualityRuleAssignmentAsync(assignment, Period.FromDays(30));
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
-                    .WithQueryParam("initializationLookbackPeriod", Period.FromDays(30))
-                    .WithVerb(HttpMethod.Post)
-                    .WithContentType("application/x.msgpacklz4")
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_ReadDataQualityRuleAssignmentByIdAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                await mds.ReadDataQualityRuleAssignmentByIdAsync(1);
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
-                    .WithVerb(HttpMethod.Get)
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_ReadDataQualityRuleAssignmentAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                await mds.ReadDataQualityRuleAssignmentAsync(1, 10, 100, 1, "TestRule", new string[] { "Id asc" });
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
-                    .WithQueryParam("page", 1)
-                    .WithQueryParam("pageSize", 10)
-                    .WithQueryParam("marketDataId", 100)
-                    .WithQueryParam("ruleId", 1)
-                    .WithQueryParam("ruleName", "TestRule")
-                    .WithQueryParam("sort", "Id asc")
-                    .WithVerb(HttpMethod.Get)
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_UpdateDataQualityRuleAssignmentAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                await mds.UpdateDataQualityRuleAssignmentAsync(1, Period.FromDays(60), "test-etag");
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
-                    .WithQueryParam("initializationLookbackPeriod", Period.FromDays(60))
-                    .WithQueryParam("etag", "test-etag")
-                    .WithVerb(HttpMethod.Put)
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_DeleteDataQualityRuleAssignmentAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                await mds.DeleteDataQualityRuleAssignmentAsync(1);
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
-                    .WithVerb(HttpMethod.Delete)
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_GetDataQualityCheckResultExtractVtsAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                var version = new LocalDateTime(2024, 1, 15, 10, 0);
-                var start = new LocalDate(2024, 1, 1);
-                var end = new LocalDate(2024, 1, 31);
-
-                await mds.GetDataQualityCheckResultExtractVtsAsync(version, Granularity.Day, start, end, "UTC", new int[] { 1, 2 });
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/extract/vts/Version/2024-01-15T10:00:00/Day/2024-01-01/2024-01-31")
-                    .WithQueryParam("timeZone", "UTC")
-                    .WithQueryParam("assignmentIds", "1")
-                    .WithQueryParam("assignmentIds", "2")
-                    .WithVerb(HttpMethod.Get)
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_GetDataQualityCheckResultExtractTsAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                var start = new LocalDate(2024, 1, 1);
-                var end = new LocalDate(2024, 1, 31);
-
-                await mds.GetDataQualityCheckResultExtractTsAsync(Granularity.Hour, start, end, "Europe/Rome", new int[] { 3, 4 });
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/extract/ts/Hour/2024-01-01/2024-01-31")
-                    .WithQueryParam("timeZone", "Europe/Rome")
-                    .WithQueryParam("assignmentIds", "3")
-                    .WithQueryParam("assignmentIds", "4")
-                    .WithVerb(HttpMethod.Get)
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_GetDataQualityCheckResultCheckSummaryAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                var from = Instant.FromUtc(2024, 1, 1, 0, 0);
-                var to = Instant.FromUtc(2024, 1, 31, 23, 59);
-                var versionFrom = new LocalDateTime(2024, 1, 1, 0, 0);
-                var versionTo = new LocalDateTime(2024, 1, 31, 23, 59);
-
-                await mds.GetDataQualityCheckResultCheckSummaryAsync(
-                    page: 1,
-                    pageSize: 20,
-                    marketDataIds: new int[] { 100, 200 },
-                    ruleIds: new int[] { 1, 2 },
-                    assignmentIds: new int[] { 10, 20 },
-                    dqStatus: CheckAggregatedStatus.KO,
-                    from: from,
-                    to: to,
-                    versionFrom: versionFrom,
-                    versionTo: versionTo,
-                    products: new string[] { "PROD1", "PROD2" },
-                    skipEmptyRanges: true,
-                    sort: new string[] { "RuleName asc" });
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/checksummary")
-                    .WithQueryParam("page", 1)
-                    .WithQueryParam("pageSize", 20)
-                    .WithQueryParam("marketDataIds", "100")
-                    .WithQueryParam("marketDataIds", "200")
-                    .WithQueryParam("ruleIds", "1")
-                    .WithQueryParam("ruleIds", "2")
-                    .WithQueryParam("assignmentIds", "10")
-                    .WithQueryParam("assignmentIds", "20")
-                    .WithQueryParam("dqStatus", CheckAggregatedStatus.KO)
-                    .WithQueryParam("from", from)
-                    .WithQueryParam("to", to)
-                    .WithQueryParam("versionFrom", versionFrom)
-                    .WithQueryParam("versionTo", versionTo)
-                    .WithQueryParam("products", "PROD1")
-                    .WithQueryParam("products", "PROD2")
-                    .WithQueryParam("skipEmptyRanges", true)
-                    .WithQueryParam("sort", "RuleName asc")
-                    .WithVerb(HttpMethod.Get)
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_GetMarketDataDqStatusSummaryAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                await mds.GetMarketDataDqStatusSummaryAsync(
-                    ruleId: 1,
-                    marketDataIds: new int[] { 100, 200 },
-                    dqStatus: CheckAggregatedStatus.KO,
-                    limit: 50);
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/marketdata/dataqualitystatussummary")
-                    .WithQueryParam("limit", 50)
-                    .WithQueryParam("ruleId", 1)
-                    .WithQueryParam("marketDataIds", "100")
-                    .WithQueryParam("marketDataIds", "200")
-                    .WithQueryParam("dqStatus", CheckAggregatedStatus.KO)
-                    .WithVerb(HttpMethod.Get)
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
-        public async Task MarketData_GetDqRuleDqStatusSummaryAsync()
-        {
-            using (var httpTest = new HttpTest())
-            {
-                var mds = new MarketDataService(_cfg);
-
-                await mds.GetDqRuleDqStatusSummaryAsync(
-                    marketDataId: 100,
-                    ruleIds: new int[] { 1, 2, 3 },
-                    dqStatus: CheckAggregatedStatus.OK,
-                    limit: 100);
-
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/dqrule/dataqualitystatussummary")
-                    .WithQueryParam("limit", 100)
-                    .WithQueryParam("marketDataId", 100)
-                    .WithQueryParam("ruleIds", "1")
-                    .WithQueryParam("ruleIds", "2")
-                    .WithQueryParam("ruleIds", "3")
-                    .WithQueryParam("dqStatus", CheckAggregatedStatus.OK)
-                    .WithVerb(HttpMethod.Get)
-                    .WithHeadersTest()
-                    .Times(1);
-            }
-        }
-
-        [Test]
         public async Task MarketDataServiceSetDataInitReplace_ActualTimeSerie()
         {
             var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
@@ -2374,6 +1995,630 @@ namespace Artesian.SDK.Tests
                 await mds.DeleteApiKeyAsync(1);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/apikey/entity/1")
+                    .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+        #endregion
+
+        #region DataQualityRule
+        [Test]
+        public async Task MarketData_RegisterDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var dataQualityRule = new DataQualityRuleDto.Input()
+                {
+                    Name = "TestRule",
+                    Type = RuleType.CompletenessAndFreshness,
+                    Configuration = new ActualCompletenessAndFreshnessConfigDto
+                    {
+                        MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                        ScheduleConfig = new ScheduleConfigDto
+                        {
+                            ScheduleDefinition = new CronScheduleDefinitionDto
+                            {
+                                CronExpression = "0 0 * * *",
+                                TimeZone = "UTC"
+                            },
+                            MaxDelay = Period.FromHours(1)
+                        },
+                        RecordValidationConfig = new RecordValidationConfigDto
+                        {
+                            RecordRangeFrom = Period.Zero,
+                            RecordRangeTo = Period.FromHours(1)
+                        }
+                    }
+                };
+
+                await mds.RegisterDataQualityRuleAsync(dataQualityRule);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleAsync(1, 10, RuleType.CompletenessAndFreshness, 1, string.Empty, Array.Empty<int>(), Array.Empty<string>());
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
+                    .WithQueryParam("marketDataId", 1)
+                    .WithQueryParam("page", 1)
+                    .WithQueryParam("pageSize", 10)
+                    .WithQueryParam("type", RuleType.CompletenessAndFreshness)
+                    .WithQueryParam("name", string.Empty)
+                    .WithoutQueryParam("ruleIds")
+                    .WithoutQueryParam("sort")
+                    .WithVerb(HttpMethod.Get)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpdateDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var dataQualityRule = new DataQualityRuleDto.Input()
+                {
+                    Name = "TestRuleUpdate",
+                    Type = RuleType.CompletenessAndFreshness,
+                    Configuration = new ActualCompletenessAndFreshnessConfigDto
+                    {
+                        MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                        ScheduleConfig = new ScheduleConfigDto
+                        {
+                            ScheduleDefinition = new CronScheduleDefinitionDto
+                            {
+                                CronExpression = "0 0 * * *",
+                                TimeZone = "UTC"
+                            },
+                            MaxDelay = Period.FromHours(1)
+                        },
+                        RecordValidationConfig = new RecordValidationConfigDto
+                        {
+                            RecordRangeFrom = Period.Zero,
+                            RecordRangeTo = Period.FromHours(1)
+                        }
+                    }
+                };
+
+                await mds.UpdateDataQualityRuleAsync(1, dataQualityRule);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Put)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteDataQualityRuleAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+        #endregion
+
+        #region DataQualityRuleAssignment
+        [Test]
+        public async Task MarketData_RegisterDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var assignment = new MarketDataQualityRuleAssignmentDto.Input()
+                {
+                    MarketDataId = 100,
+                    DataQualityRuleId = 1
+                };
+
+                await mds.RegisterDataQualityRuleAssignmentAsync(assignment, Period.FromDays(30));
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
+                    .WithQueryParam("initializationLookbackPeriod", Period.FromDays(30))
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAssignmentByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleAssignmentByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleAssignmentAsync(1, 10, 100, 1, "TestRule", new string[] { "Id asc" });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
+                    .WithQueryParam("page", 1)
+                    .WithQueryParam("pageSize", 10)
+                    .WithQueryParam("marketDataId", 100)
+                    .WithQueryParam("ruleId", 1)
+                    .WithQueryParam("ruleName", "TestRule")
+                    .WithQueryParam("sort", "Id asc")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpdateDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.UpdateDataQualityRuleAssignmentAsync(1, Period.FromDays(60), "test-etag");
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithQueryParam("initializationLookbackPeriod", Period.FromDays(60))
+                    .WithQueryParam("etag", "test-etag")
+                    .WithVerb(HttpMethod.Put)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteDataQualityRuleAssignmentAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+        #endregion
+
+        #region DataQualityCheckResult
+
+        [Test]
+        public async Task MarketData_GetDataQualityCheckResultExtractVtsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var version = new LocalDateTime(2024, 1, 15, 10, 0);
+                var start = new LocalDate(2024, 1, 1);
+                var end = new LocalDate(2024, 1, 31);
+
+                await mds.GetDataQualityCheckResultExtractVtsAsync(version, Granularity.Day, start, end, "UTC", new int[] { 1, 2 });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/extract/vts/Version/2024-01-15T10:00:00/Day/2024-01-01/2024-01-31")
+                    .WithQueryParam("timeZone", "UTC")
+                    .WithQueryParam("assignmentIds", "1")
+                    .WithQueryParam("assignmentIds", "2")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_GetDataQualityCheckResultExtractTsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var start = new LocalDate(2024, 1, 1);
+                var end = new LocalDate(2024, 1, 31);
+
+                await mds.GetDataQualityCheckResultExtractTsAsync(Granularity.Hour, start, end, "Europe/Rome", new int[] { 3, 4 });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/extract/ts/Hour/2024-01-01/2024-01-31")
+                    .WithQueryParam("timeZone", "Europe/Rome")
+                    .WithQueryParam("assignmentIds", "3")
+                    .WithQueryParam("assignmentIds", "4")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_GetDataQualityCheckResultCheckSummaryAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var from = Instant.FromUtc(2024, 1, 1, 0, 0);
+                var to = Instant.FromUtc(2024, 1, 31, 23, 59);
+                var versionFrom = new LocalDateTime(2024, 1, 1, 0, 0);
+                var versionTo = new LocalDateTime(2024, 1, 31, 23, 59);
+
+                await mds.GetDataQualityCheckResultCheckSummaryAsync(
+                    page: 1,
+                    pageSize: 20,
+                    marketDataIds: new int[] { 100, 200 },
+                    ruleIds: new int[] { 1, 2 },
+                    assignmentIds: new int[] { 10, 20 },
+                    dqStatus: CheckAggregatedStatus.KO,
+                    from: from,
+                    to: to,
+                    versionFrom: versionFrom,
+                    versionTo: versionTo,
+                    products: new string[] { "PROD1", "PROD2" },
+                    skipEmptyRanges: true,
+                    sort: new string[] { "RuleName asc" });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/checksummary")
+                    .WithQueryParam("page", 1)
+                    .WithQueryParam("pageSize", 20)
+                    .WithQueryParam("marketDataIds", "100")
+                    .WithQueryParam("marketDataIds", "200")
+                    .WithQueryParam("ruleIds", "1")
+                    .WithQueryParam("ruleIds", "2")
+                    .WithQueryParam("assignmentIds", "10")
+                    .WithQueryParam("assignmentIds", "20")
+                    .WithQueryParam("dqStatus", CheckAggregatedStatus.KO)
+                    .WithQueryParam("from", from)
+                    .WithQueryParam("to", to)
+                    .WithQueryParam("versionFrom", versionFrom)
+                    .WithQueryParam("versionTo", versionTo)
+                    .WithQueryParam("products", "PROD1")
+                    .WithQueryParam("products", "PROD2")
+                    .WithQueryParam("skipEmptyRanges", true)
+                    .WithQueryParam("sort", "RuleName asc")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_GetMarketDataDqStatusSummaryAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.GetMarketDataDqStatusSummaryAsync(
+                    ruleId: 1,
+                    marketDataIds: new int[] { 100, 200 },
+                    dqStatus: CheckAggregatedStatus.KO,
+                    limit: 50);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/marketdata/dataqualitystatussummary")
+                    .WithQueryParam("limit", 50)
+                    .WithQueryParam("ruleId", 1)
+                    .WithQueryParam("marketDataIds", "100")
+                    .WithQueryParam("marketDataIds", "200")
+                    .WithQueryParam("dqStatus", CheckAggregatedStatus.KO)
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_GetDqRuleDqStatusSummaryAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.GetDqRuleDqStatusSummaryAsync(
+                    marketDataId: 100,
+                    ruleIds: new int[] { 1, 2, 3 },
+                    dqStatus: CheckAggregatedStatus.OK,
+                    limit: 100);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/dqrule/dataqualitystatussummary")
+                    .WithQueryParam("limit", 100)
+                    .WithQueryParam("marketDataId", 100)
+                    .WithQueryParam("ruleIds", "1")
+                    .WithQueryParam("ruleIds", "2")
+                    .WithQueryParam("ruleIds", "3")
+                    .WithQueryParam("dqStatus", CheckAggregatedStatus.OK)
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+        #endregion
+
+        #region QualityNotificationAlert
+        [Test]
+        public async Task MarketData_RegisterQualityNotificationAlertAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var alert = new QualityNotificationAlertDto.Input
+                {
+                    Name = "Test alert",
+                    TriggerConfig = new OnEventTriggerConfigDto(),
+                    MailNotifications = new List<MailNotificationDto>
+                    {
+                        new MailNotificationDto { Recipients = new[] { "test@example.com" } }
+                    }
+                };
+
+                await mds.RegisterQualityNotificationAlertAsync(alert);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule")
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadQualityNotificationAlertByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadQualityNotificationAlertByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadQualityNotificationAlertsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadQualityNotificationAlertsAsync(2, 20, "Test", 100, new int[] { 1, 2 }, new string[] { "Name asc" });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule")
+                    .WithQueryParam("page", 2)
+                    .WithQueryParam("pageSize", 20)
+                    .WithQueryParam("name", "Test")
+                    .WithQueryParam("marketDataId", 100)
+                    .WithQueryParam("ruleIds", "1")
+                    .WithQueryParam("ruleIds", "2")
+                    .WithQueryParam("sort", "Name asc")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpdateQualityNotificationAlertAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var alert = new QualityNotificationAlertDto.Input
+                {
+                    Name = "Updated alert",
+                    TriggerConfig = new OnEventTriggerConfigDto(),
+                    MailNotifications = new List<MailNotificationDto>
+                    {
+                        new MailNotificationDto { Recipients = new[] { "test@example.com" } }
+                    }
+                };
+
+                await mds.UpdateQualityNotificationAlertAsync(1, alert);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1")
+                    .WithVerb(HttpMethod.Put)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteQualityNotificationAlertAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteQualityNotificationAlertAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1")
+                    .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadAlertScheduleEventsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var scheduleTime = Instant.FromUtc(2025, 1, 15, 12, 30);
+
+                await mds.ReadAlertScheduleEventsAsync(1, scheduleTime);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1/schedule/{scheduleTime}/events")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadAlertScheduleListAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadAlertScheduleListAsync(1, 5);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1/schedule")
+                    .WithQueryParam("lastN", 5)
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadAlertScheduleLastEventsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadAlertScheduleLastEventsAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1/schedule/latest/events")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        #endregion
+
+        #region QualityNotificationAlertAssignment
+
+        [Test]
+        public async Task MarketData_RegisterQualityNotificationAlertAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var assignment = new QualityNotificationAlertAssignmentDto.Input
+                {
+                    AlertId = 1,
+                    MarketDataId = 100000001
+                };
+
+                await mds.RegisterQualityNotificationAlertAssignmentAsync(assignment);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertruleassignment")
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadQualityNotificationAlertAssignmentByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadQualityNotificationAlertAssignmentByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertruleassignment/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadQualityNotificationAlertAssignmentsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadQualityNotificationAlertAssignmentsAsync(2, 20, 1, 100000001, new string[] { "AlertId desc" });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertruleassignment")
+                    .WithQueryParam("alertId", 1)
+                    .WithQueryParam("marketDataId", 100000001)
+                    .WithQueryParam("page", 2)
+                    .WithQueryParam("pageSize", 20)
+                    .WithQueryParam("sort", "AlertId desc")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteQualityNotificationAlertAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteQualityNotificationAlertAssignmentAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertruleassignment/1")
                     .WithVerb(HttpMethod.Delete)
                     .WithHeadersTest()
                     .Times(1);

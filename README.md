@@ -848,6 +848,146 @@ foreach (var evt in events)
 }
 ```
 
+### Quality Notification Alerts
+
+Quality notification alerts send notifications when data quality checks detect failures. Alerts can be triggered immediately for each event or configured with a schedule for digest notifications. Market Data assignments remain managed through the Data Quality Rule Assignment APIs.
+
+#### Create an Alert
+
+```csharp
+var alert = new QualityNotificationAlertDto.Input
+{
+    Name = "Weather station quality alert",
+    TriggerConfig = new OnEventTriggerConfigDto(),
+    MailNotifications = new List<MailNotificationDto>
+    {
+        new MailNotificationDto
+        {
+            Recipients = new[] { "quality-team@example.com" }
+        }
+    }
+};
+
+var createdAlert = await marketDataService.RegisterQualityNotificationAlertAsync(alert);
+Console.WriteLine($"Alert ID: {createdAlert.Id}");
+```
+
+For scheduled digest notifications, use `ScheduleTriggerConfigDto` with a cron schedule:
+
+```csharp
+var scheduledAlert = new QualityNotificationAlertDto.Input
+{
+    Name = "Daily quality digest",
+    TriggerConfig = new ScheduleTriggerConfigDto
+    {
+        ScheduleDefinition = new CronScheduleDefinitionDto
+        {
+            CronExpression = "0 9 * * *",
+            TimeZone = "UTC"
+        }
+    },
+    MailNotifications = new List<MailNotificationDto>
+    {
+        new MailNotificationDto
+        {
+            Recipients = new[] { "quality-team@example.com" }
+        }
+    }
+};
+```
+
+#### Read, Update, and Delete Alerts
+
+```csharp
+var alert = await marketDataService.ReadQualityNotificationAlertByIdAsync(id: 123);
+
+var alerts = await marketDataService.ReadQualityNotificationAlertsAsync(
+    page: 1,
+    pageSize: 20,
+    name: "weather",
+    marketDataId: 100000001,
+    sort: new[] { "Name asc" }
+);
+
+alert.Name = "Updated quality alert";
+var updatedAlert = await marketDataService.UpdateQualityNotificationAlertAsync(
+    id: alert.Id,
+    entity: alert
+);
+
+await marketDataService.DeleteQualityNotificationAlertAsync(id: updatedAlert.Id);
+```
+
+The `ETag` and `Version` returned by the API must be preserved when updating an alert.
+
+#### Read Alert Schedule Events
+
+```csharp
+var scheduleTimes = await marketDataService.ReadAlertScheduleListAsync(
+    alertId: 123,
+    lastN: 10
+);
+
+if (scheduleTimes.Length > 0)
+{
+    var scheduleEvents = await marketDataService.ReadAlertScheduleEventsAsync(
+        alertId: 123,
+        scheduleTime: scheduleTimes[0]
+    );
+
+    foreach (var evt in scheduleEvents.Events)
+    {
+        Console.WriteLine($"Event at {evt.Timestamp}: {evt.NewStatus}");
+    }
+}
+
+var latestScheduleEvents = await marketDataService.ReadAlertScheduleLastEventsAsync(alertId: 123);
+```
+
+### Quality Notification Alert Assignments
+
+An alert assignment binds a quality notification alert to a Market Data entity. Assignments determine which Market Data is monitored by an alert and are managed separately from the alert definition.
+
+#### Create an Assignment
+
+```csharp
+var assignment = new QualityNotificationAlertAssignmentDto.Input
+{
+    AlertId = 123,
+    MarketDataId = 100000001
+};
+
+var createdAssignment = await marketDataService.RegisterQualityNotificationAlertAssignmentAsync(assignment);
+Console.WriteLine($"Assignment ID: {createdAssignment.Id}");
+```
+
+#### Read Assignments
+
+Read a single assignment by ID or filter the paginated collection by alert and Market Data:
+
+```csharp
+var assignment = await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(id: 456);
+
+var assignments = await marketDataService.ReadQualityNotificationAlertAssignmentsAsync(
+    page: 1,
+    pageSize: 20,
+    alertId: 123,
+    marketDataId: 100000001,
+    sort: new[] { "AlertId asc" }
+);
+
+foreach (var item in assignments.Data)
+{
+    Console.WriteLine($"Assignment {item.Id}: Alert {item.AlertId} -> Market Data {item.MarketDataId}");
+}
+```
+
+#### Delete an Assignment
+
+```csharp
+await marketDataService.DeleteQualityNotificationAlertAssignmentAsync(id: 456);
+```
+
 ### Data Quality Rule Status
 
 Rules and assignments expose aggregated check status through the `AggregatedStatus` property:

@@ -178,6 +178,89 @@ namespace Artesian.SDK.Service
         /// <returns>An array of DqCheckChangeEventDto.Output.</returns>
         Task<DqCheckChangeEventDto.Output[]> ReadDataQualityRuleAssignmentEventsFeedAsync(int id, Instant? afterTimestamp = null, CancellationToken ctk = default);
 
+        /// <summary>Creates a quality notification alert.</summary>
+        /// <param name="entity">The alert definition to create.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The created alert.</returns>
+        Task<QualityNotificationAlertDto.Output> RegisterQualityNotificationAlertAsync(QualityNotificationAlertDto.Input entity, CancellationToken ctk = default);
+        /// <summary>Reads a quality notification alert by identifier.</summary>
+        /// <param name="id">The alert identifier.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The alert, or <see langword="null"/> when it does not exist.</returns>
+        Task<QualityNotificationAlertDto.Output> ReadQualityNotificationAlertByIdAsync(int id, CancellationToken ctk = default);
+        /// <summary>Reads a paginated list of quality notification alerts.</summary>
+        /// <param name="page">The one-based page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <param name="name">Optional name filter.</param>
+        /// <param name="marketDataId">Optional Market Data filter.</param>
+        /// <param name="ruleIds">Optional alert identifier filter.</param>
+        /// <param name="sort">Optional sort expressions.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A paginated collection of alerts.</returns>
+        Task<PagedResult<QualityNotificationAlertDto.Output>> ReadQualityNotificationAlertsAsync(int page, int pageSize, string? name = null, int? marketDataId = null, int[]? ruleIds = null, string[]? sort = null, CancellationToken ctk = default);
+        /// <summary>Updates a quality notification alert.</summary>
+        /// <param name="id">The alert identifier.</param>
+        /// <param name="entity">The updated alert definition.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The updated alert.</returns>
+        Task<QualityNotificationAlertDto.Output> UpdateQualityNotificationAlertAsync(int id, QualityNotificationAlertDto.Input entity, CancellationToken ctk = default);
+        /// <summary>Deletes a quality notification alert.</summary>
+        /// <param name="id">The alert identifier.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        Task DeleteQualityNotificationAlertAsync(int id, CancellationToken ctk = default);
+        /// <summary>Reads events materialized for an alert schedule occurrence.</summary>
+        /// <param name="alertId">The alert identifier.</param>
+        /// <param name="scheduleTime">The schedule occurrence timestamp.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The schedule occurrence and its events.</returns>
+        Task<AlertScheduleEventsDto.Output> ReadAlertScheduleEventsAsync(int alertId, Instant scheduleTime, CancellationToken ctk = default);
+        /// <summary>Reads recent schedule occurrence timestamps for an alert.</summary>
+        /// <param name="alertId">The alert identifier.</param>
+        /// <param name="lastN">The number of occurrences to return.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>Recent schedule timestamps in descending order.</returns>
+        Task<Instant[]> ReadAlertScheduleListAsync(int alertId, int lastN = 10, CancellationToken ctk = default);
+        /// <summary>Reads events from the latest materialized alert schedule.</summary>
+        /// <param name="alertId">The alert identifier.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The latest schedule occurrence and its events.</returns>
+        Task<AlertScheduleEventsDto.Output> ReadAlertScheduleLastEventsAsync(int alertId, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Creates an assignment binding a Market Data entity to a quality notification alert.
+        /// </summary>
+        /// <param name="entity">The assignment containing the alert and Market Data identifiers.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The created assignment.</returns>
+        Task<QualityNotificationAlertAssignmentDto.Output> RegisterQualityNotificationAlertAssignmentAsync(QualityNotificationAlertAssignmentDto.Input entity, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Retrieves a quality notification alert assignment by identifier.
+        /// </summary>
+        /// <param name="id">The assignment identifier.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The assignment, or <see langword="null"/> when it does not exist.</returns>
+        Task<QualityNotificationAlertAssignmentDto.Output> ReadQualityNotificationAlertAssignmentByIdAsync(int id, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Retrieves a paginated list of quality notification alert assignments.
+        /// </summary>
+        /// <param name="page">The one-based page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <param name="alertId">Optional quality notification alert filter.</param>
+        /// <param name="marketDataId">Optional Market Data filter.</param>
+        /// <param name="sort">Optional sort expressions.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A paginated collection of assignments.</returns>
+        Task<PagedResult<QualityNotificationAlertAssignmentDto.Output>> ReadQualityNotificationAlertAssignmentsAsync(int page, int pageSize, int? alertId = null, int? marketDataId = null, string[]? sort = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Deletes a quality notification alert assignment.
+        /// </summary>
+        /// <param name="id">The assignment identifier.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        Task DeleteQualityNotificationAlertAssignmentAsync(int id, CancellationToken ctk = default);
+
         /// <summary>
         /// Extracts data quality check results for versioned time series (VTS).
         /// Returns compact, abbreviated DTOs designed for high-volume extraction.

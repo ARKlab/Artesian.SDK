@@ -306,5 +306,133 @@ namespace Artesian.SDK.Tests.Samples
             if (mktData.MarketDataId.HasValue)
                 await marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value, ctk);
         }
+
+        [Test]
+        [Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        public async Task QualityNotificationAlertCrud()
+        {
+            var marketDataService = new MarketDataService(_cfg);
+            CancellationToken ctk = default;
+
+            var alertPayload = new QualityNotificationAlertDto.Input
+            {
+                Name = "Quality notification alert " + Guid.NewGuid(),
+                TriggerConfig = new OnEventTriggerConfigDto(),
+                MailNotifications = new System.Collections.Generic.List<MailNotificationDto>
+                {
+                    new MailNotificationDto
+                    {
+                        Recipients = new[] { "test@example.com" }
+                    }
+                }
+            };
+
+            var alertCreated = await marketDataService.RegisterQualityNotificationAlertAsync(alertPayload, ctk);
+            ClassicAssert.IsNotNull(alertCreated);
+            ClassicAssert.AreEqual(alertPayload.Name, alertCreated.Name);
+            ClassicAssert.AreEqual(AlertType.OnEvent, alertCreated.TriggerConfig.Type);
+
+            var alertRead = await marketDataService.ReadQualityNotificationAlertByIdAsync(alertCreated.Id, ctk);
+            ClassicAssert.IsNotNull(alertRead);
+            ClassicAssert.AreEqual(alertCreated.Id, alertRead.Id);
+
+            var alertUpdated = new QualityNotificationAlertDto.Input
+            {
+                Name = alertCreated.Name + " updated",
+                TriggerConfig = new OnEventTriggerConfigDto(),
+                MailNotifications = alertPayload.MailNotifications,
+                ETag = alertCreated.ETag,
+                Version = alertCreated.Version
+            };
+
+            var updatedAlert = await marketDataService.UpdateQualityNotificationAlertAsync(alertCreated.Id, alertUpdated, ctk);
+            ClassicAssert.AreEqual(alertUpdated.Name, updatedAlert.Name);
+
+            await marketDataService.DeleteQualityNotificationAlertAsync(alertCreated.Id, ctk);
+
+            var deletedAlert = await marketDataService.ReadQualityNotificationAlertByIdAsync(alertCreated.Id, ctk);
+            ClassicAssert.IsNull(deletedAlert);
+        }
+
+        [Test]
+        [Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        public async Task QualityNotificationAlertAssignmentCrud()
+        {
+            var marketDataService = new MarketDataService(_cfg);
+            CancellationToken ctk = default;
+
+            var alert = await marketDataService.RegisterQualityNotificationAlertAsync(new QualityNotificationAlertDto.Input
+            {
+                Name = "Quality notification assignment " + Guid.NewGuid(),
+                TriggerConfig = new OnEventTriggerConfigDto(),
+                MailNotifications = new System.Collections.Generic.List<MailNotificationDto>
+                {
+                    new MailNotificationDto { Recipients = new[] { "test@example.com" } }
+                }
+            }, ctk);
+
+            // Create a Daily Actual TimeSerie named TsCheckSummaryQuery from Provider DqNotificationAlert
+            var input = new MarketDataEntity.Input
+            {
+                ProviderName = "DqNotificationAlert",
+                MarketDataName = "TsCheckSummaryQuery_" + Guid.NewGuid().ToString(),
+                Type = MarketDataTypeV2.ActualTimeSerie,
+                OriginalGranularity = Granularity.Day,
+                OriginalTimezone = "UTC",
+                AggregationRule = AggregationRule.Undefined,
+            };
+
+            var mktData = marketDataService.GetMarketDataReference(
+                new MarketDataIdentifier(
+                    input.ProviderName,
+                    input.MarketDataName)
+                );
+
+            var isRegd = await mktData.IsRegistered(ctk);
+
+            if (!isRegd)
+                await mktData.Register(input, ctk);
+
+            await mktData.Load(ctk);
+
+            // Write values with gaps (2025-01-01, 2025-01-03, 2025-01-05)
+            var data = ((MarketData)mktData).EditActual();
+            data.TryAddData(new LocalDate(2025, 1, 1), 10.0);
+            data.TryAddData(new LocalDate(2025, 1, 3), 10.0);
+            data.TryAddData(new LocalDate(2025, 1, 5), 10.0);
+
+            await data.Save(Instant.FromUtc(2025, 1, 14, 0, 0), ctk: ctk);
+            var assignment = await marketDataService.RegisterQualityNotificationAlertAssignmentAsync(
+                    new QualityNotificationAlertAssignmentDto.Input
+                    {
+                        AlertId = alert.Id,
+                        MarketDataId = mktData.MarketDataId!.Value
+                    },
+                    ctk);
+
+            ClassicAssert.IsNotNull(assignment);
+            ClassicAssert.AreEqual(alert.Id, assignment.AlertId);
+            ClassicAssert.AreEqual(mktData.MarketDataId!.Value, assignment.MarketDataId);
+
+            var readAssignment = await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(assignment.Id, ctk);
+            ClassicAssert.AreEqual(assignment.Id, readAssignment.Id);
+
+            var assignments = await marketDataService.ReadQualityNotificationAlertAssignmentsAsync(
+                page: 1,
+                pageSize: 10,
+                alertId: alert.Id,
+                marketDataId: mktData.MarketDataId!.Value,
+                ctk: ctk);
+            ClassicAssert.IsNotNull(assignments);
+
+            await marketDataService.DeleteQualityNotificationAlertAssignmentAsync(assignment.Id, ctk);
+            ClassicAssert.IsNull(await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(assignment.Id, ctk));
+
+            await marketDataService.DeleteQualityNotificationAlertAsync(alert.Id, ctk);
+
+            // Delete MarketData entity
+            if (mktData.MarketDataId.HasValue)
+                await marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value, ctk);
+        }
     }
 }
