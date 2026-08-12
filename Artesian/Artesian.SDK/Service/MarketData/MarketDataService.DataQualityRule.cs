@@ -38,7 +38,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="id">The unique identifier of the rule.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The <see cref="DataQualityRuleDto.Output"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <returns>The <see cref="DataQualityRuleDto.Output"/> if found; otherwise 404 Not Found.</returns>
         public Task<DataQualityRuleDto.Output> ReadDataQualityRuleByIdAsync(int id, CancellationToken ctk = default)
         {
             var url = "/dataquality/dqrule".AppendPathSegment(id);
@@ -95,6 +95,7 @@ namespace Artesian.SDK.Service
         /// <param name="id">The unique identifier of the rule to update.</param>
         /// <param name="entity">The updated rule definition.</param>
         /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The updated <see cref="DataQualityRuleDto.Output"/> with new metadata.</returns>
         public Task<DataQualityRuleDto.Output> UpdateDataQualityRuleAsync(int id, DataQualityRuleDto.Input entity, CancellationToken ctk = default)
         {
             if (entity == null)

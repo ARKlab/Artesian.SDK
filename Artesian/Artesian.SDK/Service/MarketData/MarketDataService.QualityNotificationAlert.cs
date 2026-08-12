@@ -16,10 +16,13 @@ namespace Artesian.SDK.Service
     {
         /// <summary>
         /// Creates a new alert rule definition for data quality monitoring.
+        /// The alert rule defines the trigger mode (on-event or scheduled)
+        /// and the notification channels (email, Teams, Slack, webhook, principal).
+        /// Market Data assignments are managed separately via the alertruleassignment endpoint.
         /// </summary>
-        /// <param name="entity">The alert rule definition including trigger configuration and notification channels.</param>
+        /// <param name="entity">The alert rule definition including trigger config and notification channels.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The created alert rule with its server-assigned identifier.</returns>
+        /// <returns>The created <see cref="QualityNotificationAlertDto.Output"/> with server-assigned Id.</returns>
         public Task<QualityNotificationAlertDto.Output> RegisterQualityNotificationAlertAsync(QualityNotificationAlertDto.Input entity, CancellationToken ctk = default)
         {
             if (entity == null)
@@ -34,7 +37,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="id">The unique identifier of the alert rule.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The alert rule if found; otherwise <see langword="null"/>.</returns>
+        /// <returns>The <see cref="QualityNotificationAlertDto.Output"/> if found; otherwise 404 Not Found.</returns>
         public Task<QualityNotificationAlertDto.Output> ReadQualityNotificationAlertByIdAsync(int id, CancellationToken ctk = default)
         {
             var url = "/dataquality/alertrule".AppendPathSegment(id);
@@ -42,16 +45,16 @@ namespace Artesian.SDK.Service
         }
 
         /// <summary>
-        /// Retrieves a paginated list of alert rules with optional filters and sorting.
+        /// Retrieves a paginated list of alert rules, optionally filtered by name, assigned market data, rule IDs; and sorted.
         /// </summary>
-        /// <param name="page">The page number, starting at 1.</param>
-        /// <param name="pageSize">The number of items per page.</param>
-        /// <param name="name">Optional partial name filter.</param>
-        /// <param name="marketDataId">Optional Market Data assignment filter.</param>
-        /// <param name="ruleIds">Optional alert rule identifier filter.</param>
-        /// <param name="sort">Optional sort expressions, such as <c>Name asc</c>.</param>
+        /// <param name="name">Optional filter by alert rule name (partial match).</param>
+        /// <param name="marketDataId">Optional filter: returns alerts assigned to this MarketData.</param>
+        /// <param name="ruleIds">Optional filter by specific rule IDs (via assignment chain).</param>
+        /// <param name="sort">Optional sort expressions (e.g., "Name asc").</param>
+        /// <param name="page">The page number (1-based, default: 1).</param>
+        /// <param name="pageSize">The number of items per page (default: 10).</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>A paginated collection of alert rules.</returns>
+        /// <returns>A paginated result containing <see cref="QualityNotificationAlertDto.Output"/> items.</returns>
         public Task<PagedResult<QualityNotificationAlertDto.Output>> ReadQualityNotificationAlertsAsync(
             int page,
             int pageSize,
@@ -81,12 +84,14 @@ namespace Artesian.SDK.Service
         }
 
         /// <summary>
-        /// Updates an existing alert rule using optimistic concurrency through its ETag.
+        /// Updates an existing alert rule. Modifies the trigger configuration or notification channels.
+        /// Market Data assignments are managed separately via the alertruleassignment endpoint.
+        /// Uses optimistic concurrency via the ETag property.
         /// </summary>
-        /// <param name="id">The unique identifier of the alert rule.</param>
+        /// <param name="id">The unique identifier of the alert rule to update.</param>
         /// <param name="entity">The updated alert rule definition.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The updated alert rule.</returns>
+        /// <returns>The updated <see cref="QualityNotificationAlertDto.Output"/>.</returns>
         public Task<QualityNotificationAlertDto.Output> UpdateQualityNotificationAlertAsync(int id, QualityNotificationAlertDto.Input entity, CancellationToken ctk = default)
         {
             if (entity == null)
@@ -100,8 +105,9 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Deletes an alert rule by its unique identifier.
         /// </summary>
-        /// <param name="id">The unique identifier of the alert rule.</param>
+        /// <param name="id">The unique identifier of the alert rule to delete.</param>
         /// <param name="ctk">Cancellation token.</param>
+        /// <returns>204 No Content on successful deletion.</returns>
         public Task DeleteQualityNotificationAlertAsync(int id, CancellationToken ctk = default)
         {
             var url = "/dataquality/alertrule".AppendPathSegment(id);
@@ -111,10 +117,10 @@ namespace Artesian.SDK.Service
         /// <summary>
         /// Retrieves the materialized events for a specific alert schedule occurrence.
         /// </summary>
-        /// <param name="alertId">The alert rule identifier.</param>
+        /// <param name="alertId">The alert identifier.</param>
         /// <param name="scheduleTime">The schedule occurrence timestamp.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The schedule occurrence and its materialized data quality events.</returns>
+        /// <returns>An array of <see cref="DqCheckChangeEventDto.Output"/>.</returns>
         public Task<AlertScheduleEventsDto.Output> ReadAlertScheduleEventsAsync(int alertId, Instant scheduleTime, CancellationToken ctk = default)
         {
             var url = "/dataquality/alertrule"
@@ -127,12 +133,12 @@ namespace Artesian.SDK.Service
         }
 
         /// <summary>
-        /// Lists the most recent schedule occurrence timestamps for an alert rule.
+        /// Lists the most recent schedule occurrence timestamps for an alert.
         /// </summary>
-        /// <param name="alertId">The alert rule identifier.</param>
-        /// <param name="lastN">The number of recent occurrences to return.</param>
+        /// <param name="alertId">The alert identifier.</param>
+        /// <param name="lastN">Number of most recent occurrences to return (default 10).</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>Recent schedule timestamps ordered descending.</returns>
+        /// <returns>An array of <see cref="Instant"/> timestamps ordered descending.</returns>
         public Task<Instant[]> ReadAlertScheduleListAsync(int alertId, int lastN = 10, CancellationToken ctk = default)
         {
             if (lastN < 1)
@@ -147,11 +153,12 @@ namespace Artesian.SDK.Service
         }
 
         /// <summary>
-        /// Retrieves the materialized events from the latest schedule occurrence.
+        /// Retrieves the materialized events from the latest schedule occurrence for an alert.
+        /// Returns an empty array if no schedule has been materialized yet.
         /// </summary>
-        /// <param name="alertId">The alert rule identifier.</param>
+        /// <param name="alertId">The alert identifier.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The latest schedule occurrence and its events, or an empty event set when none exists.</returns>
+        /// <returns>An array of <see cref="DqCheckChangeEventDto.Output"/> from the latest schedule.</returns>
         public Task<AlertScheduleEventsDto.Output> ReadAlertScheduleLastEventsAsync(int alertId, CancellationToken ctk = default)
         {
             var url = "/dataquality/alertrule"

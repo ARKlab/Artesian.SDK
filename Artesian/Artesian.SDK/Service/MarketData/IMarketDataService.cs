@@ -114,6 +114,7 @@ namespace Artesian.SDK.Service
         /// <param name="id">The unique identifier of the rule to update.</param>
         /// <param name="entity">The updated rule definition.</param>
         /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The updated <see cref="DataQualityRuleDto.Output"/> with new metadata.</returns>
         Task<DataQualityRuleDto.Output> UpdateDataQualityRuleAsync(int id, DataQualityRuleDto.Input entity, CancellationToken ctk = default);
         /// <summary>
         /// Deletes a Data Quality Rule by its unique identifier.
@@ -130,14 +131,14 @@ namespace Artesian.SDK.Service
         /// <param name="entity">The assignment definition including MarketDataId and DataQualityRuleId.</param>
         /// <param name="initializationLookbackPeriod">Optional ISO 8601 period (e.g. "P30D") defining how far back in time the rule should validate data on initial assignment. Not persisted.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The created MarketDataQualityRuleAssignmentDto.Output with server-assigned Id.</returns>
+        /// <returns>The created <see cref="MarketDataQualityRuleAssignmentDto.Output"/> with server-assigned Id.</returns>
         Task<MarketDataQualityRuleAssignmentDto.Output> RegisterDataQualityRuleAssignmentAsync(MarketDataQualityRuleAssignmentDto.Input entity, Period? initializationLookbackPeriod = null, CancellationToken ctk = default);
         /// <summary>
         /// Retrieves a DQ rule assignment by its unique identifier, including enriched MarketData and Rule data.
         /// </summary>
         /// <param name="id">The unique identifier of the assignment.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The MarketDataQualityRuleAssignmentDto.Output if found; otherwise <see langword="null"/>.</returns>
+        /// <returns>The <see cref="MarketDataQualityRuleAssignmentDto.Output"/> if found; otherwise 404 Not Found.</returns>
         Task<MarketDataQualityRuleAssignmentDto.Output> ReadDataQualityRuleAssignmentByIdAsync(int id, CancellationToken ctk = default);
         /// <summary>
         /// Retrieves a paginated list of DQ rule assignments, optionally filtered by MarketData, Rule, or rule name.
@@ -173,57 +174,79 @@ namespace Artesian.SDK.Service
         /// Returns events after the given timestamp (max 8-day lookback).
         /// </summary>
         /// <param name="id">The rule assignment identifier.</param>
-        /// <param name="afterTimestamp">Optional lower bound (events after this instant).</param>
+        /// <param name="afterTimestamp">Optional lower bound (events after this instant). Clamped to 8 days ago.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>An array of DqCheckChangeEventDto.Output.</returns>
+        /// <returns>An array of <see cref="DqCheckChangeEventDto.Output"/>.</returns>
         Task<DqCheckChangeEventDto.Output[]> ReadDataQualityRuleAssignmentEventsFeedAsync(int id, Instant? afterTimestamp = null, CancellationToken ctk = default);
 
-        /// <summary>Creates a quality notification alert.</summary>
-        /// <param name="entity">The alert definition to create.</param>
+        /// <summary>
+        /// Creates a new alert rule definition for data quality monitoring.
+        /// The alert rule defines the trigger mode (on-event or scheduled)
+        /// and the notification channels (email, Teams, Slack, webhook, principal).
+        /// Market Data assignments are managed separately via the alertruleassignment endpoint.
+        /// </summary>
+        /// <param name="entity">The alert rule definition including trigger config and notification channels.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The created alert.</returns>
+        /// <returns>The created <see cref="QualityNotificationAlertDto.Output"/> with server-assigned Id.</returns>
         Task<QualityNotificationAlertDto.Output> RegisterQualityNotificationAlertAsync(QualityNotificationAlertDto.Input entity, CancellationToken ctk = default);
-        /// <summary>Reads a quality notification alert by identifier.</summary>
-        /// <param name="id">The alert identifier.</param>
+        /// <summary>
+        /// Retrieves an alert rule by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the alert rule.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The alert, or <see langword="null"/> when it does not exist.</returns>
+        /// <returns>The <see cref="QualityNotificationAlertDto.Output"/> if found; otherwise 404 Not Found.</returns>
         Task<QualityNotificationAlertDto.Output> ReadQualityNotificationAlertByIdAsync(int id, CancellationToken ctk = default);
-        /// <summary>Reads a paginated list of quality notification alerts.</summary>
-        /// <param name="page">The one-based page number.</param>
-        /// <param name="pageSize">The page size.</param>
-        /// <param name="name">Optional name filter.</param>
-        /// <param name="marketDataId">Optional Market Data filter.</param>
-        /// <param name="ruleIds">Optional alert identifier filter.</param>
-        /// <param name="sort">Optional sort expressions.</param>
+        /// <summary>
+        /// Retrieves a paginated list of alert rules, optionally filtered by name, assigned market data, rule IDs; and sorted.
+        /// </summary>
+        /// <param name="name">Optional filter by alert rule name (partial match).</param>
+        /// <param name="marketDataId">Optional filter: returns alerts assigned to this MarketData.</param>
+        /// <param name="ruleIds">Optional filter by specific rule IDs (via assignment chain).</param>
+        /// <param name="sort">Optional sort expressions (e.g., "Name asc").</param>
+        /// <param name="page">The page number (1-based, default: 1).</param>
+        /// <param name="pageSize">The number of items per page (default: 10).</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>A paginated collection of alerts.</returns>
+        /// <returns>A paginated result containing <see cref="QualityNotificationAlertDto.Output"/> items.</returns>
         Task<PagedResult<QualityNotificationAlertDto.Output>> ReadQualityNotificationAlertsAsync(int page, int pageSize, string? name = null, int? marketDataId = null, int[]? ruleIds = null, string[]? sort = null, CancellationToken ctk = default);
-        /// <summary>Updates a quality notification alert.</summary>
-        /// <param name="id">The alert identifier.</param>
+        /// <summary>
+        /// Updates an existing alert rule. Modifies the trigger configuration or notification channels.
+        /// Market Data assignments are managed separately via the alertruleassignment endpoint.
+        /// Uses optimistic concurrency via the ETag property.
+        /// </summary>
+        /// <param name="id">The unique identifier of the alert rule to update.</param>
         /// <param name="entity">The updated alert definition.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The updated alert.</returns>
+        /// <returns>The updated <see cref="QualityNotificationAlertDto.Output"/>.</returns>
         Task<QualityNotificationAlertDto.Output> UpdateQualityNotificationAlertAsync(int id, QualityNotificationAlertDto.Input entity, CancellationToken ctk = default);
-        /// <summary>Deletes a quality notification alert.</summary>
-        /// <param name="id">The alert identifier.</param>
+        /// <summary>
+        /// Deletes an alert rule by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the alert rule to delete.</param>
         /// <param name="ctk">Cancellation token.</param>
         Task DeleteQualityNotificationAlertAsync(int id, CancellationToken ctk = default);
-        /// <summary>Reads events materialized for an alert schedule occurrence.</summary>
+        /// <summary>
+        /// Retrieves the materialized events for a specific alert schedule occurrence.
+        /// </summary>
         /// <param name="alertId">The alert identifier.</param>
         /// <param name="scheduleTime">The schedule occurrence timestamp.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The schedule occurrence and its events.</returns>
+        /// <returns>An array of <see cref="DqCheckChangeEventDto.Output"/>.</returns>
         Task<AlertScheduleEventsDto.Output> ReadAlertScheduleEventsAsync(int alertId, Instant scheduleTime, CancellationToken ctk = default);
-        /// <summary>Reads recent schedule occurrence timestamps for an alert.</summary>
+        /// <summary>
+        /// Lists the most recent schedule occurrence timestamps for an alert.
+        /// </summary>
         /// <param name="alertId">The alert identifier.</param>
-        /// <param name="lastN">The number of occurrences to return.</param>
+        /// <param name="lastN">Number of most recent occurrences to return (default 10).</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>Recent schedule timestamps in descending order.</returns>
         Task<Instant[]> ReadAlertScheduleListAsync(int alertId, int lastN = 10, CancellationToken ctk = default);
-        /// <summary>Reads events from the latest materialized alert schedule.</summary>
+        /// <summary>
+        /// Retrieves the materialized events from the latest schedule occurrence for an alert.
+        /// Returns an empty array if no schedule has been materialized yet.
+        /// </summary>
         /// <param name="alertId">The alert identifier.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The latest schedule occurrence and its events.</returns>
+        /// <returns>An array of <see cref="DqCheckChangeEventDto.Output"/> from the latest schedule.</returns>
         Task<AlertScheduleEventsDto.Output> ReadAlertScheduleLastEventsAsync(int alertId, CancellationToken ctk = default);
 
         /// <summary>
@@ -265,12 +288,12 @@ namespace Artesian.SDK.Service
         /// Extracts data quality check results for versioned time series (VTS).
         /// Returns compact, abbreviated DTOs designed for high-volume extraction.
         /// </summary>
-        /// <param name="version">Version timestamp.</param>
+        /// <param name="version">Version timestamp (format yyyy-MM-ddTHH:mm:ss).</param>
         /// <param name="granularity">Time granularity (Day, Hour, etc.).</param>
-        /// <param name="start">Range start date.</param>
-        /// <param name="end">Range end date (not inclusive).</param>
-        /// <param name="timeZone">IANA timezone identifier (e.g., "UTC", "Europe/Rome").</param>
-        /// <param name="assignmentIds">Optional filter by assignment IDs. If null or empty, returns results for all assignments.</param>
+        /// <param name="start">Range start (format yyyy-MM-dd).</param>
+        /// <param name="end">Range end (format yyyy-MM-dd, not inclusive).</param>
+        /// <param name="timeZone">IANA timezone identifier.</param>
+        /// <param name="assignmentIds">Filter by assignment IDs.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>An enumerable of <see cref="CheckResultExtract.Vts"/> with Version populated.</returns>
         Task<IEnumerable<CheckResultExtract.Vts>> GetDataQualityCheckResultExtractVtsAsync(LocalDateTime version, Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, CancellationToken ctk = default);
@@ -280,10 +303,10 @@ namespace Artesian.SDK.Service
         /// Returns compact DTOs without version information.
         /// </summary>
         /// <param name="granularity">Time granularity (Day, Hour, etc.).</param>
-        /// <param name="start">Range start date.</param>
-        /// <param name="end">Range end date (not inclusive).</param>
-        /// <param name="timeZone">IANA timezone identifier (e.g., "UTC", "Europe/Rome").</param>
-        /// <param name="assignmentIds">Optional filter by assignment IDs. If null or empty, returns results for all assignments.</param>
+        /// <param name="start">Range start (format yyyy-MM-dd).</param>
+        /// <param name="end">Range end (format yyyy-MM-dd, not inclusive).</param>
+        /// <param name="timeZone">IANA timezone identifier.</param>
+        /// <param name="assignmentIds">Filter by assignment IDs.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>An enumerable of <see cref="CheckResultExtract.Ts"/>.</returns>
         Task<IEnumerable<CheckResultExtract.Ts>> GetDataQualityCheckResultExtractTsAsync(Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, CancellationToken ctk = default);
@@ -304,7 +327,7 @@ namespace Artesian.SDK.Service
         /// <param name="versionTo">Optional version range end.</param>
         /// <param name="products">Optional filter by products.</param>
         /// <param name="skipEmptyRanges">When true, return only summaries with non-empty range data (default: false).</param>
-        /// <param name="sort">Optional sort expressions (e.g., "RuleName asc", "LastCheckTime desc").</param>
+        /// <param name="sort">Optional sort expressions.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>A paginated result containing <see cref="CheckResultCheckSummaryDto"/> items.</returns>
         Task<PagedResult<CheckResultCheckSummaryDto>> GetDataQualityCheckResultCheckSummaryAsync(int page, int pageSize, int[]? marketDataIds = null, int[]? ruleIds = null, int[]? assignmentIds = null, CheckAggregatedStatus? dqStatus = null, Instant? from = null, Instant? to = null, LocalDateTime? versionFrom = null, LocalDateTime? versionTo = null, string[]? products = null, bool skipEmptyRanges = false, string[]? sort = null, CancellationToken ctk = default);

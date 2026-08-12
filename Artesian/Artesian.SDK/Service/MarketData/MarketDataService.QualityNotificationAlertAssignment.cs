@@ -13,11 +13,12 @@ namespace Artesian.SDK.Service
     public partial class MarketDataService : IMarketDataService
     {
         /// <summary>
-        /// Creates an assignment binding a Market Data entity to a quality notification alert.
+        /// Creates a new assignment binding a Market Data entity to an alert rule.
+        /// The assignment defines which market data is monitored by which alert rule.
         /// </summary>
-        /// <param name="entity">The assignment containing the alert and Market Data identifiers.</param>
+        /// <param name="entity">The assignment definition including AlertId and MarketDataId.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The created assignment with its server-assigned identifier.</returns>
+        /// <returns>The created <see cref="QualityNotificationAlertAssignmentDto.Output"/> with server-assigned Id.</returns>
         public Task<QualityNotificationAlertAssignmentDto.Output> RegisterQualityNotificationAlertAssignmentAsync(QualityNotificationAlertAssignmentDto.Input entity, CancellationToken ctk = default)
         {
             if (entity == null)
@@ -28,11 +29,11 @@ namespace Artesian.SDK.Service
         }
 
         /// <summary>
-        /// Retrieves a quality notification alert assignment by identifier.
+        /// Retrieves an alert rule / Market Data assignment by its unique identifier.
         /// </summary>
-        /// <param name="id">The assignment identifier.</param>
+        /// <param name="id">The unique identifier of the assignment.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The assignment, or <see langword="null"/> when it does not exist.</returns>
+        /// <returns>The <see cref="QualityNotificationAlertAssignmentDto.Output"/> if found; otherwise 404 Not Found.</returns>
         public Task<QualityNotificationAlertAssignmentDto.Output> ReadQualityNotificationAlertAssignmentByIdAsync(int id, CancellationToken ctk = default)
         {
             var url = "/dataquality/alertruleassignment".AppendPathSegment(id);
@@ -40,15 +41,15 @@ namespace Artesian.SDK.Service
         }
 
         /// <summary>
-        /// Retrieves a paginated list of quality notification alert assignments.
+        /// Retrieves a paginated list of alert assignments, optionally filtered by alert rule or Market Data identifier.
         /// </summary>
-        /// <param name="page">The one-based page number.</param>
-        /// <param name="pageSize">The page size.</param>
-        /// <param name="alertId">Optional quality notification alert filter.</param>
-        /// <param name="marketDataId">Optional Market Data filter.</param>
-        /// <param name="sort">Optional sort expressions.</param>
+        /// <param name="alertId">Optional filter: returns assignments for the specified alert rule.</param>
+        /// <param name="marketDataId">Optional filter: returns assignments for the specified Market Data.</param>
+        /// <param name="sort">Optional sort expressions (e.g., "Id asc", "AlertId desc").</param>
+        /// <param name="page">The page number (1-based, default: 1).</param>
+        /// <param name="pageSize">The number of items per page (default: 10).</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>A paginated collection of assignments.</returns>
+        /// <returns>A paginated result containing <see cref="QualityNotificationAlertAssignmentDto.Output"/> items.</returns>
         public Task<PagedResult<QualityNotificationAlertAssignmentDto.Output>> ReadQualityNotificationAlertAssignmentsAsync(
             int page,
             int pageSize,
@@ -75,10 +76,11 @@ namespace Artesian.SDK.Service
         }
 
         /// <summary>
-        /// Deletes a quality notification alert assignment.
+        /// Deletes an assignment, removing the binding between a Market Data entity and an alert rule.
         /// </summary>
-        /// <param name="id">The assignment identifier.</param>
+        /// <param name="id">The unique identifier of the assignment to delete.</param>
         /// <param name="ctk">Cancellation token.</param>
+        /// <returns>204 No Content on successful deletion.</returns>
         public Task DeleteQualityNotificationAlertAssignmentAsync(int id, CancellationToken ctk = default)
         {
             var url = "/dataquality/alertruleassignment".AppendPathSegment(id);

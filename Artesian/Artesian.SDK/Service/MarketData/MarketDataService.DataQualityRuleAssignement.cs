@@ -24,7 +24,7 @@ namespace Artesian.SDK.Service
         /// <param name="entity">The assignment definition including MarketDataId and DataQualityRuleId.</param>
         /// <param name="initializationLookbackPeriod">Optional ISO 8601 period (e.g. "P30D") defining how far back in time the rule should validate data on initial assignment. Not persisted.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The created MarketDataQualityRuleAssignmentDto.Output with server-assigned Id.</returns>
+        /// <returns>The created <see cref="MarketDataQualityRuleAssignmentDto.Output"/> with server-assigned Id.</returns>
         public Task<MarketDataQualityRuleAssignmentDto.Output> RegisterDataQualityRuleAssignmentAsync(MarketDataQualityRuleAssignmentDto.Input entity, Period? initializationLookbackPeriod = null, CancellationToken ctk = default)
         {
             if (entity == null)
@@ -41,7 +41,7 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="id">The unique identifier of the assignment.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The MarketDataQualityRuleAssignmentDto.Output if found; otherwise <see langword="null"/>.</returns>
+        /// <returns>The <see cref="MarketDataQualityRuleAssignmentDto.Output"/> if found; otherwise 404 Not Found.</returns>
         public Task<MarketDataQualityRuleAssignmentDto.Output> ReadDataQualityRuleAssignmentByIdAsync(int id, CancellationToken ctk = default)
         {
             var url = "/dataquality/dqruleassignment".AppendPathSegment(id);
@@ -59,7 +59,7 @@ namespace Artesian.SDK.Service
         /// <param name="page">The page number (1-based, default: 1).</param>
         /// <param name="pageSize">The number of items per page (default: 10).</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>A paginated result containing MarketDataQualityRuleAssignmentDto.Output items.</returns>
+        /// <returns>A paginated result containing <see cref="MarketDataQualityRuleAssignmentDto.Output"/> items.</returns>
         public Task<PagedResult<MarketDataQualityRuleAssignmentDto.Output>> ReadDataQualityRuleAssignmentAsync(int page,
                                                                                                                  int pageSize,
                                                                                                                  int? marketDataId = null,
@@ -94,7 +94,7 @@ namespace Artesian.SDK.Service
         /// <param name="initializationLookbackPeriod">ISO 8601 period (e.g. "P30D") defining the new lookback window.</param>
         /// <param name="etag">The current ETag for optimistic concurrency control.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>The updated MarketDataQualityRuleAssignmentDto.Output.</returns>
+        /// <returns>The updated <see cref="MarketDataQualityRuleAssignmentDto.Output"/>.</returns>
         public Task<MarketDataQualityRuleAssignmentDto.Output> UpdateDataQualityRuleAssignmentAsync(int id, Period initializationLookbackPeriod, string etag, CancellationToken ctk = default)
         {
             var url = "/dataquality/dqruleassignment"
@@ -123,9 +123,9 @@ namespace Artesian.SDK.Service
         /// Returns events after the given timestamp (max 8-day lookback).
         /// </summary>
         /// <param name="id">The rule assignment identifier.</param>
-        /// <param name="afterTimestamp">Optional lower bound (events after this instant).</param>
+        /// <param name="afterTimestamp">Optional lower bound (events after this instant). Clamped to 8 days ago.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>An array of DqCheckChangeEventDto.Output.</returns>
+        /// <returns>An array of <see cref="DqCheckChangeEventDto.Output"/>.</returns>
         public Task<DqCheckChangeEventDto.Output[]> ReadDataQualityRuleAssignmentEventsFeedAsync(int id, Instant? afterTimestamp = null, CancellationToken ctk = default)
         {
             var url = "/dataquality/dqruleassignment"

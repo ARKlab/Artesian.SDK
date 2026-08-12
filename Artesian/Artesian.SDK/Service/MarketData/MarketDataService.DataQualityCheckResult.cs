@@ -24,14 +24,14 @@ namespace Artesian.SDK.Service
         /// Extracts data quality check results for versioned time series (VTS).
         /// Returns compact, abbreviated DTOs designed for high-volume extraction.
         /// </summary>
-        /// <param name="version">Version timestamp.</param>
+        /// <param name="version">Version timestamp (format yyyy-MM-ddTHH:mm:ss).</param>
         /// <param name="granularity">Time granularity (Day, Hour, etc.).</param>
-        /// <param name="start">Range start date.</param>
-        /// <param name="end">Range end date (not inclusive).</param>
-        /// <param name="timeZone">IANA timezone identifier (e.g., "UTC", "Europe/Rome").</param>
-        /// <param name="assignmentIds">Optional filter by assignment IDs. If null or empty, returns results for all assignments.</param>
+        /// <param name="start">Range start (format yyyy-MM-dd).</param>
+        /// <param name="end">Range end (format yyyy-MM-dd, not inclusive).</param>
+        /// <param name="timeZone">IANA timezone identifier.</param>
+        /// <param name="assignmentIds">Filter by assignment IDs.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>An enumerable of <see cref="CheckResultExtract.Vts"/> with Version populated.</returns>
+        /// <returns>An array of <see cref="CheckResultExtract.Vts"/> with Version populated.</returns>
         public Task<IEnumerable<CheckResultExtract.Vts>> GetDataQualityCheckResultExtractVtsAsync(
             LocalDateTime version,
             Granularity granularity,
@@ -59,12 +59,12 @@ namespace Artesian.SDK.Service
         /// Returns compact DTOs without version information.
         /// </summary>
         /// <param name="granularity">Time granularity (Day, Hour, etc.).</param>
-        /// <param name="start">Range start date.</param>
-        /// <param name="end">Range end date (not inclusive).</param>
-        /// <param name="timeZone">IANA timezone identifier (e.g., "UTC", "Europe/Rome").</param>
-        /// <param name="assignmentIds">Optional filter by assignment IDs. If null or empty, returns results for all assignments.</param>
+        /// <param name="start">Range start (format yyyy-MM-dd).</param>
+        /// <param name="end">Range end (format yyyy-MM-dd, not inclusive).</param>
+        /// <param name="timeZone">IANA timezone identifier.</param>
+        /// <param name="assignmentIds">Filter by assignment IDs.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>An enumerable of <see cref="CheckResultExtract.Ts"/>.</returns>
+        /// <returns>An array of <see cref="CheckResultExtract.Ts"/>.</returns>
         public Task<IEnumerable<CheckResultExtract.Ts>> GetDataQualityCheckResultExtractTsAsync(
             Granularity granularity,
             LocalDate start,
@@ -90,19 +90,19 @@ namespace Artesian.SDK.Service
         /// Retrieves a paged summary of data quality check results (CurveRange-like view per assignment).
         /// Includes range metadata, product info, and assignment details.
         /// </summary>
+        /// <param name="marketDataIds">Filter by MarketData IDs.</param>
+        /// <param name="ruleIds">Filter by Rule IDs.</param>
+        /// <param name="assignmentIds">Filter by Assignment IDs.</param>
+        /// <param name="dqStatus">Filter by aggregated DQ status (OK/KO).</param>
+        /// <param name="from">Range start filter.</param>
+        /// <param name="to">Range end filter.</param>
+        /// <param name="versionFrom">Version range start.</param>
+        /// <param name="versionTo">Version range end.</param>
+        /// <param name="products">Filter by products.</param>
+        /// <param name="skipEmptyRanges">When true, return only summaries with non-empty range data (default: false).</param>
+        /// <param name="sort">Optional sort expressions.</param>
         /// <param name="page">Page number (1-based, default: 1).</param>
         /// <param name="pageSize">Items per page (default: 10).</param>
-        /// <param name="marketDataIds">Optional filter by MarketData IDs.</param>
-        /// <param name="ruleIds">Optional filter by Rule IDs.</param>
-        /// <param name="assignmentIds">Optional filter by Assignment IDs.</param>
-        /// <param name="dqStatus">Optional filter by aggregated DQ status (OK/KO).</param>
-        /// <param name="from">Optional range start filter.</param>
-        /// <param name="to">Optional range end filter.</param>
-        /// <param name="versionFrom">Optional version range start.</param>
-        /// <param name="versionTo">Optional version range end.</param>
-        /// <param name="products">Optional filter by products.</param>
-        /// <param name="skipEmptyRanges">When true, return only summaries with non-empty range data (default: false).</param>
-        /// <param name="sort">Optional sort expressions (e.g., "RuleName asc", "LastCheckTime desc").</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>A paginated result containing <see cref="CheckResultCheckSummaryDto"/> items.</returns>
         public Task<PagedResult<CheckResultCheckSummaryDto>> GetDataQualityCheckResultCheckSummaryAsync(
@@ -173,7 +173,7 @@ namespace Artesian.SDK.Service
         /// <param name="dqStatus">Optional aggregated DQ status filter (OK/KO). When KO, returns only Market Data whose overall status is KO.</param>
         /// <param name="limit">Maximum number of results to return (1..1000, default: 10).</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>An enumerable of <see cref="MarketDataDqStatusSummaryDto"/> items.</returns>
+        /// <returns>An array of <see cref="MarketDataDqStatusSummaryDto"/> items.</returns>
         public Task<IEnumerable<MarketDataDqStatusSummaryDto>> GetMarketDataDqStatusSummaryAsync(
             int? ruleId = null,
             int[]? marketDataIds = null,
@@ -208,7 +208,7 @@ namespace Artesian.SDK.Service
         /// <param name="dqStatus">Optional aggregated DQ status filter (OK/KO). When KO, returns only rules whose overall status is KO.</param>
         /// <param name="limit">Maximum number of results to return (1..1000, default: 10).</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>An enumerable of <see cref="DqRuleDqStatusSummaryDto"/> items.</returns>
+        /// <returns>An array of <see cref="DqRuleDqStatusSummaryDto"/> items.</returns>
         public Task<IEnumerable<DqRuleDqStatusSummaryDto>> GetDqRuleDqStatusSummaryAsync(
             int? marketDataId = null,
             int[]? ruleIds = null,
