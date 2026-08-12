@@ -14,15 +14,11 @@ namespace Artesian.SDK.Dto.DataQuality
         [MessagePackObject]
         public class Output
         {
-            /// <summary>
-            /// The schedule occurrence timestamp for which the event set was materialized.
-            /// </summary>
+            /// <summary>The schedule occurrence timestamp this event set was materialized for.</summary>
             [Key(0)]
             public Instant? ScheduleTime { get; set; }
 
-            /// <summary>
-            /// The data quality check change events for this schedule occurrence.
-            /// </summary>
+            /// <summary>The DQ check change events for this schedule occurrence.</summary>
             [Key(1)]
             public DqCheckChangeEventDto.Output[] Events { get; set; } = System.Array.Empty<DqCheckChangeEventDto.Output>();
         }
