@@ -1,10 +1,6 @@
-using Artesian.SDK.Dto.DataQuality.Enums;
-using Artesian.SDK.Dto.DataQuality.Serialize;
-
 using MessagePack;
 
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Artesian.SDK.Dto.DataQuality
 {
