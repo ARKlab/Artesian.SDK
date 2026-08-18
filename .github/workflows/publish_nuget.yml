@@ -88,34 +88,34 @@ jobs:
       with:
         fetch-depth: 0
 
-    # - name: 'Validate release tag'
-    #   shell: pwsh
-    #   run: |
-    #     $tag = '${{ github.ref_name }}'
+    - name: 'Validate release tag'
+      shell: pwsh
+      run: |
+        $tag = '${{ github.ref_name }}'
 
-    #     Write-Host "Validating release tag: $tag"
+        Write-Host "Validating release tag: $tag"
 
-    #     if ($tag -notmatch '^v\d+\.\d+\.\d+$')
-    #     {
-    #         Write-Host "Invalid release tag: $tag"
-    #         exit 1
-    #     }
+        if ($tag -notmatch '^v\d+\.\d+\.\d+$')
+        {
+            Write-Host "Invalid release tag: $tag"
+            exit 1
+        }
 
-    #     git fetch origin master
+        git fetch origin master
 
-    #     $tagCommit = git rev-list -n 1 $tag
+        $tagCommit = git rev-list -n 1 $tag
 
-    #     Write-Host "Tag commit: $tagCommit"
+        Write-Host "Tag commit: $tagCommit"
 
-    #     git merge-base --is-ancestor $tagCommit origin/master
+        git merge-base --is-ancestor $tagCommit origin/master
 
-    #     if($LASTEXITCODE -ne 0)
-    #     {
-    #         Write-Error "Tag '$tag' does not point to a commit contained in master."
-    #         exit 1
-    #     }
+        if($LASTEXITCODE -ne 0)
+        {
+            Write-Error "Tag '$tag' does not point to a commit contained in master."
+            exit 1
+        }
 
-    #     Write-Host "Tag '$tag' is valid and points to a commit container in master."
+        Write-Host "Tag '$tag' is valid and points to a commit container in master."
 
     - name: 'Install dotnet'
       uses: actions/setup-dotnet@v6
