@@ -1,6 +1,7 @@
 ﻿using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.DataQuality;
 using Artesian.SDK.Dto.DataQuality.Enums;
+using Artesian.SDK.Dto.Override.Enum;
 using Artesian.SDK.Service;
 using Artesian.SDK.Factory;
 
@@ -10,6 +11,8 @@ using NUnit.Framework;
 using NUnit.Framework.Legacy;
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -433,6 +436,89 @@ namespace Artesian.SDK.Tests.Samples
             // Delete MarketData entity
             if (mktData.MarketDataId.HasValue)
                 await marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value, ctk);
+        }
+
+        [Test]
+        [Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        public async Task MarketDataOverrideCrud()
+        {
+            var marketDataService = new MarketDataService(_cfg);
+            CancellationToken ctk = default;
+
+            var input = new MarketDataEntity.Input
+            {
+                ProviderName = "MarketDataOverrideSample",
+                MarketDataName = "Override_" + Guid.NewGuid(),
+                Type = MarketDataTypeV2.ActualTimeSerie,
+                OriginalGranularity = Granularity.Day,
+                OriginalTimezone = "UTC",
+                AggregationRule = AggregationRule.Undefined,
+            };
+
+            var marketData = marketDataService.GetMarketDataReference(
+                new MarketDataIdentifier(input.ProviderName, input.MarketDataName));
+
+            if (!await marketData.IsRegistered(ctk))
+                await marketData.Register(input, ctk);
+
+            await marketData.Load(ctk);
+
+            var data = ((MarketData)marketData).EditActual();
+            data.TryAddData(new LocalDate(2025, 1, 1), 10.0);
+            data.TryAddData(new LocalDate(2025, 1, 3), 10.0);
+            data.TryAddData(new LocalDate(2025, 1, 5), 10.0);
+
+            await data.Save(Instant.FromUtc(2025, 1, 14, 0, 0), ctk: ctk);
+
+            var overrideData = new UpsertCurveDataOverride
+            {
+                ID = new MarketDataIdentifier(input.ProviderName, input.MarketDataName),
+                Timezone = "UTC",
+                OverrideId = null,
+                DownloadedAt = SystemClock.Instance.GetCurrentInstant(),
+                Rows = new Dictionary<LocalDateTime, double?>
+                {
+                    [new LocalDateTime(2025, 1, 1, 0, 0)] = 11.5,
+                    [new LocalDateTime(2025, 1, 2, 0, 0)] = 12.5,
+                },
+                Kind = OverrideKind.Override,
+                ReplaceExisting = true,
+                Comment = "SDK Market Data override sample",
+                DeferCommandExecution = false,
+                DeferDataGeneration = false
+            };
+
+            var createdMetadata = await marketDataService.UpsertCurveDataOverrideAsync(overrideData, ctk);
+
+            ClassicAssert.IsNotNull(createdMetadata);
+            ClassicAssert.IsNotEmpty(createdMetadata);
+            ClassicAssert.IsTrue(createdMetadata[0].Id.HasValue);
+            ClassicAssert.AreEqual(OverrideKind.Override, createdMetadata[0].Kind);
+
+            var metadata = await marketDataService.ReadOverrideMetadataAsync(
+                marketData.MarketDataId!.Value,
+                OverrideKind.Override,
+                page: 1,
+                pageSize: 10,
+                ctk: ctk);
+
+            ClassicAssert.IsNotNull(metadata);
+            ClassicAssert.IsNotEmpty(metadata.Data);
+
+            await marketDataService.DeleteOverrideDataAsync(createdMetadata[0].Id!.Value, ctk);
+
+            var deletedMetadata = await marketDataService.ReadOverrideMetadataAsync(
+                marketData.MarketDataId!.Value,
+                OverrideKind.Override,
+                page: 1,
+                pageSize: 10,
+                ctk: ctk);
+
+            ClassicAssert.IsFalse(
+                deletedMetadata.Data.Any(x => x.Id == createdMetadata[0].Id),
+                "The override metadata should not be returned after deletion.");
+
+            await marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value, ctk);
         }
     }
 }

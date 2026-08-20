@@ -1302,6 +1302,73 @@ var writeMarketData = marketdata.EditBidAsk();
 await writeMarketData.Delete();
 ```
 
+### Market Data Overrides and Fallbacks
+
+The `MarketDataService` also supports writing corrections separately from the original Market Data.
+An override takes precedence over the original values for the affected range. A fallback is used while
+the original data is unavailable or does not pass the relevant Data Quality checks.
+
+Use `UpsertCurveDataOverride` to reuse the standard curve-data payload and provide the correction metadata.
+The payload supports Actual and Versioned time series, Market Assessment, Auction and BidAsk data.
+
+```csharp
+using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.Override.Enum;
+using Artesian.SDK.Service;
+using NodaTime;
+using System.Collections.Generic;
+
+var marketDataService = new MarketDataService(cfg);
+var marketDataIdentifier = new MarketDataIdentifier("TestProvider", "TestMarketData");
+
+var overrideData = new UpsertCurveDataOverride
+{
+    ID = marketDataIdentifier,
+    Timezone = "UTC",
+    DownloadedAt = SystemClock.Instance.GetCurrentInstant(),
+    Rows = new Dictionary<LocalDateTime, double?>
+    {
+        [new LocalDateTime(2025, 1, 1, 0, 0)] = 11.5,
+        [new LocalDateTime(2025, 1, 2, 0, 0)] = 12.5,
+    },
+    Kind = OverrideKind.Override,
+    OverrideId = null,
+    ReplaceExisting = true,
+    Comment = "Correction received from the data provider",
+};
+
+var createdEntries = await marketDataService.UpsertCurveDataOverrideAsync(overrideData);
+
+var metadata = await marketDataService.ReadOverrideMetadataAsync(
+    marketDataId: 100000001,
+    kind: OverrideKind.Override,
+    page: 1,
+    pageSize: 10);
+
+if (createdEntries.Count > 0 && createdEntries[0].Id.HasValue)
+{
+    await marketDataService.DeleteOverrideDataAsync(createdEntries[0].Id.Value);
+}
+```
+
+`OverrideId` can be set to the logical identifier of an existing correction when updating it.
+Set it to `null` to create a new correction. `ReplaceExisting` controls how overlapping corrections
+of the same kind are handled.
+
+Each `OverrideMetadataEntry` describes the current state of a correction and includes its metadata id,
+Market Data id, kind, optional version and product, referenced Market Data id, effective range,
+creator, creation timestamp and comment. The metadata endpoint is paginated and accepts an optional
+`OverrideKind` filter.
+
+`OverrideKind` identifies how the correction is applied:
+
+- **`OverrideKind.Override`**: an explicit and persistent correction. Override values always take
+  precedence over the original Market Data values within the affected range. Use this value to
+  permanently correct invalid data or replace values supplied by the data provider.
+- **`OverrideKind.Fallback`**: an alternative value used only while the original data is unavailable
+  or does not pass the relevant Data Quality checks. When the original data becomes valid again, the
+  fallback is no longer used for the affected range.
+
 ### Upsert Mode
 
 Specifies the upsert mode to be used while saving the data. If the upsert mode is not specified then **Merge** is used.

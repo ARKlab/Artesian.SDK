@@ -2,6 +2,7 @@
 using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.DataQuality;
 using Artesian.SDK.Dto.DataQuality.Enums;
+using Artesian.SDK.Dto.Override.Enum;
 using Artesian.SDK.Dto.UoM;
 using Artesian.SDK.Factory;
 using Artesian.SDK.Service;
@@ -2620,6 +2621,70 @@ namespace Artesian.SDK.Tests
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertruleassignment/1")
                     .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpsertCurveDataOverrideAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var data = new UpsertCurveDataOverride
+                {
+                    ID = new MarketDataIdentifier("Test", "Override"),
+                    Timezone = "UTC",
+                    DownloadedAt = SystemClock.Instance.GetCurrentInstant(),
+                    Rows = new Dictionary<LocalDateTime, double?>
+                    {
+                        [new LocalDateTime(2025, 1, 1, 0, 0)] = 1,
+                    },
+                    OverrideId = Guid.NewGuid(),
+                    Kind = OverrideKind.Override,
+                };
+
+                await mds.UpsertCurveDataOverrideAsync(data);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.2-beta/marketdata/override/upsertdata")
+                    .WithVerb(HttpMethod.Post)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteOverrideDataAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var id = Guid.NewGuid();
+
+                await mds.DeleteOverrideDataAsync(id);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.2-beta/marketdata/override/{id}/deletedata")
+                    .WithVerb(HttpMethod.Post)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadOverrideMetadataAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadOverrideMetadataAsync(100000001, OverrideKind.Fallback, 2, 20);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.2-beta/marketdata/override/100000001/metadata")
+                    .WithQueryParam("kind", OverrideKind.Fallback)
+                    .WithQueryParam("page", 2)
+                    .WithQueryParam("pageSize", 20)
+                    .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .Times(1);
             }

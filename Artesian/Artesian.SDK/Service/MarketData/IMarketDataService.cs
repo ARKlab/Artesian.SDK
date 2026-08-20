@@ -5,9 +5,11 @@
 using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.DataQuality;
 using Artesian.SDK.Dto.DataQuality.Enums;
+using Artesian.SDK.Dto.Override.Enum;
 using Artesian.SDK.Dto.UoM;
 
 using NodaTime;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -586,6 +588,34 @@ namespace Artesian.SDK.Service
         /// <param name="ctk">CancellationToken</param>
         /// <returns></returns>
         Task DeleteCurveDataAsync(DeleteCurveData data, CancellationToken ctk = default);
+        #endregion
+
+        #region MarketDataOverride
+        /// <summary>
+        /// Upserts an override or fallback correction for a portion of a Market Data.
+        /// </summary>
+        /// <param name="data">The curve data and override configuration.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>The created or updated override metadata entries.</returns>
+        Task<IReadOnlyList<OverrideMetadataEntry>> UpsertCurveDataOverrideAsync(UpsertCurveDataOverride data, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Deletes the data and metadata associated with an override or fallback correction.
+        /// </summary>
+        /// <param name="id">The override metadata identifier.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        Task DeleteOverrideDataAsync(Guid id, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Retrieves paged override and fallback metadata for a Market Data.
+        /// </summary>
+        /// <param name="marketDataId">The Market Data identifier.</param>
+        /// <param name="kind">Optional correction-kind filter.</param>
+        /// <param name="page">The one-based page number.</param>
+        /// <param name="pageSize">The number of items per page.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A paginated collection of override metadata entries.</returns>
+        Task<PagedResult<OverrideMetadataEntry>> ReadOverrideMetadataAsync(int marketDataId, OverrideKind? kind = null, int page = 1, int pageSize = 10, CancellationToken ctk = default);
         #endregion
 
         #region ApiKey
