@@ -9,6 +9,7 @@ on:
       - 'v[0-9]+\.[0-9]+\.[0-9]+-PR[0-9]+\.[0-9]+'
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
 
 env:
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
@@ -270,7 +271,13 @@ jobs:
         run: |
           git fetch origin master
 
-          if ! git merge-base --is-ancestor origin/master HEAD; then
+          CURRENT_MASTER=$(git rev-parse origin/master)
+          MERGE_PARENT=$(git rev-parse HEAD^1)
+      
+          echo "Current master: $CURRENT_MASTER"
+          echo "Merge parent:   $MERGE_PARENT"
+      
+          if [[ "$MERGE_PARENT" != "$CURRENT_MASTER" ]]; then
             echo "::error::PR Preview is not based on the current master."
             exit 1
           fi
