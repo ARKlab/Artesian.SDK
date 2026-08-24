@@ -232,10 +232,6 @@ jobs:
       startsWith(github.ref, 'refs/tags/v') &&
       contains(github.ref_name, '-PR')
 
-    defaults:
-      run:
-        working-directory: ./Artesian
-
     steps:
       - name: 'Validate PR Preview tag'
         shell: bash
