@@ -26,7 +26,7 @@ namespace Artesian.SDK.Dto
         /// Results
         /// </summary>
         [Key(0)]
-        public List<MarketDataEntity.Output> Results { get; init; }
+        public List<MarketDataEntity.OutputEnriched> Results { get; init; }
         /// <summary>
         /// Facets
         /// </summary>
