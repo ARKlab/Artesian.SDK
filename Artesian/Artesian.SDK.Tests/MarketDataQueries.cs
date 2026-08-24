@@ -84,7 +84,7 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = await mds.ReadMarketDataRegistryAsync(100000001);
+                var mdq = await mds.ReadMarketDataRegistryAsync(100000001, ctk: default);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity/100000001")
                    .WithVerb(HttpMethod.Get)
@@ -143,13 +143,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = "CET"
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -207,13 +214,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = "CET"
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -271,13 +285,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = "CET"
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -335,13 +356,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = "CET"
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -406,13 +434,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = originalTimezone
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -475,13 +510,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = originalTimezone
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -545,13 +587,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = originalTimezone
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -620,13 +669,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = originalTimezone
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -691,13 +747,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = originalTimezone
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 

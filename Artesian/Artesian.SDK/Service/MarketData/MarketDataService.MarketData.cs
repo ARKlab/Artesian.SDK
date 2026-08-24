@@ -19,12 +19,8 @@ namespace Artesian.SDK.Service
         /// Read marketdata metadata by provider and curve name using the default response options.
         /// </summary>
         /// <param name="id">MarketDataIdentifier of marketdata to be retrieved</param>
+        /// <param name="ctk">CancellationToken</param>
         /// <returns>MarketData Entity OutputEnriched</returns>
-        public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(MarketDataIdentifier id)
-        {
-            return ReadMarketDataRegistryAsync(id, false, false, false, true, default);
-        }
-
         public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(MarketDataIdentifier id, CancellationToken ctk = default)
         {
             return ReadMarketDataRegistryAsync(id, false, false, false, true, ctk);
@@ -64,8 +60,9 @@ namespace Artesian.SDK.Service
         /// Read marketdata metadata by id using the default response options.
         /// </summary>
         /// <param name="id">Id of the marketdata to be retrieved</param>
+        /// <param name="ctk">CancellationToken</param>
         /// <returns>MarketData Entity OutputEnriched</returns>
-        public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(int id)
+        public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(int id, CancellationToken ctk = default)
         {
             return ReadMarketDataRegistryAsync(id, false, false, false, true, default);
         }
