@@ -312,11 +312,16 @@ jobs:
         working-directory: ./Artesian/Artesian.SDK
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
+
+          OUTPUT_DIR="${GITHUB_WORKSPACE}/output"
+
+          mkdir -p "$OUTPUT_DIR"
+
           dotnet pack \
             --configuration Release \
             --include-symbols \
             -p:Version="$VERSION" \
-            --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+            --output "$OUTPUT_DIR"
 
       - name: 'Push package'
-        run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
+        run: dotnet nuget push ${GITHUB_WORKSPACE}/output/*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
