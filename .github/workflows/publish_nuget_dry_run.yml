@@ -324,4 +324,8 @@ jobs:
             --output "$OUTPUT_DIR"
 
       - name: 'Push package'
-        run: dotnet nuget push ${GITHUB_WORKSPACE}/output/*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
+        shell: pwsh
+        run: |
+          dotnet nuget push "${{ github.workspace }}/output/*.nupkg" `
+            -k "${{ secrets.NUGET_AUTH_TOKEN }}" `
+            -s "${{ env.NUGET_SOURCE_URL }}"
