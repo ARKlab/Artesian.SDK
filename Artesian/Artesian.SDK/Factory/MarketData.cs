@@ -109,7 +109,7 @@ namespace Artesian.SDK.Factory
         /// <returns></returns>
         public async Task Load(CancellationToken ctk = default)
         {
-            _entity = await _marketDataService.ReadMarketDataRegistryAsync(Identifier, ctk).ConfigureAwait(false);
+            _entity = await _marketDataService.ReadMarketDataRegistryAsync(Identifier, ctk: ctk).ConfigureAwait(false);
 
             if (_entity != null)
             {

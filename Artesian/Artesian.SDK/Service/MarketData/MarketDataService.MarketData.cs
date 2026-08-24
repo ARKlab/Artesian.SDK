@@ -19,31 +19,63 @@ namespace Artesian.SDK.Service
         /// Read marketdata metadata by provider and curve name with MarketDataIdentifier
         /// </summary>
         /// <param name="id">MarketDataIdentifier of markedata to be retrieved</param>
+        /// <param name="includeCurveSummary">When true, includes curve summary (ranges) in the response</param>
+        /// <param name="includeTimeTransform">When true, includes time transform in the response</param>
+        /// <param name="includeDataQuality">When true, includes data quality status summary in the response</param>
+        /// <param name="skipOverrides">When false, composes original and override metadata. Requires the /featureflag/overridebeta permission during beta. Default true.</param>
         /// <param name="ctk">CancellationToken</param>
         /// <returns>MarketData Entity Output</returns>
-        public Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(MarketDataIdentifier id, CancellationToken ctk = default)
+        public Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(MarketDataIdentifier id,
+                                                                         bool includeCurveSummary = false,
+                                                                         bool includeTimeTransform = false,
+                                                                         bool includeDataQuality = false,
+                                                                         bool skipOverrides = true,
+                                                                         CancellationToken ctk = default)
         {
             id.Validate();
+
             var url = "/marketdata/entity"
                     .SetQueryParam("provider", id.Provider)
                     .SetQueryParam("curveName", id.Name)
+                    .SetQueryParam("includeCurveSummary", includeCurveSummary)
+                    .SetQueryParam("includeTimeTransform", includeTimeTransform)
+                    .SetQueryParam("includeDataQuality", includeDataQuality)
+                    .SetQueryParam("skipOverrides", skipOverrides)
                     ;
+
             return _client.Exec<MarketDataEntity.Output>(HttpMethod.Get, url, ctk: ctk);
         }
+
         /// <summary>
         /// Read marketdata metadata by id
         /// </summary>
         /// <param name="id">Id of the marketdata to be retrieved</param>
+        /// <param name="includeCurveSummary">When true, includes curve summary (ranges) in the response</param>
+        /// <param name="includeTimeTransform">When true, includes time transform in the response</param>
+        /// <param name="includeDataQuality">When true, includes data quality status summary in the response</param>
+        /// <param name="skipOverrides">When false, composes original and override metadata. Requires the /featureflag/overridebeta permission during beta. Default true.</param>
+
         /// <param name="ctk">CancellationToken</param>
         /// <returns>MarketData Entity Output</returns>
-        public Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(int id, CancellationToken ctk = default)
+        public Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(int id,
+                                                                         bool includeCurveSummary = false,
+                                                                         bool includeTimeTransform = false,
+                                                                         bool includeDataQuality = false,
+                                                                         bool skipOverrides = true,
+                                                                         CancellationToken ctk = default)
         {
             if (id < 1)
                 throw new ArgumentException("Id invalid: " + id, nameof(id));
 
-            var url = "/marketdata/entity/".AppendPathSegment(id.ToString(CultureInfo.InvariantCulture));
+            var url = "/marketdata/entity/".AppendPathSegment(id.ToString(CultureInfo.InvariantCulture))
+                    .SetQueryParam("includeCurveSummary", includeCurveSummary)
+                    .SetQueryParam("includeTimeTransform", includeTimeTransform)
+                    .SetQueryParam("includeDataQuality", includeDataQuality)
+                    .SetQueryParam("skipOverrides", skipOverrides);
+
             return _client.Exec<MarketDataEntity.Output>(HttpMethod.Get, url, ctk: ctk);
         }
+
         /// <summary>
         /// Read paged set of available versions of the marketdata by id
         /// </summary>
@@ -68,6 +100,7 @@ namespace Artesian.SDK.Service
 
             return _client.Exec<PagedResult<CurveRange>>(HttpMethod.Get, url, ctk: ctk);
         }
+
         /// <summary>
         /// Register the given MarketData entity
         /// </summary>
@@ -82,6 +115,7 @@ namespace Artesian.SDK.Service
 
             return _client.Exec<MarketDataEntity.Output, MarketDataEntity.Input>(HttpMethod.Post, url, metadata, ctk: ctk);
         }
+
         /// <summary>
         /// Save the given MarketData entity
         /// </summary>
@@ -96,6 +130,7 @@ namespace Artesian.SDK.Service
 
             return _client.Exec<MarketDataEntity.Output, MarketDataEntity.Input>(HttpMethod.Put, url, metadata, ctk: ctk);
         }
+
         /// <summary>
         /// Delete the specific MarketData entity by id
         /// </summary>
@@ -108,6 +143,7 @@ namespace Artesian.SDK.Service
 
             return _client.Exec(HttpMethod.Delete, url, ctk: ctk);
         }
+
         /// <summary>
         /// Update Derived Configuration for marketData with id supplied in <paramref name="marketDataId"/> and Rebuild
         /// </summary>
@@ -118,7 +154,7 @@ namespace Artesian.SDK.Service
         /// <returns>MarketData Entity Output</returns>
         public Task<MarketDataEntity.Output> UpdateDerivedConfigurationAsync(int marketDataId, DerivedCfgBase derivedCfg, bool force = false, CancellationToken ctk = default)
         {
-            var marketDataOutput = ReadMarketDataRegistryAsync(marketDataId, ctk).ConfigureAwait(true).GetAwaiter().GetResult();
+            var marketDataOutput = ReadMarketDataRegistryAsync(marketDataId, ctk: ctk).ConfigureAwait(true).GetAwaiter().GetResult();
 
             marketDataOutput.ValidateUpdateDerivedCfg(derivedCfg);
 
