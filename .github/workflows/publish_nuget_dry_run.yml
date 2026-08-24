@@ -301,6 +301,7 @@ jobs:
           global-json-file: global.json
 
       - name: 'Build'
+        working-directory: ./Artesian/Artesian.SDK
         run: |
           dotnet restore
           dotnet build --configuration Release
@@ -308,6 +309,7 @@ jobs:
       - name: 'Pack project'
         id: pack
         shell: bash
+        working-directory: ./Artesian/Artesian.SDK
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           dotnet pack \
