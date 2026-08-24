@@ -77,7 +77,7 @@ namespace Artesian.SDK.Service
         /// <param name="skipOverrides">When false, composes original and override metadata. Requires the /featureflag/overridebeta permission during beta. Default true.</param>
 
         /// <param name="ctk">CancellationToken</param>
-        /// <returns>MarketData Entity Output</returns>
+        /// <returns>MarketData Entity OutputEnriched</returns>
         public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(int id,
                                                                           bool includeCurveSummary = false,
                                                                           bool includeTimeTransform = false,
