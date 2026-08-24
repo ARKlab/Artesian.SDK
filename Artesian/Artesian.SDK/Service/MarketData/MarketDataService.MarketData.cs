@@ -19,8 +19,8 @@ namespace Artesian.SDK.Service
         /// Read marketdata metadata by provider and curve name using the default response options.
         /// </summary>
         /// <param name="id">MarketDataIdentifier of marketdata to be retrieved</param>
-        /// <returns>MarketData Entity Output</returns>
-        public Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(MarketDataIdentifier id)
+        /// <returns>MarketData Entity OutputEnriched</returns>
+        public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(MarketDataIdentifier id)
         {
             return ReadMarketDataRegistryAsync(id, false, false, false, true, default);
         }
@@ -34,8 +34,8 @@ namespace Artesian.SDK.Service
         /// <param name="includeDataQuality">When true, includes data quality status summary in the response</param>
         /// <param name="skipOverrides">When false, composes original and override metadata. Requires the /featureflag/overridebeta permission during beta. Default true.</param>
         /// <param name="ctk">CancellationToken</param>
-        /// <returns>MarketData Entity Output</returns>
-        public Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(MarketDataIdentifier id,
+        /// <returns>MarketData Entity OutputEnriched</returns>
+        public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(MarketDataIdentifier id,
                                                                           bool includeCurveSummary = false,
                                                                           bool includeTimeTransform = false,
                                                                           bool includeDataQuality = false,
@@ -53,15 +53,15 @@ namespace Artesian.SDK.Service
                     .SetQueryParam("skipOverrides", skipOverrides)
                     ;
 
-            return _client.Exec<MarketDataEntity.Output>(HttpMethod.Get, url, ctk: ctk);
+            return _client.Exec<MarketDataEntity.OutputEnriched>(HttpMethod.Get, url, ctk: ctk);
         }
 
         /// <summary>
         /// Read marketdata metadata by id using the default response options.
         /// </summary>
         /// <param name="id">Id of the marketdata to be retrieved</param>
-        /// <returns>MarketData Entity Output</returns>
-        public Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(int id)
+        /// <returns>MarketData Entity OutputEnriched</returns>
+        public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(int id)
         {
             return ReadMarketDataRegistryAsync(id, false, false, false, true, default);
         }
@@ -77,7 +77,7 @@ namespace Artesian.SDK.Service
 
         /// <param name="ctk">CancellationToken</param>
         /// <returns>MarketData Entity Output</returns>
-        public Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(int id,
+        public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(int id,
                                                                           bool includeCurveSummary = false,
                                                                           bool includeTimeTransform = false,
                                                                           bool includeDataQuality = false,
@@ -93,7 +93,7 @@ namespace Artesian.SDK.Service
                     .SetQueryParam("includeDataQuality", includeDataQuality)
                     .SetQueryParam("skipOverrides", skipOverrides);
 
-            return _client.Exec<MarketDataEntity.Output>(HttpMethod.Get, url, ctk: ctk);
+            return _client.Exec<MarketDataEntity.OutputEnriched>(HttpMethod.Get, url, ctk: ctk);
         }
 
         /// <summary>
