@@ -148,7 +148,7 @@ namespace Artesian.SDK.Tests
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
@@ -212,7 +212,7 @@ namespace Artesian.SDK.Tests
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
@@ -276,7 +276,7 @@ namespace Artesian.SDK.Tests
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
@@ -340,7 +340,7 @@ namespace Artesian.SDK.Tests
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
@@ -411,7 +411,7 @@ namespace Artesian.SDK.Tests
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
@@ -480,7 +480,7 @@ namespace Artesian.SDK.Tests
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
@@ -550,7 +550,7 @@ namespace Artesian.SDK.Tests
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
@@ -625,7 +625,7 @@ namespace Artesian.SDK.Tests
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
@@ -696,7 +696,7 @@ namespace Artesian.SDK.Tests
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
-            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);

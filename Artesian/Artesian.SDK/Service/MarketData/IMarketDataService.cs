@@ -26,6 +26,13 @@ namespace Artesian.SDK.Service
         /// Get MarketData by provider and curve name with MarketDataIdentifier
         /// </summary>
         /// <param name="id">MarketDataIdentifier</param>
+        /// <param name="ctk">CancellationToken</param>
+        /// <returns>MarketData Entity Output</returns>
+        Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(MarketDataIdentifier id, CancellationToken ctk = default);
+        /// <summary>
+        /// Get MarketData by provider and curve name with optional related data.
+        /// </summary>
+        /// <param name="id">MarketDataIdentifier</param>
         /// <param name="includeCurveSummary">When true, includes curve summary (ranges) in the response</param>
         /// <param name="includeTimeTransform">When true, includes time transform in the response</param>
         /// <param name="includeDataQuality">When true, includes data quality status summary in the response</param>
@@ -35,6 +42,13 @@ namespace Artesian.SDK.Service
         Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(MarketDataIdentifier id, bool includeCurveSummary = false, bool includeTimeTransform = false, bool includeDataQuality = false, bool skipOverrides = true, CancellationToken ctk = default);
         /// <summary>
         /// Read MarketData by curve id
+        /// </summary>
+        /// <param name="id">An Int</param>
+        /// <param name="ctk">CancellationToken</param>
+        /// <returns>MarketData Entity Output</returns>
+        Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(int id, CancellationToken ctk = default);
+        /// <summary>
+        /// Read MarketData by curve id with optional related data.
         /// </summary>
         /// <param name="id">An Int</param>
         /// <param name="includeCurveSummary">When true, includes curve summary (ranges) in the response</param>
