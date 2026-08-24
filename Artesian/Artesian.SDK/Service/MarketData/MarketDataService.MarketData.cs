@@ -20,10 +20,10 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="id">MarketDataIdentifier of marketdata to be retrieved</param>
         /// <param name="ctk">CancellationToken</param>
-        /// <returns>MarketData Entity OutputEnriched</returns>
-        public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(MarketDataIdentifier id, CancellationToken ctk = default)
+        /// <returns>MarketData Entity Output</returns>
+        public async Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(MarketDataIdentifier id, CancellationToken ctk = default)
         {
-            return ReadMarketDataRegistryAsync(id, false, false, false, true, ctk);
+            return await ReadMarketDataRegistryAsync(id, false, false, false, true, ctk).ConfigureAwait(false);
         }
         /// <summary>
         /// Read marketdata metadata by provider and curve name with MarketDataIdentifier
@@ -61,10 +61,10 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="id">Id of the marketdata to be retrieved</param>
         /// <param name="ctk">CancellationToken</param>
-        /// <returns>MarketData Entity OutputEnriched</returns>
-        public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(int id, CancellationToken ctk = default)
+        /// <returns>MarketData Entity Output</returns>
+        public async Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(int id, CancellationToken ctk = default)
         {
-            return ReadMarketDataRegistryAsync(id, false, false, false, true, default);
+            return await ReadMarketDataRegistryAsync(id, false, false, false, true, ctk).ConfigureAwait(false);
         }
 
         /// <summary>
