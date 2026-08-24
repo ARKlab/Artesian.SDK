@@ -26,9 +26,8 @@ namespace Artesian.SDK.Service
         /// Get MarketData by provider and curve name with MarketDataIdentifier
         /// </summary>
         /// <param name="id">MarketDataIdentifier</param>
-        /// <param name="ctk">CancellationToken</param>
         /// <returns>MarketData Entity Output</returns>
-        Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(MarketDataIdentifier id, CancellationToken ctk = default);
+        Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(MarketDataIdentifier id);
         /// <summary>
         /// Get MarketData by provider and curve name with optional related data.
         /// </summary>
@@ -44,9 +43,8 @@ namespace Artesian.SDK.Service
         /// Read MarketData by curve id
         /// </summary>
         /// <param name="id">An Int</param>
-        /// <param name="ctk">CancellationToken</param>
         /// <returns>MarketData Entity Output</returns>
-        Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(int id, CancellationToken ctk = default);
+        Task<MarketDataEntity.Output> ReadMarketDataRegistryAsync(int id);
         /// <summary>
         /// Read MarketData by curve id with optional related data.
         /// </summary>
