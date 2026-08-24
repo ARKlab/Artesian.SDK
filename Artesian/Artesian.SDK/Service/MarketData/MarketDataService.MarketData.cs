@@ -25,6 +25,10 @@ namespace Artesian.SDK.Service
             return ReadMarketDataRegistryAsync(id, false, false, false, true, default);
         }
 
+        public Task<MarketDataEntity.OutputEnriched> ReadMarketDataRegistryAsync(MarketDataIdentifier id, CancellationToken ctk = default)
+        {
+            return ReadMarketDataRegistryAsync(id, false, false, false, true, ctk);
+        }
         /// <summary>
         /// Read marketdata metadata by provider and curve name with MarketDataIdentifier
         /// </summary>
