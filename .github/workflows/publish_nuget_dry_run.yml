@@ -10,7 +10,7 @@ on:
   pull_request:
     branches: [ master ]
   workflow_dispatch:
- 
+
 env:
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output
   NUGET_SOURCE_URL: 'https://api.nuget.org/v3/index.json'
@@ -85,17 +85,8 @@ jobs:
       startsWith(github.ref, 'refs/tags/v') &&
       !contains(github.ref_name, '-beta') &&
       !contains(github.ref_name, '-PR')
-
-    defaults:
-      run:
-        working-directory: ./Artesian
         
     steps:
-    - name: 'Checkout'
-      uses: actions/checkout@v7
-      with:
-        fetch-depth: 0
-
     - name: 'Validate GA release tag'
       shell: bash
       run: |
@@ -108,6 +99,11 @@ jobs:
         fi
 
         echo "Valid GA release tag: $TAG"
+
+    - name: 'Checkout'
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
 
     - name: 'Validate tag originates from master'
       shell: bash
@@ -131,13 +127,38 @@ jobs:
       uses: battila7/get-version-action@v2
 
     - name: 'Pack project'
-      run: dotnet pack --configuration Release --include-symbols -p:Version=${{ steps.version.outputs.version-without-v }} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
-      # --no-build somehow cannot be used due to being needed: 
+      id: pack
+      shell: bash
+      working-directory: ./Artesian/Artesian.SDK
+      run: |
+        VERSION="${GITHUB_REF_NAME#v}"
+
+        OUTPUT_DIR="${GITHUB_WORKSPACE}/output"
+
+        mkdir -p "$OUTPUT_DIR"
+
+        dotnet pack \
+          --configuration Release \
+          --include-symbols \
+          -p:Version="$VERSION" \
+          --output "$OUTPUT_DIR"
 
     - name: 'Push package'
-      if: false
-      run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
-      
+      shell: pwsh
+      run: |
+        $version = "${{ github.ref_name }}".Substring(1)
+        $package = "${{ github.workspace }}/output/Artesian.SDK.$version.nupkg"
+
+        if (!(Test-Path $package)) {
+          Write-Error "Package not found: $package"
+          exit 1
+        }
+
+        Write-Host "Pushing package: $package"
+
+        dotnet nuget push $package `
+          -k "${{ secrets.NUGET_AUTH_TOKEN }}" `
+          -s "${{ env.NUGET_SOURCE_URL }}"      
 
   publish-beta:
     name: 'Publish Beta'
@@ -148,17 +169,8 @@ jobs:
       github.event_name == 'push' &&
       startsWith(github.ref, 'refs/tags/v') &&
       contains(github.ref_name, '-beta.')
-
-    defaults:
-      run:
-        working-directory: ./Artesian
-
+      
     steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
       - name: 'Validate Beta release tag'
         shell: bash
         run: |
@@ -171,6 +183,11 @@ jobs:
           fi
 
           echo "Valid Beta release tag: $TAG"
+
+      - name: 'Checkout'
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: 'Validate tag originates from develop-beta'
         shell: bash
@@ -216,12 +233,38 @@ jobs:
         uses: battila7/get-version-action@v2
 
       - name: 'Pack project'
-        run: dotnet pack --configuration Release --include-symbols -p:Version=${{ steps.version.outputs.version-without-v }} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+        id: pack
+        shell: bash
+        working-directory: ./Artesian/Artesian.SDK
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          OUTPUT_DIR="${GITHUB_WORKSPACE}/output"
+
+          mkdir -p "$OUTPUT_DIR"
+
+          dotnet pack \
+            --configuration Release \
+            --include-symbols \
+            -p:Version="$VERSION" \
+            --output "$OUTPUT_DIR"
 
       - name: 'Push package'
-        if: false
-        run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".Substring(1)
+          $package = "${{ github.workspace }}/output/Artesian.SDK.$version.nupkg"
 
+          if (!(Test-Path $package)) {
+            Write-Error "Package not found: $package"
+            exit 1
+          }
+
+          Write-Host "Pushing package: $package"
+
+          dotnet nuget push $package `
+            -k "${{ secrets.NUGET_AUTH_TOKEN }}" `
+            -s "${{ env.NUGET_SOURCE_URL }}"
 
   publish-preview:
     name: 'Publish PR Preview'
