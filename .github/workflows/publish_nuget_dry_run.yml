@@ -326,6 +326,16 @@ jobs:
       - name: 'Push package'
         shell: pwsh
         run: |
-          dotnet nuget push "${{ github.workspace }}/output/*.nupkg" `
+          $version = "${{ github.ref_name }}".Substring(1)
+          $package = "${{ github.workspace }}/output/Artesian.SDK.$version.nupkg"
+
+          if (!(Test-Path $package)) {
+            Write-Error "Package not found: $package"
+            exit 1
+          }
+
+          Write-Host "Pushing package: $package"
+
+          dotnet nuget push $package `
             -k "${{ secrets.NUGET_AUTH_TOKEN }}" `
             -s "${{ env.NUGET_SOURCE_URL }}"
