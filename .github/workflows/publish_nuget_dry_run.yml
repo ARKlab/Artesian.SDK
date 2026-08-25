@@ -226,6 +226,7 @@ jobs:
   publish-preview:
     name: 'Publish PR Preview'
     runs-on: 'windows-latest'
+    needs: build
 
     if: >
       github.event_name == 'push' &&
