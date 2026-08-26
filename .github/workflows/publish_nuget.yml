@@ -341,6 +341,30 @@ jobs:
         run: |
           dotnet restore
           dotnet build --configuration Release
+          
+      - name: 'Test'
+        working-directory: ./Artesian/Artesian.SDK
+        run: dotnet test --no-restore --configuration Release -- --coverage --coverage-output-format cobertura --report-trx
+
+      - name: 'Test Report'
+        uses: dorny/test-reporter@v3
+        if: always()
+        with:
+          name: DotNET Tests
+          path: "**/*.trx"
+          reporter: dotnet-trx
+          fail-on-error: true
+          use-actions-summary: 'false'
+
+      - name: 'Create code coverage report'
+        if: always()
+        run: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          reportgenerator -reports:**/*.cobertura.xml -targetdir:CodeCoverage -reporttypes:'MarkdownSummaryGithub;Cobertura'
+
+      - name: 'Write to Job Summary'
+        if: always()
+        run: cat CodeCoverage/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
       - name: 'Pack project'
         id: pack
