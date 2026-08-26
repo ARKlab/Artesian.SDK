@@ -122,10 +122,6 @@ jobs:
       with:
         global-json-file: global.json
 
-    - name: 'Get Version'
-      id: version
-      uses: battila7/get-version-action@v2
-
     - name: 'Pack project'
       id: pack
       shell: bash
@@ -227,10 +223,6 @@ jobs:
         uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
-
-      - name: 'Get Version'
-        id: version
-        uses: battila7/get-version-action@v2
 
       - name: 'Pack project'
         id: pack
