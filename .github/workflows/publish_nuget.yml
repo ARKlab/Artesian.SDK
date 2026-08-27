@@ -133,21 +133,15 @@ jobs:
         global-json-file: global.json
 
     - name: 'Restore packages'
+      working-directory: ./Artesian
       run: dotnet restore
 
     - name: 'Build net462'
       run: dotnet build --no-restore --configuration Debug --framework net462
 
     - name: 'Test net462'
-      run: |
-        dotnet test \
-          --no-restore \
-          --configuration Debug \
-          --framework net462 \
-          -- \
-          --coverage \
-          --coverage-output-format cobertura \
-          --report-trx
+      working-directory: ./Artesian
+      run: dotnet test --no-restore --configuration Release --framework net462
 
   # ---------------------------------------------------------------------------
   # Publish Stable
