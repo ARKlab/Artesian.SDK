@@ -137,7 +137,7 @@ jobs:
       run: dotnet restore
 
     - name: 'Build net462'
-      run: dotnet build --no-restore --configuration Debug --framework net462
+      run: dotnet build --no-restore --configuration Release --framework net462
 
     - name: 'Test net462'
       working-directory: ./Artesian
