@@ -63,17 +63,7 @@ jobs:
 
     - name: 'Component detection'
       uses: advanced-security/component-detection-dependency-submission-action@v0.1.4
-
-    - name: 'Test Report'
-      uses: dorny/test-reporter@v3
-      if: always()
-      with:
-        name: DotNET Tests
-        path: "**/*.trx"
-        reporter: dotnet-trx
-        fail-on-error: true
-        use-actions-summary: 'false'
-
+      
     - name: 'Create code coverage report'
       if: always()
       run: |
@@ -432,17 +422,7 @@ jobs:
           --coverage \
           --coverage-output-format cobertura \
           --report-trx
-
-    - name: 'Test Report'
-      uses: dorny/test-reporter@v3
-      if: always()
-      with:
-        name: DotNET Tests
-        path: "**/*.trx"
-        reporter: dotnet-trx
-        fail-on-error: true
-        use-actions-summary: 'false'
-
+          
     - name: 'Create code coverage report'
       if: always()
       working-directory: ./Artesian
