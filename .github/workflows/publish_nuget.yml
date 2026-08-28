@@ -36,8 +36,7 @@ jobs:
         working-directory: ./Artesian
 
     permissions:
-      contents: write
-      checks: write
+      contents: read
 
     steps:
     - name: 'Checkout'
@@ -194,12 +193,6 @@ jobs:
         pattern: coverage-*
         path: coverage
 
-    - name: 'Download test result artifacts'
-      uses: actions/download-artifact@v7
-      with:
-        pattern: test-results-*
-        path: test-results
-
     - name: 'Install reportgenerator'
       shell: bash
       run: |
@@ -212,16 +205,6 @@ jobs:
           -reports:"coverage/**/*.cobertura.xml" \
           -targetdir:CodeCoverage \
           -reporttypes:'MarkdownSummaryGithub;Cobertura'
-
-    - name: 'Test Report'
-      uses: dorny/test-reporter@v3
-      if: always()
-      with:
-        name: DotNET Tests
-        path: "test-results/**/*.trx"
-        reporter: dotnet-trx
-        fail-on-error: true
-        use-actions-summary: 'false'
 
     - name: 'Write to Job Summary'
       if: always()
