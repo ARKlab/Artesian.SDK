@@ -91,15 +91,12 @@ jobs:
     - name: 'Component detection'
       uses: advanced-security/component-detection-dependency-submission-action@v0.1.4
 
-    - name: 'Test Report'
-      uses: dorny/test-reporter@v3
+    - name: 'Upload build test results'
+      uses: actions/upload-artifact@v7
       if: always()
       with:
-        name: DotNET Tests
-        path: "**/*.trx"
-        reporter: dotnet-trx
-        fail-on-error: true
-        use-actions-summary: 'false'
+        name: test-results-build
+        path: '**/*.trx'
 
 
   # ---------------------------------------------------------------------------
@@ -158,15 +155,12 @@ jobs:
         name: coverage-net462
         path: '**/*.cobertura.xml'
 
-    - name: 'Test Report'
-      uses: dorny/test-reporter@v3
+    - name: 'Upload net462 test results'
+      uses: actions/upload-artifact@v7
       if: always()
       with:
-        name: DotNET Framework 4.6.2 Tests
-        path: "**/*.trx"
-        reporter: dotnet-trx
-        fail-on-error: true
-        use-actions-summary: 'false'
+        name: test-results-net462
+        path: '**/*.trx'
 
 
   # ---------------------------------------------------------------------------
@@ -191,6 +185,7 @@ jobs:
 
     permissions:
       contents: read
+      checks: write
 
     steps:
     - name: 'Download coverage artifacts'
@@ -198,6 +193,12 @@ jobs:
       with:
         pattern: coverage-*
         path: coverage
+
+    - name: 'Download test result artifacts'
+      uses: actions/download-artifact@v7
+      with:
+        pattern: test-results-*
+        path: test-results
 
     - name: 'Install reportgenerator'
       shell: bash
@@ -211,6 +212,16 @@ jobs:
           -reports:"coverage/**/*.cobertura.xml" \
           -targetdir:CodeCoverage \
           -reporttypes:'MarkdownSummaryGithub;Cobertura'
+
+    - name: 'Test Report'
+      uses: dorny/test-reporter@v3
+      if: always()
+      with:
+        name: DotNET Tests
+        path: "test-results/**/*.trx"
+        reporter: dotnet-trx
+        fail-on-error: true
+        use-actions-summary: 'false'
 
     - name: 'Write to Job Summary'
       if: always()
@@ -418,6 +429,11 @@ jobs:
   publish-preview:
     name: 'Publish PR Preview'
     runs-on: 'ubuntu-latest'
+
+    permissions:
+      contents: read
+      checks: write
+
     needs:
       - build
       - test-net462
