@@ -36,7 +36,8 @@ jobs:
         working-directory: ./Artesian
 
     permissions:
-      contents: read
+      contents: write
+      checks: write
 
     steps:
     - name: 'Checkout'
