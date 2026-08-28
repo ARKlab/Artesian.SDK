@@ -81,6 +81,13 @@ jobs:
           --coverage-output-format cobertura \
           --report-trx
 
+    - name: 'Upload build coverage'
+      uses: actions/upload-artifact@v7
+      if: always()
+      with:
+        name: coverage-build
+        path: '**/*.cobertura.xml'
+
     - name: 'Component detection'
       uses: advanced-security/component-detection-dependency-submission-action@v0.1.4
 
@@ -94,18 +101,10 @@ jobs:
         fail-on-error: true
         use-actions-summary: 'false'
 
-    - name: 'Create code coverage report'
-      if: always()
-      run: |
-        dotnet tool install -g dotnet-reportgenerator-globaltool
-        reportgenerator \
-          -reports:**/*.cobertura.xml \
-          -targetdir:CodeCoverage \
-          -reporttypes:'MarkdownSummaryGithub;Cobertura'
 
-    - name: 'Write to Job Summary'
-      if: always()
-      run: cat CodeCoverage/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+  # ---------------------------------------------------------------------------
+  # Test .NET Framework 4.6.2
+  # ---------------------------------------------------------------------------
 
   test-net462:
     name: 'Test .NET Framework 4.6.2'
@@ -133,14 +132,91 @@ jobs:
         global-json-file: global.json
 
     - name: 'Restore packages'
-      working-directory: ./Artesian
+      shell: bash
       run: dotnet restore
 
     - name: 'Build net462'
+      shell: bash
       run: dotnet build --no-restore --configuration Debug --framework net462
 
     - name: 'Test net462'
-      run: dotnet test --no-restore --configuration Debug --framework net462
+      shell: bash
+      run: |
+        dotnet test \
+          --no-restore \
+          --configuration Debug \
+          --framework net462 \
+          -- \
+          --coverage \
+          --coverage-output-format cobertura \
+          --report-trx
+
+    - name: 'Upload net462 coverage'
+      uses: actions/upload-artifact@v7
+      if: always()
+      with:
+        name: coverage-net462
+        path: '**/*.cobertura.xml'
+
+    - name: 'Test Report'
+      uses: dorny/test-reporter@v3
+      if: always()
+      with:
+        name: DotNET Framework 4.6.2 Tests
+        path: "**/*.trx"
+        reporter: dotnet-trx
+        fail-on-error: true
+        use-actions-summary: 'false'
+
+
+  # ---------------------------------------------------------------------------
+  # Code Coverage
+  #
+  # Coverage from:
+  #   - net8.0
+  #   - net10.0
+  #   - net462
+  #
+  # All coverage files are merged into a single report.
+  # ---------------------------------------------------------------------------
+
+  coverage-report:
+    name: 'Code Coverage'
+    runs-on: 'ubuntu-latest'
+    needs:
+      - build
+      - test-net462
+
+    if: always()
+
+    permissions:
+      contents: read
+
+    steps:
+    - name: 'Download coverage artifacts'
+      uses: actions/download-artifact@v7
+      with:
+        pattern: coverage-*
+        path: coverage
+
+    - name: 'Install reportgenerator'
+      shell: bash
+      run: |
+        dotnet tool install -g dotnet-reportgenerator-globaltool
+
+    - name: 'Create code coverage report'
+      shell: bash
+      run: |
+        reportgenerator \
+          -reports:"coverage/**/*.cobertura.xml" \
+          -targetdir:CodeCoverage \
+          -reporttypes:'MarkdownSummaryGithub;Cobertura'
+
+    - name: 'Write to Job Summary'
+      if: always()
+      run: |
+        cat CodeCoverage/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
 
   # ---------------------------------------------------------------------------
   # Publish Stable
@@ -169,35 +245,18 @@ jobs:
       !contains(github.ref_name, '-PR')
 
     steps:
-    - name: 'Validate GA release tag'
-      shell: bash
-      run: |
-        TAG="${GITHUB_REF_NAME}"
-
-        if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-          echo "::error::Invalid GA release tag: $TAG"
-          echo "Expected format: vX.Y.Z"
-          exit 1
-        fi
-
-        echo "Valid GA release tag: $TAG"
-
     - name: 'Checkout'
       uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
+    - name: 'Validate GA release tag'
+      shell: bash
+      run: .github/workflows/validate_tag.sh "$GITHUB_REF_NAME" ga
+      
     - name: 'Validate tag originates from master'
       shell: bash
-      run: |
-        git fetch origin master
-
-        if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/master"; then
-          echo "::error::Release tag $GITHUB_REF_NAME does not point to a commit contained in master."
-          exit 1
-        fi
-
-        echo "Release commit is contained in master."
+      run: .github/workflows/validate_branch.sh master
 
     - name: 'Install dotnet'
       uses: actions/setup-dotnet@v6
@@ -263,35 +322,18 @@ jobs:
       contains(github.ref_name, '-beta.')
 
     steps:
-    - name: 'Validate Beta release tag'
-      shell: bash
-      run: |
-        TAG="${GITHUB_REF_NAME}"
-
-        if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]; then
-          echo "::error::Invalid Beta release tag: $TAG"
-          echo "Expected format: vX.Y.Z-beta.N"
-          exit 1
-        fi
-
-        echo "Valid Beta release tag: $TAG"
-
     - name: 'Checkout'
       uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
+    - name: 'Validate Beta release tag'
+      shell: bash
+      run: .github/workflows/validate_tag.sh "$GITHUB_REF_NAME" beta
+
     - name: 'Validate tag originates from develop-beta'
       shell: bash
-      run: |
-        git fetch origin develop-beta
-
-        if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/develop-beta"; then
-          echo "::error::Beta release tag does not point to a commit contained in develop-beta."
-          exit 1
-        fi
-
-        echo "Release commit is contained in develop-beta."
+      run: .github/workflows/validate_branch.sh develop-beta
 
     - name: 'Validate next version'
       shell: bash
@@ -386,19 +428,6 @@ jobs:
       contains(github.ref_name, '-PR')
 
     steps:
-    - name: 'Validate PR Preview tag'
-      shell: bash
-      run: |
-        TAG="${GITHUB_REF_NAME}"
-
-        if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-PR[0-9]+\.[0-9]+$ ]]; then
-          echo "::error::Invalid PR Preview tag: $TAG"
-          echo "Expected format: vX.Y.Z-PR{PR_NUMBER}.{ITERATION}"
-          exit 1
-        fi
-
-        echo "Valid PR Preview tag: $TAG"
-
     - name: 'Extract PR number'
       id: pr
       shell: bash
@@ -419,6 +448,10 @@ jobs:
       with:
         ref: refs/pull/${{ steps.pr.outputs.number }}/merge
         fetch-depth: 0
+        
+    - name: 'Validate PR Preview tag'
+      shell: bash
+      run: .github/workflows/validate_tag.sh "$GITHUB_REF_NAME" preview
 
     - name: 'Validate PR is based on current master'
       shell: bash
