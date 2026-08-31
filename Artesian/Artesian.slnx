@@ -10,6 +10,7 @@
     <File Path="../.github/workflows/codeql.yml" />
     <File Path="../.github/workflows/publish_nuget.yml" />
     <File Path="../.github/workflows/validate_branch.sh" />
+    <File Path="../.github/workflows/validate_tag.sh" />
     <File Path="../.gitignore" />
     <File Path="../CODEOWNERS" />
     <File Path="../global.json" />
