@@ -9,12 +9,12 @@
     <File Path="../.github/dependabot.yml" />
     <File Path="../.github/workflows/codeql.yml" />
     <File Path="../.github/workflows/publish_nuget.yml" />
+    <File Path="../.github/workflows/validate_branch.sh" />
     <File Path="../.gitignore" />
     <File Path="../CODEOWNERS" />
     <File Path="../global.json" />
     <File Path="../renovate.json" />
     <File Path="Directory.Build.props" />
-    <File Path="validate_branch.sh" />
     <File Path="validate_tag.sh" />
   </Folder>
   <Project Path="Artesian.SDK.Tests/Artesian.SDK.Tests.csproj" />
