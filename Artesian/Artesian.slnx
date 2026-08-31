@@ -15,7 +15,6 @@
     <File Path="../global.json" />
     <File Path="../renovate.json" />
     <File Path="Directory.Build.props" />
-    <File Path="validate_tag.sh" />
   </Folder>
   <Project Path="Artesian.SDK.Tests/Artesian.SDK.Tests.csproj" />
   <Project Path="Artesian.SDK/Artesian.SDK.csproj">
