@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if [[ $# -lt 1 ]]; then
+  echo "::error::Usage: validate_branch.sh <expected-branch>"
+  exit 1
+fi
+
 EXPECTED_BRANCH="$1"
 
 git fetch origin "$EXPECTED_BRANCH"
