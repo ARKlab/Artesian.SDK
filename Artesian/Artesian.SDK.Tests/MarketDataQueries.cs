@@ -2473,7 +2473,7 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                await mds.ReadDataQualityRuleAssignmentAsync(1, 10, 100, 1, "TestRule", new string[] { "Id asc" });
+                await mds.ReadDataQualityRuleAssignmentsAsync(1, 10, 100, 1, "TestRule", new string[] { "Id asc" });
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
                     .WithQueryParam("page", 1)

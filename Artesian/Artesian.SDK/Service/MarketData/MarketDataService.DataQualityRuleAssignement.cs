@@ -60,7 +60,7 @@ namespace Artesian.SDK.Service
         /// <param name="pageSize">The number of items per page (default: 10).</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>A paginated result containing <see cref="MarketDataQualityRuleAssignmentDto.Output"/> items.</returns>
-        public Task<PagedResult<MarketDataQualityRuleAssignmentDto.Output>> ReadDataQualityRuleAssignmentAsync(int page,
+        public Task<PagedResult<MarketDataQualityRuleAssignmentDto.Output>> ReadDataQualityRuleAssignmentsAsync(int page,
                                                                                                                  int pageSize,
                                                                                                                  int? marketDataId = null,
                                                                                                                  int? ruleId = null,

@@ -175,7 +175,7 @@ namespace Artesian.SDK.Service
         /// <param name="pageSize">The number of items per page (default: 10).</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>A paginated result containing MarketDataQualityRuleAssignmentDto.Output items.</returns>
-        Task<PagedResult<MarketDataQualityRuleAssignmentDto.Output>> ReadDataQualityRuleAssignmentAsync(int page, int pageSize, int? marketDataId = null, int? ruleId = null, string? ruleName = null, string[]? sort = null, CancellationToken ctk = default);
+        Task<PagedResult<MarketDataQualityRuleAssignmentDto.Output>> ReadDataQualityRuleAssignmentsAsync(int page, int pageSize, int? marketDataId = null, int? ruleId = null, string? ruleName = null, string[]? sort = null, CancellationToken ctk = default);
         /// <summary>
         /// Updates an assignment's initialization lookback, triggering re-evaluation from the new lookback date.
         /// All existing check results for this assignment are deleted and re-computed.
