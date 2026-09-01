@@ -2,10 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for
 // license information.
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Artesian.SDK.Dto;
 using Artesian.SDK.Dto.DataQuality;
 using Artesian.SDK.Dto.DataQuality.Enums;
+using Artesian.SDK.Dto.Override.Enum;
 using Artesian.SDK.Service;
 using NodaTime;
 using NUnit.Framework;
@@ -306,6 +310,238 @@ namespace Artesian.SDK.Tests
             // Act & Assert - System.Text.Json wraps the InvalidOperationException in JsonException
             Assert.Throws<JsonException>(() =>
                 System.Text.Json.JsonSerializer.Deserialize<ScheduleDefinitionDto>(invalidJson, _stjOptions));
+        }
+
+        #endregion
+
+        #region TriggerConfigDto Polymorphic Tests (AlertType discriminator)
+
+        [Test]
+        public void TriggerConfig_OnEvent_STJ_RoundTrip()
+        {
+            var config = new OnEventTriggerConfigDto();
+
+            var json = System.Text.Json.JsonSerializer.Serialize<TriggerConfigDto>(config, _stjOptions);
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<TriggerConfigDto>(json, _stjOptions);
+
+            Assert.That(deserialized, Is.InstanceOf<OnEventTriggerConfigDto>());
+            Assert.That(deserialized!.Type, Is.EqualTo(AlertType.OnEvent));
+        }
+
+        [Test]
+        public void TriggerConfig_Scheduled_STJ_RoundTrip()
+        {
+            var config = new ScheduleTriggerConfigDto
+            {
+                ScheduleDefinition = new CronScheduleDefinitionDto
+                {
+                    CronExpression = "0 8 * * *",
+                    TimeZone = "Europe/Rome"
+                }
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize<TriggerConfigDto>(config, _stjOptions);
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<TriggerConfigDto>(json, _stjOptions);
+
+            Assert.That(deserialized, Is.InstanceOf<ScheduleTriggerConfigDto>());
+            var scheduled = (ScheduleTriggerConfigDto)deserialized!;
+            Assert.That(scheduled.Type, Is.EqualTo(AlertType.Scheduled));
+            Assert.That(scheduled.ScheduleDefinition, Is.InstanceOf<CronScheduleDefinitionDto>());
+            Assert.That(((CronScheduleDefinitionDto)scheduled.ScheduleDefinition).CronExpression, Is.EqualTo("0 8 * * *"));
+        }
+
+        [Test]
+        public void TriggerConfig_InvalidType_STJ_ThrowsException()
+        {
+            const string invalidJson = @"{""Type"":999}";
+
+            Assert.Throws<JsonException>(() =>
+                System.Text.Json.JsonSerializer.Deserialize<TriggerConfigDto>(invalidJson, _stjOptions));
+        }
+
+        #endregion
+
+        #region MessagePack Round-Trip Tests
+
+        [Test]
+        public async Task DataQualityRuleDto_MessagePack_RoundTrip()
+        {
+            var rule = new DataQualityRuleDto.Input
+            {
+                Id = 123,
+                Name = "Outlier rule",
+                Type = RuleType.Outlier,
+                Configuration = new OutlierConfigDto
+                {
+                    Model = new OutlierAbsoluteBoundConfigDto
+                    {
+                        LowerBound = -10,
+                        UpperBound = 50
+                    }
+                },
+                Version = 2,
+                ETag = "etag"
+            };
+
+            var deserialized = await MessagePackRoundTrip(rule);
+
+            Assert.That(deserialized.Name, Is.EqualTo("Outlier rule"));
+            Assert.That(deserialized.Configuration, Is.InstanceOf<OutlierConfigDto>());
+            Assert.That(((OutlierConfigDto)deserialized.Configuration).Model, Is.InstanceOf<OutlierAbsoluteBoundConfigDto>());
+        }
+
+        [Test]
+        public async Task QualityNotificationAlertDto_MessagePack_RoundTrip()
+        {
+            var alert = new QualityNotificationAlertDto.Input
+            {
+                Id = 12,
+                Name = "Daily alert",
+                TriggerConfig = new ScheduleTriggerConfigDto
+                {
+                    ScheduleDefinition = new CronScheduleDefinitionDto
+                    {
+                        CronExpression = "0 8 * * *",
+                        TimeZone = "UTC"
+                    }
+                },
+                MailNotifications = new List<MailNotificationDto>
+                {
+                    new MailNotificationDto { Recipients = new[] { "test@example.com" } }
+                },
+                Version = 3,
+                ETag = "etag"
+            };
+
+            var deserialized = await MessagePackRoundTrip(alert);
+
+            Assert.That(deserialized.TriggerConfig, Is.InstanceOf<ScheduleTriggerConfigDto>());
+            Assert.That(((ScheduleTriggerConfigDto)deserialized.TriggerConfig).ScheduleDefinition, Is.InstanceOf<CronScheduleDefinitionDto>());
+            Assert.That(deserialized.MailNotifications[0].Recipients, Is.EqualTo(new[] { "test@example.com" }));
+        }
+
+        [Test]
+        public async Task MarketDataQualityRuleAssignmentDto_MessagePack_RoundTrip()
+        {
+            var assignment = new MarketDataQualityRuleAssignmentDto.Input
+            {
+                Id = 5,
+                MarketDataId = 100,
+                DataQualityRuleId = 12,
+                ETag = "etag"
+            };
+
+            var deserialized = await MessagePackRoundTrip(assignment);
+
+            Assert.That(deserialized.Id, Is.EqualTo(5));
+            Assert.That(deserialized.MarketDataId, Is.EqualTo(100));
+            Assert.That(deserialized.DataQualityRuleId, Is.EqualTo(12));
+            Assert.That(deserialized.ETag, Is.EqualTo("etag"));
+        }
+
+        [Test]
+        public async Task QualityNotificationAlertAssignmentDto_MessagePack_RoundTrip()
+        {
+            var assignment = new QualityNotificationAlertAssignmentDto.Input
+            {
+                Id = 6,
+                AlertId = 12,
+                MarketDataId = 100,
+                ETag = "etag"
+            };
+
+            var deserialized = await MessagePackRoundTrip(assignment);
+
+            Assert.That(deserialized.Id, Is.EqualTo(6));
+            Assert.That(deserialized.AlertId, Is.EqualTo(12));
+            Assert.That(deserialized.MarketDataId, Is.EqualTo(100));
+            Assert.That(deserialized.ETag, Is.EqualTo("etag"));
+        }
+
+        [Test]
+        public async Task QualityNotificationAlertAssignmentOutput_MessagePack_RoundTrip()
+        {
+            var assignment = new QualityNotificationAlertAssignmentDto.Output
+            {
+                Id = 6,
+                AlertId = 12,
+                MarketDataId = 100,
+                Alert = new QualityNotificationAlertDto.Output
+                {
+                    Id = 12,
+                    Name = "On event alert",
+                    TriggerConfig = new OnEventTriggerConfigDto(),
+                    Version = 2
+                }
+            };
+
+            var deserialized = await MessagePackRoundTrip(assignment);
+
+            Assert.That(deserialized.AlertId, Is.EqualTo(12));
+            Assert.That(deserialized.Alert, Is.Not.Null);
+            Assert.That(deserialized.Alert!.Name, Is.EqualTo("On event alert"));
+            Assert.That(deserialized.Alert.TriggerConfig, Is.InstanceOf<OnEventTriggerConfigDto>());
+        }
+
+        [Test]
+        public async Task UpsertCurveDataOverride_MessagePack_RoundTrip()
+        {
+            var id = Guid.NewGuid();
+            var data = new UpsertCurveDataOverride
+            {
+                ID = new MarketDataIdentifier("Test", "Override"),
+                Timezone = "UTC",
+                DownloadedAt = Instant.FromUtc(2025, 1, 1, 0, 0),
+                Rows = new Dictionary<LocalDateTime, double?>
+                {
+                    [new LocalDateTime(2025, 1, 1, 0, 0)] = 42
+                },
+                Kind = OverrideKind.Override,
+                OverrideId = id,
+                Comment = "correction"
+            };
+
+            var deserialized = await MessagePackRoundTrip(data);
+
+            Assert.That(deserialized.OverrideId, Is.EqualTo(id));
+            Assert.That(deserialized.Kind, Is.EqualTo(OverrideKind.Override));
+            Assert.That(deserialized.Comment, Is.EqualTo("correction"));
+            Assert.That(deserialized.Rows, Has.Count.EqualTo(1));
+        }
+
+        [Test]
+        public async Task OverrideMetadataEntry_MessagePack_RoundTrip()
+        {
+            var id = Guid.NewGuid();
+            var metadata = new OverrideMetadataEntry
+            {
+                Id = id,
+                MarketDataId = 100,
+                Kind = OverrideKind.Fallback,
+                RangeExactStart = new LocalDateTime(2025, 1, 1, 0, 0),
+                RangeExactEnd = new LocalDateTime(2025, 1, 2, 0, 0),
+                CreatedAt = Instant.FromUtc(2025, 1, 1, 12, 0),
+                CreatedBy = "test-user",
+                Comment = "temporary fallback"
+            };
+
+            var deserialized = await MessagePackRoundTrip(metadata);
+
+            Assert.That(deserialized.Id, Is.EqualTo(id));
+            Assert.That(deserialized.Kind, Is.EqualTo(OverrideKind.Fallback));
+            Assert.That(deserialized.RangeExactEnd, Is.EqualTo(metadata.RangeExactEnd));
+            Assert.That(deserialized.CreatedAt, Is.EqualTo(metadata.CreatedAt));
+        }
+
+        private static async Task<T> MessagePackRoundTrip<T>(T value)
+        {
+            var serializer = new MessagePackContentSerializer(CustomCompositeResolver.Instance);
+            using (var stream = new MemoryStream())
+            {
+                await serializer.SerializeAsync(value, stream).ConfigureAwait(false);
+                stream.Position = 0;
+                return (await serializer.DeserializeAsync<T>(stream).ConfigureAwait(false))!;
+            }
         }
 
         #endregion

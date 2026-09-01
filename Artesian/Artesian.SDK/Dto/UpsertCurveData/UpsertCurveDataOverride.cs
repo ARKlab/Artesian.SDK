@@ -62,8 +62,27 @@ namespace Artesian.SDK.Dto
                 UpsertMode = data.UpsertMode,
             }.Validate();
 
+            if (!Enum.IsDefined(typeof(OverrideKind), data.Kind))
+                throw new ArgumentException("UpsertCurveDataOverride Kind must be a valid value", nameof(data));
+
+            if (data.OverrideId.HasValue && data.ReplaceExisting)
+                throw new ArgumentException("UpsertCurveDataOverride ReplaceExisting cannot be combined with OverrideId", nameof(data));
+
             if (data.OverrideId == Guid.Empty)
                 throw new ArgumentException("UpsertCurveDataOverride OverrideId must be valorized", nameof(data));
+
+            if (data.Comment?.Length > 4000)
+                throw new ArgumentException("UpsertCurveDataOverride Comment cannot exceed 4000 characters", nameof(data));
+
+            var hasRows = data.Rows != null && data.Rows.Count > 0;
+            var hasMarketAssessment = data.MarketAssessment != null && data.MarketAssessment.Count > 0;
+            var hasAuctionRows = data.AuctionRows != null && data.AuctionRows.Count > 0;
+            var hasBidAsk = data.BidAsk != null && data.BidAsk.Count > 0;
+            if (!hasRows && !hasMarketAssessment && !hasAuctionRows && !hasBidAsk)
+                throw new ArgumentException("UpsertCurveDataOverride must contain rows", nameof(data));
+
+            if (data.UpsertMode.HasValue && data.UpsertMode.Value != UpsertMode.Merge)
+                throw new ArgumentException("UpsertCurveDataOverride UpsertMode must be null or Merge", nameof(data));
         }
     }
 }
