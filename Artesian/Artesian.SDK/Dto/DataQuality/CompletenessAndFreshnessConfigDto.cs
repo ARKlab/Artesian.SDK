@@ -24,7 +24,7 @@ namespace Artesian.SDK.Dto.DataQuality
         /// This determines the structure of the expected data.
         /// </summary>
         [Key("MarketDataType")]
-        public MarketDataTypeV2 MarketDataType { get; set; }
+        public MarketDataType MarketDataType { get; set; }
 
         /// <summary>
         /// The schedule configuration defining when quality checks should run and the maximum allowed delay for data arrival.

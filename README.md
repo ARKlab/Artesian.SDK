@@ -631,7 +631,7 @@ var actualCompletenessRule = new DataQualityRuleDto.Input
     Type = RuleType.CompletenessAndFreshness,
     Configuration = new ActualCompletenessAndFreshnessConfigDto
     {
-        MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+        MarketDataType = MarketDataType.ActualTimeSerie,
         ScheduleConfig = new ScheduleConfigDto
         {
             ScheduleDefinition = new CronScheduleDefinitionDto
@@ -662,7 +662,7 @@ var versionedCompletenessRule = new DataQualityRuleDto.Input
     Type = RuleType.CompletenessAndFreshness,
     Configuration = new VersionedCompletenessAndFreshnessConfigDto
     {
-        MarketDataType = MarketDataTypeV2.VersionedTimeSerie,
+        MarketDataType = MarketDataType.VersionedTimeSerie,
         ScheduleConfig = new ScheduleConfigDto
         {
             ScheduleDefinition = new CronScheduleDefinitionDto

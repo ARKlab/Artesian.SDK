@@ -47,7 +47,7 @@ namespace Artesian.SDK.Tests.Samples
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.AverageAndReplicate,
-                Type = MarketDataTypeV2.VersionedTimeSerie,
+                Type = MarketDataType.VersionedTimeSerie,
                 MarketDataId = 0,
             };
 
@@ -139,7 +139,7 @@ namespace Artesian.SDK.Tests.Samples
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.AverageAndReplicate,
-                Type = MarketDataTypeV2.VersionedTimeSerie,
+                Type = MarketDataType.VersionedTimeSerie,
                 MarketDataId = 0,
             };
 
@@ -231,7 +231,7 @@ namespace Artesian.SDK.Tests.Samples
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.AverageAndReplicate,
-                Type = MarketDataTypeV2.VersionedTimeSerie,
+                Type = MarketDataType.VersionedTimeSerie,
                 MarketDataId = 0,
             };
 

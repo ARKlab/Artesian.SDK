@@ -41,7 +41,7 @@ namespace Artesian.SDK.Tests
             // Arrange
             var config = new ActualCompletenessAndFreshnessConfigDto
             {
-                MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                MarketDataType = MarketDataType.ActualTimeSerie,
                 ScheduleConfig = new ScheduleConfigDto
                 {
                     ScheduleDefinition = new CronScheduleDefinitionDto
@@ -68,7 +68,7 @@ namespace Artesian.SDK.Tests
             Assert.That(deserialized!.Type, Is.EqualTo(RuleType.CompletenessAndFreshness));
 
             var actualConfig = (ActualCompletenessAndFreshnessConfigDto)deserialized;
-            Assert.That(actualConfig.MarketDataType, Is.EqualTo(MarketDataTypeV2.ActualTimeSerie));
+            Assert.That(actualConfig.MarketDataType, Is.EqualTo(MarketDataType.ActualTimeSerie));
             Assert.That(actualConfig.ScheduleConfig.MaxDelay, Is.EqualTo(Period.FromHours(2)));
             Assert.That(actualConfig.RecordValidationConfig.RecordRangeFrom, Is.EqualTo(Period.FromDays(-1)));
         }
@@ -115,7 +115,7 @@ namespace Artesian.SDK.Tests
 
         #endregion
 
-        #region CompletenessAndFreshnessConfigDto Polymorphic Tests (MarketDataTypeV2 discriminator)
+        #region CompletenessAndFreshnessConfigDto Polymorphic Tests (MarketDataType discriminator)
 
         [Test]
         public void CompletenessAndFreshnessConfig_Actual_STJ_RoundTrip()
@@ -123,7 +123,7 @@ namespace Artesian.SDK.Tests
             // Arrange
             var config = new ActualCompletenessAndFreshnessConfigDto
             {
-                MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                MarketDataType = MarketDataType.ActualTimeSerie,
                 ScheduleConfig = new ScheduleConfigDto
                 {
                     ScheduleDefinition = new CronScheduleDefinitionDto
@@ -147,7 +147,7 @@ namespace Artesian.SDK.Tests
             // Assert
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized, Is.InstanceOf<ActualCompletenessAndFreshnessConfigDto>());
-            Assert.That(deserialized!.MarketDataType, Is.EqualTo(MarketDataTypeV2.ActualTimeSerie));
+            Assert.That(deserialized!.MarketDataType, Is.EqualTo(MarketDataType.ActualTimeSerie));
             Assert.That(json, Does.Contain("ActualTimeSerie"));
         }
 
@@ -157,7 +157,7 @@ namespace Artesian.SDK.Tests
             // Arrange
             var config = new VersionedCompletenessAndFreshnessConfigDto
             {
-                MarketDataType = MarketDataTypeV2.VersionedTimeSerie,
+                MarketDataType = MarketDataType.VersionedTimeSerie,
                 ScheduleConfig = new ScheduleConfigDto
                 {
                     ScheduleDefinition = new CronScheduleDefinitionDto
@@ -184,7 +184,7 @@ namespace Artesian.SDK.Tests
             // Assert
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized, Is.InstanceOf<VersionedCompletenessAndFreshnessConfigDto>());
-            Assert.That(deserialized!.MarketDataType, Is.EqualTo(MarketDataTypeV2.VersionedTimeSerie));
+            Assert.That(deserialized!.MarketDataType, Is.EqualTo(MarketDataType.VersionedTimeSerie));
 
             var versionedConfig = (VersionedCompletenessAndFreshnessConfigDto)deserialized;
             Assert.That(versionedConfig.VersionToleranceFrom, Is.EqualTo(Period.FromHours(-1)));
@@ -204,7 +204,7 @@ namespace Artesian.SDK.Tests
                 System.Text.Json.JsonSerializer.Deserialize<CompletenessAndFreshnessConfigDto>(invalidJson, _stjOptions));
 
             Assert.That(ex!.Message, Does.Contain("CompletenessAndFreshnessConfigDto"));
-            Assert.That(ex.Message, Does.Contain("MarketDataTypeV2"));
+            Assert.That(ex.Message, Does.Contain("MarketDataType"));
         }
 
         #endregion
@@ -559,7 +559,7 @@ namespace Artesian.SDK.Tests
                 Type = RuleType.CompletenessAndFreshness,
                 Configuration = new ActualCompletenessAndFreshnessConfigDto
                 {
-                    MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                    MarketDataType = MarketDataType.ActualTimeSerie,
                     ScheduleConfig = new ScheduleConfigDto
                     {
                         ScheduleDefinition = new CronScheduleDefinitionDto
@@ -608,7 +608,7 @@ namespace Artesian.SDK.Tests
                 Type = RuleType.CompletenessAndFreshness,
                 Configuration = new VersionedCompletenessAndFreshnessConfigDto
                 {
-                    MarketDataType = MarketDataTypeV2.VersionedTimeSerie,
+                    MarketDataType = MarketDataType.VersionedTimeSerie,
                     ScheduleConfig = new ScheduleConfigDto
                     {
                         ScheduleDefinition = new CronScheduleDefinitionDto

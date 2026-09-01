@@ -31,7 +31,7 @@ namespace Artesian.SDK.Dto
             /// <summary>
             /// MarketDataEntity Type
             /// </summary>
-            public MarketDataTypeV2 Type { get; set; }
+            public MarketDataType Type { get; set; }
             /// <summary>
             /// The Version to operate on
             /// </summary>

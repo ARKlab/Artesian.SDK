@@ -37,7 +37,7 @@ namespace Artesian.SDK.Tests.Samples
                 Type = RuleType.CompletenessAndFreshness,
                 Configuration = new ActualCompletenessAndFreshnessConfigDto
                 {
-                    MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                    MarketDataType = MarketDataType.ActualTimeSerie,
                     ScheduleConfig = new ScheduleConfigDto
                     {
                         ScheduleDefinition = new CronScheduleDefinitionDto
@@ -69,7 +69,7 @@ namespace Artesian.SDK.Tests.Samples
                 Type = RuleType.CompletenessAndFreshness,
                 Configuration = new ActualCompletenessAndFreshnessConfigDto
                 {
-                    MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                    MarketDataType = MarketDataType.ActualTimeSerie,
                     ScheduleConfig = new ScheduleConfigDto
                     {
                         ScheduleDefinition = new CronScheduleDefinitionDto
@@ -110,7 +110,7 @@ namespace Artesian.SDK.Tests.Samples
             {
                 ProviderName = "SpecFlowDataQuality",
                 MarketDataName = "Temperature_" + Guid.NewGuid(),
-                Type = MarketDataTypeV2.ActualTimeSerie,
+                Type = MarketDataType.ActualTimeSerie,
                 OriginalGranularity = Granularity.Hour,
                 OriginalTimezone = "UTC",
                 AggregationRule = AggregationRule.Undefined,
@@ -182,7 +182,7 @@ namespace Artesian.SDK.Tests.Samples
             {
                 ProviderName = "SpecFlowDataQuality",
                 MarketDataName = Guid.NewGuid().ToString(),
-                Type = MarketDataTypeV2.ActualTimeSerie,
+                Type = MarketDataType.ActualTimeSerie,
                 OriginalGranularity = Granularity.Hour,
                 OriginalTimezone = "UTC",
                 AggregationRule = AggregationRule.Undefined,
@@ -208,7 +208,7 @@ namespace Artesian.SDK.Tests.Samples
                 Type = RuleType.CompletenessAndFreshness,
                 Configuration = new ActualCompletenessAndFreshnessConfigDto
                 {
-                    MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                    MarketDataType = MarketDataType.ActualTimeSerie,
                     ScheduleConfig = new ScheduleConfigDto
                     {
                         ScheduleDefinition = new CronScheduleDefinitionDto
@@ -280,7 +280,7 @@ namespace Artesian.SDK.Tests.Samples
             {
                 ProviderName = "DqCheckResult",
                 MarketDataName = "TsCheckSummaryQuery_" + Guid.NewGuid(),
-                Type = MarketDataTypeV2.ActualTimeSerie,
+                Type = MarketDataType.ActualTimeSerie,
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "UTC",
                 AggregationRule = AggregationRule.Undefined,
@@ -314,7 +314,7 @@ namespace Artesian.SDK.Tests.Samples
                 Type = RuleType.CompletenessAndFreshness,
                 Configuration = new ActualCompletenessAndFreshnessConfigDto
                 {
-                    MarketDataType = MarketDataTypeV2.ActualTimeSerie,
+                    MarketDataType = MarketDataType.ActualTimeSerie,
                     ScheduleConfig = new ScheduleConfigDto
                     {
                         ScheduleDefinition = new CronScheduleDefinitionDto
@@ -493,7 +493,7 @@ namespace Artesian.SDK.Tests.Samples
             {
                 ProviderName = "DqCheckResultVts",
                 MarketDataName = "VtsExtractQuery_" + Guid.NewGuid(),
-                Type = MarketDataTypeV2.VersionedTimeSerie,
+                Type = MarketDataType.VersionedTimeSerie,
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "UTC",
                 AggregationRule = AggregationRule.Undefined,
@@ -519,7 +519,7 @@ namespace Artesian.SDK.Tests.Samples
                 Type = RuleType.CompletenessAndFreshness,
                 Configuration = new VersionedCompletenessAndFreshnessConfigDto
                 {
-                    MarketDataType = MarketDataTypeV2.VersionedTimeSerie,
+                    MarketDataType = MarketDataType.VersionedTimeSerie,
                     ScheduleConfig = new ScheduleConfigDto
                     {
                         ScheduleDefinition = new CronScheduleDefinitionDto
@@ -658,7 +658,7 @@ namespace Artesian.SDK.Tests.Samples
             {
                 ProviderName = "DqNotificationAlert",
                 MarketDataName = "TsCheckSummaryQuery_" + Guid.NewGuid(),
-                Type = MarketDataTypeV2.ActualTimeSerie,
+                Type = MarketDataType.ActualTimeSerie,
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "UTC",
                 AggregationRule = AggregationRule.Undefined,
@@ -728,7 +728,7 @@ namespace Artesian.SDK.Tests.Samples
             {
                 ProviderName = "MarketDataOverrideSample",
                 MarketDataName = "Override_" + Guid.NewGuid(),
-                Type = MarketDataTypeV2.ActualTimeSerie,
+                Type = MarketDataType.ActualTimeSerie,
                 OriginalGranularity = Granularity.Day,
                 OriginalTimezone = "UTC",
                 AggregationRule = AggregationRule.Undefined,

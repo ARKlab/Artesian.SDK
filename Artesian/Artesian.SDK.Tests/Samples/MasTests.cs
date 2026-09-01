@@ -44,7 +44,7 @@ namespace Artesian.SDK.Tests.Samples
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataTypeV2.MarketAssessment,
+                Type = MarketDataType.MarketAssessment,
                 MarketDataId = 0,
             };
 
@@ -134,7 +134,7 @@ namespace Artesian.SDK.Tests.Samples
                 OriginalGranularity = originalGranularity,
                 OriginalTimezone = originalTimezone,
                 AggregationRule = AggregationRule.Undefined,
-                Type = MarketDataTypeV2.MarketAssessment,
+                Type = MarketDataType.MarketAssessment,
                 MarketDataId = 0,
             };
 
