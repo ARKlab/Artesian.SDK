@@ -772,6 +772,8 @@ var updatedRule = await marketDataService.UpdateDataQualityRuleAsync(
 
 ### Delete a Data Quality Rule
 
+A Data Quality Rule can be deleted only if it has no assignments. Delete all existing assignments before deleting the rule.
+
 ```csharp
 await marketDataService.DeleteDataQualityRuleAsync(id: 123);
 ```
