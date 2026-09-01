@@ -129,7 +129,7 @@ namespace Artesian.SDK.Service
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="afterTimestamp"/> is earlier than 8 days ago.</exception>
         public Task<DqCheckChangeEventDto.Output[]> ReadDataQualityRuleAssignmentEventsFeedAsync(int id, Instant? afterTimestamp = null, CancellationToken ctk = default)
         {
-            if (afterTimestamp < SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(8))
+            if (afterTimestamp.HasValue && afterTimestamp.Value < SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(8))
                 throw new ArgumentOutOfRangeException(nameof(afterTimestamp), afterTimestamp, "AfterTimestamp cannot be earlier than 8 days ago.");
 
             var url = "/dataquality/dqruleassignment"
