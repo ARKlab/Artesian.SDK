@@ -328,6 +328,7 @@ namespace Artesian.SDK.Factory
                     Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
                     DownloadedAt = downloadedAt,
                     DeferCommandExecution = deferCommandExecution,
+                    DeferDataGeneration = deferDataGeneration,
                     BidAsk = new Dictionary<LocalDateTime, IDictionary<string, BidAskValue>>(),
                     KeepNulls = keepNulls,
                     UpsertMode = upsertMode,
