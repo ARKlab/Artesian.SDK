@@ -11,7 +11,9 @@ EXPECTED_BRANCH="$1"
 
 git fetch origin "$EXPECTED_BRANCH"
 
-if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/$EXPECTED_BRANCH"; then
+TAG_COMMIT_SHA=$(git rev-parse "${GITHUB_SHA}^{commit}")
+
+if ! git merge-base --is-ancestor "$TAG_COMMIT_SHA" "origin/$EXPECTED_BRANCH"; then
   echo "::error::Release tag does not point to a commit contained in $EXPECTED_BRANCH."
   exit 1
 fi
