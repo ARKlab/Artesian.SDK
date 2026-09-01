@@ -282,6 +282,25 @@ To construct a Bid Ask Time Series the following must be provided.
 
 [Go to Time Extraction window section](#artesian-sdk-extraction-windows)
 
+### Override and Fallback Query Options
+
+Actual, Versioned, Market Assessment, Auction, and Bid Ask queries support optional override and fallback controls. Both options default to `false`.
+
+```csharp
+var actualTimeSeries = await qs.CreateActual()
+                .ForMarketData(new int[] { 100000001 })
+                .InGranularity(Granularity.Day)
+                .InAbsoluteDateRange(new LocalDate(2018, 8, 1), new LocalDate(2018, 8, 10))
+                .WithSkipOverrides(false)
+                .WithIncludeOverrideDetails(true)
+                .ExecuteAsync();
+```
+
+| Query option | Default | Description |
+| ------------ | ------- | ----------- |
+| `WithSkipOverrides(bool)` | `false` | Specifies whether overrides and fallbacks must be skipped when querying data. |
+| `WithIncludeOverrideDetails(bool)` | `false` | Specifies whether original, override, and fallback details must be included in query results. |
+
 ### Artesian SDK Extraction Windows
 
 Extraction window types for queries.
