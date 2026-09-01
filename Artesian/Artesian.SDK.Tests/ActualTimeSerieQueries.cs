@@ -150,12 +150,16 @@ namespace Artesian.SDK.Tests
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
+                       .WithSkipOverrides(true)
+                       .WithIncludeOverrideDetails(true)
                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("id", 100000001)
                     .WithQueryParam("tz", "UTC")
+                     .WithQueryParam("skipOverrides", true)
+                     .WithQueryParam("includeOverrideDetails", true)
                     .Times(1);
             }
 

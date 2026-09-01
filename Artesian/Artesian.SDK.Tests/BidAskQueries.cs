@@ -152,12 +152,16 @@ namespace Artesian.SDK.Tests
                        .ForProducts(new [] { "M+1", "GY+1" })
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
+                       .WithSkipOverrides(true)
+                       .WithIncludeOverrideDetails(true)
                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ba/2018-01-01/2018-01-10")
                     .WithQueryParam("id", 100000001)
                     .WithQueryParamMultiple("p", new [] { "M+1", "GY+1" })
                     .WithQueryParam("tz", "UTC")
+                     .WithQueryParam("skipOverrides", true)
+                     .WithQueryParam("includeOverrideDetails", true)
                     .WithVerb(HttpMethod.Get)
                     .Times(1);
             }

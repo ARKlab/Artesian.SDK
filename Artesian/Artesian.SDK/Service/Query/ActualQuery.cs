@@ -211,6 +211,28 @@ namespace Artesian.SDK.Service
             return this;
         }
         /// <summary>
+        /// Sets whether overrides and fallbacks must be skipped.
+        /// </summary>
+        /// <param name="skipOverrides">Whether to skip overrides and fallbacks.</param>
+        /// <returns>ActualQuery</returns>
+        public ActualQuery WithSkipOverrides(bool skipOverrides)
+        {
+            QueryParamaters.SkipOverrides = skipOverrides;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets whether override and fallback details must be included.
+        /// </summary>
+        /// <param name="includeOverrideDetails">Whether to include override and fallback details.</param>
+        /// <returns>ActualQuery</returns>
+        public ActualQuery WithIncludeOverrideDetails(bool includeOverrideDetails)
+        {
+            QueryParamaters.IncludeOverrideDetails = includeOverrideDetails;
+            return this;
+        }
+
+        /// <summary>
         /// Execute ActualQuery
         /// </summary>
         /// <param name="ctk">CancellationToken</param>
@@ -241,6 +263,8 @@ namespace Artesian.SDK.Service
                         .SetQueryParam("fillerP", qp.FillerConfig.FillerPeriod)
                         .SetQueryParam("aggregationRule", qp.AggregationRule)
                         .SetQueryParam("unitOfMeasure", qp.UnitOfMeasure)
+                        .SetQueryParam("includeOverrideDetails", qp.IncludeOverrideDetails)
+                        .SetQueryParam("skipOverrides", qp.SkipOverrides)
                         .ToString())
                 .ToList();
 

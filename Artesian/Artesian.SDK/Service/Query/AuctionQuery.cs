@@ -114,6 +114,28 @@ namespace Artesian.SDK.Service
         }
 
         /// <summary>
+        /// Sets whether overrides and fallbacks must be skipped.
+        /// </summary>
+        /// <param name="skipOverrides">Whether to skip overrides and fallbacks.</param>
+        /// <returns>AuctionQuery</returns>
+        public AuctionQuery WithSkipOverrides(bool skipOverrides)
+        {
+            QueryParamaters.SkipOverrides = skipOverrides;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets whether override and fallback details must be included.
+        /// </summary>
+        /// <param name="includeOverrideDetails">Whether to include override and fallback details.</param>
+        /// <returns>AuctionQuery</returns>
+        public AuctionQuery WithIncludeOverrideDetails(bool includeOverrideDetails)
+        {
+            QueryParamaters.IncludeOverrideDetails = includeOverrideDetails;
+            return this;
+        }
+
+        /// <summary>
         /// Execute Auction
         /// </summary>
         /// <param name="ctk">CancellationToken</param>
@@ -143,6 +165,8 @@ namespace Artesian.SDK.Service
                         .SetQueryParam("id", qp.Ids)
                         .SetQueryParam("filterId", qp.FilterId)
                         .SetQueryParam("tz", qp.TimeZone)
+                        .SetQueryParam("includeOverrideDetails", qp.IncludeOverrideDetails)
+                        .SetQueryParam("skipOverrides", qp.SkipOverrides)
                         .ToString())
                 .ToList();
 

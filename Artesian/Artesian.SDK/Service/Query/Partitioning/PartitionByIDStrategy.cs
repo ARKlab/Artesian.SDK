@@ -34,7 +34,9 @@ namespace Artesian.SDK.Service
                                 queryParamater.Granularity,
                                 queryParamater.TransformId,
                                 queryParamater.FillerKindType,
-                                queryParamater.FillerConfig
+                                queryParamater.FillerConfig,
+                                includeOverrideDetails: queryParamater.IncludeOverrideDetails,
+                                skipOverrides: queryParamater.SkipOverrides
                                 )));
         }
 
@@ -65,7 +67,9 @@ namespace Artesian.SDK.Service
                                 queryParamater.FillerConfig,
                                 queryParamater.AnalysisDate,
                                 queryParamater.UnitOfMeasure,
-                                queryParamater.AggregationRule
+                                queryParamater.AggregationRule,
+                                queryParamater.IncludeOverrideDetails,
+                                queryParamater.SkipOverrides
                                 )));
         }
 
@@ -89,7 +93,9 @@ namespace Artesian.SDK.Service
                                 queryParamater.FilterId,
                                 queryParamater.Products,
                                 queryParamater.FillerKindType,
-                                queryParamater.FillerConfig
+                                queryParamater.FillerConfig,
+                                queryParamater.IncludeOverrideDetails,
+                                queryParamater.SkipOverrides
                                 )));
         }
 
@@ -110,7 +116,9 @@ namespace Artesian.SDK.Service
                                 queryParamater.ExtractionRangeSelectionConfig,
                                 queryParamater.ExtractionRangeType,
                                 queryParamater.TimeZone,
-                                queryParamater.FilterId
+                                queryParamater.FilterId,
+                                queryParamater.IncludeOverrideDetails,
+                                queryParamater.SkipOverrides
                                 )));
         }
 
@@ -134,7 +142,9 @@ namespace Artesian.SDK.Service
                                 queryParamater.FilterId,
                                 queryParamater.Products,
                                 queryParamater.FillerKindType,
-                                queryParamater.FillerConfig
+                                queryParamater.FillerConfig,
+                                queryParamater.IncludeOverrideDetails,
+                                queryParamater.SkipOverrides
                                 )));
         }
 

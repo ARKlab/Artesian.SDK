@@ -1328,11 +1328,15 @@ namespace Artesian.SDK.Tests
                        .ForLastOfDays(Period.FromMonths(-1), Period.FromDays(20))
                        .InAbsoluteDateRange(new LocalDate(2017, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
+                       .WithSkipOverrides(true)
+                       .WithIncludeOverrideDetails(true)
                        .ExecuteAsync();
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/vts/LastOfDays/P-1M/P20D/Day/2017-01-01/2018-01-10")
                  .WithQueryParam("id", 100000001)
                  .WithQueryParam("tz", "UTC")
+                  .WithQueryParam("skipOverrides", true)
+                  .WithQueryParam("includeOverrideDetails", true)
                  .WithVerb(HttpMethod.Get)
                  .Times(1);
             }

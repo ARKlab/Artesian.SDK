@@ -170,6 +170,28 @@ namespace Artesian.SDK.Service
             return this;
         }
         /// <summary>
+        /// Sets whether overrides and fallbacks must be skipped.
+        /// </summary>
+        /// <param name="skipOverrides">Whether to skip overrides and fallbacks.</param>
+        /// <returns>BidAskQuery</returns>
+        public BidAskQuery WithSkipOverrides(bool skipOverrides)
+        {
+            QueryParamaters.SkipOverrides = skipOverrides;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets whether override and fallback details must be included.
+        /// </summary>
+        /// <param name="includeOverrideDetails">Whether to include override and fallback details.</param>
+        /// <returns>BidAskQuery</returns>
+        public BidAskQuery WithIncludeOverrideDetails(bool includeOverrideDetails)
+        {
+            QueryParamaters.IncludeOverrideDetails = includeOverrideDetails;
+            return this;
+        }
+
+        /// <summary>
         /// Execute BidAskQuery
         /// </summary>
         /// <param name="ctk">CancellationToken</param>
@@ -204,6 +226,8 @@ namespace Artesian.SDK.Service
                         .SetQueryParam("fillerDVlp", qp.FillerConfig.FillerBidAskDV.LastPrice)
                         .SetQueryParam("fillerDVlq", qp.FillerConfig.FillerBidAskDV.LastQuantity)
                         .SetQueryParam("fillerP" ,qp.FillerConfig.FillerPeriod)
+                        .SetQueryParam("includeOverrideDetails", qp.IncludeOverrideDetails)
+                        .SetQueryParam("skipOverrides", qp.SkipOverrides)
                         .ToString())
                 .ToList();
 

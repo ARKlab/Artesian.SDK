@@ -29,6 +29,8 @@ namespace Artesian.SDK.Service
         /// <param name="products"></param>
         /// <param name="fillerK"></param>
         /// <param name="fillerConfig"></param>
+        /// <param name="includeOverrideDetails"></param>
+        /// <param name="skipOverrides"></param>
         public MasQueryParamaters(
             IEnumerable<int> ids , 
             ExtractionRangeSelectionConfig extractionRangeSelectionConfig, 
@@ -37,16 +39,28 @@ namespace Artesian.SDK.Service
             int? filterId,
             IEnumerable<string>? products,
             FillerKindType fillerK,
-            FillerConfig fillerConfig
+            FillerConfig fillerConfig,
+            bool includeOverrideDetails = false,
+            bool skipOverrides = false
             )
             : base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
         {
             this.Products = products;
             this.FillerConfig = fillerConfig;
+            this.IncludeOverrideDetails = includeOverrideDetails;
+            this.SkipOverrides = skipOverrides;
         }
         /// <summary>
         /// Products
         /// </summary>
         public IEnumerable<string>? Products { get; set; }
+        /// <summary>
+        /// Whether to include override and fallback details
+        /// </summary>
+        public bool IncludeOverrideDetails { get; set; }
+        /// <summary>
+        /// Whether to skip overrides and fallbacks
+        /// </summary>
+        public bool SkipOverrides { get; set; }
     }
 }
