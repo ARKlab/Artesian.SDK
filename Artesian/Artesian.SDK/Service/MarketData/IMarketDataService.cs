@@ -198,9 +198,10 @@ namespace Artesian.SDK.Service
         /// Returns events after the given timestamp (max 8-day lookback).
         /// </summary>
         /// <param name="id">The rule assignment identifier.</param>
-        /// <param name="afterTimestamp">Optional lower bound (events after this instant). Clamped to 8 days ago.</param>
+        /// <param name="afterTimestamp">Optional lower bound in UTC date-time format (for example, 2016-01-21T15:01:01.999999999Z). It cannot be earlier than 8 days ago.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>An array of <see cref="DqCheckChangeEventDto.Output"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="afterTimestamp"/> is earlier than 8 days ago.</exception>
         Task<DqCheckChangeEventDto.Output[]> ReadDataQualityRuleAssignmentEventsFeedAsync(int id, Instant? afterTimestamp = null, CancellationToken ctk = default);
 
         /// <summary>

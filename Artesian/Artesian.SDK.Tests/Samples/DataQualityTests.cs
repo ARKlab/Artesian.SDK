@@ -11,7 +11,6 @@ using NUnit.Framework;
 using NUnit.Framework.Legacy;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,7 +33,7 @@ namespace Artesian.SDK.Tests.Samples
             // Register rule
             var rulePayload = new DataQualityRuleDto.Input
             {
-                Name = "TestRule",
+                Name = "TestRule" + Guid.NewGuid(),
                 Type = RuleType.CompletenessAndFreshness,
                 Configuration = new ActualCompletenessAndFreshnessConfigDto
                 {
@@ -66,7 +65,7 @@ namespace Artesian.SDK.Tests.Samples
             // Update rule
             await marketDataService.UpdateDataQualityRuleAsync(ruleCreated.Id, new DataQualityRuleDto.Input
             {
-                Name = "TestRuleUpdated",
+                Name = "TestRuleUpdated" + Guid.NewGuid(),
                 Type = RuleType.CompletenessAndFreshness,
                 Configuration = new ActualCompletenessAndFreshnessConfigDto
                 {
@@ -98,6 +97,75 @@ namespace Artesian.SDK.Tests.Samples
             readDataQualityRule = await marketDataService.ReadDataQualityRuleByIdAsync(ruleCreated.Id, ctk);
 
             ClassicAssert.IsNull(readDataQualityRule);
+        }
+
+        [Test]
+        [Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        public async Task DataQualityAbsoluteBoundOutlierRule()
+        {
+            var marketDataService = new MarketDataService(_cfg);
+            CancellationToken ctk = default;
+
+            var input = new MarketDataEntity.Input
+            {
+                ProviderName = "SpecFlowDataQuality",
+                MarketDataName = "Temperature_" + Guid.NewGuid(),
+                Type = MarketDataTypeV2.ActualTimeSerie,
+                OriginalGranularity = Granularity.Hour,
+                OriginalTimezone = "UTC",
+                AggregationRule = AggregationRule.Undefined,
+            };
+
+            var marketData = marketDataService.GetMarketDataReference(
+                new MarketDataIdentifier(
+                    input.ProviderName,
+                    input.MarketDataName));
+
+            if (!await marketData.IsRegistered(ctk))
+                await marketData.Register(input, ctk);
+
+            await marketData.Load(ctk);
+
+            var rulePayload = new DataQualityRuleDto.Input
+            {
+                Name = "Temperature absolute bound outlier check" + Guid.NewGuid(),
+                Type = RuleType.Outlier,
+                Configuration = new OutlierConfigDto
+                {
+                    Model = new OutlierAbsoluteBoundConfigDto
+                    {
+                        LowerBound = -50.0,
+                        UpperBound = 100.0
+                    }
+                },
+                ETag = "{opaque string}"
+            };
+
+            var ruleCreated = await marketDataService.RegisterDataQualityRuleAsync(rulePayload, ctk);
+
+            ClassicAssert.IsNotNull(ruleCreated);
+            ClassicAssert.AreEqual(rulePayload.Name, ruleCreated.Name);
+            ClassicAssert.AreEqual(RuleType.Outlier, ruleCreated.Type);
+            ClassicAssert.IsInstanceOf<OutlierConfigDto>(ruleCreated.Configuration);
+            var configuration = (OutlierConfigDto)ruleCreated.Configuration;
+            ClassicAssert.IsInstanceOf<OutlierAbsoluteBoundConfigDto>(configuration.Model);
+            var model = (OutlierAbsoluteBoundConfigDto)configuration.Model;
+            ClassicAssert.AreEqual(-50.0, model.LowerBound);
+            ClassicAssert.AreEqual(100.0, model.UpperBound);
+
+            var assignmentPayload = new MarketDataQualityRuleAssignmentDto.Input
+            {
+                MarketDataId = marketData.MarketDataId!.Value,
+                DataQualityRuleId = ruleCreated.Id
+            };
+
+            var assignmentCreated = await marketDataService.RegisterDataQualityRuleAssignmentAsync(
+                assignmentPayload,
+                ctk: ctk);
+
+            ClassicAssert.IsNotNull(assignmentCreated);
+            ClassicAssert.AreEqual(marketData.MarketDataId.Value, assignmentCreated.MarketDataId);
+            ClassicAssert.AreEqual(ruleCreated.Id, assignmentCreated.DataQualityRuleId);
         }
 
         [Test]
@@ -136,7 +204,7 @@ namespace Artesian.SDK.Tests.Samples
             // Register rule
             var rulePayload = new DataQualityRuleDto.Input
             {
-                Name = "TestRule",
+                Name = "TestRule" + Guid.NewGuid(),
                 Type = RuleType.CompletenessAndFreshness,
                 Configuration = new ActualCompletenessAndFreshnessConfigDto
                 {
@@ -297,10 +365,103 @@ namespace Artesian.SDK.Tests.Samples
             // Step 7: Verify the results
             ClassicAssert.IsNotNull(checkSummaryResult);
             ClassicAssert.IsNotNull(checkSummaryResult.Data);
+            var checkSummaries = checkSummaryResult.Data.ToList();
+            ClassicAssert.AreEqual(1, checkSummaries.Count);
 
-            // The check summary should contain results
-            // Note: Depending on timing and background processing, results may or may not be available immediately
-            // This assertion verifies the API call succeeded
+            var checkSummary = checkSummaries.Single();
+            ClassicAssert.IsNotNull(checkSummary.Assignment);
+            var checkSummaryAssignment = checkSummary.Assignment!;
+            ClassicAssert.AreEqual(assignmentCreated.Id, checkSummaryAssignment.Id);
+            ClassicAssert.AreEqual(mktData.MarketDataId.Value, checkSummaryAssignment.MarketDataId);
+            ClassicAssert.AreEqual(ruleCreated.Id, checkSummaryAssignment.DataQualityRuleId);
+            ClassicAssert.IsNotNull(checkSummaryAssignment.MarketData);
+            ClassicAssert.AreEqual(input.ProviderName, checkSummaryAssignment.MarketData!.ProviderName);
+            ClassicAssert.AreEqual(input.MarketDataName, checkSummaryAssignment.MarketData.MarketDataName);
+            ClassicAssert.IsNotNull(checkSummaryAssignment.DataQualityRule);
+            ClassicAssert.AreEqual(rulePayload.Name, checkSummaryAssignment.DataQualityRule!.Name);
+            ClassicAssert.AreNotEqual(default(Instant), checkSummary.LastCheckTime);
+            ClassicAssert.AreNotEqual(default(Instant), checkSummary.LastUpdated);
+            ClassicAssert.AreNotEqual(default(Instant), checkSummary.Created);
+            ClassicAssert.LessOrEqual(checkSummary.RangeStart, checkSummary.RangeEnd);
+            ClassicAssert.AreEqual(CheckAggregatedStatus.KO, checkSummary.AggregatedStatus);
+            ClassicAssert.IsNull(checkSummary.Version);
+            ClassicAssert.IsNull(checkSummary.VersionFrom);
+
+            // Step 8: Query the Market Data DQ status summary
+            var marketDataDqStatusSummary = await marketDataService.GetMarketDataDqStatusSummaryAsync(
+                ruleId: ruleCreated.Id,
+                marketDataIds: new[] { mktData.MarketDataId.Value },
+                limit: 100,
+                ctk: ctk);
+
+            ClassicAssert.IsNotNull(marketDataDqStatusSummary);
+            var marketDataDqStatusSummaries = marketDataDqStatusSummary.ToList();
+            ClassicAssert.AreEqual(1, marketDataDqStatusSummaries.Count);
+
+            var marketDataSummary = marketDataDqStatusSummaries.Single();
+            ClassicAssert.AreEqual(mktData.MarketDataId.Value, marketDataSummary.MarketDataId);
+            ClassicAssert.IsNotNull(marketDataSummary.MarketData);
+            var returnedMarketData = marketDataSummary.MarketData!;
+            ClassicAssert.AreEqual(mktData.MarketDataId.Value, returnedMarketData.MarketDataId);
+            ClassicAssert.AreEqual(input.ProviderName, returnedMarketData.ProviderName);
+            ClassicAssert.AreEqual(input.MarketDataName, returnedMarketData.MarketDataName);
+            ClassicAssert.IsNotNull(marketDataSummary.Assignments);
+
+            var returnedAssignment = marketDataSummary.Assignments!.Single();
+            ClassicAssert.AreEqual(assignmentCreated.Id, returnedAssignment.Id);
+            ClassicAssert.AreEqual(mktData.MarketDataId.Value, returnedAssignment.MarketDataId);
+            ClassicAssert.AreEqual(ruleCreated.Id, returnedAssignment.DataQualityRuleId);
+            ClassicAssert.IsNotNull(marketDataSummary.StatusSummary);
+            var marketDataStatusSummary = marketDataSummary.StatusSummary!;
+            ClassicAssert.IsNotNull(marketDataStatusSummary.LastCheckTime);
+            ClassicAssert.AreEqual(CheckAggregatedStatus.KO, marketDataStatusSummary.OverallStatus);
+            ClassicAssert.AreEqual(1, marketDataStatusSummary.ActiveRulesCount);
+            ClassicAssert.AreEqual(1, marketDataStatusSummary.FailedRulesCount);
+            ClassicAssert.IsNotNull(marketDataStatusSummary.From);
+            ClassicAssert.IsNotNull(marketDataStatusSummary.To);
+
+            // Step 9: Query the TS check result extract
+            var tsExtract = await marketDataService.GetDataQualityCheckResultExtractTsAsync(
+                Granularity.Day,
+                checkSummary.RangeStart,
+                checkSummary.RangeEnd.PlusDays(1),
+                "UTC",
+                new[] { assignmentCreated.Id },
+                ctk);
+
+            ClassicAssert.IsNotNull(tsExtract);
+            var tsExtractResults = tsExtract.ToList();
+            ClassicAssert.IsNotEmpty(tsExtractResults);
+            ClassicAssert.IsTrue(tsExtractResults.All(x => x.AssignmentId == assignmentCreated.Id));
+            ClassicAssert.IsTrue(tsExtractResults.All(x => x.MarketDataId == mktData.MarketDataId.Value));
+            ClassicAssert.IsTrue(tsExtractResults.All(x => x.RuleId == ruleCreated.Id));
+            ClassicAssert.IsTrue(tsExtractResults.All(x => x.ProviderName == input.ProviderName));
+            ClassicAssert.IsTrue(tsExtractResults.All(x => x.CurveName == input.MarketDataName));
+            ClassicAssert.IsTrue(tsExtractResults.All(x => x.RuleName == rulePayload.Name));
+            ClassicAssert.IsTrue(tsExtractResults.All(x => x.CompetenceStart <= x.CompetenceEnd));
+            ClassicAssert.IsTrue(tsExtractResults.Any(x => x.IssueCount > 0));
+
+            // Step 10: Query the DQ rule status summary
+            var dqRuleDqStatusSummary = await marketDataService.GetDqRuleDqStatusSummaryAsync(
+                marketDataId: mktData.MarketDataId.Value,
+                ruleIds: new[] { ruleCreated.Id },
+                limit: 100,
+                ctk: ctk);
+
+            ClassicAssert.IsNotNull(dqRuleDqStatusSummary);
+            var dqRuleDqStatusSummaries = dqRuleDqStatusSummary.ToList();
+            ClassicAssert.AreEqual(1, dqRuleDqStatusSummaries.Count);
+
+            var dqRuleSummary = dqRuleDqStatusSummaries.Single();
+            ClassicAssert.AreEqual(ruleCreated.Id, dqRuleSummary.RuleId);
+            ClassicAssert.IsNotNull(dqRuleSummary.StatusSummary);
+            var dqRuleStatusSummary = dqRuleSummary.StatusSummary!;
+            ClassicAssert.IsNotNull(dqRuleStatusSummary.LastCheckTime);
+            ClassicAssert.AreEqual(CheckAggregatedStatus.KO, dqRuleStatusSummary.OverallStatus);
+            ClassicAssert.AreEqual(1, dqRuleStatusSummary.ActiveRulesCount);
+            ClassicAssert.AreEqual(1, dqRuleStatusSummary.FailedRulesCount);
+            ClassicAssert.AreEqual(marketDataStatusSummary.From, dqRuleStatusSummary.From);
+            ClassicAssert.AreEqual(marketDataStatusSummary.To, dqRuleStatusSummary.To);
 
             // Cleanup
             await marketDataService.DeleteDataQualityRuleAssignmentAsync(assignmentCreated.Id, ctk);
@@ -308,6 +469,124 @@ namespace Artesian.SDK.Tests.Samples
 
             if (mktData.MarketDataId.HasValue)
                 await marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value, ctk);
+        }
+
+        [Test]
+        [Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "<Pending>")]
+        public async Task DataQualityQueryCheckResultExtractVts()
+        {
+            var marketDataService = new MarketDataService(_cfg);
+            CancellationToken ctk = default;
+            var currentTime = SystemClock.Instance.GetCurrentInstant();
+            var currentUtc = currentTime.InUtc().LocalDateTime;
+            var version = new LocalDateTime(
+                currentUtc.Year,
+                currentUtc.Month,
+                currentUtc.Day,
+                0,
+                0);
+            var rangeStart = version.Date.PlusDays(-13);
+            var rangeEnd = version.Date;
+
+            var input = new MarketDataEntity.Input
+            {
+                ProviderName = "DqCheckResultVts",
+                MarketDataName = "VtsExtractQuery_" + Guid.NewGuid(),
+                Type = MarketDataTypeV2.VersionedTimeSerie,
+                OriginalGranularity = Granularity.Day,
+                OriginalTimezone = "UTC",
+                AggregationRule = AggregationRule.Undefined,
+            };
+
+            var mktData = marketDataService.GetMarketDataReference(
+                new MarketDataIdentifier(input.ProviderName, input.MarketDataName));
+
+            if (!await mktData.IsRegistered(ctk))
+                await mktData.Register(input, ctk);
+
+            await mktData.Load(ctk);
+
+            var data = mktData.EditVersioned(version);
+            data.TryAddData(rangeStart, 10.0);
+            data.TryAddData(rangeStart.PlusDays(2), 10.0);
+            data.TryAddData(rangeStart.PlusDays(4), 10.0);
+            await data.Save(currentTime, ctk: ctk);
+
+            var rulePayload = new DataQualityRuleDto.Input
+            {
+                Name = "VtsExtractRule_" + Guid.NewGuid(),
+                Type = RuleType.CompletenessAndFreshness,
+                Configuration = new VersionedCompletenessAndFreshnessConfigDto
+                {
+                    MarketDataType = MarketDataTypeV2.VersionedTimeSerie,
+                    ScheduleConfig = new ScheduleConfigDto
+                    {
+                        ScheduleDefinition = new CronScheduleDefinitionDto
+                        {
+                            CronExpression = "0 0 * * *",
+                            TimeZone = "UTC"
+                        },
+                        MaxDelay = Period.FromHours(1)
+                    },
+                    RecordValidationConfig = new RecordValidationConfigDto
+                    {
+                        RecordRangeFrom = Period.Zero,
+                        RecordRangeTo = Period.FromDays(1)
+                    },
+                    VersionToleranceFrom = Period.FromHours(-1),
+                    VersionToleranceTo = Period.FromHours(1),
+                    VersionPrecision = PeriodPrecision.Hour
+                }
+            };
+
+            var ruleCreated = await marketDataService.RegisterDataQualityRuleAsync(rulePayload, ctk);
+            var assignmentCreated = await marketDataService.RegisterDataQualityRuleAssignmentAsync(
+                new MarketDataQualityRuleAssignmentDto.Input
+                {
+                    MarketDataId = mktData.MarketDataId!.Value,
+                    DataQualityRuleId = ruleCreated.Id
+                },
+                Period.FromDays(13),
+                ctk);
+
+            await Task.Delay(TimeSpan.FromSeconds(5), ctk);
+
+            var checkSummaryResult = await marketDataService.GetDataQualityCheckResultCheckSummaryAsync(
+                page: 1,
+                pageSize: 100,
+                assignmentIds: new[] { assignmentCreated.Id },
+                ctk: ctk);
+
+            ClassicAssert.IsNotNull(checkSummaryResult.Data);
+            var versionedCheckSummary = checkSummaryResult.Data.First(x => x.Version.HasValue);
+            var checkedVersion = versionedCheckSummary.Version!.Value;
+
+            var vtsExtract = await marketDataService.GetDataQualityCheckResultExtractVtsAsync(
+                checkedVersion,
+                Granularity.Day,
+                versionedCheckSummary.RangeStart,
+                versionedCheckSummary.RangeEnd.PlusDays(1),
+                "UTC",
+                new[] { assignmentCreated.Id },
+                ctk);
+
+            ClassicAssert.IsNotNull(vtsExtract);
+            var vtsExtractResults = vtsExtract.ToList();
+            ClassicAssert.IsNotEmpty(vtsExtractResults);
+            //ClassicAssert.IsTrue(vtsExtractResults.All(x => x.AssignmentId == assignmentCreated.Id));
+            ClassicAssert.IsTrue(vtsExtractResults.All(x => x.MarketDataId == mktData.MarketDataId.Value));
+            ClassicAssert.IsTrue(vtsExtractResults.All(x => x.RuleId == ruleCreated.Id));
+            ClassicAssert.IsTrue(vtsExtractResults.All(x => x.ProviderName == input.ProviderName));
+            ClassicAssert.IsTrue(vtsExtractResults.All(x => x.CurveName == input.MarketDataName));
+            ClassicAssert.IsTrue(vtsExtractResults.All(x => x.RuleName == rulePayload.Name));
+            ClassicAssert.IsTrue(vtsExtractResults.All(x => x.Version == checkedVersion.ToDateTimeUnspecified()));
+            ClassicAssert.IsTrue(vtsExtractResults.All(x => x.CompetenceStart <= x.CompetenceEnd));
+            ClassicAssert.IsTrue(vtsExtractResults.Any(x => x.IssueCount > 0));
+
+            await marketDataService.DeleteDataQualityRuleAssignmentAsync(assignmentCreated.Id, ctk);
+            await marketDataService.DeleteDataQualityRuleAsync(ruleCreated.Id, ctk);
+            await marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value, ctk);
         }
 
         [Test]
@@ -470,42 +749,58 @@ namespace Artesian.SDK.Tests.Samples
 
             await data.Save(Instant.FromUtc(2025, 1, 14, 0, 0), ctk: ctk);
 
-            var overrideData = new UpsertCurveDataOverride
-            {
-                ID = new MarketDataIdentifier(input.ProviderName, input.MarketDataName),
-                Timezone = "UTC",
-                OverrideId = null,
-                DownloadedAt = SystemClock.Instance.GetCurrentInstant(),
-                Rows = new Dictionary<LocalDateTime, double?>
-                {
-                    [new LocalDateTime(2025, 1, 1, 0, 0)] = 11.5,
-                    [new LocalDateTime(2025, 1, 2, 0, 0)] = 12.5,
-                },
-                Kind = OverrideKind.Override,
-                ReplaceExisting = true,
-                Comment = "SDK Market Data override sample",
-                DeferCommandExecution = false,
-                DeferDataGeneration = false
-            };
+            data.ClearData();
+            data.TryAddData(new LocalDate(2025, 1, 1), 11.5);
+            data.TryAddData(new LocalDate(2025, 1, 2), 12.5);
 
-            var createdMetadata = await marketDataService.UpsertCurveDataOverrideAsync(overrideData, ctk);
+            await data.SaveOverride(
+                SystemClock.Instance.GetCurrentInstant(),
+                deferDataGeneration: false,
+                replaceExisting: true,
+                comment: "SDK Market Data override sample",
+                ctk: ctk);
 
-            ClassicAssert.IsNotNull(createdMetadata);
-            ClassicAssert.IsNotEmpty(createdMetadata);
-            ClassicAssert.IsTrue(createdMetadata[0].Id.HasValue);
-            ClassicAssert.AreEqual(OverrideKind.Override, createdMetadata[0].Kind);
-
-            var metadata = await marketDataService.ReadOverrideMetadataAsync(
+            var overrideMetadata = await marketDataService.ReadOverrideMetadataAsync(
                 marketData.MarketDataId!.Value,
                 OverrideKind.Override,
                 page: 1,
                 pageSize: 10,
                 ctk: ctk);
 
-            ClassicAssert.IsNotNull(metadata);
-            ClassicAssert.IsNotEmpty(metadata.Data);
+            ClassicAssert.IsNotNull(overrideMetadata);
+            ClassicAssert.IsNotEmpty(overrideMetadata.Data);
+            var createdOverride = overrideMetadata.Data.First();
+            ClassicAssert.IsTrue(createdOverride.Id.HasValue);
+            ClassicAssert.AreEqual(OverrideKind.Override, createdOverride.Kind);
+            var overrideId = createdOverride.Id!.Value;
 
-            await marketDataService.DeleteOverrideDataAsync(createdMetadata[0].Id!.Value, ctk);
+            data.ClearData();
+            data.TryAddData(new LocalDate(2025, 1, 4), 13.5);
+            data.TryAddData(new LocalDate(2025, 1, 5), 14.5);
+
+            await data.SaveFallback(
+                SystemClock.Instance.GetCurrentInstant(),
+                deferDataGeneration: false,
+                replaceExisting: true,
+                comment: "SDK Market Data fallback sample",
+                ctk: ctk);
+
+            var fallbackMetadata = await marketDataService.ReadOverrideMetadataAsync(
+                marketData.MarketDataId.Value,
+                OverrideKind.Fallback,
+                page: 1,
+                pageSize: 10,
+                ctk: ctk);
+
+            ClassicAssert.IsNotNull(fallbackMetadata);
+            ClassicAssert.IsNotEmpty(fallbackMetadata.Data);
+            var createdFallback = fallbackMetadata.Data.First();
+            ClassicAssert.IsTrue(createdFallback.Id.HasValue);
+            ClassicAssert.AreEqual(OverrideKind.Fallback, createdFallback.Kind);
+            var fallbackId = createdFallback.Id!.Value;
+
+            await marketDataService.DeleteOverrideDataAsync(overrideId, ctk);
+            await marketDataService.DeleteOverrideDataAsync(fallbackId, ctk);
 
             var deletedMetadata = await marketDataService.ReadOverrideMetadataAsync(
                 marketData.MarketDataId!.Value,
@@ -515,8 +810,19 @@ namespace Artesian.SDK.Tests.Samples
                 ctk: ctk);
 
             ClassicAssert.IsFalse(
-                deletedMetadata.Data.Any(x => x.Id == createdMetadata[0].Id),
+                deletedMetadata.Data.Any(x => x.Id == overrideId),
                 "The override metadata should not be returned after deletion.");
+
+            var deletedFallbackMetadata = await marketDataService.ReadOverrideMetadataAsync(
+                marketData.MarketDataId.Value,
+                OverrideKind.Fallback,
+                page: 1,
+                pageSize: 10,
+                ctk: ctk);
+
+            ClassicAssert.IsFalse(
+                deletedFallbackMetadata.Data.Any(x => x.Id == fallbackId),
+                "The fallback metadata should not be returned after deletion.");
 
             await marketDataService.DeleteMarketDataAsync(marketData.MarketDataId.Value, ctk);
         }

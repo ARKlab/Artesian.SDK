@@ -191,6 +191,71 @@ namespace Artesian.SDK.Tests
 
             timeSerie.SetData(valuesLocalDateReplace, BulkSetPolicy.Replace);
         }
+
+        [Test]
+        public async Task ActualTimeSerie_SaveOverrideAndFallback_MapsCorrectionMetadata()
+        {
+            var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
+            var marketDataEntity = new MarketDataEntity.Input
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalGranularity = Granularity.Hour,
+                OriginalTimezone = "CET",
+                AggregationRule = AggregationRule.Undefined,
+                Type = MarketDataTypeV2.ActualTimeSerie,
+                UnitOfMeasure = new UnitOfMeasure { Value = CommonUnitOfMeasure.MW },
+            };
+            var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+            var requests = new List<UpsertCurveDataOverride>();
+            var marketDataServiceMock = new Mock<IMarketDataService>();
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(marketDataOutputEnriched);
+            marketDataServiceMock.Setup(x => x.UpsertCurveDataOverrideAsync(It.IsAny<UpsertCurveDataOverride>(), It.IsAny<CancellationToken>()))
+                .Callback<UpsertCurveDataOverride, CancellationToken>((data, _) => requests.Add(data))
+                .ReturnsAsync(Array.Empty<OverrideMetadataEntry>());
+
+            var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
+            await marketData.Load();
+            var timeSerie = marketData.EditActual();
+            timeSerie.SetData(new Dictionary<LocalDateTime, double?>
+            {
+                { new LocalDateTime(2025, 12, 14, 0, 0), 10 }
+            }, BulkSetPolicy.Init);
+            var downloadedAt = Instant.FromUtc(2025, 12, 14, 1, 0);
+            var overrideId = Guid.NewGuid();
+
+            await timeSerie.SaveOverride(downloadedAt, true, false, true, UpsertMode.Replace, true, "override comment", overrideId);
+            await timeSerie.SaveFallback(downloadedAt, comment: "fallback comment");
+
+            Assert.That(requests, Has.Count.EqualTo(2));
+            Assert.That(requests[0].Kind, Is.EqualTo(OverrideKind.Override));
+            Assert.That(requests[0].ReplaceExisting, Is.True);
+            Assert.That(requests[0].Comment, Is.EqualTo("override comment"));
+            Assert.That(requests[0].OverrideId, Is.EqualTo(overrideId));
+            Assert.That(requests[0].DeferCommandExecution, Is.True);
+            Assert.That(requests[0].DeferDataGeneration, Is.False);
+            Assert.That(requests[0].KeepNulls, Is.True);
+            Assert.That(requests[0].UpsertMode, Is.EqualTo(UpsertMode.Replace));
+            Assert.That(requests[0].Timezone, Is.EqualTo("UTC"));
+            Assert.That(requests[0].Rows, Is.EquivalentTo(timeSerie.Values));
+            Assert.That(requests[1].Kind, Is.EqualTo(OverrideKind.Fallback));
+            Assert.That(requests[1].ReplaceExisting, Is.False);
+            Assert.That(requests[1].Comment, Is.EqualTo("fallback comment"));
+            Assert.That(requests[1].OverrideId, Is.Null);
+        }
+
         [Test]
         public async Task MarketDataServiceSetDataInitReplace_MarketAssessment()
         {
@@ -2320,6 +2385,19 @@ namespace Artesian.SDK.Tests
                     .Times(1);
             }
         }
+
+        [Test]
+        public void MarketData_ReadDataQualityRuleAssignmentEventsFeedAsync_RejectsAfterTimestampOlderThanEightDays()
+        {
+            var mds = new MarketDataService(_cfg);
+            var afterTimestamp = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(9);
+
+            var exception = Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.ReadDataQualityRuleAssignmentEventsFeedAsync(1, afterTimestamp).ConfigureAwait(false));
+
+            Assert.That(exception!.ParamName, Is.EqualTo("afterTimestamp"));
+        }
+
         #endregion
 
         #region DataQualityCheckResult

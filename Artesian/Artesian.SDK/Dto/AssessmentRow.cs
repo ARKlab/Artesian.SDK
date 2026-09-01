@@ -105,6 +105,195 @@ namespace Artesian.SDK.Dto
         [Key(12)]
         public double? VolumeTotal { get; init; }
 
+        /// <summary>
+        /// Original settlement before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OS")]
+        [Key(13)]
+        public double? OriginalSettlement { get; init; }
+
+        /// <summary>
+        /// Original open before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OO")]
+        [Key(14)]
+        public double? OriginalOpen { get; init; }
+
+        /// <summary>
+        /// Original close before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OC")]
+        [Key(15)]
+        public double? OriginalClose { get; init; }
+
+        /// <summary>
+        /// Original high before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OH")]
+        [Key(16)]
+        public double? OriginalHigh { get; init; }
+
+        /// <summary>
+        /// Original low before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OL")]
+        [Key(17)]
+        public double? OriginalLow { get; init; }
+
+        /// <summary>
+        /// Original paid volume before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OVP")]
+        [Key(18)]
+        public double? OriginalVolumePaid { get; init; }
+
+        /// <summary>
+        /// Original given volume before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OVG")]
+        [Key(19)]
+        public double? OriginalVolumeGiven { get; init; }
+
+        /// <summary>
+        /// Original total volume before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OVT")]
+        [Key(20)]
+        public double? OriginalVolumeTotal { get; init; }
+
+        /// <summary>
+        /// Override settlement
+        /// </summary>
+        [JsonPropertyName("XS")]
+        [Key(21)]
+        public double? OverrideSettlement { get; init; }
+
+        /// <summary>
+        /// Override open
+        /// </summary>
+        [JsonPropertyName("XO")]
+        [Key(22)]
+        public double? OverrideOpen { get; init; }
+
+        /// <summary>
+        /// Override close
+        /// </summary>
+        [JsonPropertyName("XC")]
+        [Key(23)]
+        public double? OverrideClose { get; init; }
+
+        /// <summary>
+        /// Override high
+        /// </summary>
+        [JsonPropertyName("XH")]
+        [Key(24)]
+        public double? OverrideHigh { get; init; }
+
+        /// <summary>
+        /// Override low
+        /// </summary>
+        [JsonPropertyName("XL")]
+        [Key(25)]
+        public double? OverrideLow { get; init; }
+
+        /// <summary>
+        /// Override paid volume
+        /// </summary>
+        [JsonPropertyName("XVP")]
+        [Key(26)]
+        public double? OverrideVolumePaid { get; init; }
+
+        /// <summary>
+        /// Override given volume
+        /// </summary>
+        [JsonPropertyName("XVG")]
+        [Key(27)]
+        public double? OverrideVolumeGiven { get; init; }
+
+        /// <summary>
+        /// Override total volume
+        /// </summary>
+        [JsonPropertyName("XVT")]
+        [Key(28)]
+        public double? OverrideVolumeTotal { get; init; }
+
+        /// <summary>
+        /// Fallback settlement
+        /// </summary>
+        [JsonPropertyName("FS")]
+        [Key(29)]
+        public double? FallbackSettlement { get; init; }
+
+        /// <summary>
+        /// Fallback open
+        /// </summary>
+        [JsonPropertyName("FO")]
+        [Key(30)]
+        public double? FallbackOpen { get; init; }
+
+        /// <summary>
+        /// Fallback close
+        /// </summary>
+        [JsonPropertyName("FC")]
+        [Key(31)]
+        public double? FallbackClose { get; init; }
+
+        /// <summary>
+        /// Fallback high
+        /// </summary>
+        [JsonPropertyName("FH")]
+        [Key(32)]
+        public double? FallbackHigh { get; init; }
+
+        /// <summary>
+        /// Fallback low
+        /// </summary>
+        [JsonPropertyName("FL")]
+        [Key(33)]
+        public double? FallbackLow { get; init; }
+
+        /// <summary>
+        /// Fallback paid volume
+        /// </summary>
+        [JsonPropertyName("FVP")]
+        [Key(34)]
+        public double? FallbackVolumePaid { get; init; }
+
+        /// <summary>
+        /// Fallback given volume
+        /// </summary>
+        [JsonPropertyName("FVG")]
+        [Key(35)]
+        public double? FallbackVolumeGiven { get; init; }
+
+        /// <summary>
+        /// Fallback total volume
+        /// </summary>
+        [JsonPropertyName("FVT")]
+        [Key(36)]
+        public double? FallbackVolumeTotal { get; init; }
+
+        /// <summary>
+        /// Override identifier
+        /// </summary>
+        [JsonPropertyName("OID")]
+        [Key(37)]
+        public Guid? OverrideId { get; init; }
+
+        /// <summary>
+        /// Fallback identifier
+        /// </summary>
+        [JsonPropertyName("FID")]
+        [Key(38)]
+        public Guid? FallbackId { get; init; }
+
+        /// <summary>
+        /// Replacement state
+        /// </summary>
+        [JsonPropertyName("R")]
+        [Key(39)]
+        public int? Replaced { get; init; }
+
         #endregion Mas Values
     }
 }

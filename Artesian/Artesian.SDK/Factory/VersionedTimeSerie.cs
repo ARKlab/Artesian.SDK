@@ -1,5 +1,6 @@
 using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.Override.Enum;
 using Artesian.SDK.Service;
 
 using NodaTime;
@@ -284,6 +285,38 @@ namespace Artesian.SDK.Factory
         public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default) =>
             await _save(downloadedAt, deferCommandExecution, deferDataGeneration, keepNulls, upsertMode, ctk).ConfigureAwait(true);
 
+        /// <summary>
+        /// Saves the data of the current Market Data version as an override.
+        /// </summary>
+        /// <param name="downloadedAt">Downloaded at.</param>
+        /// <param name="deferCommandExecution">Defer command execution.</param>
+        /// <param name="deferDataGeneration">Defer data generation.</param>
+        /// <param name="keepNulls">If <see langword="false"/>, nulls are ignored server-side.</param>
+        /// <param name="upsertMode">Upsert mode.</param>
+        /// <param name="replaceExisting">Whether overlapping overrides should be replaced.</param>
+        /// <param name="comment">Optional comment describing the override.</param>
+        /// <param name="overrideId">Optional identifier of an existing override to update.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous save operation.</returns>
+        public async Task SaveOverride(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default) =>
+            await _saveCorrection(downloadedAt, deferCommandExecution, deferDataGeneration, keepNulls, upsertMode, replaceExisting, comment, overrideId, OverrideKind.Override, ctk).ConfigureAwait(false);
+
+        /// <summary>
+        /// Saves the data of the current Market Data version as a fallback.
+        /// </summary>
+        /// <param name="downloadedAt">Downloaded at.</param>
+        /// <param name="deferCommandExecution">Defer command execution.</param>
+        /// <param name="deferDataGeneration">Defer data generation.</param>
+        /// <param name="keepNulls">If <see langword="false"/>, nulls are ignored server-side.</param>
+        /// <param name="upsertMode">Upsert mode.</param>
+        /// <param name="replaceExisting">Whether overlapping fallbacks should be replaced.</param>
+        /// <param name="comment">Optional comment describing the fallback.</param>
+        /// <param name="overrideId">Optional identifier of an existing fallback to update.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous save operation.</returns>
+        public async Task SaveFallback(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default) =>
+            await _saveCorrection(downloadedAt, deferCommandExecution, deferDataGeneration, keepNulls, upsertMode, replaceExisting, comment, overrideId, OverrideKind.Fallback, ctk).ConfigureAwait(false);
+
         private async Task _save(
             Instant downloadedAt,
             bool deferCommandExecution,
@@ -311,6 +344,44 @@ namespace Artesian.SDK.Factory
                 };
 
                 await _marketDataService.UpsertCurveDataAsync(data, ctk).ConfigureAwait(false);
+            }
+        }
+
+        private async Task _saveCorrection(
+            Instant downloadedAt,
+            bool deferCommandExecution,
+            bool deferDataGeneration,
+            bool keepNulls,
+            UpsertMode? upsertMode,
+            bool replaceExisting,
+            string? comment,
+            Guid? overrideId,
+            OverrideKind kind,
+            CancellationToken ctk)
+        {
+            if (!SelectedVersion.HasValue)
+                throw new VersionedTimeSerieException("No Version has been selected to save Data");
+
+            if (Values.Any())
+            {
+                var data = new UpsertCurveDataOverride
+                {
+                    ID = _identifier,
+                    Version = SelectedVersion.Value,
+                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
+                    DownloadedAt = downloadedAt,
+                    Rows = _values,
+                    DeferCommandExecution = deferCommandExecution,
+                    DeferDataGeneration = deferDataGeneration,
+                    KeepNulls = keepNulls,
+                    UpsertMode = upsertMode,
+                    ReplaceExisting = replaceExisting,
+                    Comment = comment,
+                    OverrideId = overrideId,
+                    Kind = kind
+                };
+
+                await _marketDataService.UpsertCurveDataOverrideAsync(data, ctk).ConfigureAwait(false);
             }
         }
 

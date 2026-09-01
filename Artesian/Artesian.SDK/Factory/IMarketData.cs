@@ -310,6 +310,36 @@ namespace Artesian.SDK.Factory
         Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
 
         /// <summary>
+        /// Saves the time series data as an override.
+        /// </summary>
+        /// <param name="downloadedAt">The instant downloaded.</param>
+        /// <param name="deferCommandExecution">Defer command execution.</param>
+        /// <param name="deferDataGeneration">Defer data generation.</param>
+        /// <param name="keepNulls">If <see langword="false"/>, nulls are ignored server-side.</param>
+        /// <param name="upsertMode">Upsert mode.</param>
+        /// <param name="replaceExisting">Whether overlapping overrides should be replaced.</param>
+        /// <param name="comment">Optional comment describing the override.</param>
+        /// <param name="overrideId">Optional identifier of an existing override to update.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous save operation.</returns>
+        Task SaveOverride(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Saves the time series data as a fallback.
+        /// </summary>
+        /// <param name="downloadedAt">The instant downloaded.</param>
+        /// <param name="deferCommandExecution">Defer command execution.</param>
+        /// <param name="deferDataGeneration">Defer data generation.</param>
+        /// <param name="keepNulls">If <see langword="false"/>, nulls are ignored server-side.</param>
+        /// <param name="upsertMode">Upsert mode.</param>
+        /// <param name="replaceExisting">Whether overlapping fallbacks should be replaced.</param>
+        /// <param name="comment">Optional comment describing the fallback.</param>
+        /// <param name="overrideId">Optional identifier of an existing fallback to update.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous save operation.</returns>
+        Task SaveFallback(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default);
+
+        /// <summary>
         /// MarketData Delete
         /// </summary>
         /// <remarks>
@@ -448,6 +478,36 @@ namespace Artesian.SDK.Factory
         Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
 
         /// <summary>
+        /// Saves the time series data as an override.
+        /// </summary>
+        /// <param name="downloadedAt">The instant downloaded.</param>
+        /// <param name="deferCommandExecution">Defer command execution.</param>
+        /// <param name="deferDataGeneration">Defer data generation.</param>
+        /// <param name="keepNulls">If <see langword="false"/>, nulls are ignored server-side.</param>
+        /// <param name="upsertMode">Upsert mode.</param>
+        /// <param name="replaceExisting">Whether overlapping overrides should be replaced.</param>
+        /// <param name="comment">Optional comment describing the override.</param>
+        /// <param name="overrideId">Optional identifier of an existing override to update.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous save operation.</returns>
+        Task SaveOverride(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Saves the time series data as a fallback.
+        /// </summary>
+        /// <param name="downloadedAt">The instant downloaded.</param>
+        /// <param name="deferCommandExecution">Defer command execution.</param>
+        /// <param name="deferDataGeneration">Defer data generation.</param>
+        /// <param name="keepNulls">If <see langword="false"/>, nulls are ignored server-side.</param>
+        /// <param name="upsertMode">Upsert mode.</param>
+        /// <param name="replaceExisting">Whether overlapping fallbacks should be replaced.</param>
+        /// <param name="comment">Optional comment describing the fallback.</param>
+        /// <param name="overrideId">Optional identifier of an existing fallback to update.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous save operation.</returns>
+        Task SaveFallback(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default);
+
+        /// <summary>
         /// MarketData Delete
         /// </summary>
         /// <remarks>
@@ -555,6 +615,36 @@ namespace Artesian.SDK.Factory
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
         Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Saves the time series data as an override.
+        /// </summary>
+        /// <param name="downloadedAt">The instant downloaded.</param>
+        /// <param name="deferCommandExecution">Defer command execution.</param>
+        /// <param name="deferDataGeneration">Defer data generation.</param>
+        /// <param name="keepNulls">If <see langword="false"/>, nulls are ignored server-side.</param>
+        /// <param name="upsertMode">Upsert mode.</param>
+        /// <param name="replaceExisting">Whether overlapping overrides should be replaced.</param>
+        /// <param name="comment">Optional comment describing the override.</param>
+        /// <param name="overrideId">Optional identifier of an existing override to update.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous save operation.</returns>
+        Task SaveOverride(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Saves the time series data as a fallback.
+        /// </summary>
+        /// <param name="downloadedAt">The instant downloaded.</param>
+        /// <param name="deferCommandExecution">Defer command execution.</param>
+        /// <param name="deferDataGeneration">Defer data generation.</param>
+        /// <param name="keepNulls">If <see langword="false"/>, nulls are ignored server-side.</param>
+        /// <param name="upsertMode">Upsert mode.</param>
+        /// <param name="replaceExisting">Whether overlapping fallbacks should be replaced.</param>
+        /// <param name="comment">Optional comment describing the fallback.</param>
+        /// <param name="overrideId">Optional identifier of an existing fallback to update.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous save operation.</returns>
+        Task SaveFallback(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default);
 
         /// <summary>
         /// MarketData Delete
@@ -695,6 +785,36 @@ namespace Artesian.SDK.Factory
         /// <param name="ctk">Cancellation Token</param>
         /// <returns></returns>
         Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Saves the time series data as an override.
+        /// </summary>
+        /// <param name="downloadedAt">The instant downloaded.</param>
+        /// <param name="deferCommandExecution">Defer command execution.</param>
+        /// <param name="deferDataGeneration">Defer data generation.</param>
+        /// <param name="keepNulls">If <see langword="false"/>, nulls are ignored server-side.</param>
+        /// <param name="upsertMode">Upsert mode.</param>
+        /// <param name="replaceExisting">Whether overlapping overrides should be replaced.</param>
+        /// <param name="comment">Optional comment describing the override.</param>
+        /// <param name="overrideId">Optional identifier of an existing override to update.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous save operation.</returns>
+        Task SaveOverride(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Saves the time series data as a fallback.
+        /// </summary>
+        /// <param name="downloadedAt">The instant downloaded.</param>
+        /// <param name="deferCommandExecution">Defer command execution.</param>
+        /// <param name="deferDataGeneration">Defer data generation.</param>
+        /// <param name="keepNulls">If <see langword="false"/>, nulls are ignored server-side.</param>
+        /// <param name="upsertMode">Upsert mode.</param>
+        /// <param name="replaceExisting">Whether overlapping fallbacks should be replaced.</param>
+        /// <param name="comment">Optional comment describing the fallback.</param>
+        /// <param name="overrideId">Optional identifier of an existing fallback to update.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous save operation.</returns>
+        Task SaveFallback(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default);
 
         /// <summary>
         /// MarketData Delete

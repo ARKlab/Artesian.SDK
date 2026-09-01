@@ -696,7 +696,7 @@ namespace Artesian.SDK.Tests
         public void AuctionRow_STJ_Deserializes_WithShortPropertyNames()
         {
             // Arrange - JSON with short property names, focusing on DateTimeOffset and nullable properties
-            const string json = @"{""P"":""TestProvider"",""N"":""TestCurve"",""ID"":100000001,""T"":""2024-01-01T12:00:00+00:00"",""S"":""Bid"",""D"":50.0,""Q"":100.0,""AD"":45.0,""AQ"":90.0,""BT"":""Single""}";
+            const string json = @"{""P"":""TestProvider"",""N"":""TestCurve"",""ID"":100000001,""T"":""2024-01-01T12:00:00+00:00"",""S"":""Bid"",""D"":50.0,""Q"":100.0,""AD"":45.0,""AQ"":90.0,""BT"":""Single"",""OS"":""Offer"",""OD"":40.0,""OQ"":80.0,""OAD"":35.0,""OAQ"":70.0,""OBT"":""Block"",""XS"":""Bid"",""XD"":50.0,""XQ"":100.0,""XAD"":45.0,""XAQ"":90.0,""XBT"":""Single"",""FS"":""Offer"",""FD"":30.0,""FQ"":60.0,""FAD"":25.0,""FAQ"":50.0,""FBT"":""Block"",""OID"":""11111111-1111-1111-1111-111111111111"",""FID"":""22222222-2222-2222-2222-222222222222"",""R"":1}";
 
             // Act - Deserialize with STJ
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<AuctionRow>(json, _stjOptions);
@@ -713,13 +713,34 @@ namespace Artesian.SDK.Tests
             Assert.That(deserialized.AcceptedPrice, Is.EqualTo(45.0));
             Assert.That(deserialized.AcceptedQuantity, Is.EqualTo(90.0));
             Assert.That(deserialized.BlockType, Is.EqualTo(BlockType.Single));
+            Assert.That(deserialized.OriginalSide, Is.EqualTo(AuctionSide.Offer));
+            Assert.That(deserialized.OriginalPrice, Is.EqualTo(40.0));
+            Assert.That(deserialized.OriginalQuantity, Is.EqualTo(80.0));
+            Assert.That(deserialized.OriginalAcceptedPrice, Is.EqualTo(35.0));
+            Assert.That(deserialized.OriginalAcceptedQuantity, Is.EqualTo(70.0));
+            Assert.That(deserialized.OriginalBlockType, Is.EqualTo(BlockType.Block));
+            Assert.That(deserialized.OverrideSide, Is.EqualTo(AuctionSide.Bid));
+            Assert.That(deserialized.OverridePrice, Is.EqualTo(50.0));
+            Assert.That(deserialized.OverrideQuantity, Is.EqualTo(100.0));
+            Assert.That(deserialized.OverrideAcceptedPrice, Is.EqualTo(45.0));
+            Assert.That(deserialized.OverrideAcceptedQuantity, Is.EqualTo(90.0));
+            Assert.That(deserialized.OverrideBlockType, Is.EqualTo(BlockType.Single));
+            Assert.That(deserialized.FallbackSide, Is.EqualTo(AuctionSide.Offer));
+            Assert.That(deserialized.FallbackPrice, Is.EqualTo(30.0));
+            Assert.That(deserialized.FallbackQuantity, Is.EqualTo(60.0));
+            Assert.That(deserialized.FallbackAcceptedPrice, Is.EqualTo(25.0));
+            Assert.That(deserialized.FallbackAcceptedQuantity, Is.EqualTo(50.0));
+            Assert.That(deserialized.FallbackBlockType, Is.EqualTo(BlockType.Block));
+            Assert.That(deserialized.OverrideId, Is.EqualTo(Guid.Parse("11111111-1111-1111-1111-111111111111")));
+            Assert.That(deserialized.FallbackId, Is.EqualTo(Guid.Parse("22222222-2222-2222-2222-222222222222")));
+            Assert.That(deserialized.Replaced, Is.EqualTo(1));
         }
 
         [Test]
         public void AssessmentRow_STJ_Deserializes_WithShortPropertyNames()
         {
             // Arrange - JSON with short property names, focusing on DateTimeOffset and nullable properties
-            const string json = @"{""P"":""TestProvider"",""N"":""TestCurve"",""ID"":100000001,""PR"":""Power"",""T"":""2024-01-01T12:00:00+00:00"",""S"":100.0,""O"":99.0,""C"":101.0,""H"":102.0,""L"":98.0,""VP"":1000.0,""VG"":1100.0,""VT"":2100.0}";
+            const string json = @"{""P"":""TestProvider"",""N"":""TestCurve"",""ID"":100000001,""PR"":""Power"",""T"":""2024-01-01T12:00:00+00:00"",""S"":100.0,""O"":99.0,""C"":101.0,""H"":102.0,""L"":98.0,""VP"":1000.0,""VG"":1100.0,""VT"":2100.0,""OS"":90.0,""OO"":89.0,""OC"":91.0,""OH"":92.0,""OL"":88.0,""OVP"":900.0,""OVG"":1000.0,""OVT"":1900.0,""XS"":100.0,""XO"":99.0,""XC"":101.0,""XH"":102.0,""XL"":98.0,""XVP"":1000.0,""XVG"":1100.0,""XVT"":2100.0,""FS"":80.0,""FO"":79.0,""FC"":81.0,""FH"":82.0,""FL"":78.0,""FVP"":800.0,""FVG"":900.0,""FVT"":1700.0,""OID"":""11111111-1111-1111-1111-111111111111"",""FID"":""22222222-2222-2222-2222-222222222222"",""R"":1}";
 
             // Act - Deserialize with STJ
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<AssessmentRow>(json, _stjOptions);
@@ -739,13 +760,40 @@ namespace Artesian.SDK.Tests
             Assert.That(deserialized.VolumePaid, Is.EqualTo(1000.0));
             Assert.That(deserialized.VolumeGiven, Is.EqualTo(1100.0));
             Assert.That(deserialized.VolumeTotal, Is.EqualTo(2100.0));
+            Assert.That(deserialized.OriginalSettlement, Is.EqualTo(90.0));
+            Assert.That(deserialized.OriginalOpen, Is.EqualTo(89.0));
+            Assert.That(deserialized.OriginalClose, Is.EqualTo(91.0));
+            Assert.That(deserialized.OriginalHigh, Is.EqualTo(92.0));
+            Assert.That(deserialized.OriginalLow, Is.EqualTo(88.0));
+            Assert.That(deserialized.OriginalVolumePaid, Is.EqualTo(900.0));
+            Assert.That(deserialized.OriginalVolumeGiven, Is.EqualTo(1000.0));
+            Assert.That(deserialized.OriginalVolumeTotal, Is.EqualTo(1900.0));
+            Assert.That(deserialized.OverrideSettlement, Is.EqualTo(100.0));
+            Assert.That(deserialized.OverrideOpen, Is.EqualTo(99.0));
+            Assert.That(deserialized.OverrideClose, Is.EqualTo(101.0));
+            Assert.That(deserialized.OverrideHigh, Is.EqualTo(102.0));
+            Assert.That(deserialized.OverrideLow, Is.EqualTo(98.0));
+            Assert.That(deserialized.OverrideVolumePaid, Is.EqualTo(1000.0));
+            Assert.That(deserialized.OverrideVolumeGiven, Is.EqualTo(1100.0));
+            Assert.That(deserialized.OverrideVolumeTotal, Is.EqualTo(2100.0));
+            Assert.That(deserialized.FallbackSettlement, Is.EqualTo(80.0));
+            Assert.That(deserialized.FallbackOpen, Is.EqualTo(79.0));
+            Assert.That(deserialized.FallbackClose, Is.EqualTo(81.0));
+            Assert.That(deserialized.FallbackHigh, Is.EqualTo(82.0));
+            Assert.That(deserialized.FallbackLow, Is.EqualTo(78.0));
+            Assert.That(deserialized.FallbackVolumePaid, Is.EqualTo(800.0));
+            Assert.That(deserialized.FallbackVolumeGiven, Is.EqualTo(900.0));
+            Assert.That(deserialized.FallbackVolumeTotal, Is.EqualTo(1700.0));
+            Assert.That(deserialized.OverrideId, Is.EqualTo(Guid.Parse("11111111-1111-1111-1111-111111111111")));
+            Assert.That(deserialized.FallbackId, Is.EqualTo(Guid.Parse("22222222-2222-2222-2222-222222222222")));
+            Assert.That(deserialized.Replaced, Is.EqualTo(1));
         }
 
         [Test]
         public void TimeSerieRowActual_STJ_Deserializes_WithShortPropertyNames()
         {
             // Arrange - JSON with short property names, focusing on DateTimeOffset and nullable double
-            const string json = @"{""P"":""TestProvider"",""C"":""TestCurve"",""ID"":100000001,""T"":""2024-01-01T12:00:00+00:00"",""D"":100.5,""S"":""2024-01-01T00:00:00+00:00"",""E"":""2024-01-02T00:00:00+00:00""}";
+            const string json = @"{""P"":""TestProvider"",""C"":""TestCurve"",""ID"":100000001,""T"":""2024-01-01T12:00:00+00:00"",""D"":100.5,""S"":""2024-01-01T00:00:00+00:00"",""E"":""2024-01-02T00:00:00+00:00"",""OriginalD"":99.5,""OverrideD"":100.5,""FallbackD"":98.5,""OverrideId"":""11111111-1111-1111-1111-111111111111"",""FallbackId"":""22222222-2222-2222-2222-222222222222"",""Replaced"":1}";
 
             // Act - Deserialize with STJ
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<TimeSerieRow.Actual>(json, _stjOptions);
@@ -759,6 +807,12 @@ namespace Artesian.SDK.Tests
             Assert.That(deserialized.Value, Is.EqualTo(100.5));
             Assert.That(deserialized.CompetenceStart, Is.EqualTo(DateTimeOffset.Parse("2024-01-01T00:00:00+00:00", CultureInfo.InvariantCulture)));
             Assert.That(deserialized.CompetenceEnd, Is.EqualTo(DateTimeOffset.Parse("2024-01-02T00:00:00+00:00", CultureInfo.InvariantCulture)));
+            Assert.That(deserialized.OriginalValue, Is.EqualTo(99.5));
+            Assert.That(deserialized.OverrideValue, Is.EqualTo(100.5));
+            Assert.That(deserialized.FallbackValue, Is.EqualTo(98.5));
+            Assert.That(deserialized.OverrideId, Is.EqualTo(Guid.Parse("11111111-1111-1111-1111-111111111111")));
+            Assert.That(deserialized.FallbackId, Is.EqualTo(Guid.Parse("22222222-2222-2222-2222-222222222222")));
+            Assert.That(deserialized.Replaced, Is.EqualTo(1));
         }
 
         [Test]
@@ -766,7 +820,7 @@ namespace Artesian.SDK.Tests
         {
             // Arrange - JSON with short property names
             // Version is DateTime (not DateTimeOffset) so it should serialize without timezone offset
-            const string json = @"{""P"":""TestProvider"",""C"":""TestCurve"",""ID"":100000001,""V"":""2024-01-01T10:00:00"",""T"":""2024-01-01T12:00:00+00:00"",""D"":100.5,""S"":""2024-01-01T00:00:00+00:00"",""E"":""2024-01-02T00:00:00+00:00""}";
+            const string json = @"{""P"":""TestProvider"",""C"":""TestCurve"",""ID"":100000001,""V"":""2024-01-01T10:00:00"",""T"":""2024-01-01T12:00:00+00:00"",""D"":100.5,""S"":""2024-01-01T00:00:00+00:00"",""E"":""2024-01-02T00:00:00+00:00"",""OriginalD"":99.5,""OriginalV"":""2024-01-01T09:00:00"",""OverrideD"":100.5,""OverrideV"":""2024-01-01T10:00:00"",""FallbackD"":98.5,""FallbackV"":""2024-01-01T08:00:00"",""OverrideId"":""11111111-1111-1111-1111-111111111111"",""FallbackId"":""22222222-2222-2222-2222-222222222222"",""Replaced"":1}";
 
             // Act - Deserialize with STJ
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<TimeSerieRow.Versioned>(json, _stjOptions);
@@ -781,13 +835,22 @@ namespace Artesian.SDK.Tests
             Assert.That(deserialized.Value, Is.EqualTo(100.5));
             Assert.That(deserialized.CompetenceStart, Is.EqualTo(DateTimeOffset.Parse("2024-01-01T00:00:00+00:00", CultureInfo.InvariantCulture)));
             Assert.That(deserialized.CompetenceEnd, Is.EqualTo(DateTimeOffset.Parse("2024-01-02T00:00:00+00:00", CultureInfo.InvariantCulture)));
+            Assert.That(deserialized.OriginalValue, Is.EqualTo(99.5));
+            Assert.That(deserialized.OriginalVersion, Is.EqualTo(DateTime.Parse("2024-01-01T09:00:00", CultureInfo.InvariantCulture)));
+            Assert.That(deserialized.OverrideValue, Is.EqualTo(100.5));
+            Assert.That(deserialized.OverrideVersion, Is.EqualTo(DateTime.Parse("2024-01-01T10:00:00", CultureInfo.InvariantCulture)));
+            Assert.That(deserialized.FallbackValue, Is.EqualTo(98.5));
+            Assert.That(deserialized.FallbackVersion, Is.EqualTo(DateTime.Parse("2024-01-01T08:00:00", CultureInfo.InvariantCulture)));
+            Assert.That(deserialized.OverrideId, Is.EqualTo(Guid.Parse("11111111-1111-1111-1111-111111111111")));
+            Assert.That(deserialized.FallbackId, Is.EqualTo(Guid.Parse("22222222-2222-2222-2222-222222222222")));
+            Assert.That(deserialized.Replaced, Is.EqualTo(1));
         }
 
         [Test]
         public void BidAskRow_STJ_Deserializes_WithShortPropertyNames()
         {
             // Arrange - JSON with short property names, focusing on DateTimeOffset and nullable double
-            const string json = @"{""P"":""TestProvider"",""N"":""TestCurve"",""ID"":100000001,""PR"":""Power"",""T"":""2024-01-01T12:00:00+00:00"",""BBP"":99.0,""BAP"":101.0,""BBQ"":100.0,""BAQ"":150.0,""LP"":100.0,""LQ"":50.0}";
+            const string json = @"{""P"":""TestProvider"",""N"":""TestCurve"",""ID"":100000001,""PR"":""Power"",""T"":""2024-01-01T12:00:00+00:00"",""BBP"":99.0,""BAP"":101.0,""BBQ"":100.0,""BAQ"":150.0,""LP"":100.0,""LQ"":50.0,""OBBP"":89.0,""OBAP"":91.0,""OBBQ"":90.0,""OBAQ"":140.0,""OLP"":90.0,""OLQ"":40.0,""XBBP"":99.0,""XBAP"":101.0,""XBBQ"":100.0,""XBAQ"":150.0,""XLP"":100.0,""XLQ"":50.0,""FBBP"":79.0,""FBAP"":81.0,""FBBQ"":80.0,""FBAQ"":130.0,""FLP"":80.0,""FLQ"":30.0,""OID"":""11111111-1111-1111-1111-111111111111"",""FID"":""22222222-2222-2222-2222-222222222222"",""R"":1}";
 
             // Act - Deserialize with STJ
             var deserialized = System.Text.Json.JsonSerializer.Deserialize<BidAskRow>(json, _stjOptions);
@@ -805,6 +868,27 @@ namespace Artesian.SDK.Tests
             Assert.That(deserialized.BestAskQuantity, Is.EqualTo(150.0));
             Assert.That(deserialized.LastPrice, Is.EqualTo(100.0));
             Assert.That(deserialized.LastQuantity, Is.EqualTo(50.0));
+            Assert.That(deserialized.OriginalBestBidPrice, Is.EqualTo(89.0));
+            Assert.That(deserialized.OriginalBestAskPrice, Is.EqualTo(91.0));
+            Assert.That(deserialized.OriginalBestBidQuantity, Is.EqualTo(90.0));
+            Assert.That(deserialized.OriginalBestAskQuantity, Is.EqualTo(140.0));
+            Assert.That(deserialized.OriginalLastPrice, Is.EqualTo(90.0));
+            Assert.That(deserialized.OriginalLastQuantity, Is.EqualTo(40.0));
+            Assert.That(deserialized.OverrideBestBidPrice, Is.EqualTo(99.0));
+            Assert.That(deserialized.OverrideBestAskPrice, Is.EqualTo(101.0));
+            Assert.That(deserialized.OverrideBestBidQuantity, Is.EqualTo(100.0));
+            Assert.That(deserialized.OverrideBestAskQuantity, Is.EqualTo(150.0));
+            Assert.That(deserialized.OverrideLastPrice, Is.EqualTo(100.0));
+            Assert.That(deserialized.OverrideLastQuantity, Is.EqualTo(50.0));
+            Assert.That(deserialized.FallbackBestBidPrice, Is.EqualTo(79.0));
+            Assert.That(deserialized.FallbackBestAskPrice, Is.EqualTo(81.0));
+            Assert.That(deserialized.FallbackBestBidQuantity, Is.EqualTo(80.0));
+            Assert.That(deserialized.FallbackBestAskQuantity, Is.EqualTo(130.0));
+            Assert.That(deserialized.FallbackLastPrice, Is.EqualTo(80.0));
+            Assert.That(deserialized.FallbackLastQuantity, Is.EqualTo(30.0));
+            Assert.That(deserialized.OverrideId, Is.EqualTo(Guid.Parse("11111111-1111-1111-1111-111111111111")));
+            Assert.That(deserialized.FallbackId, Is.EqualTo(Guid.Parse("22222222-2222-2222-2222-222222222222")));
+            Assert.That(deserialized.Replaced, Is.EqualTo(1));
         }
 
         #endregion
