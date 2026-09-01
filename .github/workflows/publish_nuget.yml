@@ -189,6 +189,7 @@ jobs:
 
     - name: 'Download test result artifacts'
       uses: actions/download-artifact@v7
+      if: always()
       with:
         pattern: test-results-*
         path: test-results
@@ -234,6 +235,7 @@ jobs:
     steps:
     - name: 'Download coverage artifacts'
       uses: actions/download-artifact@v7
+      if: always()
       with:
         pattern: coverage-*
         path: coverage
@@ -573,6 +575,7 @@ jobs:
         dotnet build --configuration Release --no-restore
 
     - name: 'Test net8.0'
+      working-directory: ./Artesian
       run: |
         dotnet test \
           --no-restore \
@@ -584,6 +587,7 @@ jobs:
           --report-trx
 
     - name: 'Test net10.0'
+      working-directory: ./Artesian
       run: |
         dotnet test \
           --no-restore \
