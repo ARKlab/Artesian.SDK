@@ -184,6 +184,9 @@ jobs:
       checks: write
 
     steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v7
+
     - name: 'Download test result artifacts'
       uses: actions/download-artifact@v7
       with:
