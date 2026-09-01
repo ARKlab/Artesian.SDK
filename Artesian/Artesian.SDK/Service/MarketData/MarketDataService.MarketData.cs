@@ -173,16 +173,16 @@ namespace Artesian.SDK.Service
         /// <param name="force">Force the update of configuration also if another rebuild process is running (Defualt=false)</param>
         /// <param name="ctk">Cancellation Token</param>
         /// <returns>MarketData Entity Output</returns>
-        public Task<MarketDataEntity.Output> UpdateDerivedConfigurationAsync(int marketDataId, DerivedCfgBase derivedCfg, bool force = false, CancellationToken ctk = default)
+        public async Task<MarketDataEntity.Output> UpdateDerivedConfigurationAsync(int marketDataId, DerivedCfgBase derivedCfg, bool force = false, CancellationToken ctk = default)
         {
-            var marketDataOutput = ReadMarketDataRegistryAsync(marketDataId, ctk: ctk).ConfigureAwait(true).GetAwaiter().GetResult();
+            var marketDataOutput = await ReadMarketDataRegistryAsync(marketDataId, ctk: ctk).ConfigureAwait(false);
 
             marketDataOutput.ValidateUpdateDerivedCfg(derivedCfg);
 
             var url = "/marketdata/entity/".AppendPathSegment(marketDataId.ToString(CultureInfo.InvariantCulture)).AppendPathSegment("updateDerivedConfiguration")
                 .SetQueryParam("force", force);
 
-            return _client.Exec<MarketDataEntity.Output, DerivedCfgBase>(HttpMethod.Post, url, derivedCfg, ctk: ctk);
+            return await _client.Exec<MarketDataEntity.Output, DerivedCfgBase>(HttpMethod.Post, url, derivedCfg, ctk: ctk).ConfigureAwait(false);
         }
     }
 }
