@@ -1027,6 +1027,136 @@ if (rule.AggregatedStatus == CheckAggregatedStatus.KO)
 }
 ```
 
+### Data Quality Check Results
+
+Data Quality check result APIs provide compact extracts for time series, paginated check summaries, and aggregated status overviews. Use assignment IDs to restrict extracts to specific rule assignments.
+
+#### Extract Check Results for Actual Time Series
+
+The actual time series extract returns compact `CheckResultExtract.Ts` records without version information. The end date is not inclusive.
+
+```csharp
+var actualCheckResults = await marketDataService.GetDataQualityCheckResultExtractTsAsync(
+    granularity: Granularity.Day,
+    start: new LocalDate(2024, 1, 1),
+    end: new LocalDate(2024, 2, 1),
+    timeZone: "Europe/Rome",
+    assignmentIds: new[] { 456 }
+);
+
+foreach (var result in actualCheckResults)
+{
+    Console.WriteLine($"{result.Time}: {result.IssueCount} issues");
+}
+```
+
+#### Extract Check Results for Versioned Time Series
+
+The versioned time series extract returns compact `CheckResultExtract.Vts` records for the requested version. The end date is not inclusive.
+
+```csharp
+var versionedCheckResults = await marketDataService.GetDataQualityCheckResultExtractVtsAsync(
+    version: new LocalDateTime(2024, 1, 15, 12, 0),
+    granularity: Granularity.Day,
+    start: new LocalDate(2024, 1, 1),
+    end: new LocalDate(2024, 2, 1),
+    timeZone: "Europe/Rome",
+    assignmentIds: new[] { 456 }
+);
+
+foreach (var result in versionedCheckResults)
+{
+    Console.WriteLine($"{result.Version} - {result.Time}: {result.IssueCount} issues");
+}
+```
+
+#### Read Paginated Check Summaries
+
+Use the check summary API for a CurveRange-like view per assignment. Results can be filtered by Market Data, rule, assignment, status, checked range, version range, and product.
+
+```csharp
+var checkSummaries = await marketDataService.GetDataQualityCheckResultCheckSummaryAsync(
+    page: 1,
+    pageSize: 20,
+    marketDataIds: new[] { 100000001 },
+    ruleIds: new[] { 123 },
+    assignmentIds: new[] { 456 },
+    dqStatus: CheckAggregatedStatus.KO,
+    from: Instant.FromUtc(2024, 1, 1, 0, 0),
+    to: Instant.FromUtc(2024, 2, 1, 0, 0),
+    products: new[] { "Base" },
+    skipEmptyRanges: true,
+    sort: new[] { "LastCheckTime desc" }
+);
+
+foreach (var summary in checkSummaries.Data)
+{
+    Console.WriteLine($"{summary.Product}: {summary.AggregatedStatus} ({summary.RangeStart} - {summary.RangeEnd})");
+}
+```
+
+#### Read Aggregated Status Summaries
+
+Retrieve the latest Data Quality status by Market Data for a rule:
+
+```csharp
+var marketDataStatuses = await marketDataService.GetMarketDataDqStatusSummaryAsync(
+    ruleId: 123,
+    marketDataIds: new[] { 100000001, 100000002 },
+    dqStatus: CheckAggregatedStatus.KO,
+    limit: 100
+);
+
+foreach (var item in marketDataStatuses)
+{
+    Console.WriteLine($"Market Data {item.MarketDataId}: {item.StatusSummary?.OverallStatus}");
+}
+```
+
+Retrieve the latest Data Quality status by rule, optionally for a specific Market Data entity:
+
+```csharp
+var ruleStatuses = await marketDataService.GetDqRuleDqStatusSummaryAsync(
+    marketDataId: 100000001,
+    ruleIds: new[] { 123, 124 },
+    dqStatus: CheckAggregatedStatus.KO,
+    limit: 100
+);
+
+foreach (var item in ruleStatuses)
+{
+    Console.WriteLine($"Rule {item.RuleId}: {item.StatusSummary?.OverallStatus}");
+}
+```
+
+### Include Data Quality in Market Data Responses
+
+Set `includeDataQuality` to `true` when reading the Market Data registry or using facet search to populate the `DataQualityStatusSummary` property of each enriched Market Data result. Both `ReadMarketDataRegistryAsync` overloads support this option.
+
+```csharp
+var marketDataWithQuality = await marketDataService.ReadMarketDataRegistryAsync(
+    id: 100000001,
+    includeDataQuality: true
+);
+
+foreach (var status in marketDataWithQuality.DataQualityStatusSummary ?? new())
+{
+    Console.WriteLine($"{status.Key}: {status.Value.OverallStatus}");
+}
+
+var filter = new ArtesianSearchFilter
+{
+    SearchText = "weather",
+    Page = 1,
+    PageSize = 20
+};
+
+var searchResults = await marketDataService.SearchFacetAsync(
+    filter,
+    includeDataQuality: true
+);
+```
+
 ## MarketData Service
 
 Using the ArtesianServiceConfig `cfg` we create an instance of the MarketDataService which is used to retrieve, edit or delete
