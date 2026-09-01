@@ -99,7 +99,7 @@ namespace Artesian.SDK.Service
     /// <summary>
     /// Factory for creating dictionary converters
     /// </summary>
-    internal sealed class DictionaryJsonConverterSTJFactory : JsonConverterFactory
+    public sealed class DictionaryJsonConverterSTJFactory : JsonConverterFactory
     {
         public DictionaryJsonConverterSTJFactory()
         {

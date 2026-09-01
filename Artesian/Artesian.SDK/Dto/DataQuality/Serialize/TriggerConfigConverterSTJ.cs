@@ -5,7 +5,7 @@ using System;
 
 namespace Artesian.SDK.Dto.DataQuality.Serialize
 {
-    sealed class TriggerConfigConverterSTJ : JsonPolymorphicConverter<TriggerConfigDto, AlertType>
+    public sealed class TriggerConfigConverterSTJ : JsonPolymorphicConverter<TriggerConfigDto, AlertType>
     {
         public TriggerConfigConverterSTJ()
             : base(nameof(TriggerConfigDto.Type))

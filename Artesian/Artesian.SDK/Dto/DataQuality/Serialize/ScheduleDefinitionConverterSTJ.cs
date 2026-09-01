@@ -9,7 +9,7 @@ namespace Artesian.SDK.Dto.DataQuality.Serialize
     /// Converts <see cref="ScheduleDefinitionDto"/> polymorphic JSON payloads
     /// to their concrete schedule definition types based on <see cref="ScheduleDefinitionType"/>.
     /// </summary>
-    sealed class ScheduleDefinitionConverterSTJ : JsonPolymorphicConverter<ScheduleDefinitionDto, ScheduleDefinitionType>
+    public sealed class ScheduleDefinitionConverterSTJ : JsonPolymorphicConverter<ScheduleDefinitionDto, ScheduleDefinitionType>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ScheduleDefinitionConverterSTJ"/> class.
