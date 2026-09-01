@@ -794,7 +794,7 @@ Console.WriteLine($"Rule: {assignment.DataQualityRule?.Name}");
 Get all assignments with filters:
 
 ```csharp
-var assignments = await marketDataService.ReadDataQualityRuleAssignmentAsync(
+var assignments = await marketDataService.ReadDataQualityRuleAssignmentsAsync(
     page: 1,
     pageSize: 20,
     marketDataId: 100000001,  // Filter by Market Data
