@@ -2,12 +2,12 @@ name: "Deploy to NuGet"
 
 on:
   push:
-    branches: [ master ]
+    branches: [ "master", "develop", "develop-beta" ]
     tags:
     - 'v[0-9]+\.[0-9]+\.[0-9]+'
     - 'v[0-9]+\.[0-9]+\.[0-9]+-beta[0-9][0-9]'
   pull_request:
-    branches: [ master ]
+    branches: [ "master", "develop", "develop-beta" ]
 
 env:
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
