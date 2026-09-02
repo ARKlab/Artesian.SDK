@@ -2,11 +2,11 @@ name: "Deploy to NuGet"
 
 on:
   push:
-    branches: [ master ]
+    branches: [ "master", "develop", "develop-beta" ]
     tags:
       - "v[0-9]*.[0-9]*.[0-9]*"
   pull_request:
-    branches: [ master ]
+    branches: [ "master", "develop", "develop-beta" ]
   workflow_dispatch:
 
 env:
