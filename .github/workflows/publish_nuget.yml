@@ -4,13 +4,13 @@ on:
   push:
     branches: [ "master", "develop", "develop-beta" ]
     tags:
-    - 'v[0-9]+\.[0-9]+\.[0-9]+'
-    - 'v[0-9]+\.[0-9]+\.[0-9]+-beta[0-9][0-9]'
+      - "v[0-9]*.[0-9]*.[0-9]*"
   pull_request:
     branches: [ "master", "develop", "develop-beta" ]
+  workflow_dispatch:
 
 env:
-  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output
   NUGET_SOURCE_URL: 'https://api.nuget.org/v3/index.json'
 
 permissions:
@@ -20,82 +20,624 @@ permissions:
   checks: write
 
 jobs:
+
+  # ---------------------------------------------------------------------------
+  # Build / Test
+  # ---------------------------------------------------------------------------
+
   build:
+    name: 'Build'
+    runs-on: 'ubuntu-latest'
+
     defaults:
       run:
         working-directory: ./Artesian
 
-    name: 'Build'
-    runs-on: 'windows-2025'
+    permissions:
+      contents: write
+      checks: write
+
     steps:
     - name: 'Checkout'
       uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
 
     - name: 'Install dotnet'
       uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: | 
-            8.x
-            10.x
+        dotnet-version: |
+          8.x
+          10.x
         global-json-file: global.json
-      
+
     - name: 'Restore packages'
       run: dotnet restore
 
     - name: 'Build project'
       run: dotnet build --no-restore --configuration Debug
 
-    - name: Test
-      run: dotnet test --no-restore --configuration Debug -- --coverage --coverage-output-format cobertura --report-trx
+    - name: 'Test net8.0'
+      run: |
+        dotnet test \
+          --no-restore \
+          --configuration Debug \
+          --framework net8.0 \
+          -- \
+          --coverage \
+          --coverage-output-format cobertura \
+          --report-trx
 
-    - name: Component detection
-      uses: advanced-security/component-detection-dependency-submission-action@v0.1.4
+    - name: 'Test net10.0'
+      run: |
+        dotnet test \
+          --no-restore \
+          --configuration Debug \
+          --framework net10.0 \
+          -- \
+          --coverage \
+          --coverage-output-format cobertura \
+          --report-trx
 
-    - name: Test Report
-      uses: dorny/test-reporter@v3
+    - name: 'Upload build coverage'
+      uses: actions/upload-artifact@v7
       if: always()
       with:
-        name: DotNET Tests
-        path: "**/*.trx"                            
-        reporter: dotnet-trx
-        fail-on-error: true
-        use-actions-summary: 'false'
+        name: coverage-build
+        path: '**/*.cobertura.xml'
 
-    - name: Create code coverage report
+    - name: 'Component detection'
+      uses: advanced-security/component-detection-dependency-submission-action@v0.1.4
+
+    - name: 'Upload build test results'
+      uses: actions/upload-artifact@v7
       if: always()
-      run: |
-        dotnet tool install -g dotnet-reportgenerator-globaltool
-        reportgenerator -reports:**/*.cobertura.xml -targetdir:CodeCoverage -reporttypes:'MarkdownSummaryGithub;Cobertura'
+      with:
+        name: test-results-build
+        path: '**/*.trx'
 
-    - name: Write to Job Summary
-      if: always()
-      run: cat CodeCoverage/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
-  deploy:
+  # ---------------------------------------------------------------------------
+  # Test .NET Framework 4.6.2
+  # ---------------------------------------------------------------------------
+
+  test-net462:
+    name: 'Test .NET Framework 4.6.2'
+    runs-on: 'windows-latest'
+
+    permissions:
+      contents: read
+
     defaults:
       run:
         working-directory: ./Artesian
-    name: 'Nuget Push'
-    runs-on: 'windows-latest'
-    needs: build
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
 
     steps:
     - name: 'Checkout'
       uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+
+    - name: 'Install dotnet'
+      uses: actions/setup-dotnet@v6
+      with:
+        dotnet-version: |
+          8.x
+          10.x
+        global-json-file: global.json
+
+    - name: 'Restore packages'
+      shell: bash
+      run: dotnet restore
+
+    - name: 'Build net462'
+      shell: bash
+      run: dotnet build --no-restore --configuration Debug --framework net462
+
+    - name: 'Test net462'
+      shell: bash
+      run: |
+        dotnet test \
+          --no-restore \
+          --configuration Debug \
+          --framework net462 \
+          -- \
+          --coverage \
+          --coverage-output-format cobertura \
+          --report-trx
+
+    - name: 'Upload net462 coverage'
+      uses: actions/upload-artifact@v7
+      if: always()
+      with:
+        name: coverage-net462
+        path: '**/*.cobertura.xml'
+
+    - name: 'Upload net462 test results'
+      uses: actions/upload-artifact@v7
+      if: always()
+      with:
+        name: test-results-net462
+        path: '**/*.trx'
+
+
+  # ---------------------------------------------------------------------------
+  # Test Report
+  #
+  # Consolidates test results from all jobs (build, test-net462, publish-preview)
+  # into a single report.
+  # ---------------------------------------------------------------------------
+
+  test-report:
+    name: 'Test Report'
+    runs-on: 'ubuntu-latest'
+    needs:
+      - build
+      - test-net462
+      - publish-preview
+
+    if: always()
+
+    permissions:
+      checks: write
+
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v7
+
+    - name: 'Download test result artifacts'
+      uses: actions/download-artifact@v7
+      if: always()
+      with:
+        pattern: test-results-*
+        path: test-results
+        merge-multiple: true
+
+    - name: 'Test Report'
+      uses: dorny/test-reporter@v3
+      if: always()
+      with:
+        name: DotNET Tests
+        path: "test-results/**/*.trx"
+        reporter: dotnet-trx
+        fail-on-error: 'true'
+        use-actions-summary: 'false'
+
+
+  # ---------------------------------------------------------------------------
+  # Code Coverage
+  #
+  # Coverage from:
+  #   - net8.0
+  #   - net10.0
+  #   - net462
+  #   - PR preview merged state (when applicable)
+  #
+  # All coverage files are merged into a single report.
+  # ---------------------------------------------------------------------------
+
+  coverage-report:
+    name: 'Code Coverage'
+    runs-on: 'ubuntu-latest'
+    needs:
+      - build
+      - test-net462
+      - publish-preview
+
+    if: always()
+
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+    - name: 'Download coverage artifacts'
+      uses: actions/download-artifact@v7
+      if: always()
+      with:
+        pattern: coverage-*
+        path: coverage
+
+    - name: 'Install dotnet'
+      uses: actions/setup-dotnet@v6
+      with:
+        dotnet-version: |
+          8.x
+          10.x
+
+    - name: 'Install reportgenerator'
+      shell: bash
+      run: |
+        dotnet tool install -g dotnet-reportgenerator-globaltool
+
+    - name: 'Create code coverage report'
+      shell: bash
+      run: |
+        export PATH="$PATH:$HOME/.dotnet/tools"
+        reportgenerator \
+          -reports:"coverage/**/*.cobertura.xml" \
+          -targetdir:CodeCoverage \
+          -reporttypes:'MarkdownSummaryGithub;Cobertura'
+
+    - name: 'Write to Job Summary'
+      if: always()
+      run: |
+        cat CodeCoverage/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+
+  # ---------------------------------------------------------------------------
+  # Publish Stable
+  #
+  # Tag:
+  #   v4.3.0
+  #
+  # Package version:
+  #   4.3.0
+  #
+  # Must originate from:
+  #   master
+  # ---------------------------------------------------------------------------
+
+  publish-stable:
+    name: 'Publish Stable'
+    runs-on: 'ubuntu-latest'
+    needs:
+      - build
+      - test-net462
+
+    if: >
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/v') &&
+      !contains(github.ref_name, '-beta') &&
+      !contains(github.ref_name, '-PR')
+
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+
+    - name: 'Validate GA release tag'
+      shell: bash
+      run: bash .github/workflows/validate_tag.sh "$GITHUB_REF_NAME" ga
+      
+    - name: 'Validate tag originates from master'
+      shell: bash
+      run: bash .github/workflows/validate_branch.sh master
 
     - name: 'Install dotnet'
       uses: actions/setup-dotnet@v6
       with:
         global-json-file: global.json
 
-    - name: 'Get Version'
-      id: version
-      uses: battila7/get-version-action@v2
-
     - name: 'Pack project'
-      run: dotnet pack --configuration Release --include-symbols -p:Version=${{ steps.version.outputs.version-without-v }} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
-      # --no-build somehow cannot be used due to being needed: 
+      shell: bash
+      working-directory: ./Artesian/Artesian.SDK
+      run: |
+        VERSION="${GITHUB_REF_NAME#v}"
+        OUTPUT_DIR="${GITHUB_WORKSPACE}/output"
+
+        mkdir -p "$OUTPUT_DIR"
+
+        dotnet pack \
+          --configuration Release \
+          --include-symbols \
+          -p:Version="$VERSION" \
+          --output "$OUTPUT_DIR"
 
     - name: 'Push package'
-      run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
+      shell: bash
+      run: |
+        VERSION="${GITHUB_REF_NAME#v}"
+        PACKAGE="${GITHUB_WORKSPACE}/output/Artesian.SDK.${VERSION}.nupkg"
+
+        if [[ ! -f "$PACKAGE" ]]; then
+          echo "::error::Package not found: $PACKAGE"
+          exit 1
+        fi
+
+        echo "Pushing package: $PACKAGE"
+
+        dotnet nuget push "$PACKAGE" \
+          --api-key "${{ secrets.NUGET_AUTH_TOKEN }}" \
+          --source "${{ env.NUGET_SOURCE_URL }}"
+
+
+  # ---------------------------------------------------------------------------
+  # Publish Beta
+  #
+  # Tag:
+  #   v4.3.0-beta.1
+  #
+  # Package version:
+  #   4.3.0-beta.1
+  #
+  # Must originate from:
+  #   develop-beta
+  # ---------------------------------------------------------------------------
+
+  publish-beta:
+    name: 'Publish Beta'
+    runs-on: 'ubuntu-latest'
+    needs:
+      - build
+      - test-net462
+
+    if: >
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/v') &&
+      contains(github.ref_name, '-beta.')
+
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+
+    - name: 'Validate Beta release tag'
+      shell: bash
+      run: bash .github/workflows/validate_tag.sh "$GITHUB_REF_NAME" beta
+
+    - name: 'Validate tag originates from develop-beta'
+      shell: bash
+      run: bash .github/workflows/validate_branch.sh develop-beta
+
+    - name: 'Validate next version'
+      shell: bash
+      run: |
+        TAG="${GITHUB_REF_NAME}"
+
+        git fetch origin master --tags
+
+        MASTER_VERSION=$(
+          git describe --tags --abbrev=0 origin/master |
+          sed 's/^v//'
+        )
+
+        BETA_VERSION=$(
+          echo "$TAG" |
+          sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+)-beta\.[0-9]+$/\1/'
+        )
+
+        MASTER_MAJOR=$(echo "$MASTER_VERSION" | cut -d. -f1)
+        MASTER_MINOR=$(echo "$MASTER_VERSION" | cut -d. -f2)
+
+        BETA_MAJOR=$(echo "$BETA_VERSION" | cut -d. -f1)
+        BETA_MINOR=$(echo "$BETA_VERSION" | cut -d. -f2)
+
+        if [[ "$BETA_MAJOR.$BETA_MINOR" != "$MASTER_MAJOR.$((MASTER_MINOR + 1))" ]]; then
+          echo "::error::Beta version $BETA_VERSION is not the next minor version after master $MASTER_VERSION."
+          exit 1
+        fi
+
+        echo "Beta version $BETA_VERSION is the next version after master $MASTER_VERSION."
+
+    - name: 'Install dotnet'
+      uses: actions/setup-dotnet@v6
+      with:
+        global-json-file: global.json
+
+    - name: 'Pack project'
+      shell: bash
+      working-directory: ./Artesian/Artesian.SDK
+      run: |
+        VERSION="${GITHUB_REF_NAME#v}"
+        OUTPUT_DIR="${GITHUB_WORKSPACE}/output"
+
+        mkdir -p "$OUTPUT_DIR"
+
+        dotnet pack \
+          --configuration Release \
+          --include-symbols \
+          -p:Version="$VERSION" \
+          --output "$OUTPUT_DIR"
+
+    - name: 'Push package'
+      shell: bash
+      run: |
+        VERSION="${GITHUB_REF_NAME#v}"
+        PACKAGE="${GITHUB_WORKSPACE}/output/Artesian.SDK.${VERSION}.nupkg"
+
+        if [[ ! -f "$PACKAGE" ]]; then
+          echo "::error::Package not found: $PACKAGE"
+          exit 1
+        fi
+
+        echo "Pushing package: $PACKAGE"
+
+        dotnet nuget push "$PACKAGE" \
+          --api-key "${{ secrets.NUGET_AUTH_TOKEN }}" \
+          --source "${{ env.NUGET_SOURCE_URL }}"
+
+
+  # ---------------------------------------------------------------------------
+  # Publish PR Preview
+  #
+  # Tag:
+  #   v4.3.0-PR272.1
+  #
+  # Package version:
+  #   4.3.0-PR272.1
+  #
+  # The PR Preview must be tested against the merged PR state.
+  # ---------------------------------------------------------------------------
+
+  publish-preview:
+    name: 'Publish PR Preview'
+    runs-on: 'ubuntu-latest'
+
+    permissions:
+      contents: read
+      checks: write
+
+    needs:
+      - build
+      - test-net462
+
+    if: >
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/v') &&
+      contains(github.ref_name, '-PR')
+
+    steps:
+    - name: 'Extract PR number'
+      id: pr
+      shell: bash
+      run: |
+        TAG="${GITHUB_REF_NAME}"
+
+        if ! echo "$TAG" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+-PR([0-9]+)\.[0-9]+$'; then
+          echo "::error::Tag '$TAG' does not match the expected PR preview format v<major>.<minor>.<patch>-PR<number>.<iteration>"
+          exit 1
+        fi
+
+        PR_NUMBER=$(
+          echo "$TAG" |
+          sed -E 's/^v[0-9]+\.[0-9]+\.[0-9]+-PR([0-9]+)\.[0-9]+$/\1/'
+        )
+
+        echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+
+        echo "PR number: $PR_NUMBER"
+
+    - name: 'Checkout merged PR head'
+      uses: actions/checkout@v7
+      with:
+        ref: refs/pull/${{ steps.pr.outputs.number }}/merge
+        fetch-depth: 0
+        
+    - name: 'Validate PR Preview tag'
+      shell: bash
+      run: bash .github/workflows/validate_tag.sh "$GITHUB_REF_NAME" preview
+
+    - name: 'Validate PR is based on current master'
+      shell: bash
+      run: |
+        git fetch origin master
+
+        CURRENT_MASTER=$(git rev-parse origin/master)
+        MERGE_PARENT=$(git rev-parse HEAD^1)
+
+        echo "Current master: $CURRENT_MASTER"
+        echo "Merge parent:   $MERGE_PARENT"
+
+        if [[ "$MERGE_PARENT" != "$CURRENT_MASTER" ]]; then
+          echo "::error::PR Preview is not based on the current master."
+          exit 1
+        fi
+
+        echo "PR Preview is based on master."
+
+    - name: 'Validate preview version'
+      shell: bash
+      run: |
+        TAG="${GITHUB_REF_NAME}"
+
+        git fetch origin master --tags
+
+        MASTER_VERSION=$(
+          git describe --tags --abbrev=0 origin/master |
+          sed 's/^v//'
+        )
+
+        PREVIEW_VERSION=$(
+          echo "$TAG" |
+          sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+)-PR[0-9]+\.[0-9]+$/\1/'
+        )
+
+        echo "Master GA version: $MASTER_VERSION"
+        echo "Preview version:   $PREVIEW_VERSION"
+
+        if [[ "$PREVIEW_VERSION" != "$MASTER_VERSION" ]]; then
+          echo "::error::PR Preview version $PREVIEW_VERSION does not match current master version $MASTER_VERSION."
+          exit 1
+        fi
+
+        echo "PR Preview version matches master: $MASTER_VERSION"
+
+    - name: 'Install dotnet'
+      uses: actions/setup-dotnet@v6
+      with:
+        global-json-file: global.json
+
+    # -----------------------------------------------------------------------
+    # IMPORTANT:
+    # The preview package is built and tested from the synthetic PR merge
+    # commit, not from the original feature branch commit.
+    # -----------------------------------------------------------------------
+
+    - name: 'Build'
+      working-directory: ./Artesian/Artesian.SDK
+      run: |
+        dotnet restore
+        dotnet build --configuration Release --no-restore
+
+    - name: 'Test net8.0'
+      working-directory: ./Artesian
+      run: |
+        dotnet test \
+          --no-restore \
+          --configuration Release \
+          --framework net8.0 \
+          -- \
+          --coverage \
+          --coverage-output-format cobertura \
+          --report-trx
+
+    - name: 'Test net10.0'
+      working-directory: ./Artesian
+      run: |
+        dotnet test \
+          --no-restore \
+          --configuration Release \
+          --framework net10.0 \
+          -- \
+          --coverage \
+          --coverage-output-format cobertura \
+          --report-trx
+
+    - name: 'Upload preview test results'
+      uses: actions/upload-artifact@v7
+      if: always()
+      with:
+        name: test-results-preview
+        path: '**/*.trx'
+
+    - name: 'Upload preview coverage'
+      uses: actions/upload-artifact@v7
+      if: always()
+      with:
+        name: coverage-preview
+        path: '**/*.cobertura.xml'
+
+    - name: 'Pack project'
+      shell: bash
+      working-directory: ./Artesian/Artesian.SDK
+      run: |
+        VERSION="${GITHUB_REF_NAME#v}"
+        OUTPUT_DIR="${GITHUB_WORKSPACE}/output"
+
+        mkdir -p "$OUTPUT_DIR"
+
+        dotnet pack \
+          --configuration Release \
+          --include-symbols \
+          -p:Version="$VERSION" \
+          --output "$OUTPUT_DIR"
+
+    - name: 'Push package'
+      shell: bash
+      run: |
+        VERSION="${GITHUB_REF_NAME#v}"
+        PACKAGE="${GITHUB_WORKSPACE}/output/Artesian.SDK.${VERSION}.nupkg"
+
+        if [[ ! -f "$PACKAGE" ]]; then
+          echo "::error::Package not found: $PACKAGE"
+          exit 1
+        fi
+
+        echo "Pushing package: $PACKAGE"
+
+        dotnet nuget push "$PACKAGE" \
+          --api-key "${{ secrets.NUGET_AUTH_TOKEN }}" \
+          --source "${{ env.NUGET_SOURCE_URL }}"
