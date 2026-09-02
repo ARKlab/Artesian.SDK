@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if [[ $# -lt 2 ]]; then
+  echo "::error::Usage: validate_tag.sh <tag> <ga|beta|preview>"
+  exit 1
+fi
+
 TAG="$1"
 TYPE="$2"
 
