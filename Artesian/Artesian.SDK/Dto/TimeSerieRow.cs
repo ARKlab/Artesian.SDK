@@ -73,6 +73,69 @@ namespace Artesian.SDK.Dto
             [JsonPropertyName("E")]
             [Key(7)]
             public DateTimeOffset CompetenceEnd { get; init; }
+
+            /// <summary>
+            /// The original value before overrides and fallbacks
+            /// </summary>
+            [JsonPropertyName("OriginalD")]
+            [Key(8)]
+            public double? OriginalValue { get; init; }
+
+            /// <summary>
+            /// The original version before overrides and fallbacks
+            /// </summary>
+            [JsonPropertyName("OriginalV")]
+            [Key(9)]
+            public DateTime? OriginalVersion { get; init; }
+
+            /// <summary>
+            /// The override value
+            /// </summary>
+            [JsonPropertyName("OverrideD")]
+            [Key(10)]
+            public double? OverrideValue { get; init; }
+
+            /// <summary>
+            /// The override version
+            /// </summary>
+            [JsonPropertyName("OverrideV")]
+            [Key(11)]
+            public DateTime? OverrideVersion { get; init; }
+
+            /// <summary>
+            /// The fallback value
+            /// </summary>
+            [JsonPropertyName("FallbackD")]
+            [Key(12)]
+            public double? FallbackValue { get; init; }
+
+            /// <summary>
+            /// The fallback version
+            /// </summary>
+            [JsonPropertyName("FallbackV")]
+            [Key(13)]
+            public DateTime? FallbackVersion { get; init; }
+
+            /// <summary>
+            /// The override identifier
+            /// </summary>
+            [JsonPropertyName("OverrideId")]
+            [Key(14)]
+            public Guid? OverrideId { get; init; }
+
+            /// <summary>
+            /// The fallback identifier
+            /// </summary>
+            [JsonPropertyName("FallbackId")]
+            [Key(15)]
+            public Guid? FallbackId { get; init; }
+
+            /// <summary>
+            /// The replacement state
+            /// </summary>
+            [JsonPropertyName("Replaced")]
+            [Key(16)]
+            public int? Replaced { get; init; }
         }
 
         /// <summary>
@@ -128,6 +191,48 @@ namespace Artesian.SDK.Dto
             [JsonPropertyName("E")]
             [Key(6)]
             public DateTimeOffset CompetenceEnd { get; init; }
+
+            /// <summary>
+            /// The original value before overrides and fallbacks
+            /// </summary>
+            [JsonPropertyName("OriginalD")]
+            [Key(7)]
+            public double? OriginalValue { get; init; }
+
+            /// <summary>
+            /// The override value
+            /// </summary>
+            [JsonPropertyName("OverrideD")]
+            [Key(8)]
+            public double? OverrideValue { get; init; }
+
+            /// <summary>
+            /// The fallback value
+            /// </summary>
+            [JsonPropertyName("FallbackD")]
+            [Key(9)]
+            public double? FallbackValue { get; init; }
+
+            /// <summary>
+            /// The override identifier
+            /// </summary>
+            [JsonPropertyName("OverrideId")]
+            [Key(10)]
+            public Guid? OverrideId { get; init; }
+
+            /// <summary>
+            /// The fallback identifier
+            /// </summary>
+            [JsonPropertyName("FallbackId")]
+            [Key(11)]
+            public Guid? FallbackId { get; init; }
+
+            /// <summary>
+            /// The replacement state
+            /// </summary>
+            [JsonPropertyName("Replaced")]
+            [Key(12)]
+            public int? Replaced { get; init; }
         }
     }
 }

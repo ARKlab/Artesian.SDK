@@ -144,7 +144,7 @@ namespace Artesian.SDK.Tests.Samples
 
                 if (!marketData.DerivedCfg.Coalesce.OrderedReferencedMarketDataIds.SequenceEqual(derivedCfgUpdate.OrderedReferencedMarketDataIds))
                 {
-                    marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false).ConfigureAwait(true).GetAwaiter().GetResult();
+                    await marketData.UpdateDerivedConfiguration(derivedCfgUpdate, false);
 
                     await Task.Delay(2000);
 

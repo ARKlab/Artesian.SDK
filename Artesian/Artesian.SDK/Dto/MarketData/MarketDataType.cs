@@ -9,7 +9,7 @@ namespace Artesian.SDK.Dto
     public enum MarketDataType
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-          ActualTimeSerie
+        ActualTimeSerie
         , VersionedTimeSerie
         , MarketAssessment
         , Auction

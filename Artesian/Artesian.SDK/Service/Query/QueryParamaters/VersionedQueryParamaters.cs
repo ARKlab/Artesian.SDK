@@ -38,6 +38,8 @@ namespace Artesian.SDK.Service
         /// <param name="analysisDate"></param>
         /// <param name="unitOfMeasure"></param>
         /// <param name="aggregationRule"></param>
+        /// <param name="includeOverrideDetails"></param>
+        /// <param name="skipOverrides"></param>
         public VersionedQueryParamaters(
             IEnumerable<int> ids, 
             ExtractionRangeSelectionConfig extractionRangeSelectionConfig, 
@@ -53,7 +55,9 @@ namespace Artesian.SDK.Service
             FillerConfig fillerConfig,
             LocalDate? analysisDate,
             string? unitOfMeasure,
-            AggregationRule? aggregationRule
+            AggregationRule? aggregationRule,
+            bool includeOverrideDetails = false,
+            bool skipOverrides = false
             )
             : base(ids, extractionRangeSelectionConfig, extractionRangeType, timezone, filterId, fillerK, fillerConfig)
         {
@@ -66,6 +70,8 @@ namespace Artesian.SDK.Service
             this.FillerConfig = fillerConfig;
             this.UnitOfMeasure = unitOfMeasure;
             this.AggregationRule = aggregationRule;
+            this.IncludeOverrideDetails = includeOverrideDetails;
+            this.SkipOverrides = skipOverrides;
         }
 
         /// <summary>
@@ -100,5 +106,13 @@ namespace Artesian.SDK.Service
         /// AggregationRule
         /// </summary>
         public AggregationRule? AggregationRule { get; set; }
+        /// <summary>
+        /// Whether to include override and fallback details
+        /// </summary>
+        public bool IncludeOverrideDetails { get; set; }
+        /// <summary>
+        /// Whether to skip overrides and fallbacks
+        /// </summary>
+        public bool SkipOverrides { get; set; }
     }
 }

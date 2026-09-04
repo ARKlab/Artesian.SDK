@@ -35,7 +35,7 @@ namespace Artesian.SDK.Tests
                        .InRelativeInterval(RelativeInterval.RollingMonth)
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/RollingMonth")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/RollingMonth")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("id", 100000001)
                     .Times(1);
@@ -55,7 +55,7 @@ namespace Artesian.SDK.Tests
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-01-01/2018-01-10")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("id", 100000001)
                     .Times(1);
@@ -75,7 +75,7 @@ namespace Artesian.SDK.Tests
                        .InRelativePeriod(Period.FromDays(5))
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P5D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P5D")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("id", 100000001)
                     .Times(1);
@@ -95,7 +95,7 @@ namespace Artesian.SDK.Tests
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P2W/P20D")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("id", 100000001)
                     .Times(1);
@@ -115,7 +115,7 @@ namespace Artesian.SDK.Tests
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P2W/P20D")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParamMultiple("id", new [] { 100000001, 100000002, 100000003 })
                     .Times(1);
@@ -131,7 +131,7 @@ namespace Artesian.SDK.Tests
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromMonths(6))
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Month/P2W/P6M")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Month/P2W/P6M")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParamMultiple("id", new [] { 100000001, 100000002, 100000003 })
                     .Times(1);
@@ -150,12 +150,16 @@ namespace Artesian.SDK.Tests
                        .InGranularity(Granularity.Day)
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .InTimezone("UTC")
+                       .WithSkipOverrides(true)
+                       .WithIncludeOverrideDetails(true)
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-01-01/2018-01-10")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("id", 100000001)
                     .WithQueryParam("tz", "UTC")
+                     .WithQueryParam("skipOverrides", true)
+                     .WithQueryParam("includeOverrideDetails", true)
                     .Times(1);
             }
 
@@ -170,7 +174,7 @@ namespace Artesian.SDK.Tests
                        .InTimezone("WET")
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Hour/2018-01-01/2018-01-10")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Hour/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("id", 100000001)
                     .WithQueryParam("tz", "WET")
@@ -192,7 +196,7 @@ namespace Artesian.SDK.Tests
                        .WithTimeTransform(1)
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-01-01/2018-01-10")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("id", 100000001)
                     .WithQueryParam("tr", 1)
@@ -210,7 +214,7 @@ namespace Artesian.SDK.Tests
                        .WithTimeTransform(SystemTimeTransform.THERMALYEAR)
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-01-01/2018-01-10")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("id", 100000001)
                     .WithQueryParam("tr", 2)
@@ -231,7 +235,7 @@ namespace Artesian.SDK.Tests
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P2W/P20D")
                     .WithQueryParam("id", 100000001)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
@@ -253,7 +257,7 @@ namespace Artesian.SDK.Tests
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P2W/P20D")
                     .WithQueryParam("id", 100000001)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
@@ -319,7 +323,7 @@ namespace Artesian.SDK.Tests
                     .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                     .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P2W/P20D")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParamMultiple("id", new [] {
                         100001250, 100001251, 100001252, 100001253 , 100001254,
@@ -330,7 +334,7 @@ namespace Artesian.SDK.Tests
                     })
                     .Times(1);
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P2W/P20D")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParamMultiple("id", new [] {
                         100001275, 100001276, 100001277, 100001278, 100001279,
@@ -341,7 +345,7 @@ namespace Artesian.SDK.Tests
                     })
                     .Times(1);
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P2W/P20D")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParamMultiple("id", new [] {
                         100001302, 100001303, 100001304, 100001305, 100001306,
@@ -367,7 +371,7 @@ namespace Artesian.SDK.Tests
                        .InRelativeInterval(RelativeInterval.RollingMonth)
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/RollingMonth")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/RollingMonth")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("filterId", 1)
                     .Times(1);
@@ -387,7 +391,7 @@ namespace Artesian.SDK.Tests
                        .InAbsoluteDateRange(new LocalDate(2018, 1, 1), new LocalDate(2018, 1, 10))
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-01-01/2018-01-10")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("filterId", 1)
                     .Times(1);
@@ -407,7 +411,7 @@ namespace Artesian.SDK.Tests
                        .InRelativePeriod(Period.FromDays(5))
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P5D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P5D")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("filterId", 1)
                     .Times(1);
@@ -427,7 +431,7 @@ namespace Artesian.SDK.Tests
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P2W/P20D")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("filterId", 1)
                     .Times(1);
@@ -448,7 +452,7 @@ namespace Artesian.SDK.Tests
                        .InTimezone("UTC")
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-01-01/2018-01-10")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("filterId", 1)
                     .WithQueryParam("tz", "UTC")
@@ -466,7 +470,7 @@ namespace Artesian.SDK.Tests
                        .InTimezone("WET")
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Hour/2018-01-01/2018-01-10")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Hour/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("filterId", 1)
                     .WithQueryParam("tz", "WET")
@@ -488,7 +492,7 @@ namespace Artesian.SDK.Tests
                        .WithTimeTransform(1)
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-01-01/2018-01-10")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("filterId", 1)
                     .WithQueryParam("tr", 1)
@@ -506,7 +510,7 @@ namespace Artesian.SDK.Tests
                        .WithTimeTransform(SystemTimeTransform.THERMALYEAR)
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-01-01/2018-01-10")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-01-01/2018-01-10")
                     .WithVerb(HttpMethod.Get)
                     .WithQueryParam("filterId", 1)
                     .WithQueryParam("tr", 2)
@@ -527,7 +531,7 @@ namespace Artesian.SDK.Tests
                        .InRelativePeriodRange(Period.FromWeeks(2), Period.FromDays(20))
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P2W/P20D")
                     .WithQueryParam("filterId", 1)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
@@ -550,7 +554,7 @@ namespace Artesian.SDK.Tests
                        .WithAggregationRule(AggregationRule.SumAndDivide)
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P2W/P20D")
                     .WithQueryParam("filterId", 1)
                     .WithQueryParam("aggregationRule", AggregationRule.SumAndDivide)
                     .WithVerb(HttpMethod.Get)
@@ -574,7 +578,7 @@ namespace Artesian.SDK.Tests
                        .InUnitOfMeasure(CommonUnitOfMeasure.kWh)
                        .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/P2W/P20D")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/P2W/P20D")
                     .WithQueryParam("filterId", 1)
                     .WithQueryParam("unitOfMeasure", CommonUnitOfMeasure.kWh)
                     .WithVerb(HttpMethod.Get)
@@ -600,7 +604,7 @@ namespace Artesian.SDK.Tests
                         .WithFillNone()
                         .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-06-22/2018-07-23")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
                  .WithQueryParam("fillerK", FillerKindType.NoFill)
                  .WithVerb(HttpMethod.Get)
@@ -622,7 +626,7 @@ namespace Artesian.SDK.Tests
                         .WithFillNull()
                         .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-06-22/2018-07-23")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
                  .WithQueryParam("fillerK", FillerKindType.Null)
                  .WithVerb(HttpMethod.Get)
@@ -644,7 +648,7 @@ namespace Artesian.SDK.Tests
                         .WithFillLatestValue(Period.FromDays(7))
                         .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-06-22/2018-07-23")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
                  .WithQueryParam("fillerK", FillerKindType.LatestValidValue)
                  .WithQueryParam("fillerP", "P7D")
@@ -667,7 +671,7 @@ namespace Artesian.SDK.Tests
                         .WithFillCustomValue(123)
                         .ExecuteAsync();
 
-                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.0/ts/Day/2018-06-22/2018-07-23")
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}query/v1.1-beta/ts/Day/2018-06-22/2018-07-23")
                  .WithQueryParam("id", 100000001)
                  .WithQueryParam("fillerK", FillerKindType.CustomValue)
                  .WithQueryParam("fillerDV", 123)

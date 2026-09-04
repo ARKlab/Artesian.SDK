@@ -404,6 +404,28 @@ namespace Artesian.SDK.Service
             return this;
         }
         /// <summary>
+        /// Sets whether overrides and fallbacks must be skipped.
+        /// </summary>
+        /// <param name="skipOverrides">Whether to skip overrides and fallbacks.</param>
+        /// <returns>VersionedQuery</returns>
+        public VersionedQuery WithSkipOverrides(bool skipOverrides)
+        {
+            QueryParamaters.SkipOverrides = skipOverrides;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets whether override and fallback details must be included.
+        /// </summary>
+        /// <param name="includeOverrideDetails">Whether to include override and fallback details.</param>
+        /// <returns>VersionedQuery</returns>
+        public VersionedQuery WithIncludeOverrideDetails(bool includeOverrideDetails)
+        {
+            QueryParamaters.IncludeOverrideDetails = includeOverrideDetails;
+            return this;
+        }
+
+        /// <summary>
         /// Execute VersionedQuery
         /// </summary>
         /// <param name="ctk">CancellationToken</param>
@@ -535,6 +557,8 @@ namespace Artesian.SDK.Service
                             )
                             .SetQueryParam("aggregationRule", qp.AggregationRule)
                             .SetQueryParam("unitOfMeasure", qp.UnitOfMeasure)
+                            .SetQueryParam("includeOverrideDetails", qp.IncludeOverrideDetails)
+                            .SetQueryParam("skipOverrides", qp.SkipOverrides)
                             .ToString())
                     .ToList();
             

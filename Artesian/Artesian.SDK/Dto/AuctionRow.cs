@@ -85,5 +85,152 @@ namespace Artesian.SDK.Dto
         [JsonPropertyName("BT")]
         [Key(9)]
         public BlockType? BlockType { get; init; }
+
+        /// <summary>
+        /// Original side before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OS")]
+        [Key(10)]
+        public AuctionSide? OriginalSide { get; init; }
+
+        /// <summary>
+        /// Original price before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OD")]
+        [Key(11)]
+        public double? OriginalPrice { get; init; }
+
+        /// <summary>
+        /// Original quantity before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OQ")]
+        [Key(12)]
+        public double? OriginalQuantity { get; init; }
+
+        /// <summary>
+        /// Original accepted price before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OAD")]
+        [Key(13)]
+        public double? OriginalAcceptedPrice { get; init; }
+
+        /// <summary>
+        /// Original accepted quantity before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OAQ")]
+        [Key(14)]
+        public double? OriginalAcceptedQuantity { get; init; }
+
+        /// <summary>
+        /// Original block type before overrides and fallbacks
+        /// </summary>
+        [JsonPropertyName("OBT")]
+        [Key(15)]
+        public BlockType? OriginalBlockType { get; init; }
+
+        /// <summary>
+        /// Override side
+        /// </summary>
+        [JsonPropertyName("XS")]
+        [Key(16)]
+        public AuctionSide? OverrideSide { get; init; }
+
+        /// <summary>
+        /// Override price
+        /// </summary>
+        [JsonPropertyName("XD")]
+        [Key(17)]
+        public double? OverridePrice { get; init; }
+
+        /// <summary>
+        /// Override quantity
+        /// </summary>
+        [JsonPropertyName("XQ")]
+        [Key(18)]
+        public double? OverrideQuantity { get; init; }
+
+        /// <summary>
+        /// Override accepted price
+        /// </summary>
+        [JsonPropertyName("XAD")]
+        [Key(19)]
+        public double? OverrideAcceptedPrice { get; init; }
+
+        /// <summary>
+        /// Override accepted quantity
+        /// </summary>
+        [JsonPropertyName("XAQ")]
+        [Key(20)]
+        public double? OverrideAcceptedQuantity { get; init; }
+
+        /// <summary>
+        /// Override block type
+        /// </summary>
+        [JsonPropertyName("XBT")]
+        [Key(21)]
+        public BlockType? OverrideBlockType { get; init; }
+
+        /// <summary>
+        /// Fallback side
+        /// </summary>
+        [JsonPropertyName("FS")]
+        [Key(22)]
+        public AuctionSide? FallbackSide { get; init; }
+
+        /// <summary>
+        /// Fallback price
+        /// </summary>
+        [JsonPropertyName("FD")]
+        [Key(23)]
+        public double? FallbackPrice { get; init; }
+
+        /// <summary>
+        /// Fallback quantity
+        /// </summary>
+        [JsonPropertyName("FQ")]
+        [Key(24)]
+        public double? FallbackQuantity { get; init; }
+
+        /// <summary>
+        /// Fallback accepted price
+        /// </summary>
+        [JsonPropertyName("FAD")]
+        [Key(25)]
+        public double? FallbackAcceptedPrice { get; init; }
+
+        /// <summary>
+        /// Fallback accepted quantity
+        /// </summary>
+        [JsonPropertyName("FAQ")]
+        [Key(26)]
+        public double? FallbackAcceptedQuantity { get; init; }
+
+        /// <summary>
+        /// Fallback block type
+        /// </summary>
+        [JsonPropertyName("FBT")]
+        [Key(27)]
+        public BlockType? FallbackBlockType { get; init; }
+
+        /// <summary>
+        /// Override identifier
+        /// </summary>
+        [JsonPropertyName("OID")]
+        [Key(28)]
+        public Guid? OverrideId { get; init; }
+
+        /// <summary>
+        /// Fallback identifier
+        /// </summary>
+        [JsonPropertyName("FID")]
+        [Key(29)]
+        public Guid? FallbackId { get; init; }
+
+        /// <summary>
+        /// Replacement state
+        /// </summary>
+        [JsonPropertyName("R")]
+        [Key(30)]
+        public int? Replaced { get; init; }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.DataQuality;
+using Artesian.SDK.Dto.DataQuality.Enums;
+using Artesian.SDK.Dto.Override.Enum;
 using Artesian.SDK.Dto.UoM;
 using Artesian.SDK.Factory;
 using Artesian.SDK.Service;
@@ -16,6 +19,7 @@ using NUnit.Framework;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,11 +39,20 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = await mds.ReadMarketDataRegistryAsync(new MarketDataIdentifier("TestProvider", "TestCurveName"));
+                var mdq = await mds.ReadMarketDataRegistryAsync(
+                    new MarketDataIdentifier("TestProvider", "TestCurveName"),
+                    includeCurveSummary: true,
+                    includeTimeTransform: true,
+                    includeDataQuality: true,
+                    skipOverrides: false);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity")
                     .WithQueryParam("provider", "TestProvider")
                     .WithQueryParam("curveName", "TestCurveName")
+                    .WithQueryParam("includeCurveSummary", true)
+                    .WithQueryParam("includeTimeTransform", true)
+                    .WithQueryParam("includeDataQuality", true)
+                    .WithQueryParam("skipOverrides", false)
                     .WithVerb(HttpMethod.Get)
                     .Times(1);
             }
@@ -72,7 +85,7 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                var mdq = await mds.ReadMarketDataRegistryAsync(100000001);
+                var mdq = await mds.ReadMarketDataRegistryAsync(100000001, ctk: default);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/entity/100000001")
                    .WithVerb(HttpMethod.Get)
@@ -131,13 +144,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = "CET"
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -172,6 +192,190 @@ namespace Artesian.SDK.Tests
 
             timeSerie.SetData(valuesLocalDateReplace, BulkSetPolicy.Replace);
         }
+
+        [Test]
+        public async Task ActualTimeSerie_SaveOverrideAndFallback_MapsCorrectionMetadata()
+        {
+            var marketDataIdentifier = new MarketDataIdentifier("Test", "TestName");
+            var marketDataEntity = new MarketDataEntity.Input
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalGranularity = Granularity.Hour,
+                OriginalTimezone = "CET",
+                AggregationRule = AggregationRule.Undefined,
+                Type = MarketDataType.ActualTimeSerie,
+                UnitOfMeasure = new UnitOfMeasure { Value = CommonUnitOfMeasure.MW },
+            };
+            var marketDataOutput = new MarketDataEntity.Output(marketDataEntity)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+            var requests = new List<UpsertCurveDataOverride>();
+            var marketDataServiceMock = new Mock<IMarketDataService>();
+            marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(marketDataOutputEnriched);
+            marketDataServiceMock.Setup(x => x.UpsertCurveDataOverrideAsync(It.IsAny<UpsertCurveDataOverride>(), It.IsAny<CancellationToken>()))
+                .Callback<UpsertCurveDataOverride, CancellationToken>((data, _) => requests.Add(data))
+                .ReturnsAsync(Array.Empty<OverrideMetadataEntry>());
+
+            var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
+            await marketData.Load();
+            var timeSerie = marketData.EditActual();
+            timeSerie.SetData(new Dictionary<LocalDateTime, double?>
+            {
+                { new LocalDateTime(2025, 12, 14, 0, 0), 10 }
+            }, BulkSetPolicy.Init);
+            var downloadedAt = Instant.FromUtc(2025, 12, 14, 1, 0);
+            var overrideId = Guid.NewGuid();
+
+            await timeSerie.SaveOverride(downloadedAt, true, false, true, UpsertMode.Merge, false, "override comment", overrideId);
+            await timeSerie.SaveFallback(downloadedAt, comment: "fallback comment");
+
+            Assert.That(requests, Has.Count.EqualTo(2));
+            Assert.That(requests[0].Kind, Is.EqualTo(OverrideKind.Override));
+            Assert.That(requests[0].ReplaceExisting, Is.False);
+            Assert.That(requests[0].Comment, Is.EqualTo("override comment"));
+            Assert.That(requests[0].OverrideId, Is.EqualTo(overrideId));
+            Assert.That(requests[0].DeferCommandExecution, Is.True);
+            Assert.That(requests[0].DeferDataGeneration, Is.False);
+            Assert.That(requests[0].KeepNulls, Is.True);
+            Assert.That(requests[0].UpsertMode, Is.EqualTo(UpsertMode.Merge));
+            Assert.That(requests[0].Timezone, Is.EqualTo("UTC"));
+            Assert.That(requests[0].Rows, Is.EquivalentTo(timeSerie.Values));
+            Assert.That(requests[1].Kind, Is.EqualTo(OverrideKind.Fallback));
+            Assert.That(requests[1].ReplaceExisting, Is.False);
+            Assert.That(requests[1].Comment, Is.EqualTo("fallback comment"));
+            Assert.That(requests[1].OverrideId, Is.Null);
+        }
+
+        [Test]
+        public async Task VersionedTimeSerie_SaveOverride_MapsCorrectionData()
+        {
+            var requests = new List<UpsertCurveDataOverride>();
+            var marketData = await CreateLoadedMarketData(MarketDataType.VersionedTimeSerie, requests);
+            var version = new LocalDateTime(2025, 12, 1, 10, 0);
+            var timeSerie = marketData.EditVersioned(version);
+            timeSerie.SetData(new Dictionary<LocalDateTime, double?>
+            {
+                [new LocalDateTime(2025, 12, 14, 0, 0)] = 10
+            }, BulkSetPolicy.Init);
+
+            await timeSerie.SaveOverride(Instant.FromUtc(2025, 12, 14, 1, 0), upsertMode: UpsertMode.Merge, comment: "versioned override");
+
+            AssertOverrideRequest(requests, "versioned override");
+            Assert.That(requests[0].Version, Is.EqualTo(version));
+            Assert.That(requests[0].Rows, Has.Count.EqualTo(1));
+        }
+
+        [Test]
+        public async Task MarketAssessment_SaveOverride_MapsCorrectionData()
+        {
+            var requests = new List<UpsertCurveDataOverride>();
+            var marketData = await CreateLoadedMarketData(MarketDataType.MarketAssessment, requests);
+            var assessment = marketData.EditMarketAssessment();
+            assessment.SetData(new List<AssessmentElement>
+            {
+                new AssessmentElement(new LocalDateTime(2025, 12, 14, 0, 0), "Product1", new MarketAssessmentValue { Settlement = 10.5 })
+            }, BulkSetPolicy.Init);
+
+            await assessment.SaveOverride(Instant.FromUtc(2025, 12, 14, 1, 0), upsertMode: UpsertMode.Merge, comment: "assessment override");
+
+            AssertOverrideRequest(requests, "assessment override");
+            Assert.That(requests[0].MarketAssessment, Has.Count.EqualTo(1));
+            Assert.That(requests[0].MarketAssessment![new LocalDateTime(2025, 12, 14, 0, 0)], Contains.Key("Product1"));
+        }
+
+        [Test]
+        public async Task AuctionTimeSerie_SaveOverride_MapsCorrectionData()
+        {
+            var requests = new List<UpsertCurveDataOverride>();
+            var marketData = await CreateLoadedMarketData(MarketDataType.Auction, requests);
+            var auction = marketData.EditAuction();
+            auction.TryAddData(
+                Instant.FromUtc(2025, 12, 14, 0, 0),
+                new[] { new AuctionBidValue(100, 10) },
+                new[] { new AuctionBidValue(120, 12) },
+                KeyConflictPolicy.Throw);
+
+            await auction.SaveOverride(Instant.FromUtc(2025, 12, 14, 1, 0), upsertMode: UpsertMode.Merge, comment: "auction override");
+
+            AssertOverrideRequest(requests, "auction override");
+            Assert.That(requests[0].AuctionRows, Has.Count.EqualTo(1));
+        }
+
+        [Test]
+        public async Task BidAsk_SaveOverride_MapsCorrectionData()
+        {
+            var requests = new List<UpsertCurveDataOverride>();
+            var marketData = await CreateLoadedMarketData(MarketDataType.BidAsk, requests);
+            var bidAsk = marketData.EditBidAsk();
+            bidAsk.SetData(new List<BidAskElement>
+            {
+                new BidAskElement(new LocalDateTime(2025, 12, 14, 0, 0), "Product1", new BidAskValue { BestBidPrice = 10, BestAskPrice = 11 })
+            }, BulkSetPolicy.Init);
+
+            await bidAsk.SaveOverride(Instant.FromUtc(2025, 12, 14, 1, 0), upsertMode: UpsertMode.Merge, comment: "bid ask override");
+
+            AssertOverrideRequest(requests, "bid ask override");
+            Assert.That(requests[0].BidAsk, Has.Count.EqualTo(1));
+            Assert.That(requests[0].BidAsk![new LocalDateTime(2025, 12, 14, 0, 0)], Contains.Key("Product1"));
+        }
+
+        private static async Task<MarketData> CreateLoadedMarketData(MarketDataType type, List<UpsertCurveDataOverride> requests)
+        {
+            var identifier = new MarketDataIdentifier("Test", "TestName");
+            var entity = new MarketDataEntity.Input
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalGranularity = Granularity.Hour,
+                OriginalTimezone = "CET",
+                AggregationRule = AggregationRule.Undefined,
+                Type = type,
+                UnitOfMeasure = new UnitOfMeasure { Value = CommonUnitOfMeasure.MW },
+            };
+            var output = new MarketDataEntity.Output(entity)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+            var enriched = new MarketDataEntity.OutputEnriched(output)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+            var service = new Mock<IMarketDataService>();
+            service.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(enriched);
+            service.Setup(x => x.UpsertCurveDataOverrideAsync(It.IsAny<UpsertCurveDataOverride>(), It.IsAny<CancellationToken>()))
+                .Callback<UpsertCurveDataOverride, CancellationToken>((data, _) => requests.Add(data))
+                .ReturnsAsync(Array.Empty<OverrideMetadataEntry>());
+
+            var marketData = new MarketData(service.Object, identifier);
+            await marketData.Load().ConfigureAwait(false);
+            return marketData;
+        }
+
+        private static void AssertOverrideRequest(List<UpsertCurveDataOverride> requests, string comment)
+        {
+            Assert.That(requests, Has.Count.EqualTo(1));
+            Assert.That(requests[0].Kind, Is.EqualTo(OverrideKind.Override));
+            Assert.That(requests[0].UpsertMode, Is.EqualTo(UpsertMode.Merge));
+            Assert.That(requests[0].Comment, Is.EqualTo(comment));
+            Assert.That(requests[0].Timezone, Is.EqualTo("UTC"));
+        }
+
         [Test]
         public async Task MarketDataServiceSetDataInitReplace_MarketAssessment()
         {
@@ -195,13 +399,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = "CET"
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -259,13 +470,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = "CET"
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -323,13 +541,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = "CET"
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -394,13 +619,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = originalTimezone
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -463,13 +695,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = originalTimezone
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -533,13 +772,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = originalTimezone
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -608,13 +854,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = originalTimezone
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -679,13 +932,20 @@ namespace Artesian.SDK.Tests
                 OriginalTimezone = originalTimezone
             };
 
+            var marketDataOutputEnriched = new MarketDataEntity.OutputEnriched(marketDataOutput)
+            {
+                ProviderName = "Test",
+                MarketDataName = "TestName",
+                OriginalTimezone = "CET"
+            };
+
             var marketDataServiceMock = new Mock<IMarketDataService>();
 
             marketDataServiceMock.Setup(x => x.RegisterMarketDataAsync(It.IsAny<MarketDataEntity.Input>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(marketDataOutput);
 
             marketDataServiceMock.Setup(x => x.ReadMarketDataRegistryAsync(It.IsAny<MarketDataIdentifier>(), It.IsAny<CancellationToken>()))
-                                 .ReturnsAsync(marketDataOutput);
+                                 .ReturnsAsync(marketDataOutputEnriched);
 
             var marketData = new MarketData(marketDataServiceMock.Object, marketDataIdentifier);
 
@@ -870,7 +1130,13 @@ namespace Artesian.SDK.Tests
                     Filters = filterDict,
                     Sorts = new List<string>() { "OriginalTimezone" }
                 };
-                var mdq = await mds.SearchFacetAsync(filter, false);
+                var mdq = await mds.SearchFacetAsync(
+                    filter,
+                    doNotLoadAdditionalInfo: true,
+                    includeCurveSummary: true,
+                    includeTimeTransform: true,
+                    includeDataQuality: true,
+                    skipOverrides: false);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/marketdata/searchfacet")
                     .WithQueryParam("pageSize", 1)
@@ -878,6 +1144,11 @@ namespace Artesian.SDK.Tests
                     .WithQueryParam("searchText", "testText")
                     .WithQueryParam("filters", "TestKey:TestValue")
                     .WithQueryParam("sorts", "OriginalTimezone")
+                    .WithQueryParam("doNotLoadAdditionalInfo", true)
+                    .WithQueryParam("includeCurveSummary", true)
+                    .WithQueryParam("includeTimeTransform", true)
+                    .WithQueryParam("includeDataQuality", true)
+                    .WithQueryParam("skipOverrides", false)
                     .WithVerb(HttpMethod.Get)
                     .Times(1);
             }
@@ -1994,6 +2265,797 @@ namespace Artesian.SDK.Tests
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/apikey/entity/1")
                     .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+        #endregion
+
+        #region DataQualityRule
+        [Test]
+        public async Task MarketData_RegisterDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var dataQualityRule = new DataQualityRuleDto.Input()
+                {
+                    Name = "TestRule",
+                    Type = RuleType.CompletenessAndFreshness,
+                    Configuration = new ActualCompletenessAndFreshnessConfigDto
+                    {
+                        MarketDataType = MarketDataType.ActualTimeSerie,
+                        ScheduleConfig = new ScheduleConfigDto
+                        {
+                            ScheduleDefinition = new CronScheduleDefinitionDto
+                            {
+                                CronExpression = "0 0 * * *",
+                                TimeZone = "UTC"
+                            },
+                            MaxDelay = Period.FromHours(1)
+                        },
+                        RecordValidationConfig = new RecordValidationConfigDto
+                        {
+                            RecordRangeFrom = Period.Zero,
+                            RecordRangeTo = Period.FromHours(1)
+                        }
+                    }
+                };
+
+                var response = new DataQualityRuleDto.Output
+                {
+                    Id = 42,
+                    Name = dataQualityRule.Name,
+                    Type = dataQualityRule.Type,
+                    Configuration = dataQualityRule.Configuration,
+                    Version = 1,
+                    AggregatedStatus = CheckAggregatedStatus.OK
+                };
+                var json = System.Text.Json.JsonSerializer.Serialize(response, Client.CreateDefaultJsonSerializerOptions());
+                httpTest.RespondWith(json, 200, headers: new { Content_Type = "application/json" });
+
+                var result = await mds.RegisterDataQualityRuleAsync(dataQualityRule);
+
+                Assert.That(result.Id, Is.EqualTo(42));
+                Assert.That(result.AggregatedStatus, Is.EqualTo(CheckAggregatedStatus.OK));
+                Assert.That(result.Configuration, Is.InstanceOf<ActualCompletenessAndFreshnessConfigDto>());
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleAsync(1, 10, RuleType.CompletenessAndFreshness, 1, string.Empty, Array.Empty<int>(), Array.Empty<string>());
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
+                    .WithQueryParam("marketDataId", 1)
+                    .WithQueryParam("page", 1)
+                    .WithQueryParam("pageSize", 10)
+                    .WithQueryParam("type", RuleType.CompletenessAndFreshness)
+                    .WithQueryParam("name", string.Empty)
+                    .WithoutQueryParam("ruleIds")
+                    .WithoutQueryParam("sort")
+                    .WithVerb(HttpMethod.Get)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpdateDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var dataQualityRule = new DataQualityRuleDto.Input()
+                {
+                    Name = "TestRuleUpdate",
+                    Type = RuleType.CompletenessAndFreshness,
+                    Configuration = new ActualCompletenessAndFreshnessConfigDto
+                    {
+                        MarketDataType = MarketDataType.ActualTimeSerie,
+                        ScheduleConfig = new ScheduleConfigDto
+                        {
+                            ScheduleDefinition = new CronScheduleDefinitionDto
+                            {
+                                CronExpression = "0 0 * * *",
+                                TimeZone = "UTC"
+                            },
+                            MaxDelay = Period.FromHours(1)
+                        },
+                        RecordValidationConfig = new RecordValidationConfigDto
+                        {
+                            RecordRangeFrom = Period.Zero,
+                            RecordRangeTo = Period.FromHours(1)
+                        }
+                    }
+                };
+
+                await mds.UpdateDataQualityRuleAsync(1, dataQualityRule);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Put)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteDataQualityRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteDataQualityRuleAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule/1")
+                    .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+        #endregion
+
+        #region DataQualityRuleAssignment
+        [Test]
+        public async Task MarketData_RegisterDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var assignment = new MarketDataQualityRuleAssignmentDto.Input()
+                {
+                    MarketDataId = 100,
+                    DataQualityRuleId = 1
+                };
+
+                await mds.RegisterDataQualityRuleAssignmentAsync(assignment, Period.FromDays(30));
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
+                    .WithQueryParam("initializationLookbackPeriod", Period.FromDays(30))
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAssignmentByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleAssignmentByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadDataQualityRuleAssignmentsAsync(1, 10, 100, 1, "TestRule", new string[] { "Id asc" });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
+                    .WithQueryParam("page", 1)
+                    .WithQueryParam("pageSize", 10)
+                    .WithQueryParam("marketDataId", 100)
+                    .WithQueryParam("ruleId", 1)
+                    .WithQueryParam("ruleName", "TestRule")
+                    .WithQueryParam("sort", "Id asc")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpdateDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.UpdateDataQualityRuleAssignmentAsync(1, Period.FromDays(60), "test-etag");
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithQueryParam("initializationLookbackPeriod", Period.FromDays(60))
+                    .WithQueryParam("etag", "test-etag")
+                    .WithVerb(HttpMethod.Put)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteDataQualityRuleAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteDataQualityRuleAssignmentAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public void MarketData_ReadDataQualityRuleAssignmentEventsFeedAsync_RejectsAfterTimestampOlderThanEightDays()
+        {
+            var mds = new MarketDataService(_cfg);
+            var afterTimestamp = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(9);
+
+            var exception = Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.ReadDataQualityRuleAssignmentEventsFeedAsync(1, afterTimestamp).ConfigureAwait(false));
+
+            Assert.That(exception!.ParamName, Is.EqualTo("afterTimestamp"));
+        }
+
+        [Test]
+        public async Task MarketData_ReadDataQualityRuleAssignmentEventsFeedAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var afterTimestamp = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(1);
+
+                await mds.ReadDataQualityRuleAssignmentEventsFeedAsync(1, afterTimestamp);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1/events")
+                    .WithQueryParam("afterTimestamp", afterTimestamp)
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        #endregion
+
+        #region DataQualityCheckResult
+
+        [Test]
+        public async Task MarketData_GetDataQualityCheckResultExtractVtsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var version = new LocalDateTime(2024, 1, 15, 10, 0);
+                var start = new LocalDate(2024, 1, 1);
+                var end = new LocalDate(2024, 1, 31);
+                const string json = "[{\"P\":\"Provider\",\"C\":\"Curve\",\"R\":\"Rule\",\"AID\":1,\"MKID\":100,\"RID\":2,\"V\":\"2024-01-15T10:00:00\",\"T\":\"2024-01-01T00:00:00Z\",\"D\":3,\"S\":\"2024-01-01T00:00:00Z\",\"E\":\"2024-01-02T00:00:00Z\"}]";
+                httpTest.RespondWith(json, 200, headers: new { Content_Type = "application/json" });
+
+                var result = (await mds.GetDataQualityCheckResultExtractVtsAsync(version, Granularity.Day, start, end, "UTC", new int[] { 1, 2 })).Single();
+
+                Assert.That(result.ProviderName, Is.EqualTo("Provider"));
+                Assert.That(result.CurveName, Is.EqualTo("Curve"));
+                Assert.That(result.AssignmentId, Is.EqualTo(1));
+                Assert.That(result.IssueCount, Is.EqualTo(3));
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/extract/vts/Version/2024-01-15T10:00:00/Day/2024-01-01/2024-01-31")
+                    .WithQueryParam("timeZone", "UTC")
+                    .WithQueryParam("assignmentIds", "1")
+                    .WithQueryParam("assignmentIds", "2")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_GetDataQualityCheckResultExtractTsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var start = new LocalDate(2024, 1, 1);
+                var end = new LocalDate(2024, 1, 31);
+
+                await mds.GetDataQualityCheckResultExtractTsAsync(Granularity.Hour, start, end, "Europe/Rome", new int[] { 3, 4 });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/extract/ts/Hour/2024-01-01/2024-01-31")
+                    .WithQueryParam("timeZone", "Europe/Rome")
+                    .WithQueryParam("assignmentIds", "3")
+                    .WithQueryParam("assignmentIds", "4")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_GetDataQualityCheckResultCheckSummaryAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                var from = Instant.FromUtc(2024, 1, 1, 0, 0);
+                var to = Instant.FromUtc(2024, 1, 31, 23, 59);
+                var versionFrom = new LocalDateTime(2024, 1, 1, 0, 0);
+                var versionTo = new LocalDateTime(2024, 1, 31, 23, 59);
+
+                await mds.GetDataQualityCheckResultCheckSummaryAsync(
+                    page: 1,
+                    pageSize: 20,
+                    marketDataIds: new int[] { 100, 200 },
+                    ruleIds: new int[] { 1, 2 },
+                    assignmentIds: new int[] { 10, 20 },
+                    dqStatus: CheckAggregatedStatus.KO,
+                    from: from,
+                    to: to,
+                    versionFrom: versionFrom,
+                    versionTo: versionTo,
+                    products: new string[] { "PROD1", "PROD2" },
+                    skipEmptyRanges: true,
+                    sort: new string[] { "RuleName asc" });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/checksummary")
+                    .WithQueryParam("page", 1)
+                    .WithQueryParam("pageSize", 20)
+                    .WithQueryParam("marketDataIds", "100")
+                    .WithQueryParam("marketDataIds", "200")
+                    .WithQueryParam("ruleIds", "1")
+                    .WithQueryParam("ruleIds", "2")
+                    .WithQueryParam("assignmentIds", "10")
+                    .WithQueryParam("assignmentIds", "20")
+                    .WithQueryParam("dqStatus", CheckAggregatedStatus.KO)
+                    .WithQueryParam("from", from)
+                    .WithQueryParam("to", to)
+                    .WithQueryParam("versionFrom", versionFrom)
+                    .WithQueryParam("versionTo", versionTo)
+                    .WithQueryParam("products", "PROD1")
+                    .WithQueryParam("products", "PROD2")
+                    .WithQueryParam("skipEmptyRanges", true)
+                    .WithQueryParam("sort", "RuleName asc")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_GetMarketDataDqStatusSummaryAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.GetMarketDataDqStatusSummaryAsync(
+                    ruleId: 1,
+                    marketDataIds: new int[] { 100, 200 },
+                    dqStatus: CheckAggregatedStatus.KO,
+                    limit: 50);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/marketdata/dataqualitystatussummary")
+                    .WithQueryParam("limit", 50)
+                    .WithQueryParam("ruleId", 1)
+                    .WithQueryParam("marketDataIds", "100")
+                    .WithQueryParam("marketDataIds", "200")
+                    .WithQueryParam("dqStatus", CheckAggregatedStatus.KO)
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_GetDqRuleDqStatusSummaryAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.GetDqRuleDqStatusSummaryAsync(
+                    marketDataId: 100,
+                    ruleIds: new int[] { 1, 2, 3 },
+                    dqStatus: CheckAggregatedStatus.OK,
+                    limit: 100);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/dqrule/dataqualitystatussummary")
+                    .WithQueryParam("limit", 100)
+                    .WithQueryParam("marketDataId", 100)
+                    .WithQueryParam("ruleIds", "1")
+                    .WithQueryParam("ruleIds", "2")
+                    .WithQueryParam("ruleIds", "3")
+                    .WithQueryParam("dqStatus", CheckAggregatedStatus.OK)
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+        #endregion
+
+        #region QualityNotificationAlert
+        [Test]
+        public async Task MarketData_RegisterQualityNotificationAlertAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var alert = new QualityNotificationAlertDto.Input
+                {
+                    Name = "Test alert",
+                    TriggerConfig = new OnEventTriggerConfigDto(),
+                    MailNotifications = new List<MailNotificationDto>
+                    {
+                        new MailNotificationDto { Recipients = new[] { "test@example.com" } }
+                    }
+                };
+
+                await mds.RegisterQualityNotificationAlertAsync(alert);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule")
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadQualityNotificationAlertByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadQualityNotificationAlertByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadQualityNotificationAlertsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadQualityNotificationAlertsAsync(2, 20, "Test", 100, new int[] { 1, 2 }, new string[] { "Name asc" });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule")
+                    .WithQueryParam("page", 2)
+                    .WithQueryParam("pageSize", 20)
+                    .WithQueryParam("name", "Test")
+                    .WithQueryParam("marketDataId", 100)
+                    .WithQueryParam("ruleIds", "1")
+                    .WithQueryParam("ruleIds", "2")
+                    .WithQueryParam("sort", "Name asc")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpdateQualityNotificationAlertAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var alert = new QualityNotificationAlertDto.Input
+                {
+                    Name = "Updated alert",
+                    TriggerConfig = new OnEventTriggerConfigDto(),
+                    MailNotifications = new List<MailNotificationDto>
+                    {
+                        new MailNotificationDto { Recipients = new[] { "test@example.com" } }
+                    }
+                };
+
+                await mds.UpdateQualityNotificationAlertAsync(1, alert);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1")
+                    .WithVerb(HttpMethod.Put)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteQualityNotificationAlertAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteQualityNotificationAlertAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1")
+                    .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadAlertScheduleEventsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var scheduleTime = Instant.FromUtc(2025, 1, 15, 12, 30);
+
+                await mds.ReadAlertScheduleEventsAsync(1, scheduleTime);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1/schedule/{scheduleTime}/events")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadAlertScheduleListAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadAlertScheduleListAsync(1, 5);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1/schedule")
+                    .WithQueryParam("lastN", 5)
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadAlertScheduleLastEventsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadAlertScheduleLastEventsAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1/schedule/latest/events")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        #endregion
+
+        #region QualityNotificationAlertAssignment
+
+        [Test]
+        public async Task MarketData_RegisterQualityNotificationAlertAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var assignment = new QualityNotificationAlertAssignmentDto.Input
+                {
+                    AlertId = 1,
+                    MarketDataId = 100000001
+                };
+
+                await mds.RegisterQualityNotificationAlertAssignmentAsync(assignment);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertruleassignment")
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadQualityNotificationAlertAssignmentByIdAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadQualityNotificationAlertAssignmentByIdAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertruleassignment/1")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadQualityNotificationAlertAssignmentsAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadQualityNotificationAlertAssignmentsAsync(2, 20, 1, 100000001, new string[] { "AlertId desc" });
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertruleassignment")
+                    .WithQueryParam("alertId", 1)
+                    .WithQueryParam("marketDataId", 100000001)
+                    .WithQueryParam("page", 2)
+                    .WithQueryParam("pageSize", 20)
+                    .WithQueryParam("sort", "AlertId desc")
+                    .WithVerb(HttpMethod.Get)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteQualityNotificationAlertAssignmentAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.DeleteQualityNotificationAlertAssignmentAsync(1);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertruleassignment/1")
+                    .WithVerb(HttpMethod.Delete)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_UpsertCurveDataOverrideAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var data = new UpsertCurveDataOverride
+                {
+                    ID = new MarketDataIdentifier("Test", "Override"),
+                    Timezone = "UTC",
+                    DownloadedAt = SystemClock.Instance.GetCurrentInstant(),
+                    Rows = new Dictionary<LocalDateTime, double?>
+                    {
+                        [new LocalDateTime(2025, 1, 1, 0, 0)] = 1,
+                    },
+                    OverrideId = Guid.NewGuid(),
+                    Kind = OverrideKind.Override,
+                };
+
+                await mds.UpsertCurveDataOverrideAsync(data);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.2-beta/marketdata/override/upsertdata")
+                    .WithVerb(HttpMethod.Post)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [TestCase(0, "Kind must be a valid value")]
+        [TestCase(1, "ReplaceExisting cannot be combined with OverrideId")]
+        [TestCase(2, "OverrideId must be valorized")]
+        [TestCase(3, "Comment cannot exceed 4000 characters")]
+        [TestCase(4, "UpsertMode must be null or Merge")]
+        [TestCase(5, "Rows/Auctions/BidAsks must be valorized")]
+        public void MarketData_UpsertCurveDataOverrideAsync_RejectsInvalidOverride(int invalidCase, string expectedMessage)
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var data = new UpsertCurveDataOverride
+                {
+                    ID = new MarketDataIdentifier("Test", "Override"),
+                    Timezone = "UTC",
+                    DownloadedAt = SystemClock.Instance.GetCurrentInstant(),
+                    Rows = invalidCase == 5
+                        ? new Dictionary<LocalDateTime, double?>()
+                        : new Dictionary<LocalDateTime, double?>
+                        {
+                            [new LocalDateTime(2025, 1, 1, 0, 0)] = 1,
+                        },
+                    Kind = OverrideKind.Override,
+                    UpsertMode = invalidCase == 4 ? UpsertMode.Replace : null,
+                };
+
+                switch (invalidCase)
+                {
+                    case 0:
+                        data.Kind = (OverrideKind)999;
+                        break;
+                    case 1:
+                        data.OverrideId = Guid.NewGuid();
+                        data.ReplaceExisting = true;
+                        break;
+                    case 2:
+                        data.OverrideId = Guid.Empty;
+                        break;
+                    case 3:
+                        data.Comment = new string('x', 4001);
+                        break;
+                }
+
+                var exception = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataOverrideAsync(data));
+                Assert.That(exception!.Message, Does.Contain(expectedMessage));
+                httpTest.ShouldNotHaveMadeACall();
+            }
+        }
+
+        [Test]
+        public async Task MarketData_DeleteOverrideDataAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var id = Guid.NewGuid();
+
+                await mds.DeleteOverrideDataAsync(id);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.2-beta/marketdata/override/{id}/deletedata")
+                    .WithVerb(HttpMethod.Post)
+                    .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_ReadOverrideMetadataAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+
+                await mds.ReadOverrideMetadataAsync(100000001, OverrideKind.Fallback, 2, 20);
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.2-beta/marketdata/override/100000001/metadata")
+                    .WithQueryParam("kind", OverrideKind.Fallback)
+                    .WithQueryParam("page", 2)
+                    .WithQueryParam("pageSize", 20)
+                    .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .Times(1);
             }

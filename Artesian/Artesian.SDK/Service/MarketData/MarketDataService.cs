@@ -12,6 +12,7 @@ namespace Artesian.SDK.Service
         private readonly IArtesianServiceConfig _cfg;
         private readonly ArtesianPolicyConfig _policy;
         private readonly Client _client;
+        private readonly Client _marketDataOverrideClient;
 
         /// <summary>
         /// Metadata service
@@ -32,6 +33,7 @@ namespace Artesian.SDK.Service
             _cfg = cfg;
             _policy = policy;
             _client = new Client(cfg, ArtesianConstants._metadataVersion, _policy);
+            _marketDataOverrideClient = new Client(cfg, ArtesianConstants._metadataOverrideVersion, _policy);
         }
     }
 }

@@ -17,11 +17,12 @@ namespace Artesian.SDK.Service
         public readonly static string SDKVersionHeaderValue = $@"ArtesianSDK-C#:{Assembly.GetExecutingAssembly().GetName().Version},{Environment.OSVersion.Platform}:{Environment.OSVersion.Version},{_frameworkName?.Identifier}:{_frameworkName?.Version}";
  #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
-        internal const string _queryVersion = "v1.0";
+        internal const string _queryVersion = "v1.1-beta";
         internal const string _gMEPublicOfferVersion = "v2.0";
         internal const string _queryRoute = "query";
         internal const string _gMEPublicOfferRoute = "gmepublicoffer";
         internal const string _metadataVersion = "v2.1";
+        internal const string _metadataOverrideVersion = "v2.2-beta";
         internal const int _serviceRequestTimeOutMinutes = 10;
 
         private static FrameworkName? _frameworkName { get => new FrameworkName(Assembly.GetExecutingAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName ?? ".NETStandard,Version=unknown"); }

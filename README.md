@@ -282,6 +282,25 @@ To construct a Bid Ask Time Series the following must be provided.
 
 [Go to Time Extraction window section](#artesian-sdk-extraction-windows)
 
+### Override and Fallback Query Options
+
+Actual, Versioned, Market Assessment, Auction, and Bid Ask queries support optional override and fallback controls. Both options default to `false`.
+
+```csharp
+var actualTimeSeries = await qs.CreateActual()
+                .ForMarketData(new int[] { 100000001 })
+                .InGranularity(Granularity.Day)
+                .InAbsoluteDateRange(new LocalDate(2018, 8, 1), new LocalDate(2018, 8, 10))
+                .WithSkipOverrides(false)
+                .WithIncludeOverrideDetails(true)
+                .ExecuteAsync();
+```
+
+| Query option | Default | Description |
+| ------------ | ------- | ----------- |
+| `WithSkipOverrides(bool)` | `false` | Specifies whether overrides and fallbacks must be skipped when querying data. |
+| `WithIncludeOverrideDetails(bool)` | `false` | Specifies whether original, override, and fallback details must be included in query results. |
+
 ### Artesian SDK Extraction Windows
 
 Extraction window types for queries.
@@ -588,6 +607,558 @@ Latest Value
  .WithLFillLatestValue(Period.FromDays(7))
 ```
 
+## Data Quality Rules
+
+Artesian supports Data Quality Rules to validate market data for completeness, freshness, and outlier detection. 
+Rules are reusable configurations that can be assigned to one or more Market Data entities through rule assignments.
+
+### Data Quality Rule Types
+
+Two types of rules are supported:
+
+<table>
+  <tr><th>Rule Type</th><th>Description</th></tr>
+  <tr><td>Completeness and Freshness</td><td>Validates that expected data records are present within the defined time window and arrive within an acceptable delay</td></tr>
+  <tr><td>Outlier Detection</td><td>Identifies anomalous data points using statistical models</td></tr>
+</table>
+
+### MarketDataService Configuration
+
+Create an instance of MarketDataService to manage Data Quality Rules:
+
+```csharp
+var cfg = new ArtesianServiceConfig(
+    new Uri("https://fake-artesian-env/"),
+    "5418B0DB-7AB9-4875-81BA-6EE609E073B6"
+);
+
+var marketDataService = new MarketDataService(cfg);
+```
+
+### Create a Data Quality Rule
+
+#### Completeness and Freshness Rule for Actual Time Series
+
+```csharp
+using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.DataQuality;
+using Artesian.SDK.Dto.DataQuality.Enums;
+using NodaTime;
+var actualCompletenessRule = new DataQualityRuleDto.Input
+{
+    Name = "Daily weather station completeness",
+    Type = RuleType.CompletenessAndFreshness,
+    Configuration = new ActualCompletenessAndFreshnessConfigDto
+    {
+        MarketDataType = MarketDataType.ActualTimeSerie,
+        ScheduleConfig = new ScheduleConfigDto
+        {
+            ScheduleDefinition = new CronScheduleDefinitionDto
+            {
+                CronExpression = "0 9 * * *",  // Run daily at 9 AM
+                TimeZone = "UTC"
+            },
+            MaxDelay = Period.FromHours(2)
+        },
+        RecordValidationConfig = new RecordValidationConfigDto
+        {
+            RecordRangeFrom = Period.FromDays(-1),
+            RecordRangeTo = Period.FromDays(0)
+        }
+    }
+};
+
+var createdRule = await marketDataService.RegisterDataQualityRuleAsync(actualCompletenessRule);
+Console.WriteLine($"Created rule with ID: {createdRule.Id}");
+```
+
+#### Completeness and Freshness Rule for Versioned Time Series
+
+```csharp
+var versionedCompletenessRule = new DataQualityRuleDto.Input
+{
+    Name = "Hourly forecast version check",
+    Type = RuleType.CompletenessAndFreshness,
+    Configuration = new VersionedCompletenessAndFreshnessConfigDto
+    {
+        MarketDataType = MarketDataType.VersionedTimeSerie,
+        ScheduleConfig = new ScheduleConfigDto
+        {
+            ScheduleDefinition = new CronScheduleDefinitionDto
+            {
+                CronExpression = "15 * * * *",  // Run every hour at minute 15
+                TimeZone = "UTC"
+            },
+            MaxDelay = Period.FromMinutes(30)
+        },
+        RecordValidationConfig = new RecordValidationConfigDto
+        {
+            RecordRangeFrom = Period.FromDays(0),
+            RecordRangeTo = Period.FromDays(7)
+        },
+        VersionToleranceFrom = Period.FromHours(-1),
+        VersionToleranceTo = Period.FromHours(1),
+        VersionPrecision = PeriodPrecision.Hour
+    }
+};
+
+var createdVersionedRule = await marketDataService.RegisterDataQualityRuleAsync(versionedCompletenessRule);
+```
+
+#### Outlier Detection Rule
+
+```csharp
+var outlierRule = new DataQualityRuleDto.Input
+{
+    Name = "Temperature outlier detection",
+    Type = RuleType.Outlier,
+    Configuration = new OutlierConfigDto
+    {
+        Model = new OutlierAbsoluteBoundConfigDto
+        {
+            LowerBound = -10.0,
+            UpperBound = 45.0
+        }
+    }
+};
+
+var createdOutlierRule = await marketDataService.RegisterDataQualityRuleAsync(outlierRule);
+```
+
+### Read Data Quality Rules
+
+#### Get a Single Rule by ID
+
+```csharp
+var rule = await marketDataService.ReadDataQualityRuleByIdAsync(id: 123);
+Console.WriteLine($"Rule Name: {rule.Name}, Type: {rule.Type}");
+```
+
+#### Get All Rules with Pagination and Filters
+
+```csharp
+var rules = await marketDataService.ReadDataQualityRuleAsync(
+    page: 1,
+    pageSize: 20,
+    type: RuleType.CompletenessAndFreshness,
+    name: "weather",  // Partial match filter
+    sort: new[] { "Name asc" }
+);
+
+Console.WriteLine($"Total pages: {rules.Count}");
+foreach (var rule in rules.Data)
+{
+    Console.WriteLine($"- {rule.Name} (ID: {rule.Id})");
+}
+```
+
+### Update a Data Quality Rule
+
+```csharp
+var existingRule = await marketDataService.ReadDataQualityRuleByIdAsync(123);
+
+// Modify the rule
+existingRule.Name = "Updated rule name";
+if (existingRule.Configuration is ActualCompletenessAndFreshnessConfigDto actualConfig)
+{
+    actualConfig.ScheduleConfig.MaxDelay = Period.FromHours(3);
+}
+
+var updatedRule = await marketDataService.UpdateDataQualityRuleAsync(
+    id: existingRule.Id,
+    entity: existingRule
+);
+```
+
+### Delete a Data Quality Rule
+
+A Data Quality Rule can be deleted only if it has no assignments. Delete all existing assignments before deleting the rule.
+
+```csharp
+await marketDataService.DeleteDataQualityRuleAsync(id: 123);
+```
+
+### Data Quality Rule Assignments
+
+Once you have created Data Quality Rules, you can assign them to Market Data entities to start validating data.
+
+#### Create an Assignment
+
+```csharp
+var assignment = new MarketDataQualityRuleAssignmentDto.Input
+{
+    MarketDataId = 100000001,
+    DataQualityRuleId = 123
+};
+
+// Optional: specify how far back to validate on initial assignment
+var initializationLookback = Period.FromDays(30);
+
+var createdAssignment = await marketDataService.RegisterDataQualityRuleAssignmentAsync(
+    entity: assignment,
+    initializationLookbackPeriod: initializationLookback
+);
+
+Console.WriteLine($"Assignment ID: {createdAssignment.Id}");
+```
+
+#### Read Assignments
+
+Get a single assignment:
+
+```csharp
+var assignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(id: 456);
+Console.WriteLine($"MarketData: {assignment.MarketData?.MarketDataName}");
+Console.WriteLine($"Rule: {assignment.DataQualityRule?.Name}");
+```
+
+Get all assignments with filters:
+
+```csharp
+var assignments = await marketDataService.ReadDataQualityRuleAssignmentsAsync(
+    page: 1,
+    pageSize: 20,
+    marketDataId: 100000001,  // Filter by Market Data
+    ruleId: 123,              // Filter by Rule
+    ruleName: "weather",      // Filter by rule name (partial match)
+    sort: new[] { "Id desc" }
+);
+
+foreach (var a in assignments.Data)
+{
+    Console.WriteLine($"Assignment {a.Id}: MD {a.MarketDataId} -> Rule {a.DataQualityRuleId}");
+}
+```
+
+#### Update an Assignment
+
+Re-configure the lookback period to re-evaluate the data:
+
+```csharp
+var assignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(456);
+
+var updatedAssignment = await marketDataService.UpdateDataQualityRuleAssignmentAsync(
+    id: assignment.Id,
+    initializationLookbackPeriod: Period.FromDays(60),
+    etag: assignment.ETag
+);
+```
+
+#### Delete an Assignment
+
+```csharp
+await marketDataService.DeleteDataQualityRuleAssignmentAsync(id: 456);
+```
+
+#### Read Assignment Event Feed
+
+Retrieve raw events for a specific assignment (max 8-day lookback):
+
+```csharp
+using NodaTime;
+
+var events = await marketDataService.ReadDataQualityRuleAssignmentEventsFeedAsync(
+    id: 456,
+    afterTimestamp: Instant.FromUtc(2024, 1, 15, 0, 0)
+);
+
+Console.WriteLine($"Retrieved {events.Length} events");
+foreach (var evt in events)
+{
+    Console.WriteLine($"Event at {evt.Timestamp}: {evt.NewStatus}");
+}
+```
+
+### Quality Notification Alerts
+
+Quality notification alerts send notifications when data quality checks detect failures. Alerts can be triggered immediately for each event or configured with a schedule for digest notifications. Market Data assignments remain managed through the Data Quality Rule Assignment APIs.
+
+#### Create an Alert
+
+```csharp
+var alert = new QualityNotificationAlertDto.Input
+{
+    Name = "Weather station quality alert",
+    TriggerConfig = new OnEventTriggerConfigDto(),
+    MailNotifications = new List<MailNotificationDto>
+    {
+        new MailNotificationDto
+        {
+            Recipients = new[] { "quality-team@example.com" }
+        }
+    }
+};
+
+var createdAlert = await marketDataService.RegisterQualityNotificationAlertAsync(alert);
+Console.WriteLine($"Alert ID: {createdAlert.Id}");
+```
+
+For scheduled digest notifications, use `ScheduleTriggerConfigDto` with a cron schedule:
+
+```csharp
+var scheduledAlert = new QualityNotificationAlertDto.Input
+{
+    Name = "Daily quality digest",
+    TriggerConfig = new ScheduleTriggerConfigDto
+    {
+        ScheduleDefinition = new CronScheduleDefinitionDto
+        {
+            CronExpression = "0 9 * * *",
+            TimeZone = "UTC"
+        }
+    },
+    MailNotifications = new List<MailNotificationDto>
+    {
+        new MailNotificationDto
+        {
+            Recipients = new[] { "quality-team@example.com" }
+        }
+    }
+};
+```
+
+#### Read, Update, and Delete Alerts
+
+```csharp
+var alert = await marketDataService.ReadQualityNotificationAlertByIdAsync(id: 123);
+
+var alerts = await marketDataService.ReadQualityNotificationAlertsAsync(
+    page: 1,
+    pageSize: 20,
+    name: "weather",
+    marketDataId: 100000001,
+    sort: new[] { "Name asc" }
+);
+
+alert.Name = "Updated quality alert";
+var updatedAlert = await marketDataService.UpdateQualityNotificationAlertAsync(
+    id: alert.Id,
+    entity: alert
+);
+
+await marketDataService.DeleteQualityNotificationAlertAsync(id: updatedAlert.Id);
+```
+
+The `ETag` and `Version` returned by the API must be preserved when updating an alert.
+
+#### Read Alert Schedule Events
+
+```csharp
+var scheduleTimes = await marketDataService.ReadAlertScheduleListAsync(
+    alertId: 123,
+    lastN: 10
+);
+
+if (scheduleTimes.Length > 0)
+{
+    var scheduleEvents = await marketDataService.ReadAlertScheduleEventsAsync(
+        alertId: 123,
+        scheduleTime: scheduleTimes[0]
+    );
+
+    foreach (var evt in scheduleEvents.Events)
+    {
+        Console.WriteLine($"Event at {evt.Timestamp}: {evt.NewStatus}");
+    }
+}
+
+var latestScheduleEvents = await marketDataService.ReadAlertScheduleLastEventsAsync(alertId: 123);
+```
+
+### Quality Notification Alert Assignments
+
+An alert assignment binds a quality notification alert to a Market Data entity. Assignments determine which Market Data is monitored by an alert and are managed separately from the alert definition.
+
+#### Create an Assignment
+
+```csharp
+var assignment = new QualityNotificationAlertAssignmentDto.Input
+{
+    AlertId = 123,
+    MarketDataId = 100000001
+};
+
+var createdAssignment = await marketDataService.RegisterQualityNotificationAlertAssignmentAsync(assignment);
+Console.WriteLine($"Assignment ID: {createdAssignment.Id}");
+```
+
+#### Read Assignments
+
+Read a single assignment by ID or filter the paginated collection by alert and Market Data:
+
+```csharp
+var assignment = await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(id: 456);
+
+var assignments = await marketDataService.ReadQualityNotificationAlertAssignmentsAsync(
+    page: 1,
+    pageSize: 20,
+    alertId: 123,
+    marketDataId: 100000001,
+    sort: new[] { "AlertId asc" }
+);
+
+foreach (var item in assignments.Data)
+{
+    Console.WriteLine($"Assignment {item.Id}: Alert {item.AlertId} -> Market Data {item.MarketDataId}");
+}
+```
+
+#### Delete an Assignment
+
+```csharp
+await marketDataService.DeleteQualityNotificationAlertAssignmentAsync(id: 456);
+```
+
+### Data Quality Rule Status
+
+Rules and assignments expose aggregated check status through the `AggregatedStatus` property:
+
+<table>
+  <tr><th>Status</th><th>Description</th></tr>
+  <tr><td>OK</td><td>All checks passed</td></tr>
+  <tr><td>KO</td><td>One or more checks failed</td></tr>
+</table>
+
+Check the status after creating or reading rules:
+
+```csharp
+var rule = await marketDataService.ReadDataQualityRuleByIdAsync(123);
+if (rule.AggregatedStatus == CheckAggregatedStatus.KO)
+{
+    Console.WriteLine($"Rule {rule.Name} has failing checks!");
+}
+```
+
+### Data Quality Check Results
+
+Data Quality check result APIs provide compact extracts for time series, paginated check summaries, and aggregated status overviews. Use assignment IDs to restrict extracts to specific rule assignments.
+
+#### Extract Check Results for Actual Time Series
+
+The actual time series extract returns compact `CheckResultExtract.Ts` records without version information. The end date is not inclusive.
+
+```csharp
+var actualCheckResults = await marketDataService.GetDataQualityCheckResultExtractTsAsync(
+    granularity: Granularity.Day,
+    start: new LocalDate(2024, 1, 1),
+    end: new LocalDate(2024, 2, 1),
+    timeZone: "Europe/Rome",
+    assignmentIds: new[] { 456 }
+);
+
+foreach (var result in actualCheckResults)
+{
+    Console.WriteLine($"{result.Time}: {result.IssueCount} issues");
+}
+```
+
+#### Extract Check Results for Versioned Time Series
+
+The versioned time series extract returns compact `CheckResultExtract.Vts` records for the requested version. The end date is not inclusive.
+
+```csharp
+var versionedCheckResults = await marketDataService.GetDataQualityCheckResultExtractVtsAsync(
+    version: new LocalDateTime(2024, 1, 15, 12, 0),
+    granularity: Granularity.Day,
+    start: new LocalDate(2024, 1, 1),
+    end: new LocalDate(2024, 2, 1),
+    timeZone: "Europe/Rome",
+    assignmentIds: new[] { 456 }
+);
+
+foreach (var result in versionedCheckResults)
+{
+    Console.WriteLine($"{result.Version} - {result.Time}: {result.IssueCount} issues");
+}
+```
+
+#### Read Paginated Check Summaries
+
+Use the check summary API for a CurveRange-like view per assignment. Results can be filtered by Market Data, rule, assignment, status, checked range, version range, and product.
+
+```csharp
+var checkSummaries = await marketDataService.GetDataQualityCheckResultCheckSummaryAsync(
+    page: 1,
+    pageSize: 20,
+    marketDataIds: new[] { 100000001 },
+    ruleIds: new[] { 123 },
+    assignmentIds: new[] { 456 },
+    dqStatus: CheckAggregatedStatus.KO,
+    from: Instant.FromUtc(2024, 1, 1, 0, 0),
+    to: Instant.FromUtc(2024, 2, 1, 0, 0),
+    products: new[] { "Base" },
+    skipEmptyRanges: true,
+    sort: new[] { "LastCheckTime desc" }
+);
+
+foreach (var summary in checkSummaries.Data)
+{
+    Console.WriteLine($"{summary.Product}: {summary.AggregatedStatus} ({summary.RangeStart} - {summary.RangeEnd})");
+}
+```
+
+#### Read Aggregated Status Summaries
+
+Retrieve the latest Data Quality status by Market Data for a rule:
+
+```csharp
+var marketDataStatuses = await marketDataService.GetMarketDataDqStatusSummaryAsync(
+    ruleId: 123,
+    marketDataIds: new[] { 100000001, 100000002 },
+    dqStatus: CheckAggregatedStatus.KO,
+    limit: 100
+);
+
+foreach (var item in marketDataStatuses)
+{
+    Console.WriteLine($"Market Data {item.MarketDataId}: {item.StatusSummary?.OverallStatus}");
+}
+```
+
+Retrieve the latest Data Quality status by rule, optionally for a specific Market Data entity:
+
+```csharp
+var ruleStatuses = await marketDataService.GetDqRuleDqStatusSummaryAsync(
+    marketDataId: 100000001,
+    ruleIds: new[] { 123, 124 },
+    dqStatus: CheckAggregatedStatus.KO,
+    limit: 100
+);
+
+foreach (var item in ruleStatuses)
+{
+    Console.WriteLine($"Rule {item.RuleId}: {item.StatusSummary?.OverallStatus}");
+}
+```
+
+### Include Data Quality in Market Data Responses
+
+Set `includeDataQuality` to `true` when reading the Market Data registry or using facet search to populate the `DataQualityStatusSummary` property of each enriched Market Data result. Both `ReadMarketDataRegistryAsync` overloads support this option.
+
+```csharp
+var marketDataWithQuality = await marketDataService.ReadMarketDataRegistryAsync(
+    id: 100000001,
+    includeDataQuality: true
+);
+
+foreach (var status in marketDataWithQuality.DataQualityStatusSummary ?? new())
+{
+    Console.WriteLine($"{status.Key}: {status.Value.OverallStatus}");
+}
+
+var filter = new ArtesianSearchFilter
+{
+    SearchText = "weather",
+    Page = 1,
+    PageSize = 20
+};
+
+var searchResults = await marketDataService.SearchFacetAsync(
+    filter,
+    includeDataQuality: true
+);
+```
+
 ## MarketData Service
 
 Using the ArtesianServiceConfig `cfg` we create an instance of the MarketDataService which is used to retrieve, edit or delete
@@ -881,6 +1452,73 @@ var writeMarketData = marketdata.EditBidAsk();
 
 await writeMarketData.Delete();
 ```
+
+### Market Data Overrides and Fallbacks
+
+The `MarketDataService` also supports writing corrections separately from the original Market Data.
+An override takes precedence over the original values for the affected range. A fallback is used while
+the original data is unavailable or does not pass the relevant Data Quality checks.
+
+Use `UpsertCurveDataOverride` to reuse the standard curve-data payload and provide the correction metadata.
+The payload supports Actual and Versioned time series, Market Assessment, Auction and BidAsk data.
+
+```csharp
+using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.Override.Enum;
+using Artesian.SDK.Service;
+using NodaTime;
+using System.Collections.Generic;
+
+var marketDataService = new MarketDataService(cfg);
+var marketDataIdentifier = new MarketDataIdentifier("TestProvider", "TestMarketData");
+
+var overrideData = new UpsertCurveDataOverride
+{
+    ID = marketDataIdentifier,
+    Timezone = "UTC",
+    DownloadedAt = SystemClock.Instance.GetCurrentInstant(),
+    Rows = new Dictionary<LocalDateTime, double?>
+    {
+        [new LocalDateTime(2025, 1, 1, 0, 0)] = 11.5,
+        [new LocalDateTime(2025, 1, 2, 0, 0)] = 12.5,
+    },
+    Kind = OverrideKind.Override,
+    OverrideId = null,
+    ReplaceExisting = true,
+    Comment = "Correction received from the data provider",
+};
+
+var createdEntries = await marketDataService.UpsertCurveDataOverrideAsync(overrideData);
+
+var metadata = await marketDataService.ReadOverrideMetadataAsync(
+    marketDataId: 100000001,
+    kind: OverrideKind.Override,
+    page: 1,
+    pageSize: 10);
+
+if (createdEntries.Count > 0 && createdEntries[0].Id.HasValue)
+{
+    await marketDataService.DeleteOverrideDataAsync(createdEntries[0].Id.Value);
+}
+```
+
+`OverrideId` can be set to the logical identifier of an existing correction when updating it.
+Set it to `null` to create a new correction. `ReplaceExisting` controls how overlapping corrections
+of the same kind are handled.
+
+Each `OverrideMetadataEntry` describes the current state of a correction and includes its metadata id,
+Market Data id, kind, optional version and product, referenced Market Data id, effective range,
+creator, creation timestamp and comment. The metadata endpoint is paginated and accepts an optional
+`OverrideKind` filter.
+
+`OverrideKind` identifies how the correction is applied:
+
+- **`OverrideKind.Override`**: an explicit and persistent correction. Override values always take
+  precedence over the original Market Data values within the affected range. Use this value to
+  permanently correct invalid data or replace values supplied by the data provider.
+- **`OverrideKind.Fallback`**: an alternative value used only while the original data is unavailable
+  or does not pass the relevant Data Quality checks. When the original data becomes valid again, the
+  fallback is no longer used for the affected range.
 
 ### Upsert Mode
 

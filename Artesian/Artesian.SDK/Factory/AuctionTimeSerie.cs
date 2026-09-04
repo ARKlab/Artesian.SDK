@@ -1,5 +1,6 @@
 using Artesian.SDK.Common;
 using Artesian.SDK.Dto;
+using Artesian.SDK.Dto.Override.Enum;
 using Artesian.SDK.Service;
 
 using NodaTime;
@@ -224,6 +225,18 @@ namespace Artesian.SDK.Factory
         public async Task Save(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, CancellationToken ctk = default) =>
             await _save(downloadedAt, deferCommandExecution, deferDataGeneration, keepNulls, upsertMode, ctk).ConfigureAwait(false);
 
+        /// <summary>
+        /// Saves the Auction data as an override.
+        /// </summary>
+        public async Task SaveOverride(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default) =>
+            await _saveCorrection(downloadedAt, deferCommandExecution, deferDataGeneration, keepNulls, upsertMode, replaceExisting, comment, overrideId, OverrideKind.Override, ctk).ConfigureAwait(false);
+
+        /// <summary>
+        /// Saves the Auction data as a fallback.
+        /// </summary>
+        public async Task SaveFallback(Instant downloadedAt, bool deferCommandExecution = false, bool deferDataGeneration = true, bool keepNulls = false, UpsertMode? upsertMode = null, bool replaceExisting = false, string? comment = null, Guid? overrideId = null, CancellationToken ctk = default) =>
+            await _saveCorrection(downloadedAt, deferCommandExecution, deferDataGeneration, keepNulls, upsertMode, replaceExisting, comment, overrideId, OverrideKind.Fallback, ctk).ConfigureAwait(false);
+
         private async Task _save(
             Instant downloadedAt, 
             bool deferCommandExecution,
@@ -247,6 +260,40 @@ namespace Artesian.SDK.Factory
                 };
 
                 await _marketDataService.UpsertCurveDataAsync(data, ctk).ConfigureAwait(false);
+            }
+        }
+
+        private async Task _saveCorrection(
+            Instant downloadedAt,
+            bool deferCommandExecution,
+            bool deferDataGeneration,
+            bool keepNulls,
+            UpsertMode? upsertMode,
+            bool replaceExisting,
+            string? comment,
+            Guid? overrideId,
+            OverrideKind kind,
+            CancellationToken ctk)
+        {
+            if (Bids.Any())
+            {
+                var data = new UpsertCurveDataOverride
+                {
+                    ID = _identifier,
+                    Timezone = _entity.OriginalGranularity.IsTimeGranularity() ? "UTC" : _entity.OriginalTimezone,
+                    DownloadedAt = downloadedAt,
+                    AuctionRows = _bids,
+                    DeferCommandExecution = deferCommandExecution,
+                    DeferDataGeneration = deferDataGeneration,
+                    KeepNulls = keepNulls,
+                    UpsertMode = upsertMode,
+                    ReplaceExisting = replaceExisting,
+                    Comment = comment,
+                    OverrideId = overrideId,
+                    Kind = kind
+                };
+
+                await _marketDataService.UpsertCurveDataOverrideAsync(data, ctk).ConfigureAwait(false);
             }
         }
 
