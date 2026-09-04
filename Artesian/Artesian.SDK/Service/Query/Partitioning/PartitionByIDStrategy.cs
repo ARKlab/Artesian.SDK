@@ -68,8 +68,8 @@ namespace Artesian.SDK.Service
                                 queryParamater.AnalysisDate,
                                 queryParamater.UnitOfMeasure,
                                 queryParamater.AggregationRule,
-                                queryParamater.IncludeOverrideDetails,
-                                queryParamater.SkipOverrides
+                                includeOverrideDetails: queryParamater.IncludeOverrideDetails,
+                                skipOverrides: queryParamater.SkipOverrides
                                 )));
         }
 
@@ -94,8 +94,8 @@ namespace Artesian.SDK.Service
                                 queryParamater.Products,
                                 queryParamater.FillerKindType,
                                 queryParamater.FillerConfig,
-                                queryParamater.IncludeOverrideDetails,
-                                queryParamater.SkipOverrides
+                                includeOverrideDetails: queryParamater.IncludeOverrideDetails,
+                                skipOverrides: queryParamater.SkipOverrides
                                 )));
         }
 
@@ -117,8 +117,8 @@ namespace Artesian.SDK.Service
                                 queryParamater.ExtractionRangeType,
                                 queryParamater.TimeZone,
                                 queryParamater.FilterId,
-                                queryParamater.IncludeOverrideDetails,
-                                queryParamater.SkipOverrides
+                                includeOverrideDetails: queryParamater.IncludeOverrideDetails,
+                                skipOverrides: queryParamater.SkipOverrides
                                 )));
         }
 
@@ -143,8 +143,8 @@ namespace Artesian.SDK.Service
                                 queryParamater.Products,
                                 queryParamater.FillerKindType,
                                 queryParamater.FillerConfig,
-                                queryParamater.IncludeOverrideDetails,
-                                queryParamater.SkipOverrides
+                                includeOverrideDetails: queryParamater.IncludeOverrideDetails,
+                                skipOverrides: queryParamater.SkipOverrides
                                 )));
         }
 

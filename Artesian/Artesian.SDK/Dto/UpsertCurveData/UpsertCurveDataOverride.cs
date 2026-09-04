@@ -79,7 +79,7 @@ namespace Artesian.SDK.Dto
             var hasAuctionRows = data.AuctionRows != null && data.AuctionRows.Count > 0;
             var hasBidAsk = data.BidAsk != null && data.BidAsk.Count > 0;
             if (!hasRows && !hasMarketAssessment && !hasAuctionRows && !hasBidAsk)
-                throw new ArgumentException("UpsertCurveDataOverride must contain rows", nameof(data));
+                throw new ArgumentException("UpsertCurveDataOverride must contain at least one of Rows, MarketAssessment, AuctionRows, or BidAsk", nameof(data));
 
             if (data.UpsertMode.HasValue && data.UpsertMode.Value != UpsertMode.Merge)
                 throw new ArgumentException("UpsertCurveDataOverride UpsertMode must be null or Merge", nameof(data));
