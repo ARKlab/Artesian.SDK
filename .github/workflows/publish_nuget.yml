@@ -87,7 +87,7 @@ jobs:
         path: '**/*.cobertura.xml'
 
     - name: 'Component detection'
-      uses: advanced-security/component-detection-dependency-submission-action@v0.1.4
+      uses: advanced-security/component-detection-dependency-submission-action@v0.1.6
 
     - name: 'Upload build test results'
       uses: actions/upload-artifact@v7
