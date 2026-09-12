@@ -13,9 +13,9 @@
 	<PackageReference Include="Flurl.Http" Version="4.0.2" />
 	<PackageReference Include="NodaTime.Serialization.SystemTextJson" Version="1.4.0" />
 	<PackageReference Include="MessagePack" Version="3.1.8" />
-    <PackageReference Include="MessagePack.NodaTime" Version="3.5.6" />
+    <PackageReference Include="MessagePack.NodaTime" Version="3.5.7" />
     <PackageReference Include="Polly" Version="8.7.0" />
-	<PackageReference Include="Microsoft.Identity.Client" Version="4.87.0" />
+	<PackageReference Include="Microsoft.Identity.Client" Version="4.89.0" />
   </ItemGroup>
 
   <!-- System.ComponentModel.Annotations only needed for older frameworks -->
@@ -25,9 +25,9 @@
 
 	<ItemGroup Label="System.Text.Json">
 		<!-- Ensure we use at least version 8 for all frameworks to get latest features -->
-		<PackageReference Include="System.Text.Json" Version="10.0.11" Condition=" $(TargetFramework) == 'netstandard2.1' " />
-		<PackageReference Include="System.Text.Json" Version="10.0.11" Condition=" $(TargetFramework) == 'netstandard2.0' " />
-		<PackageReference Include="System.Text.Json" Version="10.0.11" Condition=" $(TargetFramework) == 'net462' " />
+		<PackageReference Include="System.Text.Json" Version="10.0.12" Condition=" $(TargetFramework) == 'netstandard2.1' " />
+		<PackageReference Include="System.Text.Json" Version="10.0.12" Condition=" $(TargetFramework) == 'netstandard2.0' " />
+		<PackageReference Include="System.Text.Json" Version="10.0.12" Condition=" $(TargetFramework) == 'net462' " />
 	</ItemGroup>
 
 </Project>
