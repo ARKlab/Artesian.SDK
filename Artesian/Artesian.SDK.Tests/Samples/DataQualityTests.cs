@@ -427,7 +427,8 @@ namespace Artesian.SDK.Tests.Samples
                 checkSummary.RangeEnd.PlusDays(1),
                 "UTC",
                 new[] { assignmentCreated.Id },
-                ctk);
+                includeMarketData: true,
+                ctk: ctk);
 
             ClassicAssert.IsNotNull(tsExtract);
             var tsExtractResults = tsExtract.ToList();
@@ -569,7 +570,8 @@ namespace Artesian.SDK.Tests.Samples
                 versionedCheckSummary.RangeEnd.PlusDays(1),
                 "UTC",
                 new[] { assignmentCreated.Id },
-                ctk);
+                includeMarketData: true,
+                ctk: ctk);
 
             ClassicAssert.IsNotNull(vtsExtract);
             var vtsExtractResults = vtsExtract.ToList();
@@ -583,6 +585,212 @@ namespace Artesian.SDK.Tests.Samples
             ClassicAssert.IsTrue(vtsExtractResults.All(x => x.Version == checkedVersion.ToDateTimeUnspecified()));
             ClassicAssert.IsTrue(vtsExtractResults.All(x => x.CompetenceStart <= x.CompetenceEnd));
             ClassicAssert.IsTrue(vtsExtractResults.Any(x => x.IssueCount > 0));
+
+            await marketDataService.DeleteDataQualityRuleAssignmentAsync(assignmentCreated.Id, ctk);
+            await marketDataService.DeleteDataQualityRuleAsync(ruleCreated.Id, ctk);
+            await marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value, ctk);
+        }
+
+        [Test]
+        [Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "Matches the existing manual DQ extraction samples")]
+        public async Task DataQualityQueryCheckResultExtractMas()
+        {
+            var marketDataService = new MarketDataService(_cfg);
+            CancellationToken ctk = default;
+            var currentTime = SystemClock.Instance.GetCurrentInstant();
+            var today = currentTime.InUtc().Date;
+            var rangeStart = today.PlusDays(-13);
+            const string product = "D+1";
+
+            var input = new MarketDataEntity.Input
+            {
+                ProviderName = "DqCheckResultMas",
+                MarketDataName = "MasExtractQuery_" + Guid.NewGuid(),
+                Type = MarketDataType.MarketAssessment,
+                OriginalGranularity = Granularity.Day,
+                OriginalTimezone = "UTC",
+                AggregationRule = AggregationRule.Undefined,
+            };
+
+            var mktData = marketDataService.GetMarketDataReference(new MarketDataIdentifier(input.ProviderName, input.MarketDataName));
+            if (!await mktData.IsRegistered(ctk))
+            {
+                await mktData.Register(input, ctk);
+            }
+
+            await mktData.Load(ctk);
+
+            var data = mktData.EditMarketAssessment();
+            for (var date = rangeStart; date < today; date = date.PlusDays(2))
+            {
+                data.TryAddData(date, product, new MarketAssessmentValue { Settlement = 10.0 });
+            }
+
+            await data.Save(currentTime, ctk: ctk);
+
+            var rulePayload = new DataQualityRuleDto.Input
+            {
+                Name = "MasExtractRule_" + Guid.NewGuid(),
+                Type = RuleType.CompletenessAndFreshness,
+                Configuration = new MasCompletenessAndFreshnessConfigDto
+                {
+                    MarketDataType = MarketDataType.MarketAssessment,
+                    Products = new[] { product },
+                    FieldsToBeValidated = new[] { MasDataQualityField.Settlement },
+                    ScheduleConfig = new ScheduleConfigDto
+                    {
+                        ScheduleDefinition = new CronScheduleDefinitionDto { CronExpression = "0 0 * * *", TimeZone = "UTC" },
+                        MaxDelay = Period.FromHours(1)
+                    },
+                    RecordValidationConfig = new RecordValidationConfigDto
+                    {
+                        RecordRangeFrom = Period.Zero,
+                        RecordRangeTo = Period.FromDays(1)
+                    }
+                }
+            };
+
+            var ruleCreated = await marketDataService.RegisterDataQualityRuleAsync(rulePayload, ctk);
+            var assignmentCreated = await marketDataService.RegisterDataQualityRuleAssignmentAsync(
+                new MarketDataQualityRuleAssignmentDto.Input
+                {
+                    MarketDataId = mktData.MarketDataId!.Value,
+                    DataQualityRuleId = ruleCreated.Id
+                },
+                Period.FromDays(13),
+                ctk);
+
+            await Task.Delay(TimeSpan.FromSeconds(5), ctk);
+
+            var masExtract = await marketDataService.GetDataQualityCheckResultExtractMasAsync(
+                Granularity.Day,
+                rangeStart,
+                today.PlusDays(1),
+                "UTC",
+                new[] { assignmentCreated.Id },
+                new[] { product },
+                includeMarketData: true,
+                ctk: ctk);
+
+            var masExtractResults = masExtract.ToList();
+            ClassicAssert.IsNotEmpty(masExtractResults);
+            ClassicAssert.IsTrue(masExtractResults.All(x => x.AssignmentId == assignmentCreated.Id));
+            ClassicAssert.IsTrue(masExtractResults.All(x => x.MarketDataId == mktData.MarketDataId.Value));
+            ClassicAssert.IsTrue(masExtractResults.All(x => x.RuleId == ruleCreated.Id));
+            ClassicAssert.IsTrue(masExtractResults.All(x => x.ProviderName == input.ProviderName));
+            ClassicAssert.IsTrue(masExtractResults.All(x => x.CurveName == input.MarketDataName));
+            ClassicAssert.IsTrue(masExtractResults.All(x => x.RuleName == rulePayload.Name));
+            ClassicAssert.IsTrue(masExtractResults.All(x => !string.IsNullOrWhiteSpace(x.Product)));
+            ClassicAssert.IsTrue(masExtractResults.All(x => x.CompetenceStart <= x.CompetenceEnd));
+            ClassicAssert.IsTrue(masExtractResults.Any(x => x.IssueCount > 0));
+
+            await marketDataService.DeleteDataQualityRuleAssignmentAsync(assignmentCreated.Id, ctk);
+            await marketDataService.DeleteDataQualityRuleAsync(ruleCreated.Id, ctk);
+            await marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value, ctk);
+        }
+
+        [Test]
+        [Ignore("Run only manually with proper artesian URI and ApiKey set")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051:Method is too long", Justification = "Matches the existing manual DQ extraction samples")]
+        public async Task DataQualityQueryCheckResultExtractBidAsk()
+        {
+            var marketDataService = new MarketDataService(_cfg);
+            CancellationToken ctk = default;
+            var currentTime = SystemClock.Instance.GetCurrentInstant();
+            var today = currentTime.InUtc().Date;
+            var rangeStart = today.PlusDays(-13);
+            const string product = "D+1";
+
+            var input = new MarketDataEntity.Input
+            {
+                ProviderName = "DqCheckResultBidAsk",
+                MarketDataName = "BidAskExtractQuery_" + Guid.NewGuid(),
+                Type = MarketDataType.BidAsk,
+                OriginalGranularity = Granularity.Day,
+                OriginalTimezone = "UTC",
+                AggregationRule = AggregationRule.Undefined,
+            };
+
+            var mktData = marketDataService.GetMarketDataReference(new MarketDataIdentifier(input.ProviderName, input.MarketDataName));
+            if (!await mktData.IsRegistered(ctk))
+            {
+                await mktData.Register(input, ctk);
+            }
+
+            await mktData.Load(ctk);
+
+            var data = mktData.EditBidAsk();
+            for (var date = rangeStart; date < today; date = date.PlusDays(2))
+            {
+                data.TryAddData(date, product, new BidAskValue
+                {
+                    BestBidPrice = 10.0,
+                    BestAskPrice = 11.0,
+                    BestBidQuantity = 1.0,
+                    BestAskQuantity = 1.0,
+                    LastPrice = 10.5,
+                    LastQuantity = 1.0
+                });
+            }
+
+            await data.Save(currentTime, ctk: ctk);
+
+            var rulePayload = new DataQualityRuleDto.Input
+            {
+                Name = "BidAskExtractRule_" + Guid.NewGuid(),
+                Type = RuleType.CompletenessAndFreshness,
+                Configuration = new BidAskCompletenessAndFreshnessConfigDto
+                {
+                    MarketDataType = MarketDataType.BidAsk,
+                    Products = new[] { product },
+                    FieldsToBeValidated = new[] { BidAskDataQualityField.BestBidPrice, BidAskDataQualityField.BestAskPrice },
+                    ScheduleConfig = new ScheduleConfigDto
+                    {
+                        ScheduleDefinition = new CronScheduleDefinitionDto { CronExpression = "0 0 * * *", TimeZone = "UTC" },
+                        MaxDelay = Period.FromHours(1)
+                    },
+                    RecordValidationConfig = new RecordValidationConfigDto
+                    {
+                        RecordRangeFrom = Period.Zero,
+                        RecordRangeTo = Period.FromDays(1)
+                    }
+                }
+            };
+
+            var ruleCreated = await marketDataService.RegisterDataQualityRuleAsync(rulePayload, ctk);
+            var assignmentCreated = await marketDataService.RegisterDataQualityRuleAssignmentAsync(
+                new MarketDataQualityRuleAssignmentDto.Input
+                {
+                    MarketDataId = mktData.MarketDataId!.Value,
+                    DataQualityRuleId = ruleCreated.Id
+                },
+                Period.FromDays(13),
+                ctk);
+
+            await Task.Delay(TimeSpan.FromSeconds(5), ctk);
+
+            var bidAskExtract = await marketDataService.GetDataQualityCheckResultExtractBidAskAsync(
+                Granularity.Day,
+                rangeStart,
+                today.PlusDays(1),
+                "UTC",
+                new[] { assignmentCreated.Id },
+                new[] { product },
+                includeMarketData: true,
+                ctk: ctk);
+
+            var bidAskExtractResults = bidAskExtract.ToList();
+            ClassicAssert.IsNotEmpty(bidAskExtractResults);
+            ClassicAssert.IsTrue(bidAskExtractResults.All(x => x.AssignmentId == assignmentCreated.Id));
+            ClassicAssert.IsTrue(bidAskExtractResults.All(x => x.MarketDataId == mktData.MarketDataId.Value));
+            ClassicAssert.IsTrue(bidAskExtractResults.All(x => x.RuleId == ruleCreated.Id));
+            ClassicAssert.IsTrue(bidAskExtractResults.All(x => x.ProviderName == input.ProviderName));
+            ClassicAssert.IsTrue(bidAskExtractResults.All(x => x.CurveName == input.MarketDataName));
+            ClassicAssert.IsTrue(bidAskExtractResults.All(x => x.RuleName == rulePayload.Name));
+            ClassicAssert.IsTrue(bidAskExtractResults.All(x => !string.IsNullOrWhiteSpace(x.Product)));
+            ClassicAssert.IsTrue(bidAskExtractResults.All(x => x.CompetenceStart <= x.CompetenceEnd));
+            ClassicAssert.IsTrue(bidAskExtractResults.Any(x => x.IssueCount > 0));
 
             await marketDataService.DeleteDataQualityRuleAssignmentAsync(assignmentCreated.Id, ctk);
             await marketDataService.DeleteDataQualityRuleAsync(ruleCreated.Id, ctk);

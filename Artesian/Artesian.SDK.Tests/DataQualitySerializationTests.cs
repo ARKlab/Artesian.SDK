@@ -11,6 +11,7 @@ using Artesian.SDK.Dto.DataQuality;
 using Artesian.SDK.Dto.DataQuality.Enums;
 using Artesian.SDK.Dto.Override.Enum;
 using Artesian.SDK.Service;
+using MessagePack;
 using NodaTime;
 using NUnit.Framework;
 
@@ -100,6 +101,55 @@ namespace Artesian.SDK.Tests
             var boundConfig = (OutlierAbsoluteBoundConfigDto)outlierConfig.Model;
             Assert.That(boundConfig.LowerBound, Is.EqualTo(-10.0));
             Assert.That(boundConfig.UpperBound, Is.EqualTo(45.0));
+            Assert.That(outlierConfig.MarketDataType, Is.EqualTo(MarketDataType.ActualTimeSerie));
+        }
+
+        [Test]
+        public void DataQualityRuleConfig_MasAbsoluteOutlier_STJ_RoundTrip()
+        {
+            DataQualityRuleConfigDto config = new MasOutlierConfigDto
+            {
+                MarketDataType = MarketDataType.MarketAssessment,
+                Products = new[] { "D+1" },
+                FieldsToBeValidated = new[] { MasDataQualityField.Settlement, MasDataQualityField.Volume },
+                Model = new OutlierAbsoluteBoundConfigDto { LowerBound = -10.0, UpperBound = 45.0 }
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(config, _stjOptions);
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<DataQualityRuleConfigDto>(json, _stjOptions);
+
+            Assert.That(deserialized, Is.InstanceOf<MasOutlierConfigDto>());
+            var masConfig = (MasOutlierConfigDto)deserialized!;
+            Assert.That(masConfig.MarketDataType, Is.EqualTo(MarketDataType.MarketAssessment));
+            Assert.That(masConfig.Products, Is.EqualTo(new[] { "D+1" }));
+            Assert.That(masConfig.FieldsToBeValidated, Is.EqualTo(new[] { MasDataQualityField.Settlement, MasDataQualityField.Volume }));
+            var bounds = (OutlierAbsoluteBoundConfigDto)masConfig.Model;
+            Assert.That(bounds.LowerBound, Is.EqualTo(-10.0));
+            Assert.That(bounds.UpperBound, Is.EqualTo(45.0));
+        }
+
+        [Test]
+        public void DataQualityRuleConfig_BidAskAbsoluteOutlier_STJ_RoundTrip()
+        {
+            DataQualityRuleConfigDto config = new BidAskOutlierConfigDto
+            {
+                MarketDataType = MarketDataType.BidAsk,
+                Products = new[] { "D+1" },
+                FieldsToBeValidated = new[] { BidAskDataQualityField.BestBidPrice, BidAskDataQualityField.BestAskPrice },
+                Model = new OutlierAbsoluteBoundConfigDto { LowerBound = -10.0, UpperBound = 45.0 }
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(config, _stjOptions);
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<DataQualityRuleConfigDto>(json, _stjOptions);
+
+            Assert.That(deserialized, Is.InstanceOf<BidAskOutlierConfigDto>());
+            var bidAskConfig = (BidAskOutlierConfigDto)deserialized!;
+            Assert.That(bidAskConfig.MarketDataType, Is.EqualTo(MarketDataType.BidAsk));
+            Assert.That(bidAskConfig.Products, Is.EqualTo(new[] { "D+1" }));
+            Assert.That(bidAskConfig.FieldsToBeValidated, Is.EqualTo(new[] { BidAskDataQualityField.BestBidPrice, BidAskDataQualityField.BestAskPrice }));
+            var bounds = (OutlierAbsoluteBoundConfigDto)bidAskConfig.Model;
+            Assert.That(bounds.LowerBound, Is.EqualTo(-10.0));
+            Assert.That(bounds.UpperBound, Is.EqualTo(45.0));
         }
 
         [Test]
@@ -194,10 +244,78 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
+        public void CompletenessAndFreshnessConfig_Mas_STJ_RoundTrip()
+        {
+            var config = new MasCompletenessAndFreshnessConfigDto
+            {
+                MarketDataType = MarketDataType.MarketAssessment,
+                Products = new[] { "D+1" },
+                FieldsToBeValidated = new[] { MasDataQualityField.Settlement, MasDataQualityField.Volume },
+                ScheduleConfig = new ScheduleConfigDto
+                {
+                    ScheduleDefinition = new CronScheduleDefinitionDto
+                    {
+                        CronExpression = "0 0 * * *",
+                        TimeZone = "UTC"
+                    },
+                    MaxDelay = Period.FromHours(1)
+                },
+                RecordValidationConfig = new RecordValidationConfigDto
+                {
+                    RecordRangeFrom = Period.Zero,
+                    RecordRangeTo = Period.FromDays(1)
+                }
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize<CompletenessAndFreshnessConfigDto>(config, _stjOptions);
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<CompletenessAndFreshnessConfigDto>(json, _stjOptions);
+
+            Assert.That(deserialized, Is.InstanceOf<MasCompletenessAndFreshnessConfigDto>());
+            var masConfig = (MasCompletenessAndFreshnessConfigDto)deserialized!;
+            Assert.That(masConfig.MarketDataType, Is.EqualTo(MarketDataType.MarketAssessment));
+            Assert.That(masConfig.Products, Is.EqualTo(new[] { "D+1" }));
+            Assert.That(masConfig.FieldsToBeValidated, Is.EqualTo(new[] { MasDataQualityField.Settlement, MasDataQualityField.Volume }));
+        }
+
+        [Test]
+        public void CompletenessAndFreshnessConfig_BidAsk_STJ_RoundTrip()
+        {
+            var config = new BidAskCompletenessAndFreshnessConfigDto
+            {
+                MarketDataType = MarketDataType.BidAsk,
+                Products = new[] { "D+1" },
+                FieldsToBeValidated = new[] { BidAskDataQualityField.BestBidPrice, BidAskDataQualityField.BestAskPrice },
+                ScheduleConfig = new ScheduleConfigDto
+                {
+                    ScheduleDefinition = new CronScheduleDefinitionDto
+                    {
+                        CronExpression = "0 0 * * *",
+                        TimeZone = "UTC"
+                    },
+                    MaxDelay = Period.FromHours(1)
+                },
+                RecordValidationConfig = new RecordValidationConfigDto
+                {
+                    RecordRangeFrom = Period.Zero,
+                    RecordRangeTo = Period.FromDays(1)
+                }
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize<CompletenessAndFreshnessConfigDto>(config, _stjOptions);
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<CompletenessAndFreshnessConfigDto>(json, _stjOptions);
+
+            Assert.That(deserialized, Is.InstanceOf<BidAskCompletenessAndFreshnessConfigDto>());
+            var bidAskConfig = (BidAskCompletenessAndFreshnessConfigDto)deserialized!;
+            Assert.That(bidAskConfig.MarketDataType, Is.EqualTo(MarketDataType.BidAsk));
+            Assert.That(bidAskConfig.Products, Is.EqualTo(new[] { "D+1" }));
+            Assert.That(bidAskConfig.FieldsToBeValidated, Is.EqualTo(new[] { BidAskDataQualityField.BestBidPrice, BidAskDataQualityField.BestAskPrice }));
+        }
+
+        [Test]
         public void CompletenessAndFreshnessConfig_InvalidMarketDataType_STJ_ThrowsException()
         {
             // Arrange - JSON with invalid MarketDataType for completeness rule
-            const string invalidJson = @"{""MarketDataType"":""BidAsk"",""ScheduleConfig"":{},""RecordValidationConfig"":{}}";
+            const string invalidJson = @"{""MarketDataType"":""Auction"",""ScheduleConfig"":{},""RecordValidationConfig"":{}}";
 
             // Act & Assert - Converter throws InvalidOperationException directly (not wrapped by JsonException)
             var ex = Assert.Throws<InvalidOperationException>(() =>
@@ -383,11 +501,177 @@ namespace Artesian.SDK.Tests
                 ETag = "etag"
             };
 
-            var deserialized = await MessagePackRoundTrip(rule);
+            var deserialized = await _messagePackRoundTrip(rule);
 
             Assert.That(deserialized.Name, Is.EqualTo("Outlier rule"));
             Assert.That(deserialized.Configuration, Is.InstanceOf<OutlierConfigDto>());
             Assert.That(((OutlierConfigDto)deserialized.Configuration).Model, Is.InstanceOf<OutlierAbsoluteBoundConfigDto>());
+        }
+
+        [Test]
+        public async Task DataQualityRuleDto_MasCompleteness_MessagePack_RoundTrip()
+        {
+            var rule = new DataQualityRuleDto.Input
+            {
+                Name = "MAS completeness rule",
+                Type = RuleType.CompletenessAndFreshness,
+                Configuration = new MasCompletenessAndFreshnessConfigDto
+                {
+                    MarketDataType = MarketDataType.MarketAssessment,
+                    Products = new[] { "D+1" },
+                    FieldsToBeValidated = new[] { MasDataQualityField.Settlement },
+                    ScheduleConfig = new ScheduleConfigDto
+                    {
+                        ScheduleDefinition = new CronScheduleDefinitionDto { CronExpression = "0 0 * * *", TimeZone = "UTC" },
+                        MaxDelay = Period.FromHours(1)
+                    },
+                    RecordValidationConfig = new RecordValidationConfigDto
+                    {
+                        RecordRangeFrom = Period.Zero,
+                        RecordRangeTo = Period.FromDays(1)
+                    }
+                }
+            };
+
+            var deserialized = await _messagePackRoundTrip(rule);
+
+            Assert.That(deserialized.Configuration, Is.InstanceOf<MasCompletenessAndFreshnessConfigDto>());
+            var masConfig = (MasCompletenessAndFreshnessConfigDto)deserialized.Configuration;
+            Assert.That(masConfig.Products, Is.EqualTo(new[] { "D+1" }));
+            Assert.That(masConfig.FieldsToBeValidated, Is.EqualTo(new[] { MasDataQualityField.Settlement }));
+        }
+
+        [Test]
+        public async Task DataQualityRuleDto_BidAskCompleteness_MessagePack_RoundTrip()
+        {
+            var rule = new DataQualityRuleDto.Input
+            {
+                Name = "BidAsk completeness rule",
+                Type = RuleType.CompletenessAndFreshness,
+                Configuration = new BidAskCompletenessAndFreshnessConfigDto
+                {
+                    MarketDataType = MarketDataType.BidAsk,
+                    Products = new[] { "D+1" },
+                    FieldsToBeValidated = new[] { BidAskDataQualityField.BestBidPrice },
+                    ScheduleConfig = new ScheduleConfigDto
+                    {
+                        ScheduleDefinition = new CronScheduleDefinitionDto { CronExpression = "0 0 * * *", TimeZone = "UTC" },
+                        MaxDelay = Period.FromHours(1)
+                    },
+                    RecordValidationConfig = new RecordValidationConfigDto
+                    {
+                        RecordRangeFrom = Period.Zero,
+                        RecordRangeTo = Period.FromDays(1)
+                    }
+                }
+            };
+
+            var deserialized = await _messagePackRoundTrip(rule);
+
+            Assert.That(deserialized.Configuration, Is.InstanceOf<BidAskCompletenessAndFreshnessConfigDto>());
+            var bidAskConfig = (BidAskCompletenessAndFreshnessConfigDto)deserialized.Configuration;
+            Assert.That(bidAskConfig.Products, Is.EqualTo(new[] { "D+1" }));
+            Assert.That(bidAskConfig.FieldsToBeValidated, Is.EqualTo(new[] { BidAskDataQualityField.BestBidPrice }));
+        }
+
+        [Test]
+        public async Task CompletenessAndFreshnessConfig_MasBidAsk_MessagePack_RoundTrip()
+        {
+            CompletenessAndFreshnessConfigDto masConfig = new MasCompletenessAndFreshnessConfigDto
+            {
+                MarketDataType = MarketDataType.MarketAssessment,
+                Products = new[] { "D+1" },
+                FieldsToBeValidated = new[] { MasDataQualityField.Settlement },
+                ScheduleConfig = new ScheduleConfigDto
+                {
+                    ScheduleDefinition = new CronScheduleDefinitionDto { CronExpression = "0 0 * * *", TimeZone = "UTC" },
+                    MaxDelay = Period.FromHours(1)
+                },
+                RecordValidationConfig = new RecordValidationConfigDto
+                {
+                    RecordRangeFrom = Period.Zero,
+                    RecordRangeTo = Period.FromDays(1)
+                }
+            };
+            CompletenessAndFreshnessConfigDto bidAskConfig = new BidAskCompletenessAndFreshnessConfigDto
+            {
+                MarketDataType = MarketDataType.BidAsk,
+                Products = new[] { "D+1" },
+                FieldsToBeValidated = new[] { BidAskDataQualityField.BestBidPrice },
+                ScheduleConfig = new ScheduleConfigDto
+                {
+                    ScheduleDefinition = new CronScheduleDefinitionDto { CronExpression = "0 0 * * *", TimeZone = "UTC" },
+                    MaxDelay = Period.FromHours(1)
+                },
+                RecordValidationConfig = new RecordValidationConfigDto
+                {
+                    RecordRangeFrom = Period.Zero,
+                    RecordRangeTo = Period.FromDays(1)
+                }
+            };
+
+            var masDeserialized = await _messagePackRoundTrip(masConfig);
+            var bidAskDeserialized = await _messagePackRoundTrip(bidAskConfig);
+
+            Assert.That(masDeserialized, Is.InstanceOf<MasCompletenessAndFreshnessConfigDto>());
+            Assert.That(((MasCompletenessAndFreshnessConfigDto)masDeserialized).FieldsToBeValidated, Is.EqualTo(new[] { MasDataQualityField.Settlement }));
+            Assert.That(bidAskDeserialized, Is.InstanceOf<BidAskCompletenessAndFreshnessConfigDto>());
+            Assert.That(((BidAskCompletenessAndFreshnessConfigDto)bidAskDeserialized).FieldsToBeValidated, Is.EqualTo(new[] { BidAskDataQualityField.BestBidPrice }));
+        }
+
+        [Test]
+        public async Task DataQualityRuleDto_MasBidAskAbsoluteOutlier_MessagePack_RoundTrip()
+        {
+            var masRule = new DataQualityRuleDto.Input
+            {
+                Name = "MAS absolute outlier",
+                Type = RuleType.Outlier,
+                Configuration = new MasOutlierConfigDto
+                {
+                    MarketDataType = MarketDataType.MarketAssessment,
+                    Products = new[] { "D+1", "WD" },
+                    FieldsToBeValidated = new[] { MasDataQualityField.Settlement, MasDataQualityField.Volume },
+                    Model = new OutlierAbsoluteBoundConfigDto { LowerBound = -1.0, UpperBound = 2.0 }
+                }
+            };
+            var bidAskRule = new DataQualityRuleDto.Input
+            {
+                Name = "BidAsk absolute outlier",
+                Type = RuleType.Outlier,
+                Configuration = new BidAskOutlierConfigDto
+                {
+                    MarketDataType = MarketDataType.BidAsk,
+                    Products = new[] { "D+1", "WD" },
+                    FieldsToBeValidated = new[] { BidAskDataQualityField.BestBidPrice, BidAskDataQualityField.LastQuantity },
+                    Model = new OutlierAbsoluteBoundConfigDto { LowerBound = -2.5, UpperBound = 12.5 }
+                }
+            };
+
+            Assert.That(await _readDataQualityRuleConfigUnionTag(masRule.Configuration), Is.EqualTo(5));
+            Assert.That(await _readDataQualityRuleConfigUnionTag(bidAskRule.Configuration), Is.EqualTo(6));
+
+            var masDeserialized = await _messagePackRoundTrip(masRule);
+            var bidAskDeserialized = await _messagePackRoundTrip(bidAskRule);
+
+            Assert.That(masDeserialized.Type, Is.EqualTo(RuleType.Outlier));
+            Assert.That(masDeserialized.Configuration, Is.InstanceOf<MasOutlierConfigDto>());
+            var masConfig = (MasOutlierConfigDto)masDeserialized.Configuration;
+            Assert.That(masConfig.MarketDataType, Is.EqualTo(MarketDataType.MarketAssessment));
+            Assert.That(masConfig.Products, Is.EqualTo(new[] { "D+1", "WD" }));
+            Assert.That(masConfig.FieldsToBeValidated, Is.EqualTo(new[] { MasDataQualityField.Settlement, MasDataQualityField.Volume }));
+            var masBounds = (OutlierAbsoluteBoundConfigDto)masConfig.Model;
+            Assert.That(masBounds.LowerBound, Is.EqualTo(-1.0));
+            Assert.That(masBounds.UpperBound, Is.EqualTo(2.0));
+
+            Assert.That(bidAskDeserialized.Type, Is.EqualTo(RuleType.Outlier));
+            Assert.That(bidAskDeserialized.Configuration, Is.InstanceOf<BidAskOutlierConfigDto>());
+            var bidAskConfig = (BidAskOutlierConfigDto)bidAskDeserialized.Configuration;
+            Assert.That(bidAskConfig.MarketDataType, Is.EqualTo(MarketDataType.BidAsk));
+            Assert.That(bidAskConfig.Products, Is.EqualTo(new[] { "D+1", "WD" }));
+            Assert.That(bidAskConfig.FieldsToBeValidated, Is.EqualTo(new[] { BidAskDataQualityField.BestBidPrice, BidAskDataQualityField.LastQuantity }));
+            var bidAskBounds = (OutlierAbsoluteBoundConfigDto)bidAskConfig.Model;
+            Assert.That(bidAskBounds.LowerBound, Is.EqualTo(-2.5));
+            Assert.That(bidAskBounds.UpperBound, Is.EqualTo(12.5));
         }
 
         [Test]
@@ -413,7 +697,7 @@ namespace Artesian.SDK.Tests
                 ETag = "etag"
             };
 
-            var deserialized = await MessagePackRoundTrip(alert);
+            var deserialized = await _messagePackRoundTrip(alert);
 
             Assert.That(deserialized.TriggerConfig, Is.InstanceOf<ScheduleTriggerConfigDto>());
             Assert.That(((ScheduleTriggerConfigDto)deserialized.TriggerConfig).ScheduleDefinition, Is.InstanceOf<CronScheduleDefinitionDto>());
@@ -431,7 +715,7 @@ namespace Artesian.SDK.Tests
                 ETag = "etag"
             };
 
-            var deserialized = await MessagePackRoundTrip(assignment);
+            var deserialized = await _messagePackRoundTrip(assignment);
 
             Assert.That(deserialized.Id, Is.EqualTo(5));
             Assert.That(deserialized.MarketDataId, Is.EqualTo(100));
@@ -450,7 +734,7 @@ namespace Artesian.SDK.Tests
                 ETag = "etag"
             };
 
-            var deserialized = await MessagePackRoundTrip(assignment);
+            var deserialized = await _messagePackRoundTrip(assignment);
 
             Assert.That(deserialized.Id, Is.EqualTo(6));
             Assert.That(deserialized.AlertId, Is.EqualTo(12));
@@ -475,7 +759,7 @@ namespace Artesian.SDK.Tests
                 }
             };
 
-            var deserialized = await MessagePackRoundTrip(assignment);
+            var deserialized = await _messagePackRoundTrip(assignment);
 
             Assert.That(deserialized.AlertId, Is.EqualTo(12));
             Assert.That(deserialized.Alert, Is.Not.Null);
@@ -501,7 +785,7 @@ namespace Artesian.SDK.Tests
                 Comment = "correction"
             };
 
-            var deserialized = await MessagePackRoundTrip(data);
+            var deserialized = await _messagePackRoundTrip(data);
 
             Assert.That(deserialized.OverrideId, Is.EqualTo(id));
             Assert.That(deserialized.Kind, Is.EqualTo(OverrideKind.Override));
@@ -525,7 +809,7 @@ namespace Artesian.SDK.Tests
                 Comment = "temporary fallback"
             };
 
-            var deserialized = await MessagePackRoundTrip(metadata);
+            var deserialized = await _messagePackRoundTrip(metadata);
 
             Assert.That(deserialized.Id, Is.EqualTo(id));
             Assert.That(deserialized.Kind, Is.EqualTo(OverrideKind.Fallback));
@@ -533,7 +817,17 @@ namespace Artesian.SDK.Tests
             Assert.That(deserialized.CreatedAt, Is.EqualTo(metadata.CreatedAt));
         }
 
-        private static async Task<T> MessagePackRoundTrip<T>(T value)
+        private static async Task<int> _readDataQualityRuleConfigUnionTag(DataQualityRuleConfigDto configuration)
+        {
+            var serializer = new MessagePackContentSerializer(CustomCompositeResolver.Instance);
+            using var stream = new MemoryStream();
+            await serializer.SerializeAsync(configuration, stream).ConfigureAwait(false);
+            var reader = new MessagePackReader(stream.ToArray());
+            Assert.That(reader.ReadArrayHeader(), Is.EqualTo(2));
+            return reader.ReadInt32();
+        }
+
+        private static async Task<T> _messagePackRoundTrip<T>(T value)
         {
             var serializer = new MessagePackContentSerializer(CustomCompositeResolver.Instance);
             using (var stream = new MemoryStream())

@@ -261,7 +261,7 @@ namespace Artesian.SDK.Tests
         public async Task VersionedTimeSerie_SaveOverride_MapsCorrectionData()
         {
             var requests = new List<UpsertCurveDataOverride>();
-            var marketData = await CreateLoadedMarketData(MarketDataType.VersionedTimeSerie, requests);
+            var marketData = await _createLoadedMarketData(MarketDataType.VersionedTimeSerie, requests);
             var version = new LocalDateTime(2025, 12, 1, 10, 0);
             var timeSerie = marketData.EditVersioned(version);
             timeSerie.SetData(new Dictionary<LocalDateTime, double?>
@@ -271,7 +271,7 @@ namespace Artesian.SDK.Tests
 
             await timeSerie.SaveOverride(Instant.FromUtc(2025, 12, 14, 1, 0), upsertMode: UpsertMode.Merge, comment: "versioned override");
 
-            AssertOverrideRequest(requests, "versioned override");
+            _assertOverrideRequest(requests, "versioned override");
             Assert.That(requests[0].Version, Is.EqualTo(version));
             Assert.That(requests[0].Rows, Has.Count.EqualTo(1));
         }
@@ -280,7 +280,7 @@ namespace Artesian.SDK.Tests
         public async Task MarketAssessment_SaveOverride_MapsCorrectionData()
         {
             var requests = new List<UpsertCurveDataOverride>();
-            var marketData = await CreateLoadedMarketData(MarketDataType.MarketAssessment, requests);
+            var marketData = await _createLoadedMarketData(MarketDataType.MarketAssessment, requests);
             var assessment = marketData.EditMarketAssessment();
             assessment.SetData(new List<AssessmentElement>
             {
@@ -289,7 +289,7 @@ namespace Artesian.SDK.Tests
 
             await assessment.SaveOverride(Instant.FromUtc(2025, 12, 14, 1, 0), upsertMode: UpsertMode.Merge, comment: "assessment override");
 
-            AssertOverrideRequest(requests, "assessment override");
+            _assertOverrideRequest(requests, "assessment override");
             Assert.That(requests[0].MarketAssessment, Has.Count.EqualTo(1));
             Assert.That(requests[0].MarketAssessment![new LocalDateTime(2025, 12, 14, 0, 0)], Contains.Key("Product1"));
         }
@@ -298,7 +298,7 @@ namespace Artesian.SDK.Tests
         public async Task AuctionTimeSerie_SaveOverride_MapsCorrectionData()
         {
             var requests = new List<UpsertCurveDataOverride>();
-            var marketData = await CreateLoadedMarketData(MarketDataType.Auction, requests);
+            var marketData = await _createLoadedMarketData(MarketDataType.Auction, requests);
             var auction = marketData.EditAuction();
             auction.TryAddData(
                 Instant.FromUtc(2025, 12, 14, 0, 0),
@@ -308,7 +308,7 @@ namespace Artesian.SDK.Tests
 
             await auction.SaveOverride(Instant.FromUtc(2025, 12, 14, 1, 0), upsertMode: UpsertMode.Merge, comment: "auction override");
 
-            AssertOverrideRequest(requests, "auction override");
+            _assertOverrideRequest(requests, "auction override");
             Assert.That(requests[0].AuctionRows, Has.Count.EqualTo(1));
         }
 
@@ -316,7 +316,7 @@ namespace Artesian.SDK.Tests
         public async Task BidAsk_SaveOverride_MapsCorrectionData()
         {
             var requests = new List<UpsertCurveDataOverride>();
-            var marketData = await CreateLoadedMarketData(MarketDataType.BidAsk, requests);
+            var marketData = await _createLoadedMarketData(MarketDataType.BidAsk, requests);
             var bidAsk = marketData.EditBidAsk();
             bidAsk.SetData(new List<BidAskElement>
             {
@@ -325,12 +325,12 @@ namespace Artesian.SDK.Tests
 
             await bidAsk.SaveOverride(Instant.FromUtc(2025, 12, 14, 1, 0), upsertMode: UpsertMode.Merge, comment: "bid ask override");
 
-            AssertOverrideRequest(requests, "bid ask override");
+            _assertOverrideRequest(requests, "bid ask override");
             Assert.That(requests[0].BidAsk, Has.Count.EqualTo(1));
             Assert.That(requests[0].BidAsk![new LocalDateTime(2025, 12, 14, 0, 0)], Contains.Key("Product1"));
         }
 
-        private static async Task<MarketData> CreateLoadedMarketData(MarketDataType type, List<UpsertCurveDataOverride> requests)
+        private static async Task<MarketData> _createLoadedMarketData(MarketDataType type, List<UpsertCurveDataOverride> requests)
         {
             var identifier = new MarketDataIdentifier("Test", "TestName");
             var entity = new MarketDataEntity.Input
@@ -367,7 +367,7 @@ namespace Artesian.SDK.Tests
             return marketData;
         }
 
-        private static void AssertOverrideRequest(List<UpsertCurveDataOverride> requests, string comment)
+        private static void _assertOverrideRequest(List<UpsertCurveDataOverride> requests, string comment)
         {
             Assert.That(requests, Has.Count.EqualTo(1));
             Assert.That(requests[0].Kind, Is.EqualTo(OverrideKind.Override));
@@ -2330,6 +2330,100 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
+        public async Task MarketData_RegisterMasAbsoluteOutlierRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var rule = new DataQualityRuleDto.Input
+                {
+                    Name = "MAS absolute outlier",
+                    Type = RuleType.Outlier,
+                    Configuration = new MasOutlierConfigDto
+                    {
+                        MarketDataType = MarketDataType.MarketAssessment,
+                        Products = new[] { "D+1" },
+                        FieldsToBeValidated = new[] { MasDataQualityField.Settlement },
+                        Model = new OutlierAbsoluteBoundConfigDto { LowerBound = -10.0, UpperBound = 45.0 }
+                    }
+                };
+                var response = new DataQualityRuleDto.Output
+                {
+                    Id = 43,
+                    Name = rule.Name,
+                    Type = rule.Type,
+                    Configuration = rule.Configuration,
+                    Version = 1,
+                    AggregatedStatus = CheckAggregatedStatus.OK
+                };
+                httpTest.RespondWith(System.Text.Json.JsonSerializer.Serialize(response, Client.CreateDefaultJsonSerializerOptions()), 200, headers: new { Content_Type = "application/json" });
+
+                var result = await mds.RegisterDataQualityRuleAsync(rule);
+
+                Assert.That(result.Configuration, Is.InstanceOf<MasOutlierConfigDto>());
+                var config = (MasOutlierConfigDto)result.Configuration;
+                Assert.That(config.MarketDataType, Is.EqualTo(MarketDataType.MarketAssessment));
+                Assert.That(config.Products, Is.EqualTo(new[] { "D+1" }));
+                Assert.That(config.FieldsToBeValidated, Is.EqualTo(new[] { MasDataQualityField.Settlement }));
+                var bounds = (OutlierAbsoluteBoundConfigDto)config.Model;
+                Assert.That(bounds.LowerBound, Is.EqualTo(-10.0));
+                Assert.That(bounds.UpperBound, Is.EqualTo(45.0));
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_RegisterBidAskAbsoluteOutlierRuleAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var rule = new DataQualityRuleDto.Input
+                {
+                    Name = "BidAsk absolute outlier",
+                    Type = RuleType.Outlier,
+                    Configuration = new BidAskOutlierConfigDto
+                    {
+                        MarketDataType = MarketDataType.BidAsk,
+                        Products = new[] { "D+1" },
+                        FieldsToBeValidated = new[] { BidAskDataQualityField.BestBidPrice },
+                        Model = new OutlierAbsoluteBoundConfigDto { LowerBound = -10.0, UpperBound = 45.0 }
+                    }
+                };
+                var response = new DataQualityRuleDto.Output
+                {
+                    Id = 44,
+                    Name = rule.Name,
+                    Type = rule.Type,
+                    Configuration = rule.Configuration,
+                    Version = 1,
+                    AggregatedStatus = CheckAggregatedStatus.OK
+                };
+                httpTest.RespondWith(System.Text.Json.JsonSerializer.Serialize(response, Client.CreateDefaultJsonSerializerOptions()), 200, headers: new { Content_Type = "application/json" });
+
+                var result = await mds.RegisterDataQualityRuleAsync(rule);
+
+                Assert.That(result.Configuration, Is.InstanceOf<BidAskOutlierConfigDto>());
+                var config = (BidAskOutlierConfigDto)result.Configuration;
+                Assert.That(config.MarketDataType, Is.EqualTo(MarketDataType.BidAsk));
+                Assert.That(config.Products, Is.EqualTo(new[] { "D+1" }));
+                Assert.That(config.FieldsToBeValidated, Is.EqualTo(new[] { BidAskDataQualityField.BestBidPrice }));
+                var bounds = (OutlierAbsoluteBoundConfigDto)config.Model;
+                Assert.That(bounds.LowerBound, Is.EqualTo(-10.0));
+                Assert.That(bounds.UpperBound, Is.EqualTo(45.0));
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqrule")
+                    .WithVerb(HttpMethod.Post)
+                    .WithContentType("application/x.msgpacklz4")
+                    .Times(1);
+            }
+        }
+
+        [Test]
         public async Task MarketData_ReadDataQualityRuleByIdAsync()
         {
             using (var httpTest = new HttpTest())
@@ -2569,7 +2663,7 @@ namespace Artesian.SDK.Tests
                 const string json = "[{\"P\":\"Provider\",\"C\":\"Curve\",\"R\":\"Rule\",\"AID\":1,\"MKID\":100,\"RID\":2,\"V\":\"2024-01-15T10:00:00\",\"T\":\"2024-01-01T00:00:00Z\",\"D\":3,\"S\":\"2024-01-01T00:00:00Z\",\"E\":\"2024-01-02T00:00:00Z\"}]";
                 httpTest.RespondWith(json, 200, headers: new { Content_Type = "application/json" });
 
-                var result = (await mds.GetDataQualityCheckResultExtractVtsAsync(version, Granularity.Day, start, end, "UTC", new int[] { 1, 2 })).Single();
+                var result = (await mds.GetDataQualityCheckResultExtractVtsAsync(version, Granularity.Day, start, end, "UTC", new int[] { 1, 2 }, includeMarketData: true)).Single();
 
                 Assert.That(result.ProviderName, Is.EqualTo("Provider"));
                 Assert.That(result.CurveName, Is.EqualTo("Curve"));
@@ -2578,6 +2672,7 @@ namespace Artesian.SDK.Tests
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/extract/vts/Version/2024-01-15T10:00:00/Day/2024-01-01/2024-01-31")
                     .WithQueryParam("timeZone", "UTC")
+                    .WithQueryParam("includeMarketData", true)
                     .WithQueryParam("assignmentIds", "1")
                     .WithQueryParam("assignmentIds", "2")
                     .WithVerb(HttpMethod.Get)
@@ -2596,14 +2691,66 @@ namespace Artesian.SDK.Tests
                 var start = new LocalDate(2024, 1, 1);
                 var end = new LocalDate(2024, 1, 31);
 
-                await mds.GetDataQualityCheckResultExtractTsAsync(Granularity.Hour, start, end, "Europe/Rome", new int[] { 3, 4 });
+                await mds.GetDataQualityCheckResultExtractTsAsync(Granularity.Hour, start, end, "Europe/Rome", new int[] { 3, 4 }, includeMarketData: true);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/extract/ts/Hour/2024-01-01/2024-01-31")
                     .WithQueryParam("timeZone", "Europe/Rome")
+                    .WithQueryParam("includeMarketData", true)
                     .WithQueryParam("assignmentIds", "3")
                     .WithQueryParam("assignmentIds", "4")
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_GetDataQualityCheckResultExtractMasAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var start = new LocalDate(2024, 1, 1);
+                var end = new LocalDate(2024, 1, 31);
+                httpTest.RespondWith("[{\"P\":\"Provider\",\"C\":\"Curve\",\"R\":\"Rule\",\"AID\":1,\"MKID\":100,\"RID\":2,\"T\":\"2024-01-01T00:00:00Z\",\"D\":3,\"S\":\"2024-01-01T00:00:00Z\",\"E\":\"2024-01-02T00:00:00Z\",\"PR\":\"GME_D\"}]", 200, headers: new { Content_Type = "application/json" });
+
+                var result = (await mds.GetDataQualityCheckResultExtractMasAsync(Granularity.Day, start, end, "UTC", new[] { 1, 2 }, new[] { "GME_D" })).Single();
+
+                Assert.That(result.Product, Is.EqualTo("GME_D"));
+                Assert.That(result.AssignmentId, Is.EqualTo(1));
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/extract/mas/Day/2024-01-01/2024-01-31")
+                    .WithQueryParam("tz", "UTC")
+                    .WithQueryParam("id", "1")
+                    .WithQueryParam("id", "2")
+                    .WithQueryParam("p", "GME_D")
+                    .WithQueryParam("includeMarketData", false)
+                    .WithVerb(HttpMethod.Get)
+                    .Times(1);
+            }
+        }
+
+        [Test]
+        public async Task MarketData_GetDataQualityCheckResultExtractBidAskAsync()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var start = new LocalDate(2024, 1, 1);
+                var end = new LocalDate(2024, 1, 31);
+                httpTest.RespondWith("[{\"P\":\"Provider\",\"C\":\"Curve\",\"R\":\"Rule\",\"AID\":3,\"MKID\":200,\"RID\":4,\"T\":\"2024-01-01T00:00:00Z\",\"D\":2,\"S\":\"2024-01-01T00:00:00Z\",\"E\":\"2024-01-02T00:00:00Z\",\"PR\":\"GME_D\"}]", 200, headers: new { Content_Type = "application/json" });
+
+                var result = (await mds.GetDataQualityCheckResultExtractBidAskAsync(Granularity.Hour, start, end, "Europe/Rome", new[] { 3 }, new[] { "GME_D" }, includeMarketData: true)).Single();
+
+                Assert.That(result.Product, Is.EqualTo("GME_D"));
+                Assert.That(result.AssignmentId, Is.EqualTo(3));
+
+                httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/extract/ba/Hour/2024-01-01/2024-01-31")
+                    .WithQueryParam("tz", "Europe/Rome")
+                    .WithQueryParam("id", "3")
+                    .WithQueryParam("p", "GME_D")
+                    .WithQueryParam("includeMarketData", true)
+                    .WithVerb(HttpMethod.Get)
                     .Times(1);
             }
         }

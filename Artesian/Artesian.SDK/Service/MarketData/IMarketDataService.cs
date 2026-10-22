@@ -319,9 +319,10 @@ namespace Artesian.SDK.Service
         /// <param name="end">Range end (format yyyy-MM-dd, not inclusive).</param>
         /// <param name="timeZone">IANA timezone identifier.</param>
         /// <param name="assignmentIds">Filter by assignment IDs.</param>
+        /// <param name="includeMarketData">When true, includes provider and curve names when accessible.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>An enumerable of <see cref="CheckResultExtract.Vts"/> with Version populated.</returns>
-        Task<IEnumerable<CheckResultExtract.Vts>> GetDataQualityCheckResultExtractVtsAsync(LocalDateTime version, Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, CancellationToken ctk = default);
+        Task<IEnumerable<CheckResultExtract.Vts>> GetDataQualityCheckResultExtractVtsAsync(LocalDateTime version, Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, bool includeMarketData = false, CancellationToken ctk = default);
 
         /// <summary>
         /// Extracts data quality check results for (non-versioned) time series (TS).
@@ -332,9 +333,38 @@ namespace Artesian.SDK.Service
         /// <param name="end">Range end (format yyyy-MM-dd, not inclusive).</param>
         /// <param name="timeZone">IANA timezone identifier.</param>
         /// <param name="assignmentIds">Filter by assignment IDs.</param>
+        /// <param name="includeMarketData">When true, includes provider and curve names when accessible.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>An enumerable of <see cref="CheckResultExtract.Ts"/>.</returns>
-        Task<IEnumerable<CheckResultExtract.Ts>> GetDataQualityCheckResultExtractTsAsync(Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, CancellationToken ctk = default);
+        Task<IEnumerable<CheckResultExtract.Ts>> GetDataQualityCheckResultExtractTsAsync(Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, bool includeMarketData = false, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Extracts data quality check results for Market Assessment series.
+        /// </summary>
+        /// <param name="granularity">Time granularity.</param>
+        /// <param name="start">Range start, inclusive.</param>
+        /// <param name="end">Range end, not inclusive.</param>
+        /// <param name="timeZone">IANA timezone identifier.</param>
+        /// <param name="assignmentIds">Optional assignment ID filter.</param>
+        /// <param name="products">Optional Market Assessment product filter.</param>
+        /// <param name="includeMarketData">When true, includes provider and curve names when accessible.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>An enumerable of <see cref="CheckResultExtract.Mas"/>.</returns>
+        Task<IEnumerable<CheckResultExtract.Mas>> GetDataQualityCheckResultExtractMasAsync(Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, string[]? products = null, bool includeMarketData = false, CancellationToken ctk = default);
+
+        /// <summary>
+        /// Extracts data quality check results for BidAsk series.
+        /// </summary>
+        /// <param name="granularity">Time granularity.</param>
+        /// <param name="start">Range start, inclusive.</param>
+        /// <param name="end">Range end, not inclusive.</param>
+        /// <param name="timeZone">IANA timezone identifier.</param>
+        /// <param name="assignmentIds">Optional assignment ID filter.</param>
+        /// <param name="products">Optional BidAsk product filter.</param>
+        /// <param name="includeMarketData">When true, includes provider and curve names when accessible.</param>
+        /// <param name="ctk">Cancellation token.</param>
+        /// <returns>An enumerable of <see cref="CheckResultExtract.BidAsk"/>.</returns>
+        Task<IEnumerable<CheckResultExtract.BidAsk>> GetDataQualityCheckResultExtractBidAskAsync(Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, string[]? products = null, bool includeMarketData = false, CancellationToken ctk = default);
 
         /// <summary>
         /// Retrieves a paged summary of data quality check results (CurveRange-like view per assignment).
