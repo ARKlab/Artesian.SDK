@@ -2551,9 +2551,10 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                await mds.ReadDataQualityRuleAssignmentByIdAsync(1);
+                await mds.ReadDataQualityRuleAssignmentByIdAsync(1, includeMarketData: true);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1")
+                    .WithQueryParam("includeMarketData", true)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .Times(1);
@@ -2567,7 +2568,7 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                await mds.ReadDataQualityRuleAssignmentsAsync(1, 10, 100, 1, "TestRule", new string[] { "Id asc" });
+                await mds.ReadDataQualityRuleAssignmentsAsync(1, 10, 100, 1, "TestRule", new string[] { "Id asc" }, includeMarketData: true);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment")
                     .WithQueryParam("page", 1)
@@ -2576,6 +2577,7 @@ namespace Artesian.SDK.Tests
                     .WithQueryParam("ruleId", 1)
                     .WithQueryParam("ruleName", "TestRule")
                     .WithQueryParam("sort", "Id asc")
+                    .WithQueryParam("includeMarketData", true)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .Times(1);
@@ -2636,14 +2638,103 @@ namespace Artesian.SDK.Tests
                 var mds = new MarketDataService(_cfg);
                 var afterTimestamp = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(1);
 
-                await mds.ReadDataQualityRuleAssignmentEventsFeedAsync(1, afterTimestamp);
+                await mds.ReadDataQualityRuleAssignmentEventsFeedAsync(1, afterTimestamp, includeMarketData: true);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/dqruleassignment/1/events")
                     .WithQueryParam("afterTimestamp", afterTimestamp)
+                    .WithQueryParam("includeMarketData", true)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .Times(1);
             }
+        }
+
+        [Test]
+        public async Task MarketData_DataQualityEndpoints_DefaultIncludeMarketDataFalse()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var start = new LocalDate(2024, 1, 1);
+                var end = new LocalDate(2024, 1, 2);
+                var assignmentIds = Enumerable.Range(1, 100).ToArray();
+
+                await mds.ReadDataQualityRuleAssignmentByIdAsync(1).ConfigureAwait(false);
+                await mds.ReadDataQualityRuleAssignmentsAsync(page: 1, pageSize: 100).ConfigureAwait(false);
+                await mds.ReadDataQualityRuleAssignmentEventsFeedAsync(1).ConfigureAwait(false);
+
+                await mds.GetDataQualityCheckResultExtractVtsAsync(
+                    new LocalDateTime(2024, 1, 1, 0, 0),
+                    Granularity.Day,
+                    start,
+                    end,
+                    "UTC",
+                    assignmentIds).ConfigureAwait(false);
+                await mds.GetDataQualityCheckResultExtractTsAsync(
+                    Granularity.Day,
+                    start,
+                    end,
+                    "UTC",
+                    assignmentIds).ConfigureAwait(false);
+                await mds.GetDataQualityCheckResultExtractMasAsync(
+                    Granularity.Day,
+                    start,
+                    end,
+                    "UTC",
+                    assignmentIds).ConfigureAwait(false);
+                await mds.GetDataQualityCheckResultExtractBidAskAsync(
+                    Granularity.Day,
+                    start,
+                    end,
+                    "UTC",
+                    assignmentIds).ConfigureAwait(false);
+                await mds.GetDataQualityCheckResultCheckSummaryAsync(page: 1, pageSize: 100).ConfigureAwait(false);
+                await mds.GetMarketDataDqStatusSummaryAsync(limit: 100).ConfigureAwait(false);
+
+                var scheduleTime = Instant.FromUtc(2024, 1, 1, 0, 0);
+                await mds.ReadAlertScheduleEventsAsync(1, scheduleTime, page: 1, pageSize: 100).ConfigureAwait(false);
+                await mds.ReadAlertScheduleLastEventsAsync(1, page: 1, pageSize: 100).ConfigureAwait(false);
+                await mds.ReadQualityNotificationAlertAssignmentByIdAsync(1).ConfigureAwait(false);
+                await mds.ReadQualityNotificationAlertAssignmentsAsync(page: 1, pageSize: 100).ConfigureAwait(false);
+
+                httpTest.ShouldHaveCalled("*")
+                    .WithQueryParam("includeMarketData", false)
+                    .Times(13);
+            }
+        }
+
+        [Test]
+        public void MarketData_DataQualityAclLimits_RejectMoreThan100Candidates()
+        {
+            var mds = new MarketDataService(_cfg);
+            var start = new LocalDate(2024, 1, 1);
+            var end = new LocalDate(2024, 1, 2);
+            var assignmentIds = new int[101];
+            var version = new LocalDateTime(2024, 1, 1, 0, 0);
+            var scheduleTime = Instant.FromUtc(2024, 1, 1, 0, 0);
+
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.GetDataQualityCheckResultExtractVtsAsync(version, Granularity.Day, start, end, "UTC", assignmentIds).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.GetDataQualityCheckResultExtractTsAsync(Granularity.Day, start, end, "UTC", assignmentIds).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.GetDataQualityCheckResultExtractMasAsync(Granularity.Day, start, end, "UTC", assignmentIds).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.GetDataQualityCheckResultExtractBidAskAsync(Granularity.Day, start, end, "UTC", assignmentIds).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.GetDataQualityCheckResultCheckSummaryAsync(page: 1, pageSize: 101).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.GetMarketDataDqStatusSummaryAsync(limit: 101).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.GetDqRuleDqStatusSummaryAsync(limit: 101).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.ReadDataQualityRuleAssignmentsAsync(page: 1, pageSize: 101).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.ReadAlertScheduleEventsAsync(1, scheduleTime, pageSize: 101).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.ReadAlertScheduleLastEventsAsync(1, pageSize: 101).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.ReadQualityNotificationAlertAssignmentsAsync(page: 1, pageSize: 101).ConfigureAwait(false));
         }
 
         #endregion
@@ -2714,7 +2805,7 @@ namespace Artesian.SDK.Tests
                 var end = new LocalDate(2024, 1, 31);
                 httpTest.RespondWith("[{\"P\":\"Provider\",\"C\":\"Curve\",\"R\":\"Rule\",\"AID\":1,\"MKID\":100,\"RID\":2,\"T\":\"2024-01-01T00:00:00Z\",\"D\":3,\"S\":\"2024-01-01T00:00:00Z\",\"E\":\"2024-01-02T00:00:00Z\",\"PR\":\"GME_D\"}]", 200, headers: new { Content_Type = "application/json" });
 
-                var result = (await mds.GetDataQualityCheckResultExtractMasAsync(Granularity.Day, start, end, "UTC", new[] { 1, 2 }, new[] { "GME_D" })).Single();
+                var result = (await mds.GetDataQualityCheckResultExtractMasAsync(Granularity.Day, start, end, "UTC", new[] { 1, 2 }, new[] { "GME_D" }, includeMarketData: true)).Single();
 
                 Assert.That(result.Product, Is.EqualTo("GME_D"));
                 Assert.That(result.AssignmentId, Is.EqualTo(1));
@@ -2724,7 +2815,7 @@ namespace Artesian.SDK.Tests
                     .WithQueryParam("id", "1")
                     .WithQueryParam("id", "2")
                     .WithQueryParam("p", "GME_D")
-                    .WithQueryParam("includeMarketData", false)
+                    .WithQueryParam("includeMarketData", true)
                     .WithVerb(HttpMethod.Get)
                     .Times(1);
             }
@@ -2780,7 +2871,8 @@ namespace Artesian.SDK.Tests
                     versionTo: versionTo,
                     products: new string[] { "PROD1", "PROD2" },
                     skipEmptyRanges: true,
-                    sort: new string[] { "RuleName asc" });
+                    sort: new string[] { "RuleName asc" },
+                    includeMarketData: true);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/checksummary")
                     .WithQueryParam("page", 1)
@@ -2800,6 +2892,7 @@ namespace Artesian.SDK.Tests
                     .WithQueryParam("products", "PROD2")
                     .WithQueryParam("skipEmptyRanges", true)
                     .WithQueryParam("sort", "RuleName asc")
+                    .WithQueryParam("includeMarketData", true)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .Times(1);
@@ -2817,7 +2910,8 @@ namespace Artesian.SDK.Tests
                     ruleId: 1,
                     marketDataIds: new int[] { 100, 200 },
                     dqStatus: CheckAggregatedStatus.KO,
-                    limit: 50);
+                    limit: 50,
+                    includeMarketData: true);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/checkresult/marketdata/dataqualitystatussummary")
                     .WithQueryParam("limit", 50)
@@ -2825,6 +2919,7 @@ namespace Artesian.SDK.Tests
                     .WithQueryParam("marketDataIds", "100")
                     .WithQueryParam("marketDataIds", "200")
                     .WithQueryParam("dqStatus", CheckAggregatedStatus.KO)
+                    .WithQueryParam("includeMarketData", true)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .Times(1);
@@ -2974,9 +3069,17 @@ namespace Artesian.SDK.Tests
                 var mds = new MarketDataService(_cfg);
                 var scheduleTime = Instant.FromUtc(2025, 1, 15, 12, 30);
 
-                await mds.ReadAlertScheduleEventsAsync(1, scheduleTime);
+                httpTest.RespondWith("{\"Events\":{\"Page\":2,\"PageSize\":25,\"Count\":0,\"IsCountPartial\":false,\"Data\":[]}}", 200, headers: new { Content_Type = "application/json" });
+                var response = await mds.ReadAlertScheduleEventsAsync(1, scheduleTime, page: 2, pageSize: 25, includeMarketData: true);
+
+                Assert.That(response.Events.Page, Is.EqualTo(2));
+                Assert.That(response.Events.PageSize, Is.EqualTo(25));
+                Assert.That(response.Events.Data, Is.Empty);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1/schedule/{scheduleTime}/events")
+                    .WithQueryParam("page", 2)
+                    .WithQueryParam("pageSize", 25)
+                    .WithQueryParam("includeMarketData", true)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .Times(1);
@@ -3007,9 +3110,17 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                await mds.ReadAlertScheduleLastEventsAsync(1);
+                httpTest.RespondWith("{\"Events\":{\"Page\":3,\"PageSize\":10,\"Count\":0,\"IsCountPartial\":false,\"Data\":[]}}", 200, headers: new { Content_Type = "application/json" });
+                var response = await mds.ReadAlertScheduleLastEventsAsync(1, page: 3, pageSize: 10, includeMarketData: true);
+
+                Assert.That(response.Events.Page, Is.EqualTo(3));
+                Assert.That(response.Events.PageSize, Is.EqualTo(10));
+                Assert.That(response.Events.Data, Is.Empty);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertrule/1/schedule/latest/events")
+                    .WithQueryParam("page", 3)
+                    .WithQueryParam("pageSize", 10)
+                    .WithQueryParam("includeMarketData", true)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .Times(1);
@@ -3049,9 +3160,10 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                await mds.ReadQualityNotificationAlertAssignmentByIdAsync(1);
+                await mds.ReadQualityNotificationAlertAssignmentByIdAsync(1, includeMarketData: true);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertruleassignment/1")
+                    .WithQueryParam("includeMarketData", true)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .Times(1);
@@ -3065,7 +3177,7 @@ namespace Artesian.SDK.Tests
             {
                 var mds = new MarketDataService(_cfg);
 
-                await mds.ReadQualityNotificationAlertAssignmentsAsync(2, 20, 1, 100000001, new string[] { "AlertId desc" });
+                await mds.ReadQualityNotificationAlertAssignmentsAsync(2, 20, 1, 100000001, new string[] { "AlertId desc" }, includeMarketData: true);
 
                 httpTest.ShouldHaveCalledPath($"{_cfg.BaseAddress}v2.1/dataquality/alertruleassignment")
                     .WithQueryParam("alertId", 1)
@@ -3073,6 +3185,7 @@ namespace Artesian.SDK.Tests
                     .WithQueryParam("page", 2)
                     .WithQueryParam("pageSize", 20)
                     .WithQueryParam("sort", "AlertId desc")
+                    .WithQueryParam("includeMarketData", true)
                     .WithVerb(HttpMethod.Get)
                     .WithHeadersTest()
                     .Times(1);

@@ -123,14 +123,25 @@ namespace Artesian.SDK.Service
         /// <param name="alertId">The alert identifier.</param>
         /// <param name="scheduleTime">The schedule occurrence timestamp.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>An array of <see cref="DqCheckChangeEventDto.Output"/>.</returns>
-        public Task<AlertScheduleEventsDto.Output> ReadAlertScheduleEventsAsync(int alertId, Instant scheduleTime, CancellationToken ctk = default)
+        /// <param name="page">The one-based event page (default: 1).</param>
+        /// <param name="pageSize">The number of events per page (1-100, default: 100).</param>
+        /// <param name="includeMarketData">When true, includes provider and curve names for Market Data the caller can read.</param>
+        /// <returns>The schedule occurrence and a paginated collection of events.</returns>
+        public Task<AlertScheduleEventsDto.Output> ReadAlertScheduleEventsAsync(int alertId, Instant scheduleTime, int page = 1, int pageSize = 100, bool includeMarketData = false, CancellationToken ctk = default)
         {
+            if (page < 1)
+                throw new ArgumentOutOfRangeException(nameof(page), page, "Page must be greater than 0.");
+            if (pageSize < 1 || pageSize > _maxDataQualityAclCandidates)
+                throw new ArgumentOutOfRangeException(nameof(pageSize), pageSize, $"PageSize must be between 1 and {_maxDataQualityAclCandidates}.");
+
             var url = "/dataquality/alertrule"
                 .AppendPathSegment(alertId)
                 .AppendPathSegment("schedule")
                 .AppendPathSegment(scheduleTime)
-                .AppendPathSegment("events");
+                .AppendPathSegment("events")
+                .SetQueryParam("page", page)
+                .SetQueryParam("pageSize", pageSize)
+                .SetQueryParam("includeMarketData", includeMarketData);
 
             return _client.Exec<AlertScheduleEventsDto.Output>(HttpMethod.Get, url, ctk: ctk);
         }
@@ -161,14 +172,25 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="alertId">The alert identifier.</param>
         /// <param name="ctk">Cancellation token.</param>
-        /// <returns>An array of <see cref="DqCheckChangeEventDto.Output"/> from the latest schedule.</returns>
-        public Task<AlertScheduleEventsDto.Output> ReadAlertScheduleLastEventsAsync(int alertId, CancellationToken ctk = default)
+        /// <param name="page">The one-based event page (default: 1).</param>
+        /// <param name="pageSize">The number of events per page (1-100, default: 100).</param>
+        /// <param name="includeMarketData">When true, includes provider and curve names for Market Data the caller can read.</param>
+        /// <returns>The latest schedule occurrence and a paginated collection of events.</returns>
+        public Task<AlertScheduleEventsDto.Output> ReadAlertScheduleLastEventsAsync(int alertId, int page = 1, int pageSize = 100, bool includeMarketData = false, CancellationToken ctk = default)
         {
+            if (page < 1)
+                throw new ArgumentOutOfRangeException(nameof(page), page, "Page must be greater than 0.");
+            if (pageSize < 1 || pageSize > _maxDataQualityAclCandidates)
+                throw new ArgumentOutOfRangeException(nameof(pageSize), pageSize, $"PageSize must be between 1 and {_maxDataQualityAclCandidates}.");
+
             var url = "/dataquality/alertrule"
                 .AppendPathSegment(alertId)
                 .AppendPathSegment("schedule")
                 .AppendPathSegment("latest")
-                .AppendPathSegment("events");
+                .AppendPathSegment("events")
+                .SetQueryParam("page", page)
+                .SetQueryParam("pageSize", pageSize)
+                .SetQueryParam("includeMarketData", includeMarketData);
 
             return _client.Exec<AlertScheduleEventsDto.Output>(HttpMethod.Get, url, ctk: ctk);
         }

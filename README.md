@@ -612,6 +612,8 @@ Latest Value
 Artesian supports Data Quality Rules to validate market data for completeness, freshness, and outlier detection. 
 Rules are reusable configurations that can be assigned to one or more Market Data entities through rule assignments.
 
+Data Quality endpoints are protected by the configured authorization roles. Endpoints that return Market Data details accept `includeMarketData` (default `false`) to opt in to those fields; the API still returns them only when the caller has read access to the corresponding Market Data.
+
 ### Data Quality Rule Types
 
 Two types of rules are supported:
@@ -901,6 +903,12 @@ Get a single assignment:
 var assignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(id: 456);
 Console.WriteLine($"MarketData: {assignment.MarketData?.MarketDataName}");
 Console.WriteLine($"Rule: {assignment.DataQualityRule?.Name}");
+
+// Request Market Data details; ACL permissions are still enforced by the API.
+var assignmentWithMarketData = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(
+    id: 456,
+    includeMarketData: true
+);
 ```
 
 Get all assignments with filters:
@@ -912,7 +920,8 @@ var assignments = await marketDataService.ReadDataQualityRuleAssignmentsAsync(
     marketDataId: 100000001,  // Filter by Market Data
     ruleId: 123,              // Filter by Rule
     ruleName: "weather",      // Filter by rule name (partial match)
-    sort: new[] { "Id desc" }
+    sort: new[] { "Id desc" },
+    includeMarketData: true
 );
 
 foreach (var a in assignments.Data)
@@ -950,7 +959,8 @@ using NodaTime;
 
 var events = await marketDataService.ReadDataQualityRuleAssignmentEventsFeedAsync(
     id: 456,
-    afterTimestamp: Instant.FromUtc(2024, 1, 15, 0, 0)
+    afterTimestamp: Instant.FromUtc(2024, 1, 15, 0, 0),
+    includeMarketData: true
 );
 
 Console.WriteLine($"Retrieved {events.Length} events");
@@ -1034,6 +1044,8 @@ The `ETag` and `Version` returned by the API must be preserved when updating an 
 
 #### Read Alert Schedule Events
 
+Schedule event results are paginated. `Events` is a `PagedResult`; iterate its `Data` collection.
+
 ```csharp
 var scheduleTimes = await marketDataService.ReadAlertScheduleListAsync(
     alertId: 123,
@@ -1044,16 +1056,24 @@ if (scheduleTimes.Length > 0)
 {
     var scheduleEvents = await marketDataService.ReadAlertScheduleEventsAsync(
         alertId: 123,
-        scheduleTime: scheduleTimes[0]
+        scheduleTime: scheduleTimes[0],
+        page: 1,
+        pageSize: 100,
+        includeMarketData: true
     );
 
-    foreach (var evt in scheduleEvents.Events)
+    foreach (var evt in scheduleEvents.Events.Data)
     {
         Console.WriteLine($"Event at {evt.Timestamp}: {evt.NewStatus}");
     }
 }
 
-var latestScheduleEvents = await marketDataService.ReadAlertScheduleLastEventsAsync(alertId: 123);
+var latestScheduleEvents = await marketDataService.ReadAlertScheduleLastEventsAsync(
+    alertId: 123,
+    page: 1,
+    pageSize: 100,
+    includeMarketData: true
+);
 ```
 
 ### Quality Notification Alert Assignments
@@ -1078,14 +1098,18 @@ Console.WriteLine($"Assignment ID: {createdAssignment.Id}");
 Read a single assignment by ID or filter the paginated collection by alert and Market Data:
 
 ```csharp
-var assignment = await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(id: 456);
+var assignment = await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(
+    id: 456,
+    includeMarketData: true
+);
 
 var assignments = await marketDataService.ReadQualityNotificationAlertAssignmentsAsync(
     page: 1,
     pageSize: 20,
     alertId: 123,
     marketDataId: 100000001,
-    sort: new[] { "AlertId asc" }
+    sort: new[] { "AlertId asc" },
+    includeMarketData: true
 );
 
 foreach (var item in assignments.Data)
@@ -1122,7 +1146,7 @@ if (rule.AggregatedStatus == CheckAggregatedStatus.KO)
 
 ### Data Quality Check Results
 
-Data Quality check result APIs provide compact extracts for time series, paginated check summaries, and aggregated status overviews. Use assignment IDs to restrict extracts to specific rule assignments. All four extract APIs support `includeMarketData`, which defaults to `false`; when enabled, provider and curve names are returned only for Market Data the caller can read.
+Data Quality check result APIs provide compact extracts for time series, paginated check summaries, and aggregated status overviews. Use assignment IDs to restrict extracts to specific rule assignments. The extract, check-summary, and Market Data status-summary APIs support `includeMarketData`, which defaults to `false`; when enabled, descriptive Market Data details are returned only when the caller can read that Market Data. ACL-protected candidate and page sizes are limited to 100.
 
 #### Extract Check Results for Actual Time Series
 
@@ -1214,7 +1238,8 @@ var checkSummaries = await marketDataService.GetDataQualityCheckResultCheckSumma
     to: Instant.FromUtc(2024, 2, 1, 0, 0),
     products: new[] { "Base" },
     skipEmptyRanges: true,
-    sort: new[] { "LastCheckTime desc" }
+    sort: new[] { "LastCheckTime desc" },
+    includeMarketData: true
 );
 
 foreach (var summary in checkSummaries.Data)
@@ -1232,7 +1257,8 @@ var marketDataStatuses = await marketDataService.GetMarketDataDqStatusSummaryAsy
     ruleId: 123,
     marketDataIds: new[] { 100000001, 100000002 },
     dqStatus: CheckAggregatedStatus.KO,
-    limit: 100
+    limit: 100,
+    includeMarketData: true
 );
 
 foreach (var item in marketDataStatuses)

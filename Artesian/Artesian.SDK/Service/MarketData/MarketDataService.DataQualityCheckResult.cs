@@ -20,6 +20,8 @@ namespace Artesian.SDK.Service
 {
     public partial class MarketDataService : IMarketDataService
     {
+        private const int _maxDataQualityAclCandidates = 100;
+
         /// <summary>
         /// Extracts data quality check results for versioned time series (VTS).
         /// Returns compact, abbreviated DTOs designed for high-volume extraction.
@@ -44,6 +46,7 @@ namespace Artesian.SDK.Service
             CancellationToken ctk = default)
         {
             Guard.IsNotNullOrWhiteSpace(timeZone);
+            _validateAssignmentIds(assignmentIds);
 
             var url = $"/dataquality/checkresult/extract/vts/Version/{version:yyyy-MM-ddTHH:mm:ss}/{granularity}/{start:yyyy-MM-dd}/{end:yyyy-MM-dd}"
                 .SetQueryParam("timeZone", timeZone)
@@ -79,6 +82,7 @@ namespace Artesian.SDK.Service
             CancellationToken ctk = default)
         {
             Guard.IsNotNullOrWhiteSpace(timeZone);
+            _validateAssignmentIds(assignmentIds);
 
             var url = $"/dataquality/checkresult/extract/ts/{granularity}/{start:yyyy-MM-dd}/{end:yyyy-MM-dd}"
                 .SetQueryParam("timeZone", timeZone)
@@ -115,6 +119,7 @@ namespace Artesian.SDK.Service
             CancellationToken ctk = default)
         {
             Guard.IsNotNullOrWhiteSpace(timeZone);
+            _validateAssignmentIds(assignmentIds);
 
             var url = $"/dataquality/checkresult/extract/mas/{granularity}/{start:yyyy-MM-dd}/{end:yyyy-MM-dd}"
                 .SetQueryParam("tz", timeZone)
@@ -156,6 +161,7 @@ namespace Artesian.SDK.Service
             CancellationToken ctk = default)
         {
             Guard.IsNotNullOrWhiteSpace(timeZone);
+            _validateAssignmentIds(assignmentIds);
 
             var url = $"/dataquality/checkresult/extract/ba/{granularity}/{start:yyyy-MM-dd}/{end:yyyy-MM-dd}"
                 .SetQueryParam("tz", timeZone)
@@ -190,8 +196,9 @@ namespace Artesian.SDK.Service
         /// <param name="skipEmptyRanges">When true, return only summaries with non-empty range data (default: false).</param>
         /// <param name="sort">Optional sort expressions.</param>
         /// <param name="page">Page number (1-based, default: 1).</param>
-        /// <param name="pageSize">Items per page (default: 10).</param>
+        /// <param name="pageSize">Items per page (1-100, default: 10).</param>
         /// <param name="ctk">Cancellation token.</param>
+        /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
         /// <returns>A paginated result containing <see cref="CheckResultCheckSummaryDto"/> items.</returns>
         public Task<PagedResult<CheckResultCheckSummaryDto>> GetDataQualityCheckResultCheckSummaryAsync(
             int page,
@@ -207,17 +214,19 @@ namespace Artesian.SDK.Service
             string[]? products = null,
             bool skipEmptyRanges = false,
             string[]? sort = null,
+            bool includeMarketData = false,
             CancellationToken ctk = default)
         {
             if (page < 1)
                 throw new ArgumentException("Page must be greater than 0. Page:" + page, nameof(page));
-            if (pageSize < 1)
-                throw new ArgumentException("PageSize must be greater than 0. PageSize:" + pageSize, nameof(pageSize));
+            if (pageSize < 1 || pageSize > _maxDataQualityAclCandidates)
+                throw new ArgumentOutOfRangeException(nameof(pageSize), pageSize, $"PageSize must be between 1 and {_maxDataQualityAclCandidates}.");
 
             var url = "/dataquality/checkresult/checksummary"
                 .SetQueryParam("page", page)
                 .SetQueryParam("pageSize", pageSize)
-                .SetQueryParam("skipEmptyRanges", skipEmptyRanges);
+                .SetQueryParam("skipEmptyRanges", skipEmptyRanges)
+                .SetQueryParam("includeMarketData", includeMarketData);
 
             if (marketDataIds != null && marketDataIds.Length > 0)
                 url = url.SetQueryParam("marketDataIds", marketDataIds);
@@ -259,21 +268,24 @@ namespace Artesian.SDK.Service
         /// <param name="ruleId">Optional Rule ID filter.</param>
         /// <param name="marketDataIds">Optional filter by MarketData IDs.</param>
         /// <param name="dqStatus">Optional aggregated DQ status filter (OK/KO). When KO, returns only Market Data whose overall status is KO.</param>
-        /// <param name="limit">Maximum number of results to return (1..1000, default: 10).</param>
+        /// <param name="limit">Maximum number of results to return (1..100, default: 10).</param>
         /// <param name="ctk">Cancellation token.</param>
+        /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
         /// <returns>An array of <see cref="MarketDataDqStatusSummaryDto"/> items.</returns>
         public Task<IEnumerable<MarketDataDqStatusSummaryDto>> GetMarketDataDqStatusSummaryAsync(
             int? ruleId = null,
             int[]? marketDataIds = null,
             CheckAggregatedStatus? dqStatus = null,
             int limit = 10,
+            bool includeMarketData = false,
             CancellationToken ctk = default)
         {
-            if (limit < 1 || limit > 1000)
-                throw new ArgumentException("Limit must be between 1 and 1000. Limit:" + limit, nameof(limit));
+            if (limit < 1 || limit > _maxDataQualityAclCandidates)
+                throw new ArgumentOutOfRangeException(nameof(limit), limit, $"Limit must be between 1 and {_maxDataQualityAclCandidates}.");
 
             var url = "/dataquality/checkresult/marketdata/dataqualitystatussummary"
-                .SetQueryParam("limit", limit);
+                .SetQueryParam("limit", limit)
+                .SetQueryParam("includeMarketData", includeMarketData);
 
             if (ruleId.HasValue)
                 url = url.SetQueryParam("ruleId", ruleId.Value);
@@ -294,7 +306,7 @@ namespace Artesian.SDK.Service
         /// <param name="marketDataId">Optional filter by a specific MarketData ID.</param>
         /// <param name="ruleIds">Optional filter by specific Rule IDs.</param>
         /// <param name="dqStatus">Optional aggregated DQ status filter (OK/KO). When KO, returns only rules whose overall status is KO.</param>
-        /// <param name="limit">Maximum number of results to return (1..1000, default: 10).</param>
+        /// <param name="limit">Maximum number of results to return (1..100, default: 10).</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>An array of <see cref="DqRuleDqStatusSummaryDto"/> items.</returns>
         public Task<IEnumerable<DqRuleDqStatusSummaryDto>> GetDqRuleDqStatusSummaryAsync(
@@ -304,8 +316,8 @@ namespace Artesian.SDK.Service
             int limit = 10,
             CancellationToken ctk = default)
         {
-            if (limit < 1 || limit > 1000)
-                throw new ArgumentException("Limit must be between 1 and 1000. Limit:" + limit, nameof(limit));
+            if (limit < 1 || limit > _maxDataQualityAclCandidates)
+                throw new ArgumentOutOfRangeException(nameof(limit), limit, $"Limit must be between 1 and {_maxDataQualityAclCandidates}.");
 
             var url = "/dataquality/checkresult/dqrule/dataqualitystatussummary"
                 .SetQueryParam("limit", limit);
@@ -320,6 +332,12 @@ namespace Artesian.SDK.Service
                 url = url.SetQueryParam("dqStatus", dqStatus.Value);
 
             return _client.Exec<IEnumerable<DqRuleDqStatusSummaryDto>>(HttpMethod.Get, url, ctk: ctk);
+        }
+
+        private static void _validateAssignmentIds(int[]? assignmentIds)
+        {
+            if (assignmentIds is { Length: > _maxDataQualityAclCandidates })
+                throw new ArgumentOutOfRangeException(nameof(assignmentIds), assignmentIds.Length, $"No more than {_maxDataQualityAclCandidates} assignment IDs are allowed.");
         }
     }
 }

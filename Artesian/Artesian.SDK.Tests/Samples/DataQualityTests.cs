@@ -244,14 +244,14 @@ namespace Artesian.SDK.Tests.Samples
 
             var assignmentCreated = await marketDataService.RegisterDataQualityRuleAssignmentAsync(assignmentPayload, ctk: ctk);
 
-            var dataQualityRuleAssignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentCreated.Id, ctk);
+            var dataQualityRuleAssignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentCreated.Id, ctk: ctk);
 
             ClassicAssert.AreEqual(dataQualityRuleAssignment.Id, assignmentCreated.Id);
 
             // Delete assignment
             await marketDataService.DeleteDataQualityRuleAssignmentAsync(assignmentCreated.Id, ctk);
 
-            dataQualityRuleAssignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentCreated.Id, ctk);
+            dataQualityRuleAssignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(assignmentCreated.Id, ctk: ctk);
 
             ClassicAssert.IsNull(dataQualityRuleAssignment);
 
@@ -904,7 +904,7 @@ namespace Artesian.SDK.Tests.Samples
             ClassicAssert.AreEqual(alert.Id, assignment.AlertId);
             ClassicAssert.AreEqual(mktData.MarketDataId!.Value, assignment.MarketDataId);
 
-            var readAssignment = await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(assignment.Id, ctk);
+            var readAssignment = await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(assignment.Id, ctk: ctk);
             ClassicAssert.AreEqual(assignment.Id, readAssignment.Id);
 
             var assignments = await marketDataService.ReadQualityNotificationAlertAssignmentsAsync(
@@ -916,7 +916,7 @@ namespace Artesian.SDK.Tests.Samples
             ClassicAssert.IsNotNull(assignments);
 
             await marketDataService.DeleteQualityNotificationAlertAssignmentAsync(assignment.Id, ctk);
-            ClassicAssert.IsNull(await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(assignment.Id, ctk));
+            ClassicAssert.IsNull(await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(assignment.Id, ctk: ctk));
 
             await marketDataService.DeleteQualityNotificationAlertAsync(alert.Id, ctk);
 
