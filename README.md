@@ -707,7 +707,7 @@ var versionedCompletenessRule = new DataQualityRuleDto.Input
 var createdVersionedRule = await marketDataService.RegisterDataQualityRuleAsync(versionedCompletenessRule);
 ```
 
-Completeness and Freshness rules are also supported for Market Assessment and BidAsk. Each configuration requires the products to check and the fields to validate, selected from `MasDataQualityField` or `BidAskDataQualityField` respectively.
+Completeness and Freshness rules are also supported for Market Assessment and BidAsk. Each configuration requires the products to check (relative or special, for example `D+1`) and the fields to validate, selected from `MasDataQualityField` or `BidAskDataQualityField` respectively.
 
 ```csharp
 var scheduleConfig = new ScheduleConfigDto
@@ -777,7 +777,7 @@ var outlierRule = new DataQualityRuleDto.Input
 var createdOutlierRule = await marketDataService.RegisterDataQualityRuleAsync(outlierRule);
 ```
 
-Absolute-bound Outlier rules are also supported for Market Assessment and BidAsk. Select the checked fields and optional products with `MasOutlierConfigDto` or `BidAskOutlierConfigDto`, then register them through the same `RegisterDataQualityRuleAsync` API.
+Absolute-bound Outlier rules are also supported for Market Assessment and BidAsk. Select the checked fields and optional products (for example `D+1`) with `MasOutlierConfigDto` or `BidAskOutlierConfigDto`, then register them through the same `RegisterDataQualityRuleAsync` API. The products in rule configurations are rule-level selectors, whereas the products used to filter check result extracts must be absolute or special.
 
 ```csharp
 var masOutlierRule = new DataQualityRuleDto.Input
@@ -1189,7 +1189,7 @@ foreach (var result in versionedCheckResults)
 
 #### Extract Check Results for Market Assessment and BidAsk
 
-Market Assessment and BidAsk extracts return `CheckResultExtract.Mas` and `CheckResultExtract.BidAsk` records, including the materialized product name. Both APIs accept assignment IDs and optional product filters.
+Market Assessment and BidAsk extracts return `CheckResultExtract.Mas` and `CheckResultExtract.BidAsk` records, including the materialized product name. Both APIs accept assignment IDs and optional product filters. Product filters must be absolute or special products (for example `Jan-27`), without duplicates; relative products such as `M+1` are rejected by the API. Relative products are only valid in rule configurations.
 
 ```csharp
 var masCheckResults = await marketDataService.GetDataQualityCheckResultExtractMasAsync(
@@ -1198,7 +1198,7 @@ var masCheckResults = await marketDataService.GetDataQualityCheckResultExtractMa
     end: new LocalDate(2024, 2, 1),
     timeZone: "Europe/Rome",
     assignmentIds: new[] { 456 },
-    products: new[] { "M+1", "GY+1" },
+    products: new[] { "Jan-27", "Feb-27" },
     includeMarketData: true
 );
 
@@ -1208,7 +1208,7 @@ var bidAskCheckResults = await marketDataService.GetDataQualityCheckResultExtrac
     end: new LocalDate(2024, 1, 2),
     timeZone: "Europe/Rome",
     assignmentIds: new[] { 789 },
-    products: new[] { "M+1" }
+    products: new[] { "Jan-27" }
 );
 
 foreach (var result in masCheckResults)

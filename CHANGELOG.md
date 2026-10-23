@@ -12,3 +12,4 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Limit Data Quality ACL candidate and page sizes to 100 to match the API.
+- Require both `LowerBound` and `UpperBound` on `OutlierAbsoluteBoundConfigDto`.

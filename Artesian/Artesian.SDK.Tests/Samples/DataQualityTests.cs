@@ -669,7 +669,6 @@ namespace Artesian.SDK.Tests.Samples
                 today.PlusDays(1),
                 "UTC",
                 new[] { assignmentCreated.Id },
-                new[] { product },
                 includeMarketData: true,
                 ctk: ctk);
 
@@ -776,7 +775,6 @@ namespace Artesian.SDK.Tests.Samples
                 today.PlusDays(1),
                 "UTC",
                 new[] { assignmentCreated.Id },
-                new[] { product },
                 includeMarketData: true,
                 ctk: ctk);
 
