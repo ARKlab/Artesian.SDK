@@ -66,7 +66,7 @@ namespace Artesian.SDK.Service
             CancellationToken ctk = default)
         {
             if (page < 1)
-                throw new ArgumentException("Page must be greater than 0. Page:" + page, nameof(page));
+                throw new ArgumentOutOfRangeException(nameof(page), page, "Page must be greater than 0.");
             if (pageSize < 1 || pageSize > _maxDataQualityAclCandidates)
                 throw new ArgumentOutOfRangeException(nameof(pageSize), pageSize, $"PageSize must be between 1 and {_maxDataQualityAclCandidates}.");
 

@@ -13,3 +13,5 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Limit Data Quality ACL candidate and page sizes to 100 to match the API.
 - Require both `LowerBound` and `UpperBound` on `OutlierAbsoluteBoundConfigDto`.
+- Default `MarketDataType` to the matching type on MAS and BidAsk outlier and completeness configurations.
+- Throw `ArgumentOutOfRangeException` consistently for invalid `page` and `pageSize` in Data Quality ACL-protected reads.

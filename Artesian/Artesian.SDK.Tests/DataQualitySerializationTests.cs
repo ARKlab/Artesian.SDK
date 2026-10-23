@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Artesian.SDK.Dto;
@@ -187,6 +188,24 @@ namespace Artesian.SDK.Tests
             Assert.That(((OutlierConfigDto)configs[1]).MarketDataType, Is.EqualTo(MarketDataType.BidAsk));
             Assert.That(((CompletenessAndFreshnessConfigDto)configs[2]).MarketDataType, Is.EqualTo(MarketDataType.MarketAssessment));
             Assert.That(((CompletenessAndFreshnessConfigDto)configs[3]).MarketDataType, Is.EqualTo(MarketDataType.BidAsk));
+        }
+
+        [Test]
+        public void OutlierAbsoluteBound_MissingBound_STJ_ThrowsException()
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize<OutlierModelConfigDto>(
+                new OutlierAbsoluteBoundConfigDto { LowerBound = 0.0, UpperBound = 100.0 },
+                _stjOptions);
+
+            foreach (var bound in new[] { nameof(OutlierAbsoluteBoundConfigDto.LowerBound), nameof(OutlierAbsoluteBoundConfigDto.UpperBound) })
+            {
+                var node = System.Text.Json.Nodes.JsonNode.Parse(json)!.AsObject();
+                var key = node.Select(p => p.Key).Single(k => string.Equals(k, bound, StringComparison.OrdinalIgnoreCase));
+                node.Remove(key);
+
+                Assert.Throws<System.Text.Json.JsonException>(() =>
+                    System.Text.Json.JsonSerializer.Deserialize<OutlierModelConfigDto>(node.ToJsonString(), _stjOptions));
+            }
         }
 
         [Test]

@@ -2735,6 +2735,12 @@ namespace Artesian.SDK.Tests
                 await mds.ReadAlertScheduleLastEventsAsync(1, pageSize: 101).ConfigureAwait(false));
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.ReadQualityNotificationAlertAssignmentsAsync(page: 1, pageSize: 101).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.GetDataQualityCheckResultCheckSummaryAsync(page: 0, pageSize: 10).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.ReadDataQualityRuleAssignmentsAsync(page: 0, pageSize: 10).ConfigureAwait(false));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await mds.ReadQualityNotificationAlertAssignmentsAsync(page: 0, pageSize: 10).ConfigureAwait(false));
         }
 
         #endregion
