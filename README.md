@@ -612,6 +612,8 @@ Latest Value
 Artesian supports Data Quality Rules to validate market data for completeness, freshness, and outlier detection. 
 Rules are reusable configurations that can be assigned to one or more Market Data entities through rule assignments.
 
+Data Quality endpoints are protected by the configured authorization roles. Endpoints that return Market Data details accept `includeMarketData` (default `false`) to opt in to those fields; the API still returns them only when the caller has read access to the corresponding Market Data.
+
 ### Data Quality Rule Types
 
 Two types of rules are supported:
@@ -705,6 +707,56 @@ var versionedCompletenessRule = new DataQualityRuleDto.Input
 var createdVersionedRule = await marketDataService.RegisterDataQualityRuleAsync(versionedCompletenessRule);
 ```
 
+Completeness and Freshness rules are also supported for Market Assessment and BidAsk. Each configuration requires the products to check (relative or special, for example `D+1`) and the fields to validate, selected from `MasDataQualityField` or `BidAskDataQualityField` respectively.
+
+```csharp
+var scheduleConfig = new ScheduleConfigDto
+{
+    ScheduleDefinition = new CronScheduleDefinitionDto
+    {
+        CronExpression = "0 9 * * *",
+        TimeZone = "UTC"
+    },
+    MaxDelay = Period.FromHours(2)
+};
+var recordValidationConfig = new RecordValidationConfigDto
+{
+    RecordRangeFrom = Period.FromDays(-1),
+    RecordRangeTo = Period.Zero
+};
+
+var masRule = new DataQualityRuleDto.Input
+{
+    Name = "Daily MAS completeness",
+    Type = RuleType.CompletenessAndFreshness,
+    Configuration = new MasCompletenessAndFreshnessConfigDto
+    {
+        MarketDataType = MarketDataType.MarketAssessment,
+        Products = new[] { "D+1" },
+        FieldsToBeValidated = new[] { MasDataQualityField.Settlement },
+        ScheduleConfig = scheduleConfig,
+        RecordValidationConfig = recordValidationConfig
+    }
+};
+
+var bidAskRule = new DataQualityRuleDto.Input
+{
+    Name = "Daily BidAsk completeness",
+    Type = RuleType.CompletenessAndFreshness,
+    Configuration = new BidAskCompletenessAndFreshnessConfigDto
+    {
+        MarketDataType = MarketDataType.BidAsk,
+        Products = new[] { "D+1" },
+        FieldsToBeValidated = new[] { BidAskDataQualityField.BestBidPrice, BidAskDataQualityField.BestAskPrice },
+        ScheduleConfig = scheduleConfig,
+        RecordValidationConfig = recordValidationConfig
+    }
+};
+
+var createdMasRule = await marketDataService.RegisterDataQualityRuleAsync(masRule);
+var createdBidAskRule = await marketDataService.RegisterDataQualityRuleAsync(bidAskRule);
+```
+
 #### Outlier Detection Rule
 
 ```csharp
@@ -723,6 +775,47 @@ var outlierRule = new DataQualityRuleDto.Input
 };
 
 var createdOutlierRule = await marketDataService.RegisterDataQualityRuleAsync(outlierRule);
+```
+
+Absolute-bound Outlier rules are also supported for Market Assessment and BidAsk. Select the checked fields and optional products (for example `D+1`) with `MasOutlierConfigDto` or `BidAskOutlierConfigDto`, then register them through the same `RegisterDataQualityRuleAsync` API. The products in rule configurations are rule-level selectors, whereas the products used to filter check result extracts must be absolute or special.
+
+```csharp
+var masOutlierRule = new DataQualityRuleDto.Input
+{
+    Name = "MAS settlement bounds",
+    Type = RuleType.Outlier,
+    Configuration = new MasOutlierConfigDto
+    {
+        MarketDataType = MarketDataType.MarketAssessment,
+        Products = new[] { "D+1" },
+        FieldsToBeValidated = new[] { MasDataQualityField.Settlement },
+        Model = new OutlierAbsoluteBoundConfigDto
+        {
+            LowerBound = 0.0,
+            UpperBound = 100.0
+        }
+    }
+};
+
+var bidAskOutlierRule = new DataQualityRuleDto.Input
+{
+    Name = "BidAsk price bounds",
+    Type = RuleType.Outlier,
+    Configuration = new BidAskOutlierConfigDto
+    {
+        MarketDataType = MarketDataType.BidAsk,
+        Products = new[] { "D+1" },
+        FieldsToBeValidated = new[] { BidAskDataQualityField.BestBidPrice, BidAskDataQualityField.BestAskPrice },
+        Model = new OutlierAbsoluteBoundConfigDto
+        {
+            LowerBound = 0.0,
+            UpperBound = 100.0
+        }
+    }
+};
+
+var createdMasOutlierRule = await marketDataService.RegisterDataQualityRuleAsync(masOutlierRule);
+var createdBidAskOutlierRule = await marketDataService.RegisterDataQualityRuleAsync(bidAskOutlierRule);
 ```
 
 ### Read Data Quality Rules
@@ -810,6 +903,12 @@ Get a single assignment:
 var assignment = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(id: 456);
 Console.WriteLine($"MarketData: {assignment.MarketData?.MarketDataName}");
 Console.WriteLine($"Rule: {assignment.DataQualityRule?.Name}");
+
+// Request Market Data details; ACL permissions are still enforced by the API.
+var assignmentWithMarketData = await marketDataService.ReadDataQualityRuleAssignmentByIdAsync(
+    id: 456,
+    includeMarketData: true
+);
 ```
 
 Get all assignments with filters:
@@ -821,7 +920,8 @@ var assignments = await marketDataService.ReadDataQualityRuleAssignmentsAsync(
     marketDataId: 100000001,  // Filter by Market Data
     ruleId: 123,              // Filter by Rule
     ruleName: "weather",      // Filter by rule name (partial match)
-    sort: new[] { "Id desc" }
+    sort: new[] { "Id desc" },
+    includeMarketData: true
 );
 
 foreach (var a in assignments.Data)
@@ -859,7 +959,8 @@ using NodaTime;
 
 var events = await marketDataService.ReadDataQualityRuleAssignmentEventsFeedAsync(
     id: 456,
-    afterTimestamp: Instant.FromUtc(2024, 1, 15, 0, 0)
+    afterTimestamp: Instant.FromUtc(2024, 1, 15, 0, 0),
+    includeMarketData: true
 );
 
 Console.WriteLine($"Retrieved {events.Length} events");
@@ -943,6 +1044,8 @@ The `ETag` and `Version` returned by the API must be preserved when updating an 
 
 #### Read Alert Schedule Events
 
+Schedule event results are paginated. `Events` is a `PagedResult`; iterate its `Data` collection.
+
 ```csharp
 var scheduleTimes = await marketDataService.ReadAlertScheduleListAsync(
     alertId: 123,
@@ -953,16 +1056,24 @@ if (scheduleTimes.Length > 0)
 {
     var scheduleEvents = await marketDataService.ReadAlertScheduleEventsAsync(
         alertId: 123,
-        scheduleTime: scheduleTimes[0]
+        scheduleTime: scheduleTimes[0],
+        page: 1,
+        pageSize: 100,
+        includeMarketData: true
     );
 
-    foreach (var evt in scheduleEvents.Events)
+    foreach (var evt in scheduleEvents.Events.Data)
     {
         Console.WriteLine($"Event at {evt.Timestamp}: {evt.NewStatus}");
     }
 }
 
-var latestScheduleEvents = await marketDataService.ReadAlertScheduleLastEventsAsync(alertId: 123);
+var latestScheduleEvents = await marketDataService.ReadAlertScheduleLastEventsAsync(
+    alertId: 123,
+    page: 1,
+    pageSize: 100,
+    includeMarketData: true
+);
 ```
 
 ### Quality Notification Alert Assignments
@@ -987,14 +1098,18 @@ Console.WriteLine($"Assignment ID: {createdAssignment.Id}");
 Read a single assignment by ID or filter the paginated collection by alert and Market Data:
 
 ```csharp
-var assignment = await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(id: 456);
+var assignment = await marketDataService.ReadQualityNotificationAlertAssignmentByIdAsync(
+    id: 456,
+    includeMarketData: true
+);
 
 var assignments = await marketDataService.ReadQualityNotificationAlertAssignmentsAsync(
     page: 1,
     pageSize: 20,
     alertId: 123,
     marketDataId: 100000001,
-    sort: new[] { "AlertId asc" }
+    sort: new[] { "AlertId asc" },
+    includeMarketData: true
 );
 
 foreach (var item in assignments.Data)
@@ -1031,7 +1146,7 @@ if (rule.AggregatedStatus == CheckAggregatedStatus.KO)
 
 ### Data Quality Check Results
 
-Data Quality check result APIs provide compact extracts for time series, paginated check summaries, and aggregated status overviews. Use assignment IDs to restrict extracts to specific rule assignments.
+Data Quality check result APIs provide compact extracts for time series, paginated check summaries, and aggregated status overviews. Use assignment IDs to restrict extracts to specific rule assignments. The extract, check-summary, and Market Data status-summary APIs support `includeMarketData`, which defaults to `false`; when enabled, descriptive Market Data details are returned only when the caller can read that Market Data. ACL-protected candidate and page sizes are limited to 100.
 
 #### Extract Check Results for Actual Time Series
 
@@ -1072,6 +1187,41 @@ foreach (var result in versionedCheckResults)
 }
 ```
 
+#### Extract Check Results for Market Assessment and BidAsk
+
+Market Assessment and BidAsk extracts return `CheckResultExtract.Mas` and `CheckResultExtract.BidAsk` records, including the materialized product name. Both APIs accept assignment IDs and optional product filters. Product filters must be absolute or special products (for example `Jan-27`), without duplicates; relative products such as `M+1` are rejected by the API. Relative products are only valid in rule configurations.
+
+```csharp
+var masCheckResults = await marketDataService.GetDataQualityCheckResultExtractMasAsync(
+    granularity: Granularity.Day,
+    start: new LocalDate(2024, 1, 1),
+    end: new LocalDate(2024, 2, 1),
+    timeZone: "Europe/Rome",
+    assignmentIds: new[] { 456 },
+    products: new[] { "Jan-27", "Feb-27" },
+    includeMarketData: true
+);
+
+var bidAskCheckResults = await marketDataService.GetDataQualityCheckResultExtractBidAskAsync(
+    granularity: Granularity.Hour,
+    start: new LocalDate(2024, 1, 1),
+    end: new LocalDate(2024, 1, 2),
+    timeZone: "Europe/Rome",
+    assignmentIds: new[] { 789 },
+    products: new[] { "Jan-27" }
+);
+
+foreach (var result in masCheckResults)
+{
+    Console.WriteLine($"{result.Product} - {result.Time}: {result.IssueCount} issues");
+}
+
+foreach (var result in bidAskCheckResults)
+{
+    Console.WriteLine($"{result.Product} - {result.Time}: {result.IssueCount} issues");
+}
+```
+
 #### Read Paginated Check Summaries
 
 Use the check summary API for a CurveRange-like view per assignment. Results can be filtered by Market Data, rule, assignment, status, checked range, version range, and product.
@@ -1088,7 +1238,8 @@ var checkSummaries = await marketDataService.GetDataQualityCheckResultCheckSumma
     to: Instant.FromUtc(2024, 2, 1, 0, 0),
     products: new[] { "Base" },
     skipEmptyRanges: true,
-    sort: new[] { "LastCheckTime desc" }
+    sort: new[] { "LastCheckTime desc" },
+    includeMarketData: true
 );
 
 foreach (var summary in checkSummaries.Data)
@@ -1106,7 +1257,8 @@ var marketDataStatuses = await marketDataService.GetMarketDataDqStatusSummaryAsy
     ruleId: 123,
     marketDataIds: new[] { 100000001, 100000002 },
     dqStatus: CheckAggregatedStatus.KO,
-    limit: 100
+    limit: 100,
+    includeMarketData: true
 );
 
 foreach (var item in marketDataStatuses)

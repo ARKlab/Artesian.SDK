@@ -8,7 +8,9 @@ namespace Artesian.SDK.Dto.DataQuality.Serialize
     /// System.Text.Json polymorphic converter for <see cref="CompletenessAndFreshnessConfigDto"/>.
     /// Discriminates by the <see cref="MarketDataType"/> property to resolve the concrete subtype:
     /// <see cref="ActualCompletenessAndFreshnessConfigDto"/> for actual time series,
-    /// <see cref="VersionedCompletenessAndFreshnessConfigDto"/> for versioned time series.
+    /// <see cref="VersionedCompletenessAndFreshnessConfigDto"/> for versioned time series,
+    /// <see cref="MasCompletenessAndFreshnessConfigDto"/> for Market Assessment, and
+    /// <see cref="BidAskCompletenessAndFreshnessConfigDto"/> for BidAsk.
     /// </summary>
     sealed class CompletenessAndFreshnessConfigConverterSTJ : JsonPolymorphicConverter<CompletenessAndFreshnessConfigDto, MarketDataType>
     {
@@ -31,6 +33,8 @@ namespace Artesian.SDK.Dto.DataQuality.Serialize
             {
                 MarketDataType.ActualTimeSerie => typeof(ActualCompletenessAndFreshnessConfigDto),
                 MarketDataType.VersionedTimeSerie => typeof(VersionedCompletenessAndFreshnessConfigDto),
+                MarketDataType.MarketAssessment => typeof(MasCompletenessAndFreshnessConfigDto),
+                MarketDataType.BidAsk => typeof(BidAskCompletenessAndFreshnessConfigDto),
                 _ => throw new InvalidOperationException($"Can't deserialize CompletenessAndFreshnessConfigDto. MarketDataType '{discriminatorValue}' is not valid.")
             };
         }

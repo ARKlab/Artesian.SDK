@@ -15,13 +15,13 @@ namespace Artesian.SDK.Dto.DataQuality
         /// The maximum acceptable value. Data points with values above this threshold are flagged as outliers.
         /// </summary>
         [Key("UpperBound")]
-        public double UpperBound { get; set; }
+        public required double UpperBound { get; set; }
 
         /// <summary>
         /// The minimum acceptable value. Data points with values below this threshold are flagged as outliers.
         /// </summary>
         [Key("LowerBound")]
-        public double LowerBound { get; set; }
+        public required double LowerBound { get; set; }
 
         /// <inheritdoc />
         [IgnoreMember]

@@ -20,7 +20,7 @@ namespace Artesian.SDK.Dto.DataQuality
 
             /// <summary>The DQ check change events for this schedule occurrence.</summary>
             [Key(1)]
-            public DqCheckChangeEventDto.Output[] Events { get; set; } = System.Array.Empty<DqCheckChangeEventDto.Output>();
+            public PagedResult<DqCheckChangeEventDto.Output> Events { get; set; } = new();
         }
 
     }

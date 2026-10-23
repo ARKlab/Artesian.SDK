@@ -13,6 +13,12 @@ namespace Artesian.SDK.Dto.DataQuality
     public class OutlierConfigDto : DataQualityRuleConfigDto
     {
         /// <summary>
+        /// The type of Market Data to which the rule applies. Defaults to actual time series for legacy rules.
+        /// </summary>
+        [Key("MarketDataType")]
+        public MarketDataType MarketDataType { get; set; } = MarketDataType.ActualTimeSerie;
+
+        /// <summary>
         /// The outlier detection model configuration. The concrete subtype determines the statistical approach used
         /// (e.g., absolute bounds, moving average, reference curve, AI-based).
         /// </summary>

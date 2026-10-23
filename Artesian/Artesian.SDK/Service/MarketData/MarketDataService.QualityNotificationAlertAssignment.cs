@@ -35,11 +35,13 @@ namespace Artesian.SDK.Service
         /// Retrieves an alert rule / Market Data assignment by its unique identifier.
         /// </summary>
         /// <param name="id">The unique identifier of the assignment.</param>
+        /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>The <see cref="QualityNotificationAlertAssignmentDto.Output"/> if found; otherwise 404 Not Found.</returns>
-        public Task<QualityNotificationAlertAssignmentDto.Output> ReadQualityNotificationAlertAssignmentByIdAsync(int id, CancellationToken ctk = default)
+        public Task<QualityNotificationAlertAssignmentDto.Output> ReadQualityNotificationAlertAssignmentByIdAsync(int id, bool includeMarketData = false, CancellationToken ctk = default)
         {
-            var url = "/dataquality/alertruleassignment".AppendPathSegment(id);
+            var url = "/dataquality/alertruleassignment".AppendPathSegment(id)
+                .SetQueryParam("includeMarketData", includeMarketData);
             return _client.Exec<QualityNotificationAlertAssignmentDto.Output>(HttpMethod.Get, url, ctk: ctk);
         }
 
@@ -50,7 +52,8 @@ namespace Artesian.SDK.Service
         /// <param name="marketDataId">Optional filter: returns assignments for the specified Market Data.</param>
         /// <param name="sort">Optional sort expressions (e.g., "Id asc", "AlertId desc").</param>
         /// <param name="page">The page number (1-based, default: 1).</param>
-        /// <param name="pageSize">The number of items per page (default: 10).</param>
+        /// <param name="pageSize">The number of items per page (1-100, default: 10).</param>
+        /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>A paginated result containing <see cref="QualityNotificationAlertAssignmentDto.Output"/> items.</returns>
         public Task<PagedResult<QualityNotificationAlertAssignmentDto.Output>> ReadQualityNotificationAlertAssignmentsAsync(
@@ -59,18 +62,20 @@ namespace Artesian.SDK.Service
             int? alertId = null,
             int? marketDataId = null,
             string[]? sort = null,
+            bool includeMarketData = false,
             CancellationToken ctk = default)
         {
             if (page < 1)
-                throw new ArgumentException("Page must be greater than 0. Page:" + page, nameof(page));
-            if (pageSize < 1)
-                throw new ArgumentException("PageSize must be greater than 0. PageSize:" + pageSize, nameof(pageSize));
+                throw new ArgumentOutOfRangeException(nameof(page), page, "Page must be greater than 0.");
+            if (pageSize < 1 || pageSize > _maxDataQualityAclCandidates)
+                throw new ArgumentOutOfRangeException(nameof(pageSize), pageSize, $"PageSize must be between 1 and {_maxDataQualityAclCandidates}.");
 
             var url = "/dataquality/alertruleassignment"
                 .SetQueryParam("alertId", alertId)
                 .SetQueryParam("marketDataId", marketDataId)
                 .SetQueryParam("page", page)
-                .SetQueryParam("pageSize", pageSize);
+                .SetQueryParam("pageSize", pageSize)
+                .SetQueryParam("includeMarketData", includeMarketData);
 
             if (sort is { Length: > 0 })
                 url = url.SetQueryParam("sort", sort);
