@@ -35,8 +35,8 @@ namespace Artesian.SDK.Service
         /// Retrieves an alert rule / Market Data assignment by its unique identifier.
         /// </summary>
         /// <param name="id">The unique identifier of the assignment.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>The <see cref="QualityNotificationAlertAssignmentDto.Output"/> if found; otherwise 404 Not Found.</returns>
         public Task<QualityNotificationAlertAssignmentDto.Output> ReadQualityNotificationAlertAssignmentByIdAsync(int id, bool includeMarketData = false, CancellationToken ctk = default)
         {
@@ -53,8 +53,8 @@ namespace Artesian.SDK.Service
         /// <param name="sort">Optional sort expressions (e.g., "Id asc", "AlertId desc").</param>
         /// <param name="page">The page number (1-based, default: 1).</param>
         /// <param name="pageSize">The number of items per page (1-100, default: 10).</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>A paginated result containing <see cref="QualityNotificationAlertAssignmentDto.Output"/> items.</returns>
         public Task<PagedResult<QualityNotificationAlertAssignmentDto.Output>> ReadQualityNotificationAlertAssignmentsAsync(
             int page,

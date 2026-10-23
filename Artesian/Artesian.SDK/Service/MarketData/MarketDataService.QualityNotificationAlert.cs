@@ -122,10 +122,10 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="alertId">The alert identifier.</param>
         /// <param name="scheduleTime">The schedule occurrence timestamp.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="page">The one-based event page (default: 1).</param>
         /// <param name="pageSize">The number of events per page (1-100, default: 100).</param>
         /// <param name="includeMarketData">When true, includes provider and curve names for Market Data the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>The schedule occurrence and a paginated collection of events.</returns>
         public Task<AlertScheduleEventsDto.Output> ReadAlertScheduleEventsAsync(int alertId, Instant scheduleTime, int page = 1, int pageSize = 100, bool includeMarketData = false, CancellationToken ctk = default)
         {
@@ -168,13 +168,13 @@ namespace Artesian.SDK.Service
 
         /// <summary>
         /// Retrieves the materialized events from the latest schedule occurrence for an alert.
-        /// Returns an empty array if no schedule has been materialized yet.
+        /// Returns an empty event page if no schedule has been materialized yet.
         /// </summary>
         /// <param name="alertId">The alert identifier.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="page">The one-based event page (default: 1).</param>
         /// <param name="pageSize">The number of events per page (1-100, default: 100).</param>
         /// <param name="includeMarketData">When true, includes provider and curve names for Market Data the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>The latest schedule occurrence and a paginated collection of events.</returns>
         public Task<AlertScheduleEventsDto.Output> ReadAlertScheduleLastEventsAsync(int alertId, int page = 1, int pageSize = 100, bool includeMarketData = false, CancellationToken ctk = default)
         {

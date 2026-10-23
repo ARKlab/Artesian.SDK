@@ -40,8 +40,8 @@ namespace Artesian.SDK.Service
         /// Retrieves a DQ rule assignment by its unique identifier, including enriched MarketData and Rule data.
         /// </summary>
         /// <param name="id">The unique identifier of the assignment.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>The <see cref="MarketDataQualityRuleAssignmentDto.Output"/> if found; otherwise 404 Not Found.</returns>
         public Task<MarketDataQualityRuleAssignmentDto.Output> ReadDataQualityRuleAssignmentByIdAsync(int id, bool includeMarketData = false, CancellationToken ctk = default)
         {
@@ -60,8 +60,8 @@ namespace Artesian.SDK.Service
         /// <param name="sort">Optional sort expressions (e.g., "Id asc", "RuleName desc").</param>
         /// <param name="page">The page number (1-based, default: 1).</param>
         /// <param name="pageSize">The number of items per page (1-100, default: 10).</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>A paginated result containing <see cref="MarketDataQualityRuleAssignmentDto.Output"/> items.</returns>
         public Task<PagedResult<MarketDataQualityRuleAssignmentDto.Output>> ReadDataQualityRuleAssignmentsAsync(int page,
                                                                                                                  int pageSize,
@@ -82,9 +82,8 @@ namespace Artesian.SDK.Service
                     .SetQueryParam("pageSize", pageSize)
                     .SetQueryParam("marketDataId", marketDataId)
                     .SetQueryParam("ruleId", ruleId)
-                    .SetQueryParam("ruleName", ruleName);
-
-                    url = url.SetQueryParam("includeMarketData", includeMarketData);
+                    .SetQueryParam("ruleName", ruleName)
+                    .SetQueryParam("includeMarketData", includeMarketData);
 
             if (sort is { Length: > 0 })
                 url = url.SetQueryParam("sort", sort);
@@ -130,8 +129,8 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="id">The rule assignment identifier.</param>
         /// <param name="afterTimestamp">Optional lower bound in UTC date-time format (for example, 2016-01-21T15:01:01.999999999Z). It cannot be earlier than 8 days ago.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes provider and curve names for Market Data the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>An array of <see cref="DqCheckChangeEventDto.Output"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="afterTimestamp"/> is earlier than 8 days ago.</exception>
         public Task<DqCheckChangeEventDto.Output[]> ReadDataQualityRuleAssignmentEventsFeedAsync(int id, Instant? afterTimestamp = null, bool includeMarketData = false, CancellationToken ctk = default)

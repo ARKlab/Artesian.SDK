@@ -161,8 +161,8 @@ namespace Artesian.SDK.Service
         /// Retrieves a DQ rule assignment by its unique identifier, including enriched MarketData and Rule data.
         /// </summary>
         /// <param name="id">The unique identifier of the assignment.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>The <see cref="MarketDataQualityRuleAssignmentDto.Output"/> if found; otherwise 404 Not Found.</returns>
         Task<MarketDataQualityRuleAssignmentDto.Output> ReadDataQualityRuleAssignmentByIdAsync(int id, bool includeMarketData = false, CancellationToken ctk = default);
         /// <summary>
@@ -174,8 +174,8 @@ namespace Artesian.SDK.Service
         /// <param name="sort">Optional sort expressions (e.g., "Id asc", "RuleName desc").</param>
         /// <param name="page">The page number (1-based, default: 1).</param>
         /// <param name="pageSize">The number of items per page (1-100, default: 10).</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>A paginated result containing MarketDataQualityRuleAssignmentDto.Output items.</returns>
         Task<PagedResult<MarketDataQualityRuleAssignmentDto.Output>> ReadDataQualityRuleAssignmentsAsync(int page, int pageSize, int? marketDataId = null, int? ruleId = null, string? ruleName = null, string[]? sort = null, bool includeMarketData = false, CancellationToken ctk = default);
         /// <summary>
@@ -201,8 +201,8 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="id">The rule assignment identifier.</param>
         /// <param name="afterTimestamp">Optional lower bound in UTC date-time format (for example, 2016-01-21T15:01:01.999999999Z). It cannot be earlier than 8 days ago.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes provider and curve names for Market Data the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>An array of <see cref="DqCheckChangeEventDto.Output"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="afterTimestamp"/> is earlier than 8 days ago.</exception>
         Task<DqCheckChangeEventDto.Output[]> ReadDataQualityRuleAssignmentEventsFeedAsync(int id, Instant? afterTimestamp = null, bool includeMarketData = false, CancellationToken ctk = default);
@@ -257,10 +257,10 @@ namespace Artesian.SDK.Service
         /// </summary>
         /// <param name="alertId">The alert identifier.</param>
         /// <param name="scheduleTime">The schedule occurrence timestamp.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="page">The one-based event page (default: 1).</param>
         /// <param name="pageSize">The number of events per page (1-100, default: 100).</param>
         /// <param name="includeMarketData">When true, includes provider and curve names for Market Data the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>The schedule occurrence and a paginated collection of events.</returns>
         Task<AlertScheduleEventsDto.Output> ReadAlertScheduleEventsAsync(int alertId, Instant scheduleTime, int page = 1, int pageSize = 100, bool includeMarketData = false, CancellationToken ctk = default);
         /// <summary>
@@ -273,13 +273,13 @@ namespace Artesian.SDK.Service
         Task<Instant[]> ReadAlertScheduleListAsync(int alertId, int lastN = 10, CancellationToken ctk = default);
         /// <summary>
         /// Retrieves the materialized events from the latest schedule occurrence for an alert.
-        /// Returns an empty array if no schedule has been materialized yet.
+        /// Returns an empty event page if no schedule has been materialized yet.
         /// </summary>
         /// <param name="alertId">The alert identifier.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="page">The one-based event page (default: 1).</param>
         /// <param name="pageSize">The number of events per page (1-100, default: 100).</param>
         /// <param name="includeMarketData">When true, includes provider and curve names for Market Data the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>The latest schedule occurrence and a paginated collection of events.</returns>
         Task<AlertScheduleEventsDto.Output> ReadAlertScheduleLastEventsAsync(int alertId, int page = 1, int pageSize = 100, bool includeMarketData = false, CancellationToken ctk = default);
 
@@ -295,8 +295,8 @@ namespace Artesian.SDK.Service
         /// Retrieves a quality notification alert assignment by identifier.
         /// </summary>
         /// <param name="id">The assignment identifier.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>The assignment, or <see langword="null"/> when it does not exist.</returns>
         Task<QualityNotificationAlertAssignmentDto.Output> ReadQualityNotificationAlertAssignmentByIdAsync(int id, bool includeMarketData = false, CancellationToken ctk = default);
 
@@ -308,8 +308,8 @@ namespace Artesian.SDK.Service
         /// <param name="alertId">Optional quality notification alert filter.</param>
         /// <param name="marketDataId">Optional Market Data filter.</param>
         /// <param name="sort">Optional sort expressions.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>A paginated collection of assignments.</returns>
         Task<PagedResult<QualityNotificationAlertAssignmentDto.Output>> ReadQualityNotificationAlertAssignmentsAsync(int page, int pageSize, int? alertId = null, int? marketDataId = null, string[]? sort = null, bool includeMarketData = false, CancellationToken ctk = default);
 
@@ -330,8 +330,8 @@ namespace Artesian.SDK.Service
         /// <param name="end">Range end (format yyyy-MM-dd, not inclusive).</param>
         /// <param name="timeZone">IANA timezone identifier.</param>
         /// <param name="assignmentIds">Filter by assignment IDs.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes provider and curve names when accessible.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>An enumerable of <see cref="CheckResultExtract.Vts"/> with Version populated.</returns>
         Task<IEnumerable<CheckResultExtract.Vts>> GetDataQualityCheckResultExtractVtsAsync(LocalDateTime version, Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, bool includeMarketData = false, CancellationToken ctk = default);
 
@@ -344,8 +344,8 @@ namespace Artesian.SDK.Service
         /// <param name="end">Range end (format yyyy-MM-dd, not inclusive).</param>
         /// <param name="timeZone">IANA timezone identifier.</param>
         /// <param name="assignmentIds">Filter by assignment IDs.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes provider and curve names when accessible.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>An enumerable of <see cref="CheckResultExtract.Ts"/>.</returns>
         Task<IEnumerable<CheckResultExtract.Ts>> GetDataQualityCheckResultExtractTsAsync(Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, bool includeMarketData = false, CancellationToken ctk = default);
 
@@ -357,9 +357,9 @@ namespace Artesian.SDK.Service
         /// <param name="end">Range end, not inclusive.</param>
         /// <param name="timeZone">IANA timezone identifier.</param>
         /// <param name="assignmentIds">Optional assignment ID filter.</param>
-        /// <param name="products">Optional Market Assessment product filter.</param>
-        /// <param name="ctk">Cancellation token.</param>
+        /// <param name="products">Optional Market Assessment product filter. Only absolute or special products, without duplicates, are accepted.</param>
         /// <param name="includeMarketData">When true, includes provider and curve names when accessible.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>An enumerable of <see cref="CheckResultExtract.Mas"/>.</returns>
         Task<IEnumerable<CheckResultExtract.Mas>> GetDataQualityCheckResultExtractMasAsync(Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, string[]? products = null, bool includeMarketData = false, CancellationToken ctk = default);
 
@@ -371,9 +371,9 @@ namespace Artesian.SDK.Service
         /// <param name="end">Range end, not inclusive.</param>
         /// <param name="timeZone">IANA timezone identifier.</param>
         /// <param name="assignmentIds">Optional assignment ID filter.</param>
-        /// <param name="products">Optional BidAsk product filter.</param>
-        /// <param name="ctk">Cancellation token.</param>
+        /// <param name="products">Optional BidAsk product filter. Only absolute or special products, without duplicates, are accepted.</param>
         /// <param name="includeMarketData">When true, includes provider and curve names when accessible.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>An enumerable of <see cref="CheckResultExtract.BidAsk"/>.</returns>
         Task<IEnumerable<CheckResultExtract.BidAsk>> GetDataQualityCheckResultExtractBidAskAsync(Granularity granularity, LocalDate start, LocalDate end, string timeZone, int[]? assignmentIds = null, string[]? products = null, bool includeMarketData = false, CancellationToken ctk = default);
 
@@ -394,8 +394,8 @@ namespace Artesian.SDK.Service
         /// <param name="products">Optional filter by products.</param>
         /// <param name="skipEmptyRanges">When true, return only summaries with non-empty range data (default: false).</param>
         /// <param name="sort">Optional sort expressions.</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>A paginated result containing <see cref="CheckResultCheckSummaryDto"/> items.</returns>
         Task<PagedResult<CheckResultCheckSummaryDto>> GetDataQualityCheckResultCheckSummaryAsync(int page, int pageSize, int[]? marketDataIds = null, int[]? ruleIds = null, int[]? assignmentIds = null, CheckAggregatedStatus? dqStatus = null, Instant? from = null, Instant? to = null, LocalDateTime? versionFrom = null, LocalDateTime? versionTo = null, string[]? products = null, bool skipEmptyRanges = false, string[]? sort = null, bool includeMarketData = false, CancellationToken ctk = default);
 
@@ -407,8 +407,8 @@ namespace Artesian.SDK.Service
         /// <param name="marketDataIds">Optional filter by MarketData IDs.</param>
         /// <param name="dqStatus">Optional aggregated DQ status filter (OK/KO). When KO, returns only Market Data whose overall status is KO.</param>
         /// <param name="limit">Maximum number of results to return (1..100, default: 10).</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>An enumerable of <see cref="MarketDataDqStatusSummaryDto"/> items.</returns>
         Task<IEnumerable<MarketDataDqStatusSummaryDto>> GetMarketDataDqStatusSummaryAsync(int? ruleId = null, int[]? marketDataIds = null, CheckAggregatedStatus? dqStatus = null, int limit = 10, bool includeMarketData = false, CancellationToken ctk = default);
 

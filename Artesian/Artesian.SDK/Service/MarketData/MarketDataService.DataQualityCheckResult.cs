@@ -104,7 +104,7 @@ namespace Artesian.SDK.Service
         /// <param name="end">Range end, not inclusive.</param>
         /// <param name="timeZone">IANA timezone identifier.</param>
         /// <param name="assignmentIds">Optional assignment ID filter.</param>
-        /// <param name="products">Optional Market Assessment product filter.</param>
+        /// <param name="products">Optional Market Assessment product filter. Only absolute or special products, without duplicates, are accepted.</param>
         /// <param name="includeMarketData">When true, includes provider and curve names when accessible.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>An enumerable of <see cref="CheckResultExtract.Mas"/>.</returns>
@@ -146,7 +146,7 @@ namespace Artesian.SDK.Service
         /// <param name="end">Range end, not inclusive.</param>
         /// <param name="timeZone">IANA timezone identifier.</param>
         /// <param name="assignmentIds">Optional assignment ID filter.</param>
-        /// <param name="products">Optional BidAsk product filter.</param>
+        /// <param name="products">Optional BidAsk product filter. Only absolute or special products, without duplicates, are accepted.</param>
         /// <param name="includeMarketData">When true, includes provider and curve names when accessible.</param>
         /// <param name="ctk">Cancellation token.</param>
         /// <returns>An enumerable of <see cref="CheckResultExtract.BidAsk"/>.</returns>
@@ -197,8 +197,8 @@ namespace Artesian.SDK.Service
         /// <param name="sort">Optional sort expressions.</param>
         /// <param name="page">Page number (1-based, default: 1).</param>
         /// <param name="pageSize">Items per page (1-100, default: 10).</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>A paginated result containing <see cref="CheckResultCheckSummaryDto"/> items.</returns>
         public Task<PagedResult<CheckResultCheckSummaryDto>> GetDataQualityCheckResultCheckSummaryAsync(
             int page,
@@ -269,8 +269,8 @@ namespace Artesian.SDK.Service
         /// <param name="marketDataIds">Optional filter by MarketData IDs.</param>
         /// <param name="dqStatus">Optional aggregated DQ status filter (OK/KO). When KO, returns only Market Data whose overall status is KO.</param>
         /// <param name="limit">Maximum number of results to return (1..100, default: 10).</param>
-        /// <param name="ctk">Cancellation token.</param>
         /// <param name="includeMarketData">When true, includes Market Data details the caller can read.</param>
+        /// <param name="ctk">Cancellation token.</param>
         /// <returns>An array of <see cref="MarketDataDqStatusSummaryDto"/> items.</returns>
         public Task<IEnumerable<MarketDataDqStatusSummaryDto>> GetMarketDataDqStatusSummaryAsync(
             int? ruleId = null,
