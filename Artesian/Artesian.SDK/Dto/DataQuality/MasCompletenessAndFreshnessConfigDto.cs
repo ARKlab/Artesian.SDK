@@ -11,6 +11,14 @@ namespace Artesian.SDK.Dto.DataQuality
     public class MasCompletenessAndFreshnessConfigDto : CompletenessAndFreshnessConfigDto
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="MasCompletenessAndFreshnessConfigDto"/> class with <see cref="MarketDataType.MarketAssessment"/>.
+        /// </summary>
+        public MasCompletenessAndFreshnessConfigDto()
+        {
+            MarketDataType = MarketDataType.MarketAssessment;
+        }
+
+        /// <summary>
         /// The relative or special products expected at each report time.
         /// </summary>
         [Key("Products")]

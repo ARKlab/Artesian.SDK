@@ -153,6 +153,43 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
+        public void DataQualityRuleConfig_MasAndBidAskConfigs_DefaultMarketDataType_STJ_RoundTrip()
+        {
+            var scheduleConfig = new ScheduleConfigDto
+            {
+                ScheduleDefinition = new CronScheduleDefinitionDto { CronExpression = "0 9 * * *", TimeZone = "UTC" },
+                MaxDelay = Period.FromHours(2)
+            };
+            var recordValidationConfig = new RecordValidationConfigDto
+            {
+                RecordRangeFrom = Period.FromDays(-1),
+                RecordRangeTo = Period.FromDays(0)
+            };
+            var model = new OutlierAbsoluteBoundConfigDto { LowerBound = 0.0, UpperBound = 100.0 };
+
+            DataQualityRuleConfigDto[] configs =
+            {
+                new MasOutlierConfigDto { Products = new[] { "D+1" }, FieldsToBeValidated = new[] { MasDataQualityField.Settlement }, Model = model },
+                new BidAskOutlierConfigDto { Products = new[] { "D+1" }, FieldsToBeValidated = new[] { BidAskDataQualityField.BestBidPrice }, Model = model },
+                new MasCompletenessAndFreshnessConfigDto { Products = new[] { "D+1" }, FieldsToBeValidated = new[] { MasDataQualityField.Settlement }, ScheduleConfig = scheduleConfig, RecordValidationConfig = recordValidationConfig },
+                new BidAskCompletenessAndFreshnessConfigDto { Products = new[] { "D+1" }, FieldsToBeValidated = new[] { BidAskDataQualityField.BestBidPrice }, ScheduleConfig = scheduleConfig, RecordValidationConfig = recordValidationConfig }
+            };
+
+            foreach (var config in configs)
+            {
+                var json = System.Text.Json.JsonSerializer.Serialize(config, _stjOptions);
+                var deserialized = System.Text.Json.JsonSerializer.Deserialize<DataQualityRuleConfigDto>(json, _stjOptions);
+
+                Assert.That(deserialized, Is.InstanceOf(config.GetType()));
+            }
+
+            Assert.That(((OutlierConfigDto)configs[0]).MarketDataType, Is.EqualTo(MarketDataType.MarketAssessment));
+            Assert.That(((OutlierConfigDto)configs[1]).MarketDataType, Is.EqualTo(MarketDataType.BidAsk));
+            Assert.That(((CompletenessAndFreshnessConfigDto)configs[2]).MarketDataType, Is.EqualTo(MarketDataType.MarketAssessment));
+            Assert.That(((CompletenessAndFreshnessConfigDto)configs[3]).MarketDataType, Is.EqualTo(MarketDataType.BidAsk));
+        }
+
+        [Test]
         public void DataQualityRuleConfig_InvalidRuleType_STJ_ThrowsException()
         {
             // Arrange - JSON with invalid RuleType value

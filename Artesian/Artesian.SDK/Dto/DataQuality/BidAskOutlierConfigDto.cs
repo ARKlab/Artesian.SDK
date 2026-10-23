@@ -11,6 +11,14 @@ namespace Artesian.SDK.Dto.DataQuality
     public class BidAskOutlierConfigDto : OutlierConfigDto
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="BidAskOutlierConfigDto"/> class with <see cref="MarketDataType.BidAsk"/>.
+        /// </summary>
+        public BidAskOutlierConfigDto()
+        {
+            MarketDataType = MarketDataType.BidAsk;
+        }
+
+        /// <summary>
         /// Optional products selected by this rule. A null value selects every available product.
         /// </summary>
         [Key("Products")]

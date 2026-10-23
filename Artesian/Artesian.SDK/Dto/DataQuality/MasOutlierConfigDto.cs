@@ -11,6 +11,14 @@ namespace Artesian.SDK.Dto.DataQuality
     public class MasOutlierConfigDto : OutlierConfigDto
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="MasOutlierConfigDto"/> class with <see cref="MarketDataType.MarketAssessment"/>.
+        /// </summary>
+        public MasOutlierConfigDto()
+        {
+            MarketDataType = MarketDataType.MarketAssessment;
+        }
+
+        /// <summary>
         /// Optional products selected by this rule. A null value selects every available product.
         /// </summary>
         [Key("Products")]
