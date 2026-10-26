@@ -23,7 +23,10 @@ namespace Artesian.SDK.Dto.DataQuality.Serialize
                 throw new JsonException($"Required discriminator '{nameof(DataQualityRuleConfigDto.Type)}' is missing.");
             }
 
-            var ruleType = JsonSerializer.Deserialize<RuleType>(ruleTypeElement.GetRawText(), options);
+            var ruleType = ruleTypeElement.ValueKind == JsonValueKind.String
+                && Enum.TryParse<RuleType>(ruleTypeElement.GetString(), true, out var parsedRuleType)
+                    ? parsedRuleType
+                    : JsonSerializer.Deserialize<RuleType>(ruleTypeElement.GetRawText(), options);
             var configurationType = ruleType switch
             {
                 RuleType.CompletenessAndFreshness => typeof(CompletenessAndFreshnessConfigDto),
