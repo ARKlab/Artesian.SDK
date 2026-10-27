@@ -106,6 +106,57 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
+        public void DataQualityRuleConfig_LegacyOutlierGoldenJson_STJ_UsesActualTimeSerie()
+        {
+            const string json = @"{""Type"":""Outlier"",""Model"":{""Model"":""AbsoluteBound"",""LowerBound"":-10.0,""UpperBound"":45.0}}";
+
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<DataQualityRuleConfigDto>(json, _stjOptions);
+
+            Assert.That(deserialized, Is.TypeOf<OutlierConfigDto>());
+            var outlierConfig = (OutlierConfigDto)deserialized!;
+            Assert.That(outlierConfig.Type, Is.EqualTo(RuleType.Outlier));
+            Assert.That(outlierConfig.MarketDataType, Is.EqualTo(MarketDataType.ActualTimeSerie));
+            Assert.That(outlierConfig.Model, Is.InstanceOf<OutlierAbsoluteBoundConfigDto>());
+        }
+
+        [Test]
+        public void DataQualityRuleConfig_MasOutlierGoldenJson_STJ_ReadsStringProducts()
+        {
+            const string json = @"{""Type"":""Outlier"",""MarketDataType"":""MarketAssessment"",""Products"":[""D+1"",""WD""],""FieldsToBeValidated"":[""Settlement"",""Volume""],""Model"":{""Model"":""AbsoluteBound"",""LowerBound"":-10.0,""UpperBound"":45.0}}";
+
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<DataQualityRuleConfigDto>(json, _stjOptions);
+
+            Assert.That(deserialized, Is.TypeOf<MasOutlierConfigDto>());
+            var masConfig = (MasOutlierConfigDto)deserialized!;
+            Assert.That(masConfig.MarketDataType, Is.EqualTo(MarketDataType.MarketAssessment));
+            Assert.That(masConfig.Products, Is.EqualTo(new[] { "D+1", "WD" }));
+            Assert.That(masConfig.FieldsToBeValidated, Is.EqualTo(new[] { MasDataQualityField.Settlement, MasDataQualityField.Volume }));
+        }
+
+        [Test]
+        public void DataQualityRuleConfig_BidAskOutlierGoldenJson_STJ_ReadsStringProducts()
+        {
+            const string json = @"{""Type"":""Outlier"",""MarketDataType"":""BidAsk"",""Products"":[""D+1"",""WD""],""FieldsToBeValidated"":[""BestBidPrice"",""BestAskPrice""],""Model"":{""Model"":""AbsoluteBound"",""LowerBound"":-10.0,""UpperBound"":45.0}}";
+
+            var deserialized = System.Text.Json.JsonSerializer.Deserialize<DataQualityRuleConfigDto>(json, _stjOptions);
+
+            Assert.That(deserialized, Is.TypeOf<BidAskOutlierConfigDto>());
+            var bidAskConfig = (BidAskOutlierConfigDto)deserialized!;
+            Assert.That(bidAskConfig.MarketDataType, Is.EqualTo(MarketDataType.BidAsk));
+            Assert.That(bidAskConfig.Products, Is.EqualTo(new[] { "D+1", "WD" }));
+            Assert.That(bidAskConfig.FieldsToBeValidated, Is.EqualTo(new[] { BidAskDataQualityField.BestBidPrice, BidAskDataQualityField.BestAskPrice }));
+        }
+
+        [Test]
+        public void DataQualityRuleConfig_AuctionOutlierGoldenJson_STJ_ThrowsJsonException()
+        {
+            const string json = @"{""Type"":""Outlier"",""MarketDataType"":""Auction""}";
+
+            Assert.Throws<JsonException>(() =>
+                System.Text.Json.JsonSerializer.Deserialize<DataQualityRuleConfigDto>(json, _stjOptions));
+        }
+
+        [Test]
         public void DataQualityRuleConfig_MasAbsoluteOutlier_STJ_RoundTrip()
         {
             DataQualityRuleConfigDto config = new MasOutlierConfigDto
