@@ -725,7 +725,7 @@ namespace Artesian.SDK.Tests
         private const string _realProblemDetailsJson = @"{""Errors"":[{""Key"":""MarketDataEntity.Tags[0].Value[0]"",""Value"":[{""ErrorMessage"":""'Value' must be between 1 and 50 characters. You entered 155 characters."",""AttemptedValue"":""PowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPower"",""CustomState"":null,""ErrorCode"":""LengthValidator"",""FormattedMessagePlaceholderValues"":[{""Key"":""CollectionIndex"",""Value"":0},{""Key"":""MinLength"",""Value"":1},{""Key"":""MaxLength"",""Value"":50},{""Key"":""TotalLength"",""Value"":155},{""Key"":""PropertyName"",""Value"":""Value""},{""Key"":""PropertyValue"",""Value"":""PowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPowerPower""}]}]}],""type"":""https://httpstatuses.com/400"",""title"":""Bad Request"",""status"":400,""detail"":""'Value' must be between 1 and 50 characters. You entered 155 characters."",""instance"":null}";
 
         [Test]
-        public void MarketData_RegisterIsFailingMarketDataAsync()
+        public async Task MarketData_RegisterIsFailingMarketDataAsync()
         {
             using (var httpTest = new HttpTest())
             {
@@ -746,7 +746,7 @@ namespace Artesian.SDK.Tests
                     status: 400,
                     headers: new { content_type = "application/problem+json; charset=utf-8" });
 
-                Assert.ThrowsAsync<ArtesianSdkValidationException>(
+                await Assert.ThrowsAsync<ArtesianSdkValidationException>(
                   () =>
                   {
                       return mds.RegisterMarketDataAsync(marketDataEntity);
@@ -1219,7 +1219,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void ValidationCheck_UpsertCurveData_Versioned_with_BidAsk()
+        public async Task ValidationCheck_UpsertCurveData_Versioned_with_BidAsk()
         {
             using (var httpTest = new HttpTest())
             {
@@ -1241,13 +1241,13 @@ namespace Artesian.SDK.Tests
                 data.BidAsk.Add(localDateTime, new Dictionary<string, BidAskValue>(StringComparer.Ordinal));
                 data.BidAsk[localDateTime].Add("test", new BidAskValue());
 
-                var ex = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
+                var ex = await Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
                 Assert.That(ex!.Message, Does.StartWith("UpsertCurveData BidAsk must be NULL if Rows are Valorized"));
             }
         }
 
         [Test]
-        public void ValidationCheck_UpsertCurveData_MarketAssesment_with_Auction()
+        public async Task ValidationCheck_UpsertCurveData_MarketAssesment_with_Auction()
         {
             using (var httpTest = new HttpTest())
             {
@@ -1274,7 +1274,7 @@ namespace Artesian.SDK.Tests
                 data.MarketAssessment.Add(localDateTime, new Dictionary<string, MarketAssessmentValue>(StringComparer.Ordinal));
                 data.MarketAssessment[localDateTime].Add("test", new MarketAssessmentValue());
 
-                var ex = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
+                var ex = await Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataAsync(data));
                 Assert.That(ex!.Message, Does.StartWith("UpsertCurveData Auctions must be NULL if MarketAssessment are Valorized"));
             }
         }
