@@ -863,7 +863,7 @@ namespace Artesian.SDK.Tests.Samples
             var currentTime = SystemClock.Instance.GetCurrentInstant();
             var today = currentTime.InUtc().Date;
             var rangeStart = today.PlusDays(-13);
-            const string product = "D+1";
+            const string product = "GME_D";
 
             var input = new MarketDataEntity.Input
             {
@@ -1058,7 +1058,7 @@ namespace Artesian.SDK.Tests.Samples
             var currentTime = SystemClock.Instance.GetCurrentInstant();
             var today = currentTime.InUtc().Date;
             var rangeStart = today.PlusDays(-13);
-            const string product = "D+1";
+            const string product = "GME_D";
 
             var input = new MarketDataEntity.Input
             {
