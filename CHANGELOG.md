@@ -11,7 +11,8 @@ All notable changes to this project will be documented in this file.
 - Support optional Market Data details in TS and VTS data quality extraction.
 
 ### Changed
+- BREAKING: Change `Events` in alert schedule event responses from an array to `PagedResult<>`; callers must access items through `Events.Data`.
 - Limit Data Quality ACL candidate and page sizes to 100 to match the API.
-- Require both `LowerBound` and `UpperBound` on `OutlierAbsoluteBoundConfigDto`.
+- BREAKING: Require both `LowerBound` and `UpperBound` on `OutlierAbsoluteBoundConfigDto`; initializers that set only one bound no longer compile.
 - Default `MarketDataType` to the matching type on MAS and BidAsk outlier and completeness configurations.
 - Throw `ArgumentOutOfRangeException` consistently for invalid `page` and `pageSize` in Data Quality ACL-protected reads.

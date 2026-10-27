@@ -612,7 +612,7 @@ Latest Value
 Artesian supports Data Quality Rules to validate market data for completeness, freshness, and outlier detection. 
 Rules are reusable configurations that can be assigned to one or more Market Data entities through rule assignments.
 
-Data Quality endpoints are protected by the configured authorization roles. Endpoints that return Market Data details accept `includeMarketData` (default `false`) to opt in to those fields; the API still returns them only when the caller has read access to the corresponding Market Data.
+Data Quality rule endpoints are protected by the `/dataquality/dqrule/all` ACL resource, and alert endpoints by `/dataquality/alertrule/all`. Grants to `/featureflag/dqbeta` no longer apply. Endpoints that return Market Data details accept `includeMarketData` (default `false`) to opt in to those fields; the API still returns them only when the caller has read access to the corresponding Market Data.
 
 ### Data Quality Rule Types
 
@@ -1146,7 +1146,7 @@ if (rule.AggregatedStatus == CheckAggregatedStatus.KO)
 
 ### Data Quality Check Results
 
-Data Quality check result APIs provide compact extracts for time series, paginated check summaries, and aggregated status overviews. Use assignment IDs to restrict extracts to specific rule assignments. The extract, check-summary, and Market Data status-summary APIs support `includeMarketData`, which defaults to `false`; when enabled, descriptive Market Data details are returned only when the caller can read that Market Data. ACL-protected candidate and page sizes are limited to 100.
+Data Quality check result APIs provide compact extracts for time series, paginated check summaries, and aggregated status overviews. Use assignment IDs to restrict extracts to specific rule assignments. The extract, check-summary, and Market Data status-summary APIs support `includeMarketData`, which defaults to `false`; when enabled, descriptive Market Data details are returned only when the caller can read that Market Data. For ACL-protected requests, `pageSize`, `limit`, and `assignmentIds` are each limited to a maximum of 100.
 
 #### Extract Check Results for Actual Time Series
 
@@ -1285,7 +1285,7 @@ foreach (var item in ruleStatuses)
 
 ### Include Data Quality in Market Data Responses
 
-Set `includeDataQuality` to `true` when reading the Market Data registry or using facet search to populate the `DataQualityStatusSummary` property of each enriched Market Data result. Both `ReadMarketDataRegistryAsync` overloads support this option.
+Set `includeDataQuality` to `true` when reading the Market Data registry or using facet search to populate the `DataQualityStatusSummary` property of each enriched Market Data result. Both `ReadMarketDataRegistryAsync` overloads support this option. This option requires read access to `/dataquality/dqrule/all`.
 
 ```csharp
 var marketDataWithQuality = await marketDataService.ReadMarketDataRegistryAsync(

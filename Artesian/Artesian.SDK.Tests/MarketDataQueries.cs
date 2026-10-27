@@ -3093,6 +3093,29 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
+        public async Task MarketData_ReadAlertScheduleEventsAsync_WithNonEmptyPage()
+        {
+            using (var httpTest = new HttpTest())
+            {
+                var mds = new MarketDataService(_cfg);
+                var scheduleTime = Instant.FromUtc(2025, 1, 15, 12, 30);
+
+                httpTest.RespondWith(@"{""Events"":{""Page"":1,""PageSize"":25,""Count"":1,""IsCountPartial"":false,""Data"":[{""MarketDataId"":100000001,""RuleId"":123,""AssignmentId"":456,""RangeImpacted"":{""Start"":""2025-01-15T00:00:00"",""End"":""2025-01-16T00:00:00""},""NewStatus"":1,""Timestamp"":""2025-01-15T12:30:00Z"",""RuleVersion"":1}]}}", 200, headers: new { Content_Type = "application/json" });
+                var response = await mds.ReadAlertScheduleEventsAsync(1, scheduleTime, page: 1, pageSize: 25);
+
+                Assert.That(response.Events.Page, Is.EqualTo(1));
+                Assert.That(response.Events.Count, Is.EqualTo(1));
+                var eventResult = response.Events.Data.Single();
+                Assert.That(eventResult.MarketDataId, Is.EqualTo(100000001));
+                Assert.That(eventResult.RuleId, Is.EqualTo(123));
+                Assert.That(eventResult.AssignmentId, Is.EqualTo(456));
+                Assert.That(eventResult.RangeImpacted.Start, Is.EqualTo(new LocalDateTime(2025, 1, 15, 0, 0)));
+                Assert.That(eventResult.NewStatus, Is.EqualTo(CheckAggregatedStatus.KO));
+                Assert.That(eventResult.Timestamp, Is.EqualTo(scheduleTime));
+            }
+        }
+
+        [Test]
         public async Task MarketData_ReadAlertScheduleListAsync()
         {
             using (var httpTest = new HttpTest())
