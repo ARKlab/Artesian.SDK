@@ -2743,6 +2743,24 @@ namespace Artesian.SDK.Tests
                 await mds.ReadQualityNotificationAlertAssignmentsAsync(page: 0, pageSize: 10).ConfigureAwait(false));
         }
 
+        [Test]
+        public void MarketData_GetDataQualityCheckResultCheckSummaryAsync_RejectsMoreThan100AssignmentIdsBeforeRequest()
+        {
+            var mds = new MarketDataService(_cfg);
+            var assignmentIds = new int[101];
+
+            using (var httpTest = new HttpTest())
+            {
+                Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                    await mds.GetDataQualityCheckResultCheckSummaryAsync(
+                        page: 1,
+                        pageSize: 10,
+                        assignmentIds: assignmentIds).ConfigureAwait(false));
+
+                httpTest.ShouldNotHaveCalled("*");
+            }
+        }
+
         #endregion
 
         #region DataQualityCheckResult

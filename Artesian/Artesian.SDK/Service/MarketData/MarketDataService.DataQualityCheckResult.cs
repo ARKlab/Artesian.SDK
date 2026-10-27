@@ -222,6 +222,8 @@ namespace Artesian.SDK.Service
             if (pageSize < 1 || pageSize > _maxDataQualityAclCandidates)
                 throw new ArgumentOutOfRangeException(nameof(pageSize), pageSize, $"PageSize must be between 1 and {_maxDataQualityAclCandidates}.");
 
+            _validateAssignmentIds(assignmentIds);
+
             var url = "/dataquality/checkresult/checksummary"
                 .SetQueryParam("page", page)
                 .SetQueryParam("pageSize", pageSize)
