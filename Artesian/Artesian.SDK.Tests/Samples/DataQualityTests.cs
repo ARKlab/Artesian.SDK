@@ -937,6 +937,20 @@ namespace Artesian.SDK.Tests.Samples
             ClassicAssert.IsTrue(masExtractResults.All(x => x.CompetenceStart <= x.CompetenceEnd));
             ClassicAssert.IsTrue(masExtractResults.Any(x => x.IssueCount > 0));
 
+            var masExtractWithoutMarketData = await marketDataService.GetDataQualityCheckResultExtractMasAsync(
+                Granularity.Day,
+                rangeStart,
+                today.PlusDays(1),
+                "UTC",
+                new[] { assignmentCreated.Id },
+                products: new[] { product },
+                ctk: ctk);
+
+            var masExtractWithoutMarketDataResults = masExtractWithoutMarketData.ToList();
+            ClassicAssert.IsNotEmpty(masExtractWithoutMarketDataResults);
+            ClassicAssert.IsTrue(masExtractWithoutMarketDataResults.All(x => x.ProviderName == null));
+            ClassicAssert.IsTrue(masExtractWithoutMarketDataResults.All(x => x.CurveName == null));
+
             await marketDataService.DeleteDataQualityRuleAssignmentAsync(assignmentCreated.Id, ctk);
             await marketDataService.DeleteDataQualityRuleAsync(ruleCreated.Id, ctk);
             await marketDataService.DeleteMarketDataAsync(mktData.MarketDataId.Value, ctk);
