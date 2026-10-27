@@ -176,5 +176,33 @@ namespace Artesian.SDK.Dto.DataQuality
             [Key(10)]
             public DateTimeOffset CompetenceEnd { get; set; }
         }
+
+        /// <summary>
+        /// Compact extraction result for Market Assessment check results.
+        /// </summary>
+        [MessagePackObject]
+        public class Mas : Ts
+        {
+            /// <summary>
+            /// The canonical materialized product name.
+            /// </summary>
+            [JsonPropertyName("PR")]
+            [Key(10)]
+            public string? Product { get; set; }
+        }
+
+        /// <summary>
+        /// Compact extraction result for BidAsk check results.
+        /// </summary>
+        [MessagePackObject]
+        public class BidAsk : Ts
+        {
+            /// <summary>
+            /// The canonical materialized product name.
+            /// </summary>
+            [JsonPropertyName("PR")]
+            [Key(10)]
+            public string? Product { get; set; }
+        }
     }
 }

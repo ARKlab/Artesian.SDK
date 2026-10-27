@@ -11,16 +11,20 @@ namespace Artesian.SDK.Dto.DataQuality
     /// Abstract configuration for Completeness and Freshness rules.
     /// Validates that expected data records are present within the defined time window and arrive within an acceptable delay.
     /// Concrete subtypes: <see cref="ActualCompletenessAndFreshnessConfigDto"/> for actual (non-versioned) time series,
-    /// <see cref="VersionedCompletenessAndFreshnessConfigDto"/> for versioned time series with version tolerance.
+    /// <see cref="VersionedCompletenessAndFreshnessConfigDto"/> for versioned time series with version tolerance,
+    /// <see cref="MasCompletenessAndFreshnessConfigDto"/> for Market Assessment, and
+    /// <see cref="BidAskCompletenessAndFreshnessConfigDto"/> for BidAsk.
     /// </summary>
     [MessagePackObject]
     [Union(0, typeof(ActualCompletenessAndFreshnessConfigDto))]
     [Union(1, typeof(VersionedCompletenessAndFreshnessConfigDto))]
+    [Union(2, typeof(MasCompletenessAndFreshnessConfigDto))]
+    [Union(3, typeof(BidAskCompletenessAndFreshnessConfigDto))]
     [JsonConverter(typeof(CompletenessAndFreshnessConfigConverterSTJ))]
     public abstract class CompletenessAndFreshnessConfigDto : DataQualityRuleConfigDto
     {
         /// <summary>
-        /// The type of Market Data this rule applies to (e.g., ActualTimeSerie, VersionedTimeSerie, MarketAssessment).
+        /// The type of Market Data this rule applies to (e.g., ActualTimeSerie, VersionedTimeSerie, MarketAssessment, BidAsk).
         /// This determines the structure of the expected data.
         /// </summary>
         [Key("MarketDataType")]
