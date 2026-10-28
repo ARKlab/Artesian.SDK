@@ -26,11 +26,10 @@
         MIXBID = 70,
         AFRR = 100,
         AFRE = 200,
-        GMP_ASTA = 230,
-        GMP_Cont = 234,
+        MGP_ASTA = 230,
+        MGP_Cont = 234,
         MI_Cont = 235,
         MGS = 240
-
     }
 
     public enum Status : byte
@@ -107,6 +106,7 @@
         BSP = 22,
         XAUS = 23,
         XFRA = 24,
+        UNKNOWN = 99
     }
 
     public enum GenerationType : byte
