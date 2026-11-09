@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Breaking:** renamed `Market.GMP_ASTA` and `Market.GMP_Cont` to `Market.MGP_ASTA` and `Market.MGP_Cont` to match the GME market names. The ENUMs GMP_ASTA and GMP_Count where typos, those markets don't exist.
+- **Breaking:** renamed `Market.GMP_ASTA` and `Market.GMP_Cont` to `Market.MGP_ASTA` and `Market.MGP_Cont` to match the GME market names. The ENUMs GMP_ASTA and GMP_Cont where typos, those markets don't exist.
 
 ### Security
 
