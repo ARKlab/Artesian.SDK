@@ -14,7 +14,6 @@ env:
   NUGET_SOURCE_URL: 'https://api.nuget.org/v3/index.json'
 
 permissions:
-  id-token: write
   contents: write
   statuses: write
   checks: write
@@ -281,6 +280,9 @@ jobs:
   publish-stable:
     name: 'Publish Stable'
     runs-on: 'ubuntu-latest'
+
+    permissions:
+      contents: read
     needs:
       - build
       - test-net462
@@ -325,22 +327,12 @@ jobs:
           -p:Version="$VERSION" \
           --output "$OUTPUT_DIR"
 
-    - name: 'Push package'
-      shell: bash
-      run: |
-        VERSION="${GITHUB_REF_NAME#v}"
-        PACKAGE="${GITHUB_WORKSPACE}/output/Artesian.SDK.${VERSION}.nupkg"
-
-        if [[ ! -f "$PACKAGE" ]]; then
-          echo "::error::Package not found: $PACKAGE"
-          exit 1
-        fi
-
-        echo "Pushing package: $PACKAGE"
-
-        dotnet nuget push "$PACKAGE" \
-          --api-key "${{ secrets.NUGET_AUTH_TOKEN }}" \
-          --source "${{ env.NUGET_SOURCE_URL }}"
+    - name: 'Upload package'
+      uses: actions/upload-artifact@v7
+      with:
+        name: nuget-package
+        path: ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+        if-no-files-found: error
 
 
   # ---------------------------------------------------------------------------
@@ -359,6 +351,9 @@ jobs:
   publish-beta:
     name: 'Publish Beta'
     runs-on: 'ubuntu-latest'
+
+    permissions:
+      contents: read
     needs:
       - build
       - test-net462
@@ -432,22 +427,12 @@ jobs:
           -p:Version="$VERSION" \
           --output "$OUTPUT_DIR"
 
-    - name: 'Push package'
-      shell: bash
-      run: |
-        VERSION="${GITHUB_REF_NAME#v}"
-        PACKAGE="${GITHUB_WORKSPACE}/output/Artesian.SDK.${VERSION}.nupkg"
-
-        if [[ ! -f "$PACKAGE" ]]; then
-          echo "::error::Package not found: $PACKAGE"
-          exit 1
-        fi
-
-        echo "Pushing package: $PACKAGE"
-
-        dotnet nuget push "$PACKAGE" \
-          --api-key "${{ secrets.NUGET_AUTH_TOKEN }}" \
-          --source "${{ env.NUGET_SOURCE_URL }}"
+    - name: 'Upload package'
+      uses: actions/upload-artifact@v7
+      with:
+        name: nuget-package
+        path: ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+        if-no-files-found: error
 
 
   # ---------------------------------------------------------------------------
@@ -625,11 +610,66 @@ jobs:
           -p:Version="$VERSION" \
           --output "$OUTPUT_DIR"
 
+    - name: 'Upload package'
+      uses: actions/upload-artifact@v7
+      with:
+        name: nuget-package
+        path: ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+        if-no-files-found: error
+
+
+  # ---------------------------------------------------------------------------
+  # Push to NuGet
+  #
+  # The only job that can request an OIDC token: the build, test and pack jobs
+  # above cannot mint a NuGet key. Trusted publishing exchanges the token for
+  # a one-hour API key.
+  # ---------------------------------------------------------------------------
+
+  nuget-push:
+    name: 'Push to NuGet'
+    runs-on: 'ubuntu-latest'
+    needs:
+      - publish-stable
+      - publish-beta
+      - publish-preview
+
+    if: >
+      !cancelled() &&
+      (needs.publish-stable.result == 'success' ||
+       needs.publish-beta.result == 'success' ||
+       needs.publish-preview.result == 'success')
+
+    # The nuget.org policy accepts only this environment, and the environment accepts only release tags.
+    environment: nuget
+    permissions:
+      id-token: write
+
+    steps:
+    - name: 'Download package'
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2, pinned: this job can mint the publish key
+      with:
+        name: nuget-package
+        path: ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+
+    - name: 'Install dotnet'
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0, pinned: this job can mint the publish key
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: 'NuGet login'
+      id: nuget-login
+      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0, pinned: this step handles the publish credential
+      with:
+        user: ${{ secrets.NUGET_USER }}
+
     - name: 'Push package'
       shell: bash
+      env:
+        NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
       run: |
         VERSION="${GITHUB_REF_NAME#v}"
-        PACKAGE="${GITHUB_WORKSPACE}/output/Artesian.SDK.${VERSION}.nupkg"
+        PACKAGE="${PACKAGE_OUTPUT_DIRECTORY}/Artesian.SDK.${VERSION}.nupkg"
 
         if [[ ! -f "$PACKAGE" ]]; then
           echo "::error::Package not found: $PACKAGE"
@@ -639,5 +679,5 @@ jobs:
         echo "Pushing package: $PACKAGE"
 
         dotnet nuget push "$PACKAGE" \
-          --api-key "${{ secrets.NUGET_AUTH_TOKEN }}" \
+          --api-key "$NUGET_API_KEY" \
           --source "${{ env.NUGET_SOURCE_URL }}"
