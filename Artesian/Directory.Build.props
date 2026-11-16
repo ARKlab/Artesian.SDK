@@ -53,17 +53,17 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.400" >
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.404" >
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
 		
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400">
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.404">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
 
-		<PackageReference Include="Meziantou.Analyzer" Version="3.0.147">
+		<PackageReference Include="Meziantou.Analyzer" Version="3.0.341">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
@@ -72,7 +72,7 @@
 
 	<ItemGroup>
 		<!-- PolySharp provides polyfills for all target frameworks -->
-		<PackageReference Include="PolySharp" Version="1.16.0">
+		<PackageReference Include="PolySharp" Version="1.17.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
