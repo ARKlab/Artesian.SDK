@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BREAKING: Default `includeMarketData` to `false` for Data Quality reads; Market Data names and providers are omitted unless requested.
 - BREAKING: Require Data Quality ACL grants on `/dataquality/dqrule/all` and `/dataquality/alertrule/all`; grants on `/featureflag/dqbeta` no longer apply.
 - Throw `ArgumentOutOfRangeException` consistently for invalid `page` and `pageSize` in Data Quality ACL-protected reads.
-- **Breaking:** renamed `Market.GMP_ASTA` and `Market.GMP_Cont` to `Market.MGP_ASTA` and `Market.MGP_Cont` to match the GME market names. The ENUMs GMP_ASTA and GMP_Cont where typos, those markets don't exist.
+- **Breaking:** renamed `Market.GMP_ASTA` and `Market.GMP_Cont` to `Market.MGP_ASTA` and `Market.MGP_Cont` to match the GME market names. The ENUMs GMP_ASTA and GMP_Cont were typos, those markets don't exist.
 
 ### Security
 
