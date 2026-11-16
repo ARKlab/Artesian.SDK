@@ -2732,7 +2732,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Ver_RelativePeriodExtractionWindowFail()
+        public async Task Ver_RelativePeriodExtractionWindowFail()
         {
             var qs = new QueryService(_cfg);
 
@@ -2747,7 +2747,7 @@ namespace Artesian.SDK.Tests
                                 .ForAnalysisDate(new LocalDate(2018, 07, 19))
                                 ;
 
-            Assert.ThrowsAsync<ArtesianSdkClientException>(
+            await Assert.ThrowsAsync<ArtesianSdkClientException>(
                 () => {
                     return query.ExecuteAsync(); 
                 }

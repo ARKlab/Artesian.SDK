@@ -139,7 +139,7 @@ namespace Artesian.SDK.Tests
 
                 var qs = new QueryService(_cfg);
 
-                var ex = Assert.ThrowsAsync<ArtesianSdkValidationException>(async () =>
+                var ex = await Assert.ThrowsAsync<ArtesianSdkValidationException>(async () =>
                 {
                     await qs.CreateActual()
                         .ForMarketData(new[] { 100000001 })
@@ -177,7 +177,7 @@ namespace Artesian.SDK.Tests
 
                 var qs = new QueryService(_cfg);
 
-                var ex = Assert.ThrowsAsync<ArtesianSdkOptimisticConcurrencyException>(async () =>
+                var ex = await Assert.ThrowsAsync<ArtesianSdkOptimisticConcurrencyException>(async () =>
                 {
                     await qs.CreateActual()
                         .ForMarketData(new[] { 100000001 })
@@ -196,7 +196,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void Should_Throw_For_Unsupported_ContentType()
+        public async Task Should_Throw_For_Unsupported_ContentType()
         {
             using (var httpTest = new HttpTest())
             {
@@ -204,7 +204,7 @@ namespace Artesian.SDK.Tests
 
                 var qs = new QueryService(_cfg);
 
-                var ex = Assert.ThrowsAsync<ArtesianSdkClientException>(async () =>
+                var ex = await Assert.ThrowsAsync<ArtesianSdkClientException>(async () =>
                 {
                     await qs.CreateActual()
                         .ForMarketData(new[] { 100000001 })
@@ -235,7 +235,7 @@ namespace Artesian.SDK.Tests
 
                 var qs = new QueryService(_cfg);
 
-                var ex = Assert.ThrowsAsync<ArtesianSdkValidationException>(async () =>
+                var ex = await Assert.ThrowsAsync<ArtesianSdkValidationException>(async () =>
                 {
                     await qs.CreateActual()
                         .ForMarketData(new[] { 100000001 })
