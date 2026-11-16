@@ -2619,12 +2619,12 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MarketData_ReadDataQualityRuleAssignmentEventsFeedAsync_RejectsAfterTimestampOlderThanEightDays()
+        public async Task MarketData_ReadDataQualityRuleAssignmentEventsFeedAsync_RejectsAfterTimestampOlderThanEightDays()
         {
             var mds = new MarketDataService(_cfg);
             var afterTimestamp = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(9);
 
-            var exception = Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.ReadDataQualityRuleAssignmentEventsFeedAsync(1, afterTimestamp).ConfigureAwait(false));
 
             Assert.That(exception!.ParamName, Is.EqualTo("afterTimestamp"));
@@ -2704,7 +2704,7 @@ namespace Artesian.SDK.Tests
         }
 
         [Test]
-        public void MarketData_DataQualityAclLimits_RejectMoreThan100Candidates()
+        public async Task MarketData_DataQualityAclLimits_RejectMoreThan100Candidates()
         {
             var mds = new MarketDataService(_cfg);
             var start = new LocalDate(2024, 1, 1);
@@ -2713,45 +2713,45 @@ namespace Artesian.SDK.Tests
             var version = new LocalDateTime(2024, 1, 1, 0, 0);
             var scheduleTime = Instant.FromUtc(2024, 1, 1, 0, 0);
 
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.GetDataQualityCheckResultExtractVtsAsync(version, Granularity.Day, start, end, "UTC", assignmentIds).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.GetDataQualityCheckResultExtractTsAsync(Granularity.Day, start, end, "UTC", assignmentIds).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.GetDataQualityCheckResultExtractMasAsync(Granularity.Day, start, end, "UTC", assignmentIds).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.GetDataQualityCheckResultExtractBidAskAsync(Granularity.Day, start, end, "UTC", assignmentIds).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.GetDataQualityCheckResultCheckSummaryAsync(page: 1, pageSize: 101).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.GetMarketDataDqStatusSummaryAsync(limit: 101).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.GetDqRuleDqStatusSummaryAsync(limit: 101).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.ReadDataQualityRuleAssignmentsAsync(page: 1, pageSize: 101).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.ReadAlertScheduleEventsAsync(1, scheduleTime, pageSize: 101).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.ReadAlertScheduleLastEventsAsync(1, pageSize: 101).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.ReadQualityNotificationAlertAssignmentsAsync(page: 1, pageSize: 101).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.GetDataQualityCheckResultCheckSummaryAsync(page: 0, pageSize: 10).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.ReadDataQualityRuleAssignmentsAsync(page: 0, pageSize: 10).ConfigureAwait(false));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await mds.ReadQualityNotificationAlertAssignmentsAsync(page: 0, pageSize: 10).ConfigureAwait(false));
         }
 
         [Test]
-        public void MarketData_GetDataQualityCheckResultCheckSummaryAsync_RejectsMoreThan100AssignmentIdsBeforeRequest()
+        public async Task MarketData_GetDataQualityCheckResultCheckSummaryAsync_RejectsMoreThan100AssignmentIdsBeforeRequest()
         {
             var mds = new MarketDataService(_cfg);
             var assignmentIds = new int[101];
 
             using (var httpTest = new HttpTest())
             {
-                Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                     await mds.GetDataQualityCheckResultCheckSummaryAsync(
                         page: 1,
                         pageSize: 10,
@@ -3289,7 +3289,7 @@ namespace Artesian.SDK.Tests
         [TestCase(3, "Comment cannot exceed 4000 characters")]
         [TestCase(4, "UpsertMode must be null or Merge")]
         [TestCase(5, "Rows/Auctions/BidAsks must be valorized")]
-        public void MarketData_UpsertCurveDataOverrideAsync_RejectsInvalidOverride(int invalidCase, string expectedMessage)
+        public async Task MarketData_UpsertCurveDataOverrideAsync_RejectsInvalidOverride(int invalidCase, string expectedMessage)
         {
             using (var httpTest = new HttpTest())
             {
@@ -3326,7 +3326,7 @@ namespace Artesian.SDK.Tests
                         break;
                 }
 
-                var exception = Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataOverrideAsync(data));
+                var exception = await Assert.ThrowsAsync<ArgumentException>(() => mds.UpsertCurveDataOverrideAsync(data));
                 Assert.That(exception!.Message, Does.Contain(expectedMessage));
                 httpTest.ShouldNotHaveMadeACall();
             }
